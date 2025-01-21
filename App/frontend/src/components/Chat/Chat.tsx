@@ -150,6 +150,264 @@ const Chat: React.FC<ChatProps> = ({
     scrollChatToBottom();
   }, [state.chat.generatingResponse]);
 
+  const makeApiRequestForChart = async (
+    question: string,
+    conversationId: string,
+    lrg: string
+  ) => {
+    if (generatingResponse || !question.trim()) {
+      return;
+    }
+
+    const newMessage: ChatMessage = {
+      id: generateUUIDv4(),
+      role: "user",
+      content: question,
+      date: new Date().toISOString(),
+    };
+    dispatch({
+      type: actionConstants.UPDATE_GENERATING_RESPONSE_FLAG,
+      payload: true,
+    });
+    scrollChatToBottom();
+    dispatch({
+      type: actionConstants.UPDATE_MESSAGES,
+      payload: [newMessage],
+    });
+    dispatch({
+      type: actionConstants.UPDATE_USER_MESSAGE,
+      payload: "",
+    });
+    const abortController = new AbortController();
+    abortFuncs.current.unshift(abortController);
+
+    const request: ConversationRequest = {
+      id: conversationId,
+      messages: [...state.chat.messages, newMessage].filter(
+        (messageObj) => messageObj.role !== ERROR
+      ),
+      last_rag_response: lrg
+    };
+
+    const streamMessage: ChatMessage = {
+      id: generateUUIDv4(),
+      date: new Date().toISOString(),
+      role: ASSISTANT,
+      content: "",
+    };
+    let updatedMessages: ChatMessage[] = [];
+    try {
+      const response = await callConversationApi(
+        request,
+        abortController.signal
+      );
+console.log("");
+
+      if (response?.body) {
+        let isChartResponseReceived = false;
+        const reader = response.body.getReader();
+        let runningText = "";
+        let hasError = false;
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          const text = new TextDecoder("utf-8").decode(value);
+          try {
+            const textObj = JSON.parse(text);
+            if (textObj?.object?.data) {
+              runningText = text;
+              isChartResponseReceived = true;
+            }
+            if (textObj?.object?.message) {
+              runningText = text;
+              isChartResponseReceived = true;
+            }
+            if (textObj?.error) {
+              hasError = true;
+              runningText = text;
+            }
+          } catch (e) {
+            console.error("error while parsing text before split", e);
+          }
+          if (!isChartResponseReceived) {
+            //text based streaming response
+            const objects = text.split("\n").filter((val) => val !== "");
+            objects.forEach((textValue, index) => {
+              try {
+                if (textValue !== "" && textValue !== "{}") {
+                  const parsed: ParsedChunk = JSON.parse(textValue);
+                  if (parsed?.error && !hasError) {
+                    hasError = true;
+                    runningText = parsed?.error;
+                  } else if (isChartQuery(question)) {
+                    runningText = runningText + textValue;
+                  } else if (typeof parsed === "object" && !hasError) {
+                    streamMessage.content =
+                      parsed?.choices?.[0]?.messages?.[0]?.content || "";
+                    streamMessage.role =
+                      parsed?.choices?.[0]?.messages?.[0]?.role || ASSISTANT;
+                    dispatch({
+                      type: actionConstants.UPDATE_MESSAGE_BY_ID,
+                      payload: streamMessage,
+                    });
+                    scrollChatToBottom();
+                  }
+                }
+              } catch (e) {
+                console.log("Error while parsing and appending content", e);
+              }
+            });
+            if (hasError) {
+              console.log("STOPPED DUE TO ERROR FROM API RESPONSE");
+              break;
+            }
+          }
+        }
+        // END OF STREAMING
+        if (hasError) {
+          const errorMsg = JSON.parse(runningText).error;
+          const errorMessage: ChatMessage = {
+            id: generateUUIDv4(),
+            role: ASSISTANT,
+            content: errorMsg,
+            date: new Date().toISOString(),
+          };
+          updatedMessages = [...state.chat.messages, newMessage, errorMessage];
+          dispatch({
+            type: actionConstants.UPDATE_MESSAGES,
+            payload: [errorMessage],
+          });
+          scrollChatToBottom();
+        } else if (isChartQuery(question)) {
+          try {
+            const parsedChartResponse = JSON.parse(runningText);
+            if (
+              "object" in parsedChartResponse &&
+              parsedChartResponse?.object?.type &&
+              parsedChartResponse?.object?.data
+            ) {
+              // CHART CHECKING
+              try {
+                const chartMessage: ChatMessage = {
+                  id: generateUUIDv4(),
+                  role: ASSISTANT,
+                  content:
+                    parsedChartResponse.object as unknown as ChartDataResponse,
+                  date: new Date().toISOString(),
+                };
+                updatedMessages = [
+                  ...state.chat.messages,
+                  newMessage,
+                  chartMessage,
+                ];
+                // Update messages with the response content
+                dispatch({
+                  type: actionConstants.UPDATE_MESSAGES,
+                  payload: [chartMessage],
+                });
+                scrollChatToBottom();
+              } catch (e) {
+                console.error("Error handling assistant response:", e);
+                const chartMessage: ChatMessage = {
+                  id: generateUUIDv4(),
+                  role: ASSISTANT,
+                  content: "Error while generating Chart.",
+                  date: new Date().toISOString(),
+                };
+                updatedMessages = [
+                  ...state.chat.messages,
+                  newMessage,
+                  chartMessage,
+                ];
+                dispatch({
+                  type: actionConstants.UPDATE_MESSAGES,
+                  payload: [chartMessage],
+                });
+                scrollChatToBottom();
+              }
+            } else if (
+              parsedChartResponse.error ||
+              parsedChartResponse?.object?.message
+            ) {
+              const errorMsg =
+                parsedChartResponse.error ||
+                parsedChartResponse?.object?.message;
+              const errorMessage: ChatMessage = {
+                id: generateUUIDv4(),
+                role: ASSISTANT,
+                content: errorMsg,
+                date: new Date().toISOString(),
+              };
+              updatedMessages = [
+                ...state.chat.messages,
+                newMessage,
+                errorMessage,
+              ];
+              dispatch({
+                type: actionConstants.UPDATE_MESSAGES,
+                payload: [errorMessage],
+              });
+              scrollChatToBottom();
+            }
+          } catch (e) {
+            console.log("Error while parsing charts response", e);
+          }
+        } else if (!isChartResponseReceived) {
+          dispatch({
+            type: actionConstants.SET_LAST_RAG_RESPONSE,
+            payload: streamMessage?.content as string,
+          });
+          updatedMessages = [
+            ...state.chat.messages,
+            newMessage,
+            ...[streamMessage],
+          ];
+        }
+      }
+      saveToDB(updatedMessages, conversationId);
+    } catch (e) {
+      console.log("Catched with an error while chat and save", e);
+      if (abortController.signal.aborted) {
+        if (streamMessage.content) {
+          updatedMessages = [
+            ...state.chat.messages,
+            newMessage,
+            ...[streamMessage],
+          ];
+        } else {
+          updatedMessages = [...state.chat.messages, newMessage];
+        }
+        console.log(
+          "@@@ Abort Signal detected: Formed updated msgs",
+          updatedMessages
+        );
+        saveToDB(updatedMessages, conversationId);
+      }
+
+      if (!abortController.signal.aborted) {
+        if (e instanceof Error) {
+          alert(e.message);
+        } else {
+          alert(
+            "An error occurred. Please try again. If the problem persists, please contact the site administrator."
+          );
+        }
+      }
+    } finally {
+
+      
+      dispatch({
+        type: actionConstants.UPDATE_GENERATING_RESPONSE_FLAG,
+        payload: false,
+      });
+      dispatch({
+        type: actionConstants.UPDATE_STREAMING_FLAG,
+        payload: false,
+      });
+    }
+    return abortController.abort();
+  };
+
   const makeApiRequestWithCosmosDB = async (
     question: string,
     conversationId: string
@@ -402,7 +660,9 @@ const Chat: React.FC<ChatProps> = ({
       dispatch({
         type: actionConstants.UPDATE_STREAMING_FLAG,
         payload: false,
-      });
+      }); 
+      // await getChartResponse(streamMessage.content as string)
+      makeApiRequestForChart('show in a graph',conversationId, streamMessage?.content as string)
     }
     return abortController.abort();
   };
