@@ -22,7 +22,7 @@ updates:
     target-branch: "dependabotchanges"
    
 
-  - package-ecosystem: "pip"
+  - package-ecosystem: "npm"
     directory: "/App/frontend"
     schedule:
       interval: "monthly"
