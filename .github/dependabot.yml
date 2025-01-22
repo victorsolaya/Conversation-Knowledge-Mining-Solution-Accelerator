@@ -11,7 +11,7 @@ updates:
     commit-message:
       prefix: "build"
     target-branch: "dependabotchanges"
-    
+    open-pull-requests-limit: 20
 
   - package-ecosystem: "pip"
     directory: "/App"
@@ -20,7 +20,7 @@ updates:
     commit-message:
       prefix: "build"
     target-branch: "dependabotchanges"
-   
+    open-pull-requests-limit: 60
 
   - package-ecosystem: "npm"
     directory: "/App/frontend"
@@ -29,4 +29,4 @@ updates:
     commit-message:
       prefix: "build"
     target-branch: "dependabotchanges"
-    
+    open-pull-requests-limit: 60
