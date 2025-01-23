@@ -389,6 +389,13 @@ async def get_layout_config():
         return layout_config_str
     return jsonify({"error": "Layout config not found in environment variables"}), 400
 
+@app.route("/api/display-chart-default", methods=["GET"])
+async def get_chart_config():
+    chart_config = os.getenv("DISPLAY_CHART_DEFAULT", "")
+    if chart_config:
+        return jsonify({"isChartDisplayDefault":  chart_config})
+    return jsonify({"error": "DISPLAY_CHART_DEFAULT flag not found in environment variables"}), 400
+
 
 async def generate_title(conversation_messages):
     # make sure the messages are sorted by _ts descending

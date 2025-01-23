@@ -22,7 +22,7 @@ import {
   type ParsedChunk,
   type ChatMessage,
 } from "../../types/AppTypes";
-import { callConversationApi, historyUpdate } from "../../api/api";
+import { callConversationApi, getIsChartDisplayDefault, historyUpdate } from "../../api/api";
 import { ChatAdd24Regular } from "@fluentui/react-icons";
 import { generateUUIDv4 } from "../../configs/Utils";
 import ChatChart from "../ChatChart/ChatChart";
@@ -48,6 +48,19 @@ const Chat: React.FC<ChatProps> = ({
   const abortFuncs = useRef([] as AbortController[]);
   // const [lastRagResponse, setLastRagResponse] = useState<string | null>(null);
   const chatMessageStreamEnd = useRef<HTMLDivElement | null>(null);
+  const [isCharthDisplayDefault , setIsCharthDisplayDefault] = useState(false);
+  
+  useEffect(() => {
+    try {
+      const fetchIsChartDisplayDefault = async () => {
+        const chartConfigFlag = await getIsChartDisplayDefault();
+        setIsCharthDisplayDefault(chartConfigFlag.isChartDisplayDefault);
+      };
+      fetchIsChartDisplayDefault();
+    } catch (error) {
+      console.error("Failed to fetch isChartDisplayDefault flag", error);
+    }
+  }, []);
 
   const saveToDB = async (messages: ChatMessage[], convId: string, reqType: string = 'Text') => {
     if (!convId || !messages.length) {
@@ -59,7 +72,7 @@ const Chat: React.FC<ChatProps> = ({
       payload: true,
     });
 
-    if (reqType !== 'graph' && reqType !== 'error'){
+    if ((reqType !== 'graph' && reqType !== 'error') && isCharthDisplayDefault){
       setIsChartLoading(true);
       setTimeout(()=>{
         makeApiRequestForChart('show in a graph by default', convId, messages[messages.length - 1].content as string)
