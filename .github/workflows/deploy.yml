@@ -30,14 +30,14 @@ jobs:
         run: |
           echo "Generating a unique resource group name..."
           TIMESTAMP=$(date +%Y%m%d%H%M%S)
-          COMMON_PART="ci-ckmv2"
+          COMMON_PART="ci-KMGeneric"
           UNIQUE_RG_NAME="${COMMON_PART}${TIMESTAMP}"
           echo "RESOURCE_GROUP_NAME=${UNIQUE_RG_NAME}" >> $GITHUB_ENV
           echo "Generated Resource_GROUP_PREFIX: ${UNIQUE_RG_NAME}"
 
       - name: Create Resource Group
         run: |
-          az group create --name ${{ env.RESOURCE_GROUP_NAME }} --location eastus
+          az group create --name ${{ env.RESOURCE_GROUP_NAME }} --location eastus2
 
       - name: Generate Unique Solution Prefix
         id: generate_solution_prefix
