@@ -107,7 +107,6 @@ module createIndex 'deploy_index_scripts.bicep' = {
 module azureFunctionsCharts 'deploy_azure_function_charts.bicep' = {
   name : 'deploy_azure_function_charts'
   params:{
-    imageTag: imageTag
     solutionName: solutionPrefix
     solutionLocation: solutionLocation
     sqlServerName: sqlDBModule.outputs.sqlServerName
@@ -122,7 +121,6 @@ module azureFunctionsCharts 'deploy_azure_function_charts.bicep' = {
 module azureragFunctionsRag 'deploy_azure_function_rag.bicep' = {
   name : 'deploy_azure_function_rag'
   params:{
-    imageTag: imageTag
     solutionName: solutionPrefix
     solutionLocation: solutionLocation
     azureOpenAIApiKey:keyVault.getSecret('AZURE-OPENAI-KEY')
@@ -143,7 +141,6 @@ module azureragFunctionsRag 'deploy_azure_function_rag.bicep' = {
 module azureFunctionURL 'deploy_azure_function_urls.bicep' = {
   name : 'deploy_azure_function_urls'
   params:{
-    imageTag: imageTag
     solutionName: solutionPrefix
     identity:managedIdentityModule.outputs.managedIdentityOutput.id
   }
