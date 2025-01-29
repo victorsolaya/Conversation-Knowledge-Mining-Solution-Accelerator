@@ -17,12 +17,6 @@
         "description": "Prefix Name"
       }
     },
-       "imageTag": {
-      "type": "string",
-      "metadata": {
-        "description": "Specifies the tag for the Docker image."
-      }
-    },
     "otherLocation": {
       "type": "string",
       "metadata": {
@@ -1667,7 +1661,7 @@
           "variables": {
             "functionAppName": "[format('{0}-charts-fn', parameters('solutionName'))]",
             "storageaccountname": "[format('{0}chartsfnacc', parameters('solutionName'))]",
-             "dockerImage": "[format('DOCKER|kmcontainerreg.azurecr.io/km-charts-function:{0}', parameters('imageTag'))]",
+            "dockerImage": "DOCKER|kmcontainerreg.azurecr.io/km-charts-function:latest",
             "environmentName": "[format('{0}-charts-fn-env', parameters('solutionName'))]"
           },
           "resources": [
@@ -1907,7 +1901,7 @@
           "variables": {
             "functionAppName": "[format('{0}-rag-fn', parameters('solutionName'))]",
             "storageaccountname": "[format('{0}ragfnacc', parameters('solutionName'))]",
-            "dockerImage": "[format('DOCKER|kmcontainerreg.azurecr.io/km-rag-function:{0}', parameters('imageTag'))]",
+            "dockerImage": "DOCKER|kmcontainerreg.azurecr.io/km-rag-function:latest",
             "environmentName": "[format('{0}-rag-fn-env', parameters('solutionName'))]"
           },
           "resources": [
@@ -2363,7 +2357,7 @@
             }
           },
           "variables": {
-            "WebAppImageName": "[format('DOCKER|kmcontainerreg.azurecr.io/km-app:{0}', parameters('imageTag'))]",
+            "WebAppImageName": "DOCKER|kmcontainerreg.azurecr.io/km-app:latest",
             "REACT_APP_LAYOUT_CONFIG": "{\r\n  \"appConfig\": {\r\n    \"THREE_COLUMN\": {\r\n      \"DASHBOARD\": 50,\r\n      \"CHAT\": 33,\r\n      \"CHATHISTORY\": 17\r\n    },\r\n    \"TWO_COLUMN\": {\r\n      \"DASHBOARD_CHAT\": {\r\n        \"DASHBOARD\": 65,\r\n        \"CHAT\": 35\r\n      },\r\n      \"CHAT_CHATHISTORY\": {\r\n        \"CHAT\": 80,\r\n        \"CHATHISTORY\": 20\r\n      }\r\n    }\r\n  },\r\n  \"charts\": [\r\n    {\r\n      \"id\": \"SATISFIED\",\r\n      \"name\": \"Satisfied\",\r\n      \"type\": \"card\",\r\n      \"layout\": { \"row\": 1, \"column\": 1, \"height\": 11 }\r\n    },\r\n    {\r\n      \"id\": \"TOTAL_CALLS\",\r\n      \"name\": \"Total Calls\",\r\n      \"type\": \"card\",\r\n      \"layout\": { \"row\": 1, \"column\": 2, \"span\": 1 }\r\n    },\r\n    {\r\n      \"id\": \"AVG_HANDLING_TIME\",\r\n      \"name\": \"Average Handling Time\",\r\n      \"type\": \"card\",\r\n      \"layout\": { \"row\": 1, \"column\": 3, \"span\": 1 }\r\n    },\r\n    {\r\n      \"id\": \"SENTIMENT\",\r\n      \"name\": \"Topics Overview\",\r\n      \"type\": \"donutchart\",\r\n      \"layout\": { \"row\": 2, \"column\": 1, \"width\": 40, \"height\": 44.5 }\r\n    },\r\n    {\r\n      \"id\": \"AVG_HANDLING_TIME_BY_TOPIC\",\r\n      \"name\": \"Average Handling Time By Topic\",\r\n      \"type\": \"bar\",\r\n      \"layout\": { \"row\": 2, \"column\": 2, \"row-span\": 2, \"width\": 60 }\r\n    },\r\n    {\r\n      \"id\": \"TOPICS\",\r\n      \"name\": \"Trending Topics\",\r\n      \"type\": \"table\",\r\n      \"layout\": { \"row\": 3, \"column\": 1, \"span\": 2 }\r\n    },\r\n    {\r\n      \"id\": \"KEY_PHRASES\",\r\n      \"name\": \"Key Phrases\",\r\n      \"type\": \"wordcloud\",\r\n      \"layout\": { \"row\": 3, \"column\": 2, \"height\": 44.5 }\r\n    }\r\n  ]\r\n}"
           },
           "resources": [
