@@ -224,6 +224,28 @@ export async function getLayoutConfig(): Promise<{
   };
 }
 
+export async function getIsChartDisplayDefault(): Promise<{
+  isChartDisplayDefault: boolean;
+}> {
+  const response = await fetch("/api/display-chart-default", {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  try {
+    if (response.ok) {
+      const responseData = await response.json();
+      return { isChartDisplayDefault : responseData.isChartDisplayDefault}
+    }
+  } catch {
+    console.error("Failed to get chart config flag");
+  }
+  return {
+    isChartDisplayDefault : false
+  };
+}
+
 export async function callConversationApi(
   options: ConversationRequest,
   abortSignal: AbortSignal
