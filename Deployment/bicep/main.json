@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.32.4.45862",
-      "templateHash": "16964994139844363160"
+      "version": "0.30.23.60470",
+      "templateHash": "10435906030925048109"
     }
   },
   "parameters": {
@@ -22,6 +22,9 @@
       "metadata": {
         "description": "other Location"
       }
+    },
+    "imageTag": {
+      "type": "string"
     }
   },
   "variables": {
@@ -55,8 +58,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.32.4.45862",
-              "templateHash": "9540019694218374629"
+              "version": "0.30.23.60470",
+              "templateHash": "8775325455752085588"
             }
           },
           "parameters": {
@@ -147,8 +150,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.32.4.45862",
-              "templateHash": "7307097157056975862"
+              "version": "0.30.23.60470",
+              "templateHash": "5869217970926810810"
             }
           },
           "parameters": {
@@ -878,8 +881,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.32.4.45862",
-              "templateHash": "4054020608454748933"
+              "version": "0.30.23.60470",
+              "templateHash": "16012222996233768636"
             }
           },
           "parameters": {
@@ -976,8 +979,7 @@
                 "publicAccess": "None"
               },
               "dependsOn": [
-                "[resourceId('Microsoft.Storage/storageAccounts/blobServices', parameters('saName'), 'default')]",
-                "[resourceId('Microsoft.Storage/storageAccounts', parameters('saName'))]"
+                "[resourceId('Microsoft.Storage/storageAccounts/blobServices', parameters('saName'), 'default')]"
               ]
             },
             {
@@ -1062,8 +1064,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.32.4.45862",
-              "templateHash": "10403900831974927682"
+              "version": "0.30.23.60470",
+              "templateHash": "16978185825890155480"
             }
           },
           "parameters": {
@@ -1268,8 +1270,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.32.4.45862",
-              "templateHash": "11476223078836576838"
+              "version": "0.30.23.60470",
+              "templateHash": "15098887909027168557"
             }
           },
           "parameters": {
@@ -1445,8 +1447,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.32.4.45862",
-              "templateHash": "16162981464101235300"
+              "version": "0.30.23.60470",
+              "templateHash": "2298974321859845086"
             }
           },
           "parameters": {
@@ -1532,8 +1534,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.32.4.45862",
-              "templateHash": "9968723784632879247"
+              "version": "0.30.23.60470",
+              "templateHash": "17279604675307278350"
             }
           },
           "parameters": {
@@ -1595,6 +1597,9 @@
         },
         "mode": "Incremental",
         "parameters": {
+          "imageTag": {
+            "value": "[parameters('imageTag')]"
+          },
           "solutionName": {
             "value": "[parameters('solutionPrefix')]"
           },
@@ -1628,8 +1633,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.32.4.45862",
-              "templateHash": "5884595544531896804"
+              "version": "0.30.23.60470",
+              "templateHash": "17791537320215817595"
             }
           },
           "parameters": {
@@ -1656,12 +1661,15 @@
             },
             "managedIdentityObjectId": {
               "type": "string"
+            },
+            "imageTag": {
+              "type": "string"
             }
           },
           "variables": {
             "functionAppName": "[format('{0}-charts-fn', parameters('solutionName'))]",
             "storageaccountname": "[format('{0}chartsfnacc', parameters('solutionName'))]",
-            "dockerImage": "DOCKER|kmcontainerreg.azurecr.io/km-charts-function:latest",
+            "dockerImage": "[format('DOCKER|kmcontainerreg.azurecr.io/km-charts-function:{0}', parameters('imageTag'))]",
             "environmentName": "[format('{0}-charts-fn-env', parameters('solutionName'))]"
           },
           "resources": [
@@ -1789,6 +1797,9 @@
         },
         "mode": "Incremental",
         "parameters": {
+          "imageTag": {
+            "value": "[parameters('imageTag')]"
+          },
           "solutionName": {
             "value": "[parameters('solutionPrefix')]"
           },
@@ -1850,8 +1861,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.32.4.45862",
-              "templateHash": "10442060421232789092"
+              "version": "0.30.23.60470",
+              "templateHash": "15219013071471372160"
             }
           },
           "parameters": {
@@ -1896,12 +1907,15 @@
             },
             "managedIdentityObjectId": {
               "type": "string"
+            },
+            "imageTag": {
+              "type": "string"
             }
           },
           "variables": {
             "functionAppName": "[format('{0}-rag-fn', parameters('solutionName'))]",
             "storageaccountname": "[format('{0}ragfnacc', parameters('solutionName'))]",
-            "dockerImage": "DOCKER|kmcontainerreg.azurecr.io/km-rag-function:latest",
+            "dockerImage": "[format('DOCKER|kmcontainerreg.azurecr.io/km-rag-function:{0}', parameters('imageTag'))]",
             "environmentName": "[format('{0}-rag-fn-env', parameters('solutionName'))]"
           },
           "resources": [
@@ -2078,8 +2092,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.32.4.45862",
-              "templateHash": "13904180097670083480"
+              "version": "0.30.23.60470",
+              "templateHash": "6322893930132489795"
             }
           },
           "parameters": {
@@ -2131,6 +2145,9 @@
         },
         "mode": "Incremental",
         "parameters": {
+          "imageTag": {
+            "value": "[parameters('imageTag')]"
+          },
           "identity": {
             "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_managed_identity'), '2022-09-01').outputs.managedIdentityOutput.value.id]"
           },
@@ -2205,8 +2222,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.32.4.45862",
-              "templateHash": "17203290032845883855"
+              "version": "0.30.23.60470",
+              "templateHash": "5478086548342696016"
             }
           },
           "parameters": {
@@ -2354,10 +2371,13 @@
               "metadata": {
                 "description": "Enable feedback in Cosmos DB"
               }
+            },
+            "imageTag": {
+              "type": "string"
             }
           },
           "variables": {
-            "WebAppImageName": "DOCKER|kmcontainerreg.azurecr.io/km-app:latest",
+            "WebAppImageName": "[format('DOCKER|kmcontainerreg.azurecr.io/km-app:{0}', parameters('imageTag'))]",
             "REACT_APP_LAYOUT_CONFIG": "{\r\n  \"appConfig\": {\r\n    \"THREE_COLUMN\": {\r\n      \"DASHBOARD\": 50,\r\n      \"CHAT\": 33,\r\n      \"CHATHISTORY\": 17\r\n    },\r\n    \"TWO_COLUMN\": {\r\n      \"DASHBOARD_CHAT\": {\r\n        \"DASHBOARD\": 65,\r\n        \"CHAT\": 35\r\n      },\r\n      \"CHAT_CHATHISTORY\": {\r\n        \"CHAT\": 80,\r\n        \"CHATHISTORY\": 20\r\n      }\r\n    }\r\n  },\r\n  \"charts\": [\r\n    {\r\n      \"id\": \"SATISFIED\",\r\n      \"name\": \"Satisfied\",\r\n      \"type\": \"card\",\r\n      \"layout\": { \"row\": 1, \"column\": 1, \"height\": 11 }\r\n    },\r\n    {\r\n      \"id\": \"TOTAL_CALLS\",\r\n      \"name\": \"Total Calls\",\r\n      \"type\": \"card\",\r\n      \"layout\": { \"row\": 1, \"column\": 2, \"span\": 1 }\r\n    },\r\n    {\r\n      \"id\": \"AVG_HANDLING_TIME\",\r\n      \"name\": \"Average Handling Time\",\r\n      \"type\": \"card\",\r\n      \"layout\": { \"row\": 1, \"column\": 3, \"span\": 1 }\r\n    },\r\n    {\r\n      \"id\": \"SENTIMENT\",\r\n      \"name\": \"Topics Overview\",\r\n      \"type\": \"donutchart\",\r\n      \"layout\": { \"row\": 2, \"column\": 1, \"width\": 40, \"height\": 44.5 }\r\n    },\r\n    {\r\n      \"id\": \"AVG_HANDLING_TIME_BY_TOPIC\",\r\n      \"name\": \"Average Handling Time By Topic\",\r\n      \"type\": \"bar\",\r\n      \"layout\": { \"row\": 2, \"column\": 2, \"row-span\": 2, \"width\": 60 }\r\n    },\r\n    {\r\n      \"id\": \"TOPICS\",\r\n      \"name\": \"Trending Topics\",\r\n      \"type\": \"table\",\r\n      \"layout\": { \"row\": 3, \"column\": 1, \"span\": 2 }\r\n    },\r\n    {\r\n      \"id\": \"KEY_PHRASES\",\r\n      \"name\": \"Key Phrases\",\r\n      \"type\": \"wordcloud\",\r\n      \"layout\": { \"row\": 3, \"column\": 2, \"height\": 44.5 }\r\n    }\r\n  ]\r\n}"
           },
           "resources": [
