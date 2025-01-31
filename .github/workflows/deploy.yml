@@ -37,7 +37,7 @@ jobs:
 
       - name: Create Resource Group
         run: |
-          az group create --name ${{ env.RESOURCE_GROUP_NAME }} --location westus
+          az group create --name ${{ env.RESOURCE_GROUP_NAME }} --location eastus
 
       - name: Generate Unique Solution Prefix
         id: generate_solution_prefix
@@ -57,7 +57,7 @@ jobs:
           az deployment group create \
             --resource-group ${{ env.RESOURCE_GROUP_NAME }} \
             --template-file Deployment/bicep/main.bicep \
-            --parameters solutionPrefix=${{ env.SOLUTION_PREFIX }} otherLocation=westus imageTag=${{ env.TAG }}
+            --parameters solutionPrefix=${{ env.SOLUTION_PREFIX }} otherLocation=eastus imageTag=${{ env.TAG }}
 
       - name: Delete Bicep Deployment
         if: success()
