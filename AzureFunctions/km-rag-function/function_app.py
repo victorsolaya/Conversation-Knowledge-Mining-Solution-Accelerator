@@ -50,17 +50,6 @@ def get_db_connection():
 
     # Attempt connection using Username & Password
     try:
-        conn = pyodbc.connect(
-            f"DRIVER={driver};SERVER={server};DATABASE={database};UID={username};PWD={password}",
-            timeout=5
-        )
-        logging.info("Connected using Username & Password")
-        return conn
-    except pyodbc.Error as e:
-        print(f"Failed with Username & Password: {str(e)}")
-
-    # If first attempt fails, try Azure Default Credential
-    try:
         credential = DefaultAzureCredential()
 
         token_bytes = credential.get_token(
@@ -78,10 +67,17 @@ def get_db_connection():
         )
 
         logging.info("Connected using Default Azure Credential")
+
         return conn
-    except Exception as e:
+    except pyodbc.Error as e:
         logging.error(f"Failed with Default Credential: {str(e)}")
-        return None  # Return None if both attempts fail
+        conn = pyodbc.connect(
+            f"DRIVER={driver};SERVER={server};DATABASE={database};UID={username};PWD={password}",
+            timeout=5
+        )
+        
+        logging.info("Connected using Username & Password")
+        return conn
 
 class ChatWithDataPlugin:
     @kernel_function(name="Greeting", description="Respond to any greeting or general questions")
