@@ -12,4 +12,5 @@ ENV AzureWebJobsScriptRoot=/home/site/wwwroot \
 COPY requirements.txt /
 RUN pip install -r /requirements.txt
 
+COPY ../dbutils /home/site/wwwroot/dbutils
 COPY . /home/site/wwwroot

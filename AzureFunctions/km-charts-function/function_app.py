@@ -9,7 +9,6 @@ from utils import dbutils
 
 app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)
 
-
 # add post methods - filters will come in the body (request.body), if body is not empty, update the where clause in the query
 @app.route(route="get_metrics", methods=["GET","POST"], auth_level=func.AuthLevel.ANONYMOUS)
 def get_metrics(req: func.HttpRequest) -> func.HttpResponse:

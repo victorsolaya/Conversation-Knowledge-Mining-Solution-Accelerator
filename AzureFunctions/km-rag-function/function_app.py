@@ -1,5 +1,4 @@
 import azure.functions as func
-import logging
 import openai
 from azurefunctions.extensions.http.fastapi import Request, StreamingResponse
 import asyncio
