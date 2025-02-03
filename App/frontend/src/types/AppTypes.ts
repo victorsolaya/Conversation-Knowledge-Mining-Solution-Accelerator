@@ -34,12 +34,19 @@ export type ChatMessage = {
   feedback?: Feedback;
   context?: string;
   contentType?: "text" | "image";
+  citations?: string
 };
 
 export type ConversationRequest = {
   id?: string;
   messages: ChatMessage[];
   last_rag_response: string | null;
+};
+
+export type AskResponse = {
+  answer: string;
+  citations: Citation[];
+  error?: string;
 };
 
 export type Conversation = {
@@ -156,3 +163,18 @@ export type ParsedChunk = {
   ];
   "apim-request-id": string;
 };
+
+export type ToolMessageContent = {
+  citations: Citation[]
+}
+
+export type Citation = {
+  content: string;
+  id: string;
+  title: string | null;
+  filepath: string | null;
+  url: string | null;
+  metadata: string | null;
+  chunk_id: string | null;
+  reindex_id: string | null;
+}

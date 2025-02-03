@@ -26,6 +26,8 @@
     "react-d3-cloud": "^1.0.6",
     "react-dom": "^18.3.1",
     "react-markdown": "^9.0.1",
+    "rehype-raw": "^7.0.0",
+    "lodash-es": "^4.17.21",
     "react-scripts": "5.0.1",
     "remark-gfm": "^4.0.0",
     "remark-supersub": "^1.0.0",
@@ -57,6 +59,7 @@
     ]
   },
   "devDependencies": {
-    "@types/chart.js": "^2.9.41"
+    "@types/chart.js": "^2.9.41",
+     "@types/lodash-es": "^4.17.12"
   }
 }

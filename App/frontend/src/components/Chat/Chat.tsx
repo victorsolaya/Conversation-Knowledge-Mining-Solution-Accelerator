@@ -21,11 +21,15 @@ import {
   type ConversationRequest,
   type ParsedChunk,
   type ChatMessage,
+  ToolMessageContent,
 } from "../../types/AppTypes";
 import { callConversationApi, historyUpdate } from "../../api/api";
 import { ChatAdd24Regular } from "@fluentui/react-icons";
 import { generateUUIDv4 } from "../../configs/Utils";
 import ChatChart from "../ChatChart/ChatChart";
+import { endianness } from "os";
+import Citations from "../Citations/Citations";
+// import Citations from "../Citations/Citations";
 
 type ChatProps = {
   onHandlePanelStates: (name: string) => void;
@@ -108,6 +112,25 @@ const Chat: React.FC<ChatProps> = ({
       });
   };
 
+
+  const parseCitationFromMessage = (message : any) => {
+    console.log("parseCitationFromMessage", message);
+    // const dummyres = '\"citations\": [ {\"content\":\"Lost phone\",\"url\":\"\",\"title\":\"\"}, {\"content\":\"Phone freezing\",\"url\":\"\",\"title\":\"\"}, {\"content\":\"Internet speed issues\",\"url\":\"\",\"title\":\"\"}, {\"content\":\"Activation delays\",\"url\":\"\",\"title\":\"\"}, {\"content\":\"Slow internet\",\"url\":\"\",\"title\":\"\"}, {\"content\":\"Network connectivity issues\",\"url\":\"\",\"title\":\"\"}, {\"content\":\"Poor network coverage\",\"url\":\"\",\"title\":\"\"}, {\"content\":\"Voicemail not working\",\"url\":\"\",\"title\":\"\"} ] }';
+    // // if (message.role === TOOL) {
+    // message =dummyres;
+      try {
+        message = '{'+ message 
+        const toolMessage = JSON.parse(message as string) as ToolMessageContent;
+        console.log("toolMessage citations", toolMessage.citations);
+        
+        return toolMessage.citations;
+      } catch {
+        console.log("ERROR WHIEL PARSING TOOL CONTENT");
+        // return [];
+      }
+    // }
+    return [];
+  };
   const isChartQuery = (query: string) => {
     const chartKeywords = ["chart", "graph", "visualize", "plot"];
     return chartKeywords.some((keyword) =>
@@ -196,6 +219,7 @@ const Chat: React.FC<ChatProps> = ({
       date: new Date().toISOString(),
       role: ASSISTANT,
       content: "",
+      citations:"",
     };
     let updatedMessages: ChatMessage[] = [];
     try {
@@ -213,8 +237,10 @@ const Chat: React.FC<ChatProps> = ({
           const { done, value } = await reader.read();
           if (done) break;
           const text = new TextDecoder("utf-8").decode(value);
+          console.log("text::", text);
           try {
             const textObj = JSON.parse(text);
+            console.log("textObj::", textObj);
             if (textObj?.object?.data) {
               runningText = text;
               isChartResponseReceived = true;
@@ -236,6 +262,7 @@ const Chat: React.FC<ChatProps> = ({
             objects.forEach((textValue, index) => {
               try {
                 if (textValue !== "" && textValue !== "{}") {
+                  console.log("textValue::", textValue);
                   const parsed: ParsedChunk = JSON.parse(textValue);
                   if (parsed?.error && !hasError) {
                     hasError = true;
@@ -243,10 +270,29 @@ const Chat: React.FC<ChatProps> = ({
                   } else if (isChartQuery(userMessage)) {
                     runningText = runningText + textValue;
                   } else if (typeof parsed === "object" && !hasError) {
-                    streamMessage.content =
-                      parsed?.choices?.[0]?.messages?.[0]?.content || "";
+                    // console.log(":::::::",!parsed?.choices?.[0]?.messages?.[0]?.content.includes(`\", \"`))
+                    const endIndex=
+                      parsed?.choices?.[0]?.messages?.[0]?.content.indexOf(
+                        `\", \"`
+                      );
+                    
+                    console.log(":::::index::", endIndex);
+                    const startIndex = parsed?.choices?.[0]?.messages?.[0]?.content.indexOf(
+                      `{ \"answer\": \"`
+                    );
+                    const answerString =
+                    endIndex === -1?
+                      parsed?.choices?.[0]?.messages?.[0]?.content.slice(startIndex +  `{ \"answer\": \"`.length):  parsed?.choices?.[0]?.messages?.[0]?.content.slice(startIndex +  `{ \"answer\": \"`.length, endIndex);
+                    console.log(":::::answerString::", answerString);
+                    streamMessage.content = endIndex ? answerString || "" : "";
                     streamMessage.role =
                       parsed?.choices?.[0]?.messages?.[0]?.role || ASSISTANT;
+
+
+                    const citationEndIndex = parsed?.choices?.[0]?.messages?.[0]?.content.indexOf(
+                      `] }`
+                    );
+                    streamMessage.citations = parsed?.choices?.[0]?.messages?.[0]?.content.slice(endIndex+3)
                     dispatch({
                       type: actionConstants.UPDATE_MESSAGE_BY_ID,
                       payload: streamMessage,
@@ -439,7 +485,11 @@ const Chat: React.FC<ChatProps> = ({
   const onNewConversation = () => {
     dispatch({ type: actionConstants.NEW_CONVERSATION_START });
   };
-  const { messages } = state.chat;
+  const { messages, citations } = state.chat;
+  useEffect(()=>{
+    console.log('messages::', messages)
+    console.log('citations::', citations)
+  },[citations, messages]);
   return (
     <div className="chat-container">
       <div className="chat-header">
@@ -502,12 +552,24 @@ const Chat: React.FC<ChatProps> = ({
                   );
                 }
                 if (typeof msg.content === "string") {
+                  console.log("mesg.conent:::", msg)
                   return (
                     <div className="assistant-message">
                       <ReactMarkdown
                         remarkPlugins={[remarkGfm, supersub]}
                         children={msg.content}
                       />
+                      <Citations
+                      answer={{
+                        answer: msg.content,
+                        citations:
+                          msg.role === ASSISTANT
+                            ? parseCitationFromMessage(msg.citations)
+                            : [],
+                      }} 
+                      index={index}
+                      />
+
                       <div className="answerDisclaimerContainer">
                         <span className="answerDisclaimer">
                           AI-generated content may be incorrect

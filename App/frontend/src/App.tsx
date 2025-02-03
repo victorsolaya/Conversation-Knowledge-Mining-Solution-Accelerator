@@ -28,6 +28,7 @@ import { actionConstants } from "./state/ActionConstants";
 import { ChatMessage, Conversation } from "./types/AppTypes";
 import { AppLogo } from "./components/Svg/Svg";
 import CustomSpinner from "./components/CustomSpinner/CustomSpinner";
+import CitationPanel from "./components/CitationPanel/CitationPanel";
 const panels = {
   DASHBOARD: "DASHBOARD",
   CHAT: "CHAT",
@@ -352,6 +353,18 @@ const Dashboard: React.FC = () => {
               panels={panels}
               panelShowStates={panelShowStates}
             />
+          </div>
+        )}
+        {state.citation.showCitation && (
+          <div
+            style={{
+              // width: `${panelWidths[panels.DASHBOARD]}%`,
+              width: `${panelWidths[panels.CHATHISTORY] || 17}%`,
+              // minWidth: '30%'
+            }}
+          >
+            <CitationPanel activeCitation={state.citation.activeCitation}  />
+
           </div>
         )}
         {/* RIGHT PANEL: CHAT HISTORY */}
