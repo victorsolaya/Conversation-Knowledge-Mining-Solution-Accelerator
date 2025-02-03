@@ -9,7 +9,7 @@ ragFuncAppName="$2-rag-fn"
 
 # Ensure that Azure CLI is logged in
 echo "Logging in to Azure..."
-az login --tenant 52b39610-0746-4c25-a83d-d4f89fadedfe
+az login
 
 # Fetch the logged-in user email from Azure CLI
 logged_in_user=$(az account show --query "user.name" -o tsv)
