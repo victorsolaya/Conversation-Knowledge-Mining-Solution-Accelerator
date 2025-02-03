@@ -18,6 +18,7 @@ interface Props {
 
 const Citations = ({ answer, index }: Props) => {
     console.log("answer", answer);
+    
     const { state, dispatch } = useAppContext();
     const parsedAnswer = useMemo(() => parseAnswer(answer), [answer]);
     console.log("parsedAnswer::", parsedAnswer);
