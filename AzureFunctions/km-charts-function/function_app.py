@@ -1,13 +1,54 @@
 from datetime import datetime
 import azure.functions as func
+from azure.identity import DefaultAzureCredential
+import logging
 import json
 import os
+import pyodbc
 import pandas as pd
-from utils import dbutils
+import struct
 # from dotenv import load_dotenv
 # load_dotenv()
 
 app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)
+
+# get database connection
+def get_db_connection():
+    driver = "{ODBC Driver 17 for SQL Server}"
+    server = os.environ.get("SQLDB_SERVER")
+    database = os.environ.get("SQLDB_DATABASE")
+    username = os.environ.get("SQLDB_USERNAME")
+    password = os.environ.get("SQLDB_PASSWORD")
+
+    # Attempt connection using Username & Password
+    try:
+        credential = DefaultAzureCredential()
+
+        token_bytes = credential.get_token(
+            "https://database.windows.net/.default"
+        ).token.encode("utf-16-LE")
+        token_struct = struct.pack(f"<I{len(token_bytes)}s", len(token_bytes), token_bytes)
+        SQL_COPT_SS_ACCESS_TOKEN = (
+            1256  # This connection option is defined by microsoft in msodbcsql.h
+        )
+
+        # Set up the connection
+        connection_string = f"DRIVER={driver};SERVER={server};DATABASE={database};"
+        conn = pyodbc.connect(
+            connection_string, attrs_before={SQL_COPT_SS_ACCESS_TOKEN: token_struct}
+        )
+
+        logging.info("Connected using Default Azure Credential")
+
+        return conn
+    except pyodbc.Error as e:
+        logging.error(f"Failed with Default Credential: {str(e)}")
+        conn = pyodbc.connect(
+            f"DRIVER={driver};SERVER={server};DATABASE={database};UID={username};PWD={password}",
+            timeout=5
+        )
+        logging.info("Connected using Username & Password")
+        return conn
 
 # add post methods - filters will come in the body (request.body), if body is not empty, update the where clause in the query
 @app.route(route="get_metrics", methods=["GET","POST"], auth_level=func.AuthLevel.ANONYMOUS)
@@ -18,7 +59,7 @@ def get_metrics(req: func.HttpRequest) -> func.HttpResponse:
     if not data_type:
         data_type = 'filters'
 
-    conn = dbutils.get_db_connection()
+    conn = get_db_connection()
     cursor = conn.cursor()
 
     # Adjust the dates to the current date
