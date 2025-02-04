@@ -15,7 +15,7 @@ interface Props {
 }
 
 const CitationPanel = ({ activeCitation }: Props) => {
-    console.log("activeCitation", activeCitation);
+    // console.log("activeCitation", activeCitation);
     const { dispatch } = useAppContext()
     // const [activeCitation, setActiveCitation] =
     //     useState<

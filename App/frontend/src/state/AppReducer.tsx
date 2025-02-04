@@ -209,7 +209,7 @@ const appReducer = (state: AppState, action: Action): AppState => {
       };
     case actionConstants.UPDATE_MESSAGE_BY_ID:
       const messageID = action.payload.id;
-      console.log("aaction::",action.payload)
+      // console.log("aaction::",action.payload)
       const matchIndex = state.chat.messages.findIndex(
         (obj) => String(obj.id) === String(messageID)
       );

@@ -17,11 +17,11 @@ interface Props {
 }
 
 const Citations = ({ answer, index }: Props) => {
-    console.log("answer", answer);
+    // console.log("answer", answer);
     
     const { state, dispatch } = useAppContext();
     const parsedAnswer = useMemo(() => parseAnswer(answer), [answer]);
-    console.log("parsedAnswer::", parsedAnswer);
+    // console.log("parsedAnswer::", parsedAnswer);
     const filePathTruncationLimit = 50;
     const createCitationFilepath = (
         citation: Citation,
