@@ -1,4 +1,5 @@
 name: Build and Push Docker Image
+
 on:
   push:
     branches:
@@ -15,43 +16,61 @@ on:
       - main
       - dev
       - demo
-  workflow_dispatch: 
+  workflow_dispatch:
+
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
+
       - name: Log in to Azure Container Registry
-        if: ${{ github.event_name == 'push' && (github.ref_name == 'main' || github.ref_name == 'dev'|| github.ref_name == 'demo') }}
+        if: ${{ github.event_name == 'push' && (github.ref_name == 'main' || github.ref_name == 'dev' || github.ref_name == 'demo' || github.ref_name == 'hotfix') }}
         uses: azure/docker-login@v2
         with:
           login-server: ${{ secrets.ACR_LOGIN_SERVER }}
           username: ${{ secrets.ACR_USERNAME }}
           password: ${{ secrets.ACR_PASSWORD }}
 
-      - name: Set Docker image tag
-        run: |
-          if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
-            echo "TAG=latest" >> $GITHUB_ENV
-          elif [[ "${{ github.ref }}" == "refs/heads/dev" ]]; then
-            echo "TAG=dev" >> $GITHUB_ENV
-          elif [[ "${{ github.ref }}" == "refs/heads/demo" ]]; then
-            echo "TAG=demo" >> $GITHUB_ENV
-          fi
-          
-      - name: Build and push Docker km-charts-function image
-        run: |
-          docker build -t ${{ secrets.ACR_LOGIN_SERVER }}/km-charts-function:${{ env.TAG }} -f AzureFunctions/km-charts-function/Dockerfile AzureFunctions/km-charts-function && \
-          docker push ${{ secrets.ACR_LOGIN_SERVER }}/km-charts-function:${{ env.TAG }} 
-            
-      - name: Build and push Docker km-rag-function image
-        run: |
-          docker build -t ${{ secrets.ACR_LOGIN_SERVER }}/km-rag-function:${{ env.TAG }} -f AzureFunctions/km-rag-function/Dockerfile AzureFunctions/km-rag-function && \
-          docker push ${{ secrets.ACR_LOGIN_SERVER }}/km-rag-function:${{ env.TAG }} 
-      - name: Build and push Docker km-app image
-        run: |
-          docker build -t ${{ secrets.ACR_LOGIN_SERVER }}/km-app:${{ env.TAG }} -f App/WebApp.Dockerfile App && \
-          docker push ${{ secrets.ACR_LOGIN_SERVER }}/km-app:${{ env.TAG }} 
+      - name: Get current date
+        id: date
+        run: echo "date=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
+
+      - name: Determine Tag Name Based on Branch
+        id: determine_tag
+        run: echo "tagname=${{ github.ref_name == 'main' && 'latest' || github.ref_name == 'dev' && 'dev' || github.ref_name == 'demo' && 'demo' || github.head_ref || 'default' }}" >> $GITHUB_OUTPUT
+
+      - name: Build and Push Docker Image for WebApp
+        uses: docker/build-push-action@v6
+        with:
+          context: ./App
+          file: ./App/WebApp.Dockerfile
+          push: ${{ github.ref_name == 'main' || github.ref_name == 'dev' || github.ref_name == 'demo' }}
+          tags: |
+            ${{ secrets.ACR_LOGIN_SERVER }}/km-app:${{ steps.determine_tag.outputs.tagname }}
+            ${{ secrets.ACR_LOGIN_SERVER }}/km-app:${{ steps.determine_tag.outputs.tagname }}_${{ steps.date.outputs.date }}_${{ github.run_number }}
+
+      - name: Build and Push Docker Image for km-rag-function
+        uses: docker/build-push-action@v6
+        with:
+          context: ./AzureFunctions/km-rag-function
+          file: ./AzureFunctions/km-rag-function/Dockerfile
+          push: ${{ github.ref_name == 'main' || github.ref_name == 'dev' || github.ref_name == 'demo' }}
+          tags: |
+            ${{ secrets.ACR_LOGIN_SERVER }}/km-rag-function:${{ steps.determine_tag.outputs.tagname }}
+            ${{ secrets.ACR_LOGIN_SERVER }}/km-rag-function:${{ steps.determine_tag.outputs.tagname }}_${{ steps.date.outputs.date }}_${{ github.run_number }}
+
+      - name: Build and Push Docker Image for km-charts-function
+        uses: docker/build-push-action@v6
+        with:
+          context: ./AzureFunctions/km-charts-function
+          file: ./AzureFunctions/km-charts-function/Dockerfile
+          push: ${{ github.ref_name == 'main' || github.ref_name == 'dev' || github.ref_name == 'demo' }}
+          tags: |
+            ${{ secrets.ACR_LOGIN_SERVER }}/km-charts-function:${{ steps.determine_tag.outputs.tagname }}
+            ${{ secrets.ACR_LOGIN_SERVER }}/km-charts-function:${{ steps.determine_tag.outputs.tagname }}_${{ steps.date.outputs.date }}_${{ github.run_number }}
