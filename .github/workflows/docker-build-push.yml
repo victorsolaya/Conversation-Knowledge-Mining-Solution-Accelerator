@@ -37,27 +37,20 @@ jobs:
           username: ${{ secrets.ACR_USERNAME }}
           password: ${{ secrets.ACR_PASSWORD }}
 
-      - name: Set Docker image tag
-        run: |
-          if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
-            echo "TAG=latest" >> $GITHUB_ENV
-          elif [[ "${{ github.ref }}" == "refs/heads/dev" ]]; then
-            echo "TAG=dev" >> $GITHUB_ENV
-          elif [[ "${{ github.ref }}" == "refs/heads/demo" ]]; then
-            echo "TAG=demo" >> $GITHUB_ENV
-          elif [[ "${{ github.ref }}" == "refs/heads/hotfix" ]]; then
-            echo "TAG=hotfix" >> $GITHUB_ENV
-          else
-            echo "TAG=pullrequest-ignore" >> $GITHUB_ENV
-          fi
-          
-      - name: Build and push Docker images optionally
-        run: |
-          cd App
-          docker build -t ${{ secrets.ACR_LOGIN_SERVER }}/km-app:${{ env.TAG }} -f WebApp.Dockerfile . && \
-          if [[ "${{ env.TAG }}" == "latest" || "${{ env.TAG }}" == "dev" || "${{ env.TAG }}" == "demo" || "${{ env.TAG }}" == "hotfix"  ]]; then
-            docker push ${{ secrets.ACR_LOGIN_SERVER }}/km-app:${{ env.TAG }} && \
-            echo "Backend image built and pushed successfully."
-          else
-            echo "Skipping Docker push for backend with tag: ${{ env.TAG }}"
-          fi 
+      - name: Get current date
+        id: date
+        run: echo "date=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
+
+      - name: Determine Tag Name Based on Branch
+        id: determine_tag
+        run: echo "tagname=${{ github.ref_name == 'main' && 'latest' || github.ref_name == 'dev' && 'dev' || github.ref_name == 'demo' && 'demo' || github.head_ref || 'default' }}" >> $GITHUB_OUTPUT
+
+      - name: Build Docker Image and optionally push
+        uses: docker/build-push-action@v6
+        with:
+          context: ./App
+          file: ./App/WebApp.Dockerfile
+          push: ${{ github.ref_name == 'main' || github.ref_name == 'dev' || github.ref_name == 'demo' }}
+          tags: |
+            ${{ steps.registry.outputs.registry }}/webapp:${{ steps.determine_tag.outputs.tagname }}
+            ${{ steps.registry.outputs.registry }}/webapp:${{ steps.determine_tag.outputs.tagname }}_${{ steps.date.outputs.date }}_${{ github.run_number }}
