@@ -262,6 +262,7 @@ const Chat: React.FC<ChatProps> = ({
             const objects = text.split("\n").filter((val) => val !== "");
             let answerText='';
             let citationString ='';
+            let answerTextStart  = 0;
             objects.forEach((textValue, index) => {
               try {
                 if (textValue !== "" && textValue !== "{}") {
@@ -275,15 +276,24 @@ const Chat: React.FC<ChatProps> = ({
                     runningText = runningText + textValue;
                   } else if (typeof parsed === "object" && !hasError) {
                     console.log(":::parsed::::",parsed);
-                    const jsonString = parsed?.choices?.[0]?.messages?.[0]?.content;
-                    const textStart = jsonString.indexOf(`"answer":`) +9; 
+                    const responseContent  = parsed?.choices?.[0]?.messages?.[0]?.content;
+                    // const jsonString = "abcd jjjjlkk";
+                    // const textStart = jsonString.indexOf(`"answer":`) +9; 
+                    const answerKey = `"answer":`;
+                    const answerStartIndex  = responseContent.indexOf(answerKey);
+
+                    if (answerStartIndex  !== -1) {
+                      answerTextStart  =responseContent .indexOf(`"answer":`) +9;
+                    } 
                  
-                    const citationStart =  jsonString.indexOf(`"citations":`); 
-                    if(citationStart > textStart){
-                      answerText = jsonString.substring(textStart, citationStart).trim();
-                      citationString = jsonString.substring(citationStart).trim();
+                    const citationsKey = `"citations":`;
+                    const citationsStartIndex = responseContent.indexOf(citationsKey);
+
+                    if(citationsStartIndex > answerTextStart ){
+                      answerText = responseContent .substring(answerTextStart, citationsStartIndex).trim();
+                      citationString = responseContent .substring(citationsStartIndex).trim();
                     }else{
-                      answerText = jsonString.substring(textStart).trim();
+                      answerText = responseContent .substring(answerTextStart).trim();
                     }
 
                     // if(answerText.startsWith(`"`)){
