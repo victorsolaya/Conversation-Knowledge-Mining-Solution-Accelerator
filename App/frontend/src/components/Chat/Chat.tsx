@@ -23,7 +23,7 @@ import {
   type ChatMessage,
   ToolMessageContent,
 } from "../../types/AppTypes";
-import { callConversationApi, historyUpdate } from "../../api/api";
+import { callConversationApi, getIsChartDisplayDefault, historyUpdate } from "../../api/api";
 import { ChatAdd24Regular } from "@fluentui/react-icons";
 import { generateUUIDv4 } from "../../configs/Utils";
 import ChatChart from "../ChatChart/ChatChart";
@@ -49,19 +49,41 @@ const Chat: React.FC<ChatProps> = ({
   const { state, dispatch } = useAppContext();
   const { userMessage, generatingResponse } = state?.chat;
   const questionInputRef = useRef<HTMLTextAreaElement>(null);
+  const [isChartLoading, setIsChartLoading] = useState(false)
   const abortFuncs = useRef([] as AbortController[]);
   // const [lastRagResponse, setLastRagResponse] = useState<string | null>(null);
   const chatMessageStreamEnd = useRef<HTMLDivElement | null>(null);
+  const [isCharthDisplayDefault , setIsCharthDisplayDefault] = useState(false);
+  
+  useEffect(() => {
+    try {
+      const fetchIsChartDisplayDefault = async () => {
+        const chartConfigFlag = await getIsChartDisplayDefault();
+        setIsCharthDisplayDefault(chartConfigFlag.isChartDisplayDefault);
+      };
+      fetchIsChartDisplayDefault();
+    } catch (error) {
+      console.error("Failed to fetch isChartDisplayDefault flag", error);
+    }
+  }, []);
 
-  const saveToDB = async (messages: ChatMessage[], convId: string) => {
+  const saveToDB = async (messages: ChatMessage[], convId: string, reqType: string = 'Text') => {
     if (!convId || !messages.length) {
       return;
     }
-    const isNewConversation = !state.selectedConversationId;
+    const isNewConversation = reqType !== 'graph' ? !state.selectedConversationId : false;
     dispatch({
       type: actionConstants.UPDATE_HISTORY_UPDATE_API_FLAG,
       payload: true,
     });
+
+    if ((reqType !== 'graph' && reqType !== 'error') && isCharthDisplayDefault){
+      setIsChartLoading(true);
+      setTimeout(()=>{
+        makeApiRequestForChart('show in a graph by default', convId, messages[messages.length - 1].content as string)
+      },5000)
+      
+    }
     await historyUpdate(messages, convId)
       .then(async (res) => {
         if (!res.ok) {
@@ -73,7 +95,7 @@ const Chat: React.FC<ChatProps> = ({
             };
             throw err;
           }
-        }
+        }     
         let responseJson = await res.json();
         if (isNewConversation && responseJson?.success) {
           const newConversation: Conversation = {
@@ -109,7 +131,7 @@ const Chat: React.FC<ChatProps> = ({
         dispatch({
           type: actionConstants.UPDATE_HISTORY_UPDATE_API_FLAG,
           payload: false,
-        });
+        });  
       });
   };
 
@@ -174,6 +196,222 @@ const Chat: React.FC<ChatProps> = ({
     scrollChatToBottom();
   }, [state.chat.generatingResponse]);
 
+  const makeApiRequestForChart = async (
+    question: string,
+    conversationId: string,
+    lrg: string
+  ) => {
+    if (generatingResponse || !question.trim()) {
+      return;
+    }
+
+    const newMessage: ChatMessage = {
+      id: generateUUIDv4(),
+      role: "user",
+      content: question,
+      date: new Date().toISOString()
+    };
+    dispatch({
+      type: actionConstants.UPDATE_GENERATING_RESPONSE_FLAG,
+      payload: true,
+    });
+    scrollChatToBottom();
+    dispatch({
+      type: actionConstants.UPDATE_MESSAGES,
+      payload: [newMessage],
+    });
+    dispatch({
+      type: actionConstants.UPDATE_USER_MESSAGE,
+      payload: "",
+    });
+    const abortController = new AbortController();
+    abortFuncs.current.unshift(abortController);
+
+    const request: ConversationRequest = {
+      id: conversationId,
+      messages: [...state.chat.messages, newMessage].filter(
+        (messageObj) => messageObj.role !== ERROR
+      ),
+      last_rag_response: lrg
+    };
+
+    const streamMessage: ChatMessage = {
+      id: generateUUIDv4(),
+      date: new Date().toISOString(),
+      role: ASSISTANT,
+      content: "",
+    };
+    let updatedMessages: ChatMessage[] = [];
+    try {
+      const response = await callConversationApi(
+        request,
+        abortController.signal
+      );
+
+
+      if (response?.body) {
+        let isChartResponseReceived = false;
+        const reader = response.body.getReader();
+        let runningText = "";
+        let hasError = false;
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          const text = new TextDecoder("utf-8").decode(value);
+          try {
+            const textObj = JSON.parse(text);
+            if (textObj?.object?.data) {
+              runningText = text;
+              isChartResponseReceived = true;
+            }
+            // if (textObj?.object?.message) {
+            //   runningText = text;
+            //   isChartResponseReceived = true;
+            // }
+            if (textObj?.error) {
+              hasError = true;
+              runningText = text;
+            }
+          } catch (e) {
+            console.error("error while parsing text before split", e);
+          }
+
+        }
+        // END OF STREAMING
+        if (hasError) {
+          const errorMsg = JSON.parse(runningText).error;
+          const errorMessage: ChatMessage = {
+            id: generateUUIDv4(),
+            role: ASSISTANT,
+            content: errorMsg,
+            date: new Date().toISOString(),
+          };
+          updatedMessages = [...state.chat.messages, newMessage, errorMessage];
+          dispatch({
+            type: actionConstants.UPDATE_MESSAGES,
+            payload: [errorMessage],
+          });
+          scrollChatToBottom();
+        } else if (isChartQuery(question)) {
+          try {
+            const parsedChartResponse = JSON.parse(runningText);
+            if (
+              "object" in parsedChartResponse &&
+              parsedChartResponse?.object?.type &&
+              parsedChartResponse?.object?.data
+            ) {
+              // CHART CHECKING
+              try {
+                const chartMessage: ChatMessage = {
+                  id: generateUUIDv4(),
+                  role: ASSISTANT,
+                  content:
+                    parsedChartResponse.object as unknown as ChartDataResponse,
+                  date: new Date().toISOString(),
+                };
+                updatedMessages = [
+                  ...state.chat.messages,
+                  newMessage,
+                  chartMessage,
+                ];
+                // Update messages with the response content
+                dispatch({
+                  type: actionConstants.UPDATE_MESSAGES,
+                  payload: [chartMessage],
+                });
+                scrollChatToBottom();
+              } catch (e) {
+                console.error("Error handling assistant response:", e);
+                const chartMessage: ChatMessage = {
+                  id: generateUUIDv4(),
+                  role: ASSISTANT,
+                  content: "Error while generating Chart.",
+                  date: new Date().toISOString(),
+                };
+                updatedMessages = [
+                  ...state.chat.messages,
+                  newMessage,
+                  chartMessage,
+                ];
+                dispatch({
+                  type: actionConstants.UPDATE_MESSAGES,
+                  payload: [chartMessage],
+                });
+                scrollChatToBottom();
+              }
+            } else if (
+              parsedChartResponse.error 
+            ) {
+              const errorMsg =
+                parsedChartResponse.error ||
+                parsedChartResponse?.object?.message;
+              const errorMessage: ChatMessage = {
+                id: generateUUIDv4(),
+                role: ASSISTANT,
+                content: errorMsg,
+                date: new Date().toISOString(),
+              };
+              updatedMessages = [
+                ...state.chat.messages,
+                newMessage,
+                errorMessage,
+              ];
+              dispatch({
+                type: actionConstants.UPDATE_MESSAGES,
+                payload: [errorMessage],
+              });
+              scrollChatToBottom();
+            }
+          } catch (e) {
+            console.log("Error while parsing charts response", e);
+          }
+        }
+      }
+      saveToDB(updatedMessages, conversationId, 'graph');
+    } catch (e) {
+      console.log("Catched with an error while chat and save", e);
+      if (abortController.signal.aborted) {
+        if (streamMessage.content) {
+          updatedMessages = [
+            ...state.chat.messages,
+            newMessage,
+            ...[streamMessage],
+          ];
+        } else {
+          updatedMessages = [...state.chat.messages, newMessage];
+        }
+        console.log(
+          "@@@ Abort Signal detected: Formed updated msgs",
+          updatedMessages
+        );
+        saveToDB(updatedMessages, conversationId, 'graph');
+      }
+
+      if (!abortController.signal.aborted) {
+        if (e instanceof Error) {
+          alert(e.message);
+        } else {
+          alert(
+            "An error occurred. Please try again. If the problem persists, please contact the site administrator."
+          );
+        }
+      }
+    } finally {
+
+
+      dispatch({
+        type: actionConstants.UPDATE_GENERATING_RESPONSE_FLAG,
+        payload: false,
+      });
+      dispatch({
+        type: actionConstants.UPDATE_STREAMING_FLAG,
+        payload: false,
+      });
+      setIsChartLoading(false);
+    }
+    return abortController.abort();
+  };
+
   const makeApiRequestWithCosmosDB = async (
     question: string,
     conversationId: string
@@ -181,7 +419,7 @@ const Chat: React.FC<ChatProps> = ({
     if (generatingResponse || !question.trim()) {
       return;
     }
-
+    const isChatReq = isChartQuery(userMessage) ? "graph" : "Text"
     const newMessage: ChatMessage = {
       id: generateUUIDv4(),
       role: "user",
@@ -442,7 +680,7 @@ const Chat: React.FC<ChatProps> = ({
           ];
         }
       }
-      saveToDB(updatedMessages, conversationId);
+      saveToDB(updatedMessages, conversationId, isChatReq);
     } catch (e) {
       console.log("Catched with an error while chat and save", e);
       if (abortController.signal.aborted) {
@@ -459,7 +697,7 @@ const Chat: React.FC<ChatProps> = ({
           "@@@ Abort Signal detected: Formed updated msgs",
           updatedMessages
         );
-        saveToDB(updatedMessages, conversationId);
+        saveToDB(updatedMessages, conversationId, 'error');
       }
 
       if (!abortController.signal.aborted) {
@@ -480,6 +718,7 @@ const Chat: React.FC<ChatProps> = ({
         type: actionConstants.UPDATE_STREAMING_FLAG,
         payload: false,
       });
+      
     }
     return abortController.abort();
   };
@@ -531,9 +770,8 @@ const Chat: React.FC<ChatProps> = ({
             onClick={() => onHandlePanelStates(panels.CHATHISTORY)}
             className="hide-chat-history"
           >
-            {`${
-              panelShowStates?.[panels.CHATHISTORY] ? "Hide" : "Show"
-            } Chat History`}
+            {`${panelShowStates?.[panels.CHATHISTORY] ? "Hide" : "Show"
+              } Chat History`}
           </Button>
         </span>
       </div>
@@ -562,12 +800,14 @@ const Chat: React.FC<ChatProps> = ({
           messages.map((msg, index) => (
             <div key={index} className={`chat-message ${msg.role}`}>
               {(() => {
-                if (msg.role === "user" && typeof msg.content === "string") {
-                  return (
-                    <div className="user-message">
-                      <span>{msg.content}</span>
-                    </div>
-                  );
+                if ((msg.role === "user") && typeof msg.content === "string") {
+                  if (msg.content == "show in a graph by default") return null;
+                    return (
+                      <div className="user-message">
+                        <span>{msg.content}</span>
+                      </div>
+                    );
+
                 }
                 msg.content = msg.content as ChartDataResponse;
                 if (msg?.content?.type && msg?.content?.data) {
@@ -612,10 +852,10 @@ const Chat: React.FC<ChatProps> = ({
               })()}
             </div>
           ))}
-        {generatingResponse && !state.chat.isStreamingInProgress && (
+        {((generatingResponse && !state.chat.isStreamingInProgress) || isChartLoading)  && (
           <div className="assistant-message loading-indicator">
             <div className="typing-indicator">
-              <span className="generating-text">Generating answer</span>
+              <span className="generating-text">{isChartLoading ? "Generating chat if possible with the provided data" : "Generating answer"} </span>
               <span className="dot"></span>
               <span className="dot"></span>
               <span className="dot"></span>

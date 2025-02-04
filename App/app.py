@@ -34,24 +34,24 @@ app = cors(app, allow_origin=["http://localhost:3000", "http://127.0.0.1:5000"])
 @app.route("/")
 async def serve_index():
     return await send_from_directory(
-        os.path.join(app.root_path, "frontend", "build"), "index.html"
+        os.path.join(app.root_path,"static"), "index.html"
     )
 
 
 @app.route("/favicon.ico")
 async def favicon():
     return await send_from_directory(
-        os.path.join(app.root_path, "frontend", "build", "static"),
+        os.path.join(app.root_path,"static"),
         "favicon.ico",
         mimetype="image/x-icon",
     )
 
 
 # Serve static files (JS, CSS, images, etc.)
-@app.route("/assets/<path:path>")
-async def assets(path):
+@app.route("/static/<path:path>")
+async def static_files(path):
     return await send_from_directory(
-        os.path.join(app.root_path, "frontend", "build", "static", "assets"), path
+        os.path.join(app.root_path, "static"), path
     )
 
 
@@ -388,6 +388,13 @@ async def get_layout_config():
     if layout_config_str:
         return layout_config_str
     return jsonify({"error": "Layout config not found in environment variables"}), 400
+
+@app.route("/api/display-chart-default", methods=["GET"])
+async def get_chart_config():
+    chart_config = os.getenv("DISPLAY_CHART_DEFAULT", "")
+    if chart_config:
+        return jsonify({"isChartDisplayDefault":  chart_config})
+    return jsonify({"error": "DISPLAY_CHART_DEFAULT flag not found in environment variables"}), 400
 
 
 async def generate_title(conversation_messages):
