@@ -2,7 +2,7 @@ name: CI-Validate Deployment
 on:
   push:
     branches:
-      - main
+      - ckm-v2
   schedule:
     - cron: '0 6,18 * * *'  # Runs at 6:00 AM and 6:00 PM GMT
     
