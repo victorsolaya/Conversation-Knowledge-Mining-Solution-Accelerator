@@ -98,6 +98,31 @@ To use this solution accelerator, you will need access to an [Azure subscription
               1.   keyvault_param - the name of the keyvault that was created in Step 1
               2.   workspaceid_param - the workspaceid created in Step 2
               3.   solutionprefix_param - prefix used to append to lakehouse upon creation
+
+6. **Add Azure Function Users to Database**
+
+    This script automates the process of adding Azure Function identities as users in a database and assigning them appropriate roles.
+    ## Prerequisites
+
+    Before running the script, ensure you have:
+
+    - **Azure CLI** installed.
+    - **Python 3** installed.
+    ## Usage
+
+    1. Clone the repository:
+
+        ```sh
+        git clone https://github.com/microsoft/Conversation-Knowledge-Mining-Solution-Accelerator.git
+    
+    2. Navigate to script directory
+        ```sh
+        cd Deployment\scripts\add_user_scripts
+
+    3. Run the script
+        ```sh
+        ./add_user.sh
+
 5.  **Add App Authentication**
    
     Follow steps in [App Authentication](./Documents/AppAuthentication.md) to configure authenitcation in app service.

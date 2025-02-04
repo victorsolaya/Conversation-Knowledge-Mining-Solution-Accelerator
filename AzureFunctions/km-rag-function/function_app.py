@@ -1,4 +1,5 @@
 import azure.functions as func
+import logging
 import openai
 from azurefunctions.extensions.http.fastapi import Request, StreamingResponse
 import os
@@ -13,13 +14,53 @@ from semantic_kernel.functions.kernel_function_decorator import kernel_function
 from semantic_kernel.kernel import Kernel
 from azure.identity import DefaultAzureCredential
 from azure.ai.projects import AIProjectClient
-import pymssql
+import pyodbc
+import struct
 
 
 # Azure Function App
 app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)
 HOST_NAME = "CKM"
 HOST_INSTRUCTIONS = "Answer questions about call center operations"
+
+# get database connection
+def get_db_connection():
+    driver = "{ODBC Driver 17 for SQL Server}"
+    server = os.environ.get("SQLDB_SERVER")
+    database = os.environ.get("SQLDB_DATABASE")
+    username = os.environ.get("SQLDB_USERNAME")
+    password = os.environ.get("SQLDB_PASSWORD")
+
+    # Attempt connection using Username & Password
+    try:
+        credential = DefaultAzureCredential()
+
+        token_bytes = credential.get_token(
+            "https://database.windows.net/.default"
+        ).token.encode("utf-16-LE")
+        token_struct = struct.pack(f"<I{len(token_bytes)}s", len(token_bytes), token_bytes)
+        SQL_COPT_SS_ACCESS_TOKEN = (
+            1256  # This connection option is defined by microsoft in msodbcsql.h
+        )
+
+        # Set up the connection
+        connection_string = f"DRIVER={driver};SERVER={server};DATABASE={database};"
+        conn = pyodbc.connect(
+            connection_string, attrs_before={SQL_COPT_SS_ACCESS_TOKEN: token_struct}
+        )
+
+        logging.info("Connected using Default Azure Credential")
+
+        return conn
+    except pyodbc.Error as e:
+        logging.error(f"Failed with Default Credential: {str(e)}")
+        conn = pyodbc.connect(
+            f"DRIVER={driver};SERVER={server};DATABASE={database};UID={username};PWD={password}",
+            timeout=5
+        )
+        
+        logging.info("Connected using Username & Password")
+        return conn
 
 class ChatWithDataPlugin:
     @kernel_function(name="Greeting", description="Respond to any greeting or general questions")
@@ -84,13 +125,9 @@ class ChatWithDataPlugin:
             )
             sql_query = completion.choices[0].message.content
             sql_query = sql_query.replace("```sql",'').replace("```",'')
-        
-            server = os.environ.get("SQLDB_SERVER")
-            database = os.environ.get("SQLDB_DATABASE")
-            username = os.environ.get("SQLDB_USERNAME")
-            password = os.environ.get("SQLDB_PASSWORD")
 
-            conn = pymssql.connect(server, username, password, database)
+            conn = get_db_connection()
+
             cursor = conn.cursor()
             cursor.execute(sql_query)
             answer = ''
