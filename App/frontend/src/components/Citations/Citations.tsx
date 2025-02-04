@@ -38,7 +38,7 @@ const Citations = ({ answer, index }: Props) => {
         //         citationFilename = `${citation.filepath} - Part ${citation.chunk_id}`;
         //     }
         // } else {
-            citationFilename = `Citation ${index}`;
+            citationFilename =  citation.title ? (citation.title ?? `Citation ${index}`) : `Citation ${index}`;
         // }
         return citationFilename;
     };

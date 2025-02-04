@@ -115,10 +115,10 @@ const Chat: React.FC<ChatProps> = ({
 
 
   const parseCitationFromMessage = (message : any) => {
-    console.log("parseCitationFromMessage", message);
-    const dummyres = '\"citations\": [ {\"content\":\"Lost phone\",\"url\":\"https://google.com\",\"title\":\"\"}, {\"content\":\"Phone freezing\",\"url\":\"\",\"title\":\"\"}, {\"content\":\"Internet speed issues\",\"url\":\"\",\"title\":\"\"}, {\"content\":\"Activation delays\",\"url\":\"\",\"title\":\"\"}, {\"content\":\"Slow internet\",\"url\":\"\",\"title\":\"\"}, {\"content\":\"Network connectivity issues\",\"url\":\"\",\"title\":\"\"}, {\"content\":\"Poor network coverage\",\"url\":\"\",\"title\":\"\"}, {\"content\":\"Voicemail not working\",\"url\":\"\",\"title\":\"\"} ] }';
-    // if (message.role === TOOL) {
-    message =dummyres;
+    // console.log("parseCitationFromMessage", message);
+    // const dummyres = '\"citations\": [ {\"content\":\"Lost phone\",\"url\":\"https://google.com\",\"title\":\"\"}, {\"content\":\"Phone freezing\",\"url\":\"\",\"title\":\"User Experience Report 1\"}, {\"content\":\"Internet speed issues\",\"url\":\"\",\"title\":\"\"}, {\"content\":\"Activation delays\",\"url\":\"\",\"title\":\"Experience Report\"}, {\"content\":\"Slow internet\",\"url\":\"\",\"title\":\"\"}, {\"content\":\"Network connectivity issues\",\"url\":\"\",\"title\":\"\"}, {\"content\":\"Poor network coverage\",\"url\":\"\",\"title\":\"abcd Report\"}, {\"content\":\"Voicemail not working\",\"url\":\"\",\"title\":\"\"} ] }';
+    // // if (message.role === TOOL) {
+    // message =dummyres;
       try {
         message = '{'+ message 
         const toolMessage = JSON.parse(message as string) as ToolMessageContent;
@@ -287,11 +287,11 @@ const Chat: React.FC<ChatProps> = ({
                     }
 
                     // if(answerText.startsWith(`"`)){
-                      answerText = answerText.replace(/^"+|"+$|,$/g, '');
-                      answerText = answerText.replace(/[",]+$/, '');
+                      answerText = answerText.replace(/^"+|"+$|,$/g, '');// first ""
+                      answerText = answerText.replace(/[",]+$/, ''); // last ",
                     // }
                     
-                    
+                    console.log("answer Text::", answerText);
                     // const endIndex=
                     //   parsed?.choices?.[0]?.messages?.[0]?.content.indexOf(
                     //     `\", \"`

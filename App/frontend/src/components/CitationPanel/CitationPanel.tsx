@@ -44,9 +44,18 @@ const CitationPanel = ({ activeCitation }: Props) => {
                     horizontalAlign="space-between"
                     verticalAlign="center"
                 >
-                    <span 
-                    // className={styles.citationPanelHeader}
-                    >Citations</span>
+                    <div
+                        role="heading"
+                        aria-level={2}
+                        style={{
+                            fontWeight: "600",
+                            fontSize: '16px'
+                        }}
+                        >
+
+                    {/* // className={styles.citationPanelHeader} */}
+                    Citations
+                    </div>
                     <DismissRegular
                         role="button"
                         onKeyDown={(e) =>
@@ -64,12 +73,12 @@ const CitationPanel = ({ activeCitation }: Props) => {
                 >
                     {activeCitation.title}
                 </h5>
-                <div className='citationPanelInner'
+                {/* <div className='citationPanelInner'
                     // className={`${styles.citationPanelDisclaimer} ${styles.mobileCitationPanelDisclaimer}`}
                 >
                     Tables, images, and other special formatting not shown in this
                     preview. Please follow the link to review the original document.
-                </div>
+                </div> */}
                 <ReactMarkdown
                 // className={`${styles.citationPanelContent} ${styles.mobileCitationPanelContent}`}
                 children={activeCitation?.content}
