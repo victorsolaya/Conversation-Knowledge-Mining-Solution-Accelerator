@@ -34,14 +34,14 @@ app = cors(app, allow_origin=["http://localhost:3000", "http://127.0.0.1:5000"])
 @app.route("/")
 async def serve_index():
     return await send_from_directory(
-        os.path.join(app.root_path,"build"), "index.html"
+        os.path.join(app.root_path,"static"), "index.html"
     )
 
 
 @app.route("/favicon.ico")
 async def favicon():
     return await send_from_directory(
-        os.path.join(app.root_path,"build"),
+        os.path.join(app.root_path,"static"),
         "favicon.ico",
         mimetype="image/x-icon",
     )
@@ -49,7 +49,7 @@ async def favicon():
 
 # Serve static files (JS, CSS, images, etc.)
 @app.route("/static/<path:path>")
-async def assets(path):
+async def static_files(path):
     return await send_from_directory(
         os.path.join(app.root_path, "static"), path
     )
