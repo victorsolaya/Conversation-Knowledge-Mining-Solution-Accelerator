@@ -45,7 +45,7 @@ jobs:
         id: determine_tag
         run: echo "tagname=${{ github.ref_name == 'main' && 'latest' || github.ref_name == 'dev' && 'dev' || github.ref_name == 'demo' && 'demo' || github.head_ref || 'default' }}" >> $GITHUB_OUTPUT
           
-      - name: Build Docker Image and optionally push
+      - name: Build Docker Image and optionally push - webapp
         uses: docker/build-push-action@v6
         with:
           context: ./App
@@ -55,8 +55,8 @@ jobs:
             ${{ secrets.ACR_LOGIN_SERVER }}/km-app:${{ steps.determine_tag.outputs.tagname }}
             ${{ secrets.ACR_LOGIN_SERVER }}/km-app:${{ steps.determine_tag.outputs.tagname }}_${{ steps.date.outputs.date }}_${{ github.run_number }}
       
-            
-      - name: Build and Push Docker Image for km-rag-function
+
+      - name: Build Docker Image and optionally push - km-rag-function
         uses: docker/build-push-action@v6
         with:
           context: ./AzureFunctions/km-rag-function
@@ -66,7 +66,7 @@ jobs:
             ${{ secrets.ACR_LOGIN_SERVER }}/km-rag-function:${{ steps.determine_tag.outputs.tagname }}
             ${{ secrets.ACR_LOGIN_SERVER }}/km-rag-function:${{ steps.determine_tag.outputs.tagname }}_${{ steps.date.outputs.date }}_${{ github.run_number }}
 
-      - name: Build and Push Docker Image for km-charts-function
+      - name: Build Docker Image and optionally push - km-charts-function
         uses: docker/build-push-action@v6
         with:
           context: ./AzureFunctions/km-charts-function
