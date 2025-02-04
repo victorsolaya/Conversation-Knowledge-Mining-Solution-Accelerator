@@ -34,6 +34,7 @@ RUN pip install --no-cache-dir -r /usr/src/app/requirements.txt \
 COPY . /usr/src/app/
 
 # Copy static files from the frontend stage to the backend
+COPY --from=frontend /home/node/app/frontend/build /usr/src/app/build/
 COPY --from=frontend /home/node/app/frontend/build/static /usr/src/app/static/
 
 # Set working directory and expose port
