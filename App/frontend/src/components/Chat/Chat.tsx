@@ -476,10 +476,8 @@ const Chat: React.FC<ChatProps> = ({
           const { done, value } = await reader.read();
           if (done) break;
           const text = new TextDecoder("utf-8").decode(value);
-          // console.log("text::", text);
           try {
             const textObj = JSON.parse(text);
-            // console.log("textObj::", textObj);
             if (textObj?.object?.data) {
               runningText = text;
               isChartResponseReceived = true;
@@ -504,9 +502,7 @@ const Chat: React.FC<ChatProps> = ({
             objects.forEach((textValue, index) => {
               try {
                 if (textValue !== "" && textValue !== "{}") {
-                  // console.log("textValue::", textValue);
                   const parsed: ParsedChunk = JSON.parse(textValue);
-                  // console.log("parsed res::", parsed);
                   if (parsed?.error && !hasError) {
                     hasError = true;
                     runningText = parsed?.error;
@@ -515,8 +511,7 @@ const Chat: React.FC<ChatProps> = ({
                   } else if (typeof parsed === "object" && !hasError) {
                     console.log(":::parsed::::",parsed);
                     const responseContent  = parsed?.choices?.[0]?.messages?.[0]?.content;
-                    // const jsonString = "abcd jjjjlkk";
-                    // const textStart = jsonString.indexOf(`"answer":`) +9; 
+                     
                     const answerKey = `"answer":`;
                     const answerStartIndex  = responseContent.indexOf(answerKey);
 
@@ -534,33 +529,15 @@ const Chat: React.FC<ChatProps> = ({
                       answerText = responseContent .substring(answerTextStart).trim();
                     }
 
-                    // if(answerText.startsWith(`"`)){
                       answerText = answerText.replace(/^"+|"+$|,$/g, '');// first ""
                       answerText = answerText.replace(/[",]+$/, ''); // last ",
-                    // }
+                      answerText = answerText.replace(/\\n/g, "  \n");
                     
-                    console.log("answer Text::", answerText);
-                    // const endIndex=
-                    //   parsed?.choices?.[0]?.messages?.[0]?.content.indexOf(
-                    //     `\", \"`
-                    //   );
                     
-                    // console.log(":::::index::", endIndex);
-                    // const startIndex = parsed?.choices?.[0]?.messages?.[0]?.content.indexOf(
-                    //   `{ \"answer\": \"`
-                    // );
-                    // const answerString =
-                    // endIndex === -1?
-                    //   parsed?.choices?.[0]?.messages?.[0]?.content.slice(startIndex +  `{ \"answer\": \"`.length):  parsed?.choices?.[0]?.messages?.[0]?.content.slice(startIndex +  `{ \"answer\": \"`.length, endIndex);
-                    // console.log(":::::answerString::", answerString);
                     streamMessage.content = answerText || "";
                     streamMessage.role =
                       parsed?.choices?.[0]?.messages?.[0]?.role || ASSISTANT;
 
-
-                    // const citationEndIndex = parsed?.choices?.[0]?.messages?.[0]?.content.indexOf(
-                    //   `] }`
-                    // );
                     streamMessage.citations = citationString;
                     dispatch({
                       type: actionConstants.UPDATE_MESSAGE_BY_ID,

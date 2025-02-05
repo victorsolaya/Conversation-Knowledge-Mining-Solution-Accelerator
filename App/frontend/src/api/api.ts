@@ -236,13 +236,13 @@ export async function getIsChartDisplayDefault(): Promise<{
   try {
     if (response.ok) {
       const responseData = await response.json();
-      return { isChartDisplayDefault : responseData.isChartDisplayDefault}
+      return { isChartDisplayDefault: responseData.isChartDisplayDefault }
     }
   } catch {
     console.error("Failed to get chart config flag");
   }
   return {
-    isChartDisplayDefault : false
+    isChartDisplayDefault: true
   };
 }
 
