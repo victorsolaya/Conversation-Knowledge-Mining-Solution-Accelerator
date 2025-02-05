@@ -236,7 +236,8 @@ export async function getIsChartDisplayDefault(): Promise<{
   try {
     if (response.ok) {
       const responseData = await response.json();
-      return { isChartDisplayDefault: responseData.isChartDisplayDefault }
+      const tempChartDisplayFlag = responseData.isChartDisplayDefault.toLowerCase() == 'true' ? true : false
+      return { isChartDisplayDefault: tempChartDisplayFlag }
     }
   } catch {
     console.error("Failed to get chart config flag");
