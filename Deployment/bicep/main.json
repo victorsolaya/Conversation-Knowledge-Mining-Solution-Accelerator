@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.30.23.60470",
-      "templateHash": "10435906030925048109"
+      "templateHash": "6631021722888054043"
     }
   },
   "parameters": {
@@ -22,12 +22,10 @@
       "metadata": {
         "description": "other Location"
       }
-    },
-    "imageTag": {
-      "type": "string"
     }
   },
   "variables": {
+    "imageTag": "latest",
     "resourceGroupLocation": "[resourceGroup().location]",
     "resourceGroupName": "[resourceGroup().name]",
     "solutionLocation": "[variables('resourceGroupLocation')]",
@@ -1598,7 +1596,7 @@
         "mode": "Incremental",
         "parameters": {
           "imageTag": {
-            "value": "[parameters('imageTag')]"
+            "value": "[variables('imageTag')]"
           },
           "solutionName": {
             "value": "[parameters('solutionPrefix')]"
@@ -1798,7 +1796,7 @@
         "mode": "Incremental",
         "parameters": {
           "imageTag": {
-            "value": "[parameters('imageTag')]"
+            "value": "[variables('imageTag')]"
           },
           "solutionName": {
             "value": "[parameters('solutionPrefix')]"
@@ -2146,7 +2144,7 @@
         "mode": "Incremental",
         "parameters": {
           "imageTag": {
-            "value": "[parameters('imageTag')]"
+            "value": "[variables('imageTag')]"
           },
           "identity": {
             "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_managed_identity'), '2022-09-01').outputs.managedIdentityOutput.value.id]"

@@ -8,7 +8,8 @@ param solutionPrefix string
 
 @description('other Location')
 param otherLocation string
-param imageTag string
+
+var imageTag = 'latest'
 // @description('Fabric Workspace Id if you have one, else leave it empty. ')
 // param fabricWorkspaceId string
 
