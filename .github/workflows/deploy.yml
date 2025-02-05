@@ -37,13 +37,13 @@ jobs:
 
       - name: Create Resource Group
         run: |
-          az group create --name ${{ env.RESOURCE_GROUP_NAME }} --location southcentralus
+          az group create --name ${{ env.RESOURCE_GROUP_NAME }} --location northcentralus
 
       - name: Generate Unique Solution Prefix
         id: generate_solution_prefix
         run: |
           set -e
-          COMMON_PART="ckm2"
+          COMMON_PART="km"
           TIMESTAMP=$(date +%s)  
           UPDATED_TIMESTAMP=$(echo $TIMESTAMP | tail -c 3) 
           UNIQUE_SOLUTION_PREFIX="${COMMON_PART}${UPDATED_TIMESTAMP}"
@@ -57,7 +57,7 @@ jobs:
           az deployment group create \
             --resource-group ${{ env.RESOURCE_GROUP_NAME }} \
             --template-file Deployment/bicep/main.bicep \
-            --parameters solutionPrefix=${{ env.SOLUTION_PREFIX }} otherLocation=southcentralus imageTag=${{ env.TAG }}
+            --parameters solutionPrefix=${{ env.SOLUTION_PREFIX }} otherLocation=northcentralus imageTag=${{ env.TAG }}
 
       - name: Delete Bicep Deployment
         if: success()
