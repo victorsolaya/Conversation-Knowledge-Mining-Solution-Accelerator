@@ -37,7 +37,7 @@ jobs:
 
       - name: Create Resource Group
         run: |
-          az group create --name ${{ env.RESOURCE_GROUP_NAME }} --location westeurope
+          az group create --name ${{ env.RESOURCE_GROUP_NAME }} --location centralus
 
       - name: Generate Unique Solution Prefix
         id: generate_solution_prefix
@@ -57,7 +57,7 @@ jobs:
           az deployment group create \
             --resource-group ${{ env.RESOURCE_GROUP_NAME }} \
             --template-file Deployment/bicep/main.bicep \
-            --parameters solutionPrefix=${{ env.SOLUTION_PREFIX }} otherLocation=westeurope imageTag=${{ env.TAG }}
+            --parameters solutionPrefix=${{ env.SOLUTION_PREFIX }} otherLocation=centralus imageTag=${{ env.TAG }}
 
       - name: Delete Bicep Deployment
         if: success()
@@ -76,20 +76,20 @@ jobs:
             echo "Resource group does not exists."
           fi
 
-      - name: Send Notification on Failure
-        if: failure()
-        run: |
-          RUN_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+      # - name: Send Notification on Failure
+      #   if: failure()
+      #   run: |
+      #     RUN_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
       
-          # Construct the email body
-          EMAIL_BODY=$(cat <<EOF
-          {
-            "body": "<p>Dear Team,</p><p>We would like to inform you that the CKMv2 Automation process has encountered an issue and has failed to complete successfully.</p><p><strong>Build URL:</strong> ${RUN_URL}<br> ${OUTPUT}</p><p>Please investigate the matter at your earliest convenience.</p><p>Best regards,<br>Your Automation Team</p>"
-          }
-          EOF
-          )
+      #     # Construct the email body
+      #     EMAIL_BODY=$(cat <<EOF
+      #     {
+      #       "body": "<p>Dear Team,</p><p>We would like to inform you that the CKMv2 Automation process has encountered an issue and has failed to complete successfully.</p><p><strong>Build URL:</strong> ${RUN_URL}<br> ${OUTPUT}</p><p>Please investigate the matter at your earliest convenience.</p><p>Best regards,<br>Your Automation Team</p>"
+      #     }
+      #     EOF
+      #     )
       
-          # Send the notification
-          curl -X POST "${{ secrets.LOGIC_APP_URL }}" \
-            -H "Content-Type: application/json" \
-            -d "$EMAIL_BODY" || echo "Failed to send notification"
+      #     # Send the notification
+      #     curl -X POST "${{ secrets.LOGIC_APP_URL }}" \
+      #       -H "Content-Type: application/json" \
+      #       -d "$EMAIL_BODY" || echo "Failed to send notification"
