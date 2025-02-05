@@ -832,7 +832,7 @@ const Chat: React.FC<ChatProps> = ({
         {((generatingResponse && !state.chat.isStreamingInProgress) || isChartLoading)  && (
           <div className="assistant-message loading-indicator">
             <div className="typing-indicator">
-              <span className="generating-text">{isChartLoading ? "Generating chat if possible with the provided data" : "Generating answer"} </span>
+              <span className="generating-text">{isChartLoading ? "Generating chart if possible with the provided data" : "Generating answer"} </span>
               <span className="dot"></span>
               <span className="dot"></span>
               <span className="dot"></span>
