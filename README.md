@@ -121,7 +121,7 @@ To use this solution accelerator, you will need access to an [Azure subscription
 
     3. Run the script
         ```sh
-        ./add_user.sh
+        ./add_user.sh <resourcegroupname> <solution_prefix>
 
 5.  **Add App Authentication**
    
