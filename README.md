@@ -1,7 +1,6 @@
 # Conversation knowledge mining solution accelerator
 
-MENU: [**USER STORY**](#user-story) \| [**QUICK DEPLOY**](#quick-deploy)  \| [**SUPPORTING DOCUMENTATION**](#supporting-documentation) \|
-[**CUSTOMER TRUTH**](#customer-truth)
+MENU: [**USER STORY**](#user-story) \| [**QUICK DEPLOY**](#quick-deploy)  \| [**SUPPORTING DOCUMENTATION**](#supporting-documentation) 
 
 <h2><img src="./Documents/Images/ReadMe/userStory.png" width="64">
 <br/>
@@ -12,9 +11,8 @@ User story
 
 This solution accelerator enables customers with large amounts of conversational data to improve decision-making by leveraging intelligence to uncover insights, relationships, and patterns from customer interactions. It empowers users to gain valuable knowledge and drive targeted business impact. 
 
-This solution accelerator leverages Azure AI Foundry, Azure OpenAI, Microsoft Fabric, and Azure Search to transform large volumes of conversational data into actionable insights through topic modeling, key phrase extraction, speech-to-text transcription, and interactive chat experiences.
+This solution accelerator leverages Azure AI Foundry, AI Content Understanding, Azure OpenAI,and Azure Search to transform large volumes of conversational data into actionable insights through topic modeling, key phrase extraction, speech-to-text transcription, and interactive chat experiences.
 
-**Version history:** An updated version of the Conversation Knowledge Mining solution accelerator was published on 01/17/2025. If you deployed the accelerator prior to that date, please see “Version history” in the [Supporting documentation](#supporting-documentation) section.
 
 ### Technical key features
 
@@ -38,22 +36,29 @@ The sample data used in this repository is synthetic and generated using Azure O
 
 <h2><img src="./Documents/Images/ReadMe/quickDeploy.png" width="64">
 <br/>
-Quick deploy
+Deployment & installation 
 </h2>
 
 ### **Prerequisites**
 
 To use this solution accelerator, you will need access to an [Azure subscription](https://azure.microsoft.com/free/) with permission to create resource groups and resources. 
 
+### **Options**
+Pick from the options below to see step-by-step instructions for: Bicep, GitHub Codespaces, VS Code Dev Containers, and Local Environments, deployments.
+<!-- We recommend using the first option (Bicep) because it is the fastest and easiest way to get started. -->
 
-### **How to install/deploy**
+<details>
+  <summary><b>Deploy with Bicep/ARM solution accelerator</b></summary>
+
+### Quick Deploy (Bicep)
 
 1. Please check the link [Azure Products by Region](https://azure.microsoft.com/en-us/explore/global-infrastructure/products-by-region/?products=all&regions=all) and choose a region where Azure AI Search, Azure OpenAI services, Azure AI Foundry Services are available. 
 
 2. **Deploy Azure resources**  
    Click the following deployment button to create the required resources for this accelerator directly in your Azure Subscription.
 
-   [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fmicrosoft%2FConversation-Knowledge-Mining-Solution-Accelerator%2Fmain%2FDeployment%2Fbicep%2Fmain.json)
+   [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fmicrosoft%2FConversation-Knowledge-Mining-Solution-Accelerato%2FKM-AIFoundry%2Finfra%2Fmain.json)
+
 
 
 
@@ -62,85 +67,84 @@ To use this solution accelerator, you will need access to an [Azure subscription
        -  Region - the region where the resources will be created in
 
        -  Solution Prefix - provide a 6 alphanumeric value that will be used to prefix resources
-      
+
+       -  Content Understanding location 
+
+       -  Model deployment location 
+
+       -  Model choice
+
+       -  Select an existing AI Hub
+
        -  Other Location - location of resources (required for Azure SQL and CosmoDB resources)
+       
            
-3.  **Create Fabric workspace**
-    1.  Navigate to ([Fabric Workspace](https://app.fabric.microsoft.com/))
-    2.  Click on Data Engineering experience
-    3.  Click on Workspaces from left Navigation
-    4.  Click on + New Workspace
-        1.  Provide Name of Workspace 
-        2.  Provide Description of Workspace (optional)
-        3.  Click Apply
-    5.  Open Workspace
-    6.  Create Environment
-        1.  Click ` + New Item ` (in Workspace)
-        2.  Select Environment from list
-        3.  Provide name for Environment and click Create
-        4.  Select Public libraries in left panel
-        5.  Click Add from .yml
-        6.  Upload .yml from [here](./Deployment/scripts/fabric_scripts/ckm_cu_env.yml)
-        7.  Click Publish
-    7.  Retrieve Workspace ID from URL, refer to documentation additional assistance ([here](https://learn.microsoft.com/en-us/fabric/admin/portal-workspace#identify-your-workspace-id))
 
-    ***Note: Wait until the Environment is finished publishing prior to proceeding witht the next steps.
+</details>
 
-4.  **Deploy Fabric resources and artifacts**
-    1.   Navigate to ([Azure Portal](https://portal.azure.com/))
-    2.   Click on Azure Cloud Shell in the top right of navigation Menu (add image)
-    3.   Run the run the following commands:  
-         1.   ```az login``` ***Follow instructions in Azure Cloud Shell for login instructions
-         2.   ```rm -rf ./Conversation-Knowledge-Mining-Solution-Accelerator```
-         3.   ```git clone https://github.com/microsoft/Conversation-Knowledge-Mining-Solution-Accelerator```
-         4.   ```cd ./Conversation-Knowledge-Mining-Solution-Accelerator/Deployment/scripts/fabric_scripts```
-         5.   ```sh ./run_fabric_items_scripts.sh keyvault_param workspaceid_param solutionprefix_param```
-              1.   keyvault_param - the name of the keyvault that was created in Step 1
-              2.   workspaceid_param - the workspaceid created in Step 2
-              3.   solutionprefix_param - prefix used to append to lakehouse upon creation
+<details>
+  <summary><b>Deploy in GitHub Codespaces</b></summary>
 
-6. **Add Azure Function Users to Database**
+ ### GitHub Codpespaces
 
-    This script automates the process of adding Azure Function identities as users in a database and assigning them appropriate roles.
-    ## Prerequisites
+You can run this solution accelerator virtually by using GitHub Codespaces. The button will open a web-based VS Code instance in your browser:
 
-    Before running the script, ensure you have:
+1. Open the solution accelerator (this may take several minutes):
 
-    - **Azure CLI** installed.
-    - **Python 3** installed.
-    ## Usage
+    [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/microsoft/Conversation-Knowledge-Mining-Solution-Accelerator/KM-AIFoundry)
 
-    1. Clone the repository:
+2. Open a terminal window
+3. Continue with the [deploying steps](#deploying)
 
-        ```sh
-        git clone https://github.com/microsoft/Conversation-Knowledge-Mining-Solution-Accelerator.git
-    
-    2. Navigate to script directory
-        ```sh
-        cd Deployment\scripts\add_user_scripts
+</details>
 
-    3. Run the script
-        ```sh
-        ./add_user.sh <resourcegroupname> <solution_prefix>
+<details>
+  <summary><b>Deploy in VS Code</b></summary>
 
-5.  **Add App Authentication**
-   
-    Follow steps in [App Authentication](./Documents/AppAuthentication.md) to configure authenitcation in app service.
+ ### VS Code Dev Containers
+
+A related option is VS Code Dev Containers, which will open the project in your local VS Code using the [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers):
+
+1. Start Docker Desktop (install it if not already installed)
+2. Open the project:
+
+    [![Open in Dev Containers](https://img.shields.io/static/v1?style=for-the-badge&label=Dev%20Containers&message=Open&color=blue&logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/microsoft/Conversation-Knowledge-Mining-Solution-Accelerator/KM-AIFoundry)
 
 
+3. In the VS Code window that opens, once the project files show up (this may take several minutes), open a terminal window.
+4. Continue with the [deploying steps](#deploying)
 
-### Upload additional files
+</details>
 
-All files WAV files can be uploaded in the corresponding Lakehouse in the data/Files folder:
+<details>
+  <summary><b>Deploy in your local environment</b></summary>
 
-- Audio (WAV files):
-  Upload Audio files in the *cu_audio_files_all* folder.
+ ### Local environment
 
+If you're not using one of the above options for opening the project, then you'll need to:
 
-### Post-deployment
-- To process additional files, manually execute the pipeline_notebook after uploading new files.
-- The OpenAI prompt can be modified within the Fabric notebooks.
+1. Make sure the following tools are installed:
 
+    * [Azure Developer CLI (azd)](https://aka.ms/install-azd)
+    * [Python 3.9+](https://www.python.org/downloads/)
+    * [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+    * [Git](https://git-scm.com/downloads)
+
+2. Download the project code:
+
+    ```shell
+    azd init -t azureai-basic-python
+    ```
+
+3. Open the project folder in your terminal or editor.
+
+4. Continue with the [deploying steps](#deploying).
+
+## Deploying
+
+Once you've opened the project in [Codespaces](#github-codespaces), in [Dev Containers](#vs-code-dev-containers), or [locally](#local-environment), you can deploy it to Azure.
+
+</details>
 
 <br/>
 <h2>
@@ -151,31 +155,19 @@ Supporting documentation
 
 ### How to customize 
 
-If you'd like to customize the accelerator, here are some ways you might do that:
+If you'd like to customize the solution accelerator, here are some ways you might do that:
 - Ingest your own [audio conversation files](./Documents/ConversationalDataFormat.md) by uploading them into the `cu_audio_files_all` lakehouse folder and run the data pipeline
+- Deploy with Microsoft Fabric by following the steps in [Fabric_deployment.md](./Documents/Fabric_deployment.md)
 
 ### Additional resources
 
-- [Microsoft Fabric documentation - Microsoft Fabric | Microsoft Learn](https://learn.microsoft.com/en-us/fabric/)
+<!-- - [Microsoft Fabric documentation - Microsoft Fabric | Microsoft Learn](https://learn.microsoft.com/en-us/fabric/) -->
 - [Azure OpenAI Service - Documentation, quickstarts, API reference - Azure AI services | Microsoft Learn](https://learn.microsoft.com/en-us/azure/ai-services/openai/concepts/use-your-data)
 - [Azure AI Content Understanding documentation](https://learn.microsoft.com/en-us/azure/ai-services/content-understanding/)
 - [Azure AI Foundry documentation](https://learn.microsoft.com/en-us/azure/ai-studio/)
-- [Speech service documentation - Tutorials, API Reference - Azure AI services - Azure AI services | Microsoft Learn](https://learn.microsoft.com/en-us/azure/ai-services/speech-service/)
+<!-- - [Speech service documentation - Tutorials, API Reference - Azure AI services - Azure AI services | Microsoft Learn](https://learn.microsoft.com/en-us/azure/ai-services/speech-service/) -->
 
 
-### Version history
-
-#### Release 3
-An updated version of the Conversation Knowledge Mining (CKM) solution accelerator was published on 01/17/2025. If you deployed the accelerator prior to that date, please note that CKM Release 3 cannot be deployed over CKM Release 2. Please also note that the CKM Release 3 conversation and audio file formats has been revised therefore files for prior releases are no longer compatible. For resources related to CKM Release 2, please visit our archive ([link-to-archive](https://github.com/microsoft/Conversation-Knowledge-Mining-Solution-Accelerator/tree/ckm-v2)).
-
-#### Release 2
-An updated version of the Conversation Knowledge Mining (CKM) solution accelerator was published on 08/15/2024. If you deployed the accelerator prior to that date, please note that CKM v2 cannot be deployed over CKM v1. Please also note that the CKM Release 2 JSON conversation file format has been revised to include additional metadata, therefore CKM v1 files are no longer compatible. For resources related to CKM v1, please visit our archive ([link-to-archive](https://github.com/microsoft/Conversation-Knowledge-Mining-Solution-Accelerator/tree/ckm-v1)).
-
-<h2><img src="./Documents/Images/ReadMe/customerTruth.png" width="64">
-</br>
-Customer truth
-</h2>
-Customer stories coming soon.
 
 <h2>
 </br>
@@ -184,7 +176,6 @@ Responsible AI Transparency FAQ
 
 Please refer to [Transparency FAQ](./TRANSPARENCY_FAQ.md) for responsible AI transparency details of this solution accelerator.
 
-<br/>
 <br/>
 <br/>
 
