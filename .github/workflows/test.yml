@@ -44,6 +44,7 @@ jobs:
           else
             echo "Frontend test files found, running tests."
             echo "skip_frontend_tests=false" >> $GITHUB_ENV
+          fi
 
       - name: Install Frontend Dependencies
         if: env.skip_frontend_tests == 'false'
@@ -80,6 +81,7 @@ jobs:
           else
             echo "Backend test files found, running tests."
             echo "skip_backend_tests=false" >> $GITHUB_ENV
+          fi
 
       - name: Run Backend Tests with Coverage
         if: env.skip_backend_tests == 'false'
