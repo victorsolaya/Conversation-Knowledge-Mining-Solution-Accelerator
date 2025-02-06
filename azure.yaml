@@ -13,7 +13,7 @@ parameters:
     default: eastus2
   baseUrl:
     type: string
-    default: 'https://raw.githubusercontent.com/microsoft/Conversation-Knowledge-Mining-Solution-Accelerator/KM-AIFoundry/'
+    default: 'https://raw.githubusercontent.com/microsoft/Conversation-Knowledge-Mining-Solution-Accelerator/tree/KM-AIFoundry/'
 
 deployment:
   mode: Incremental
