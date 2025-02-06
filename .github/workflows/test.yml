@@ -18,17 +18,12 @@ on:
       - demo
 
 jobs:
-  test:
+  frontend_tests:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.11'
 
       - name: Set up Node.js
         uses: actions/setup-node@v3
@@ -63,7 +58,18 @@ jobs:
         run: |
           echo "Skipping frontend tests because no test files were found."
 
-     
+  backend_tests:
+    runs-on: ubuntu-latest
+    needs: frontend_tests
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
 
       - name: Install Backend Dependencies
         run: |
