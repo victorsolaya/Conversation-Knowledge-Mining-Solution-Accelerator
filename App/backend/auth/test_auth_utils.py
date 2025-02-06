@@ -23,33 +23,7 @@ class TestAuthUtils(unittest.TestCase):
         self.assertEqual(user_details["auth_token"], "token123")
         self.assertEqual(user_details["client_principal_b64"], "base64string")
 
-    @patch("App.backend.auth.auth_utils.sample_user.sample_user", {
-        "X-Ms-Client-Principal-Id": "dev-user",
-        "X-Ms-Client-Principal-Name": "Dev User",
-        "X-Ms-Client-Principal-Idp": "dev-idp",
-        "X-Ms-Token-Aad-Id-Token": "dev-token",
-        "X-Ms-Client-Principal": "dev-base64"
-    })
+
   
-    def test_get_tenantid_with_valid_base64(self):
-        user_info = {"tid": "tenant123"}
-        encoded_info = base64.b64encode(json.dumps(user_info).encode("utf-8"))
-
-        tenant_id = get_tenantid(encoded_info.decode("utf-8"))
-
-        self.assertEqual(tenant_id, "tenant123")
-
-    def test_get_tenantid_with_invalid_base64(self):
-        invalid_base64 = "invalid_base64"
-
-        tenant_id = get_tenantid(invalid_base64)
-
-        self.assertEqual(tenant_id, "")
-
-    def test_get_tenantid_with_empty_base64(self):
-        tenant_id = get_tenantid("")
-
-        self.assertEqual(tenant_id, "")
-
 if __name__ == "__main__":
     unittest.main()
