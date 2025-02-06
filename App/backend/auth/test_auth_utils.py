@@ -2,7 +2,7 @@ import unittest
 from unittest.mock import patch
 import base64
 import json
-from App.backend.auth.auth_utils import get_authenticated_user_details, get_tenantid
+from auth_utils import get_authenticated_user_details, get_tenantid
 
 class TestAuthUtils(unittest.TestCase):
 
