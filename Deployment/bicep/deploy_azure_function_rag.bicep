@@ -6,6 +6,9 @@ param azureOpenAIApiKey string
 param azureOpenAIApiVersion string
 param azureOpenAIEndpoint string
 @secure()
+param azureAiProjectConnString string
+param aiProjectName string
+@secure()
 param azureSearchAdminKey string
 param azureSearchServiceEndpoint string
 param azureSearchIndex string
@@ -112,6 +115,10 @@ resource azurefn 'Microsoft.Web/sites@2023-12-01' = {
           value: azureOpenAIApiKey
         }
         {
+          name: 'AZURE_AI_PROJECT_CONN_STRING'
+          value: azureAiProjectConnString
+        }
+        {
           name: 'OPENAI_API_VERSION'
           value: azureOpenAIApiVersion
         }
@@ -151,6 +158,23 @@ resource roleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
   scope: storageAccount
   properties: {
     roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'ba92f5b4-2d11-453d-a403-e96b0029c9fe') // Storage Blob Data Contributor
+    principalId: azurefn.identity.principalId
+  }
+}
+
+resource aiHubProject 'Microsoft.MachineLearningServices/workspaces@2024-01-01-preview' existing = {
+  name: aiProjectName
+}
+
+resource aiDeveloper 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = {
+  name: '64702f94-c441-49e6-a78b-ef80e0188fee'
+}
+
+resource aiDeveloperAccessProj 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(azurefn.id, aiHubProject.id, aiDeveloper.id)
+  scope: aiHubProject
+  properties: {
+    roleDefinitionId: aiDeveloper.id
     principalId: azurefn.identity.principalId
   }
 }

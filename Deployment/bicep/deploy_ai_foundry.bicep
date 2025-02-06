@@ -408,6 +408,26 @@ resource aiHub 'Microsoft.MachineLearningServices/workspaces@2023-08-01-preview'
       aiServicesDeployments,aiSearch
     ]
   }
+
+  resource aiServicesConnection_m 'connections@2024-07-01-preview' = {
+    name: '${aiHubName}-connection-AzureOpenAI_m'
+    properties: {
+      category: 'AIServices'
+      target: aiServices_m.properties.endpoint
+      authType: 'ApiKey'
+      isSharedToAll: true
+      credentials: {
+        key: aiServices_m.listKeys().key1
+      }
+      metadata: {
+        ApiType: 'Azure'
+        ResourceId: aiServices_m.id
+      }
+    }
+    dependsOn: [
+      aiServicesDeployments,aiSearch,aiServicesConnection
+    ]
+  }
   
   resource aiSearchConnection 'connections@2024-07-01-preview' = {
     name: '${aiHubName}-connection-AzureAISearch'
@@ -539,6 +559,14 @@ resource azureOpenAIEndpointEntry 'Microsoft.KeyVault/vaults/secrets@2021-11-01-
   }
 }
 
+resource azureAIProjectConnectionStringEntry 'Microsoft.KeyVault/vaults/secrets@2021-11-01-preview' = {
+  parent: keyVault
+  name: 'AZURE-AI-PROJECT-CONN-STRING'
+  properties: {
+    value: '${split(aiHubProject.properties.discoveryUrl, '/')[2]};${subscription().subscriptionId};${resourceGroup().name};${aiHubProject.name}'
+  }
+}
+
 resource azureOpenAICUEndpointEntry 'Microsoft.KeyVault/vaults/secrets@2021-11-01-preview' = {
   parent: keyVault
   name: 'AZURE-OPENAI-CU-ENDPOINT'
@@ -666,7 +694,7 @@ output aiSearchService string = aiSearch.name
 
 
 // output aiHubID string = aiHub.id
-// output aiProjectID string = aiHubProject.id
+output aiProjectName string = aiHubProject.name
 // // output aiservicesID string = aiServices.id
 // // output aiservicesTarget string = aiServices.properties.endpoint
 // // output storageId string = storage.id

@@ -125,11 +125,13 @@ module azureragFunctionsRag 'deploy_azure_function_rag.bicep' = {
     azureSearchAdminKey:keyVault.getSecret('AZURE-SEARCH-KEY')
     azureSearchServiceEndpoint:aifoundry.outputs.aiSearchTarget
     azureOpenAIApiVersion:'2024-02-15-preview'
+    azureAiProjectConnString:keyVault.getSecret('AZURE-AI-PROJECT-CONN-STRING')
     azureSearchIndex:'call_transcripts_index'
     sqlServerName:sqlDBModule.outputs.sqlServerName
     sqlDbName:sqlDBModule.outputs.sqlDbName
     sqlDbUser:sqlDBModule.outputs.sqlDbUser
     sqlDbPwd:keyVault.getSecret('SQLDB-PASSWORD')
+    aiProjectName:aifoundry.outputs.aiProjectName
     managedIdentityObjectId:managedIdentityModule.outputs.managedIdentityOutput.objectId
   }
   dependsOn:[aifoundry,sqlDBModule,keyVault]
