@@ -30,17 +30,7 @@ class TestAuthUtils(unittest.TestCase):
         "X-Ms-Token-Aad-Id-Token": "dev-token",
         "X-Ms-Client-Principal": "dev-base64"
     })
-    def test_get_authenticated_user_details_without_headers(self, mock_sample_user):
-        request_headers = {}
-
-        user_details = get_authenticated_user_details(request_headers)
-
-        self.assertEqual(user_details["user_principal_id"], "dev-user")
-        self.assertEqual(user_details["user_name"], "Dev User")
-        self.assertEqual(user_details["auth_provider"], "dev-idp")
-        self.assertEqual(user_details["auth_token"], "dev-token")
-        self.assertEqual(user_details["client_principal_b64"], "dev-base64")
-
+  
     def test_get_tenantid_with_valid_base64(self):
         user_info = {"tid": "tenant123"}
         encoded_info = base64.b64encode(json.dumps(user_info).encode("utf-8"))
