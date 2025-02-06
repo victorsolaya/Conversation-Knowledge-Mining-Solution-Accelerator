@@ -81,7 +81,7 @@ jobs:
       - name: Check if Backend Test Files Exist
         id: check_backend_tests
         run: |
-          if [ -z "$(find backend/src -type f -name 'test_*.py')" ]; then
+          if [ -z "$(find backend -type f -name 'test_*.py')" ]; then
             echo "No backend test files found, skipping backend tests."
             echo "skip_backend_tests=true" >> $GITHUB_ENV
           else
