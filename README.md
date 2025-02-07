@@ -133,15 +133,11 @@ Once you've opened the project in [Codespaces](#github-codespaces), in [Dev Cont
 
        -  Solution Prefix - provide a 6 alphanumeric value that will be used to prefix resources
 
-       -  Content Understanding location 
+       - Content Understanding location (West US, Sweden Central or Australia East)
 
-       -  Model deployment location 
+       -  Secondary Location - location for Azure SQL and CosmoDB resources
 
-       -  Model choice
-
-       -  Select an existing AI Hub
-
-       -  Other Location - location of resources (required for Azure SQL and CosmoDB resources)
+       
           
 
 </details>
