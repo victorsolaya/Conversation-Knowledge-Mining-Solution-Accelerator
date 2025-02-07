@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.30.23.60470",
-      "templateHash": "2194341250798727884"
+      "version": "0.33.93.31351",
+      "templateHash": "7588923350594272003"
     }
   },
   "parameters": {
@@ -59,8 +59,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.30.23.60470",
-              "templateHash": "8775325455752085588"
+              "version": "0.33.93.31351",
+              "templateHash": "4123789684929590981"
             }
           },
           "parameters": {
@@ -151,8 +151,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.30.23.60470",
-              "templateHash": "5869217970926810810"
+              "version": "0.33.93.31351",
+              "templateHash": "8835926514632625681"
             }
           },
           "parameters": {
@@ -882,8 +882,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.30.23.60470",
-              "templateHash": "16012222996233768636"
+              "version": "0.33.93.31351",
+              "templateHash": "1505719283486163574"
             }
           },
           "parameters": {
@@ -980,7 +980,8 @@
                 "publicAccess": "None"
               },
               "dependsOn": [
-                "[resourceId('Microsoft.Storage/storageAccounts/blobServices', parameters('saName'), 'default')]"
+                "[resourceId('Microsoft.Storage/storageAccounts/blobServices', parameters('saName'), 'default')]",
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('saName'))]"
               ]
             },
             {
@@ -1065,8 +1066,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.30.23.60470",
-              "templateHash": "16978185825890155480"
+              "version": "0.33.93.31351",
+              "templateHash": "3100365088410602500"
             }
           },
           "parameters": {
@@ -1113,7 +1114,7 @@
           "resources": [
             {
               "copy": {
-                "name": "list",
+                "name": "database::list",
                 "count": "[length(variables('containers'))]"
               },
               "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers",
@@ -1271,8 +1272,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.30.23.60470",
-              "templateHash": "15098887909027168557"
+              "version": "0.33.93.31351",
+              "templateHash": "6170430466600233564"
             }
           },
           "parameters": {
@@ -1448,8 +1449,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.30.23.60470",
-              "templateHash": "2298974321859845086"
+              "version": "0.33.93.31351",
+              "templateHash": "2314581525522797670"
             }
           },
           "parameters": {
@@ -1535,8 +1536,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.30.23.60470",
-              "templateHash": "17279604675307278350"
+              "version": "0.33.93.31351",
+              "templateHash": "3483044528146968359"
             }
           },
           "parameters": {
@@ -1634,8 +1635,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.30.23.60470",
-              "templateHash": "17791537320215817595"
+              "version": "0.33.93.31351",
+              "templateHash": "8291781429768450130"
             }
           },
           "parameters": {
@@ -1862,8 +1863,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.30.23.60470",
-              "templateHash": "15219013071471372160"
+              "version": "0.33.93.31351",
+              "templateHash": "15485200574987252136"
             }
           },
           "parameters": {
@@ -2093,8 +2094,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.30.23.60470",
-              "templateHash": "6322893930132489795"
+              "version": "0.33.93.31351",
+              "templateHash": "11904916764630875140"
             }
           },
           "parameters": {
@@ -2223,8 +2224,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.30.23.60470",
-              "templateHash": "5478086548342696016"
+              "version": "0.33.93.31351",
+              "templateHash": "1923507558856922316"
             }
           },
           "parameters": {
