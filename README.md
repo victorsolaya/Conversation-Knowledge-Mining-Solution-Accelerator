@@ -151,7 +151,8 @@ Additional Steps
 </h2>
 
 1. **Add Azure Function Users to Database**
-  This script automates the process of adding Azure Function identities as users in a database and assigning them appropriate roles.
+    
+    This script automates the process of adding Azure Function identities as users in a database and assigning them appropriate roles.
     ## Prerequisites
 
     Before running the script, ensure you have:
