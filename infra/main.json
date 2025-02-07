@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.33.93.31351",
-      "templateHash": "17421604958847791353"
+      "templateHash": "15437091219796932808"
     }
   },
   "parameters": {
@@ -28,7 +28,7 @@
     "resourceGroupLocation": "[resourceGroup().location]",
     "resourceGroupName": "[resourceGroup().name]",
     "solutionLocation": "[variables('resourceGroupLocation')]",
-    "baseUrl": "https://raw.githubusercontent.com/microsoft/Conversation-Knowledge-Mining-Solution-Accelerator/tree/KM-AIFoundry/"
+    "baseUrl": "https://raw.githubusercontent.com/microsoft/Conversation-Knowledge-Mining-Solution-Accelerator/KM-AIFoundry/"
   },
   "resources": [
     {
@@ -1487,7 +1487,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.33.93.31351",
-              "templateHash": "2314581525522797670"
+              "templateHash": "8170119391258676410"
             }
           },
           "parameters": {
@@ -1574,7 +1574,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.33.93.31351",
-              "templateHash": "3483044528146968359"
+              "templateHash": "16955379019952955448"
             }
           },
           "parameters": {
