@@ -56,7 +56,7 @@ jobs:
           set -e
           az deployment group create \
             --resource-group ${{ env.RESOURCE_GROUP_NAME }} \
-            --template-file Deployment/bicep/main.bicep \
+            --template-file infra/main.bicep \
             --parameters solutionPrefix=${{ env.SOLUTION_PREFIX }} location=eastus
 
       - name: Delete Bicep Deployment
