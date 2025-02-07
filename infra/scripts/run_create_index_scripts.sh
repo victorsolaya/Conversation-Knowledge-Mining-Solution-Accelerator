@@ -15,9 +15,12 @@ curl --output "02_create_cu_template_text.py" ${baseUrl}"infra/scripts/index_scr
 curl --output "02_create_cu_template_audio.py" ${baseUrl}"infra/scripts/index_scripts/02_create_cu_template_audio.py"
 curl --output "03_cu_process_data_text.py" ${baseUrl}"infra/scripts/index_scripts/03_cu_process_data_text.py"
 curl --output "content_understanding_client.py" ${baseUrl}"infra/scripts/index_scripts/content_understanding_client.py"
-curl --output "ckm-analyzer_config_audio.json" ${baseUrl}"infra/data/ckm-analyzer_config_audio.json"
 curl --output "ckm-analyzer_config_text.json" ${baseUrl}"infra/data/ckm-analyzer_config_text.json"
-curl --output "audio_data" ${baseUrl}"infra/data/audio_data"
+curl --output "ckm-analyzer_config_audio.json" ${baseUrl}"infra/data/ckm-analyzer_config_audio.json"
+
+curl --output "sample_processed_data.json" ${baseUrl}"infra/data/sample_processed_data.json"
+curl --output "sample_processed_data_key_phrases.json" ${baseUrl}"infra/data/sample_processed_data_key_phrases.json"
+curl --output "sample_search_index_data.json" ${baseUrl}"infra/data/sample_search_index_data.json"
 
 # RUN apt-get update
 # RUN apt-get install python3 python3-dev g++ unixodbc-dev unixodbc libpq-dev
