@@ -14,6 +14,7 @@ curl --output "01_create_search_index.py" ${baseUrl}"infra/scripts/index_scripts
 curl --output "02_create_cu_template_text.py" ${baseUrl}"infra/scripts/index_scripts/02_create_cu_template_text.py"
 curl --output "02_create_cu_template_audio.py" ${baseUrl}"infra/scripts/index_scripts/02_create_cu_template_audio.py"
 curl --output "03_cu_process_data_text.py" ${baseUrl}"infra/scripts/index_scripts/03_cu_process_data_text.py"
+curl --output "content_understanding_client.py" ${baseUrl}"infra/scripts/index_scripts/content_understanding_client.py"
 
 # RUN apt-get update
 # RUN apt-get install python3 python3-dev g++ unixodbc-dev unixodbc libpq-dev

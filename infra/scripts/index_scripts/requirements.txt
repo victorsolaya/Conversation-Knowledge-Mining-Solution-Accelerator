@@ -5,7 +5,7 @@ pypdf
 # pyodbc
 tiktoken
 msal[broker]==1.31.1
-azure-identity==1.15.0
+azure-identity
 azure-ai-textanalytics
 azure-search-documents==11.6.0b3
 azure-keyvault-secrets
