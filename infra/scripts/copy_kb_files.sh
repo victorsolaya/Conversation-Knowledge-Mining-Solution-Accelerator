@@ -11,39 +11,39 @@ baseUrl="$3"
 
 zipFileName1="calltranscripts.zip"
 extractedFolder1="calltranscripts"
-zipUrl1=${baseUrl}"Deployment/data/calltranscripts.zip"
+zipUrl1=${baseUrl}"infra/data/calltranscripts.zip"
 
 zipFileName2="audiofiles_1.zip"
 extractedFolder2="audiofiles_1"
-zipUrl2=${baseUrl}"Deployment/data/audiofiles_1.zip"
+zipUrl2=${baseUrl}"infra/data/audiofiles_1.zip"
 
 zipFileName3="audiofiles_2.zip"
 extractedFolder3="audiofiles_2"
-zipUrl3=${baseUrl}"Deployment/data/audiofiles_2.zip"
+zipUrl3=${baseUrl}"infra/data/audiofiles_2.zip"
 
 zipFileName4="audiofiles_3.zip"
 extractedFolder4="audiofiles_3"
-zipUrl4=${baseUrl}"Deployment/data/audiofiles_3.zip"
+zipUrl4=${baseUrl}"infra/data/audiofiles_3.zip"
 
 zipFileName5="audiofiles_4.zip"
 extractedFolder5="audiofiles_4"
-zipUrl5=${baseUrl}"Deployment/data/audiofiles_4.zip"
+zipUrl5=${baseUrl}"infra/data/audiofiles_4.zip"
 
 zipFileName6="audiofiles_5.zip"
 extractedFolder6="audiofiles_5"
-zipUrl6=${baseUrl}"Deployment/data/audiofiles_5.zip"
+zipUrl6=${baseUrl}"infra/data/audiofiles_5.zip"
 
 zipFileName7="audiofiles_6.zip"
 extractedFolder7="audiofiles_6"
-zipUrl7=${baseUrl}"Deployment/data/audiofiles_6.zip"
+zipUrl7=${baseUrl}"infra/data/audiofiles_6.zip"
 
 # zipFileName2="transcriptstxtdata.zip"
 # extractedFolder2="input"
-# zipUrl2=${baseUrl}"Deployment/data/transcriptstxtdata.zip"
+# zipUrl2=${baseUrl}"infra/data/transcriptstxtdata.zip"
 
 # zipFileName3="ragtest.zip"
 # extractedFolder3="ragtest"
-# zipUrl3=${baseUrl}"Deployment/data/ragtest.zip"
+# zipUrl3=${baseUrl}"infra/data/ragtest.zip"
 
 # graphragfileSystem="graphrag"
 
@@ -102,7 +102,7 @@ az storage blob upload-batch --account-name "$storageAccount" --destination data
 # az storage fs directory upload -f "$graphragfileSystem" --account-name "$storageAccount" -s "$extractedFolder3" --account-key "$accountKey" --recursive
 
 # requirementFile="graphrag-requirements.txt"
-# requirementFileUrl=${baseUrl}"Deployment/scripts/graphrag-requirements.txt"
+# requirementFileUrl=${baseUrl}"infra/scripts/graphrag-requirements.txt"
 # curl --output "$requirementFile" "$requirementFileUrl"
 # pip install -r graphrag-requirements.txt
 # python -m graphrag index --root /mnt/azscripts/azscriptinput/ragtest
