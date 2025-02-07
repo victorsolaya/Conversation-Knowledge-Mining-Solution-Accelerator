@@ -98,7 +98,7 @@ If you're not using one of the above options for opening the project, then you'l
 2. Download the project code:
 
     ```shell
-    azd init -t conversation-knowledge-mining
+    azd init -t microsoft/Conversation-Knowledge-Mining-Solution-Accelerator/
     ```
 
 3. Open the project folder in your terminal or editor.
