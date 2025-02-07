@@ -44,43 +44,8 @@ Deployment & installation
 To use this solution accelerator, you will need access to an [Azure subscription](https://azure.microsoft.com/free/) with permission to create resource groups and resources. 
 
 ### **Options**
-Pick from the options below to see step-by-step instructions for: Bicep, GitHub Codespaces, VS Code Dev Containers, and Local Environments, deployments.
+Pick from the options below to see step-by-step instructions for: GitHub Codespaces, VS Code Dev Containers, Local Environments, and Bicep deployments.
 <!-- We recommend using the first option (Bicep) because it is the fastest and easiest way to get started. -->
-
-<details>
-  <summary><b>Deploy with Bicep/ARM solution accelerator</b></summary>
-
-### Quick Deploy (Bicep)
-
-1. Please check the link [Azure Products by Region](https://azure.microsoft.com/en-us/explore/global-infrastructure/products-by-region/?products=all&regions=all) and choose a region where Azure AI Search, Azure OpenAI services, Azure AI Foundry Services are available. 
-
-2. **Deploy Azure resources**  
-   Click the following deployment button to create the required resources for this accelerator directly in your Azure Subscription.
-
-   [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fmicrosoft%2FConversation-Knowledge-Mining-Solution-Accelerator%2Ftree%2FKM-AIFoundry%2Finfra%2Fmain.json)
-
-
-
-
-   1.  Most fields will have a default name set already. You will need to update the following Azure OpenAI settings:
-
-       -  Region - the region where the resources will be created in
-
-       -  Solution Prefix - provide a 6 alphanumeric value that will be used to prefix resources
-
-       -  Content Understanding location 
-
-       -  Model deployment location 
-
-       -  Model choice
-
-       -  Select an existing AI Hub
-
-       -  Other Location - location of resources (required for Azure SQL and CosmoDB resources)
-       
-           
-
-</details>
 
 <details>
   <summary><b>Deploy in GitHub Codespaces</b></summary>
@@ -133,7 +98,7 @@ If you're not using one of the above options for opening the project, then you'l
 2. Download the project code:
 
     ```shell
-    azd init -t azureai-basic-python
+    azd init -t conversation-knowledge-mining
     ```
 
 3. Open the project folder in your terminal or editor.
@@ -143,6 +108,41 @@ If you're not using one of the above options for opening the project, then you'l
 ## Deploying
 
 Once you've opened the project in [Codespaces](#github-codespaces), in [Dev Containers](#vs-code-dev-containers), or [locally](#local-environment), you can deploy it to Azure.
+
+</details>
+
+
+<details>
+  <summary><b>Deploy with Bicep/ARM solution accelerator</b></summary>
+
+### Quick Deploy (Bicep)
+
+1. Please check the link [Azure Products by Region](https://azure.microsoft.com/en-us/explore/global-infrastructure/products-by-region/?products=all&regions=all) and choose a region where Azure AI Search, Azure OpenAI services, Azure AI Foundry Services are available. 
+
+2. **Deploy Azure resources**  
+   Click the following deployment button to create the required resources for this accelerator directly in your Azure Subscription.
+
+   [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fmicrosoft%2FConversation-Knowledge-Mining-Solution-Accelerator%2Ftree%2FKM-AIFoundry%2F)
+
+
+
+
+   1.  Most fields will have a default name set already. You will need to update the following Azure OpenAI settings:
+
+       -  Region - the region where the resources will be created in
+
+       -  Solution Prefix - provide a 6 alphanumeric value that will be used to prefix resources
+
+       -  Content Understanding location 
+
+       -  Model deployment location 
+
+       -  Model choice
+
+       -  Select an existing AI Hub
+
+       -  Other Location - location of resources (required for Azure SQL and CosmoDB resources)
+          
 
 </details>
 
