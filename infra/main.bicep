@@ -82,12 +82,24 @@ module managedIdentityModule 'deploy_managed_identity.bicep' = {
   scope: resourceGroup(resourceGroup().name)
 }
 
+// ==========Key Vault Module ========== //
+module kvault 'deploy_keyvault.bicep' = {
+  name: 'deploy_keyvault'
+  params: {
+    solutionName: solutionPrefix
+    solutionLocation: resourceGroupLocation
+    managedIdentityObjectId:managedIdentityModule.outputs.managedIdentityOutput.objectId
+  }
+  scope: resourceGroup(resourceGroup().name)
+}
+
 // ==========AI Foundry and related resources ========== //
 module aifoundry 'deploy_ai_foundry.bicep' = {
   name: 'deploy_ai_foundry'
   params: {
     solutionName: solutionPrefix
     solutionLocation: resourceGroupLocation
+    keyVaultName: kvault.outputs.keyvaultName
     cuLocation: contentUnderstandingLocation
     deploymentType: deploymentType
     gptModelName: gptModelName
@@ -106,7 +118,7 @@ module storageAccount 'deploy_storage_account.bicep' = {
   params: {
     solutionName: solutionPrefix
     solutionLocation: solutionLocation
-    keyVaultName: aifoundry.outputs.keyvaultName
+    keyVaultName: kvault.outputs.keyvaultName
     managedIdentityObjectId:managedIdentityModule.outputs.managedIdentityOutput.objectId
   }
   scope: resourceGroup(resourceGroup().name)
@@ -118,7 +130,7 @@ module cosmosDBModule 'deploy_cosmos_db.bicep' = {
   params: {
     solutionName: solutionPrefix
     solutionLocation: secondaryLocation
-    keyVaultName: aifoundry.outputs.keyvaultName
+    keyVaultName: kvault.outputs.keyvaultName
   }
   scope: resourceGroup(resourceGroup().name)
 }
@@ -129,7 +141,7 @@ module sqlDBModule 'deploy_sql_db.bicep' = {
   params: {
     solutionName: solutionPrefix
     solutionLocation: secondaryLocation
-    keyVaultName: aifoundry.outputs.keyvaultName
+    keyVaultName: kvault.outputs.keyvaultName
   }
   scope: resourceGroup(resourceGroup().name)
 }
