@@ -1,8 +1,8 @@
 ### How to customize 
 
 If you'd like to customize the solution accelerator, here are some ways you might do that:
-- Ingest your own [audio conversation files](./Documents/ConversationalDataFormat.md) by uploading them into the `cu_audio_files_all` lakehouse folder and run the data pipeline
-- Deploy with Microsoft Fabric by following the steps in [Fabric_deployment.md](./Documents/Fabric_deployment.md)
+- Ingest your own [audio conversation files](./docs/ConversationalDataFormat.md) by uploading them into the `cu_audio_files_all` lakehouse folder and run the data pipeline
+- Deploy with Microsoft Fabric by following the steps in [Fabric_deployment.md](./docs/Fabric_deployment.md)
 
 
 3.  **Create Fabric workspace**
@@ -40,7 +40,7 @@ If you'd like to customize the solution accelerator, here are some ways you migh
               3.   solutionprefix_param - prefix used to append to lakehouse upon creation
 5.  **Add App Authentication**
    
-    Follow steps in [App Authentication](./Documents/AppAuthentication.md) to configure authenitcation in app service.
+    Follow steps in [App Authentication](./docs/AppAuthentication.md) to configure authenitcation in app service.
 
 ### Upload additional files
 

@@ -2,7 +2,7 @@
 
 MENU: [**USER STORY**](#user-story) \| [**QUICK DEPLOY**](#quick-deploy)  \| [**SUPPORTING DOCUMENTATION**](#supporting-documentation) 
 
-<h2><img src="./Documents/Images/ReadMe/userStory.png" width="64">
+<h2><img src="./docs/Images/ReadMe/userStory.png" width="64">
 <br/>
 User story
 </h2>
@@ -16,11 +16,11 @@ It leverages Azure AI Foundry, AI Content Understanding, Azure OpenAI, and Azure
 
 ### Technical key features
 
-![image](./Documents/Images/ReadMe/techkeyfeatures.png)
+![image](./docs/Images/ReadMe/techkeyfeatures.png)
 
 Below is an image of the solution accelerator.
 
-![image](./Documents/Images/ReadMe/ckm-ui.png)
+![image](./docs/Images/ReadMe/ckm-ui.png)
 
 ### Use case / scenario
 
@@ -31,10 +31,10 @@ This solution empowers analysts with tools to ask questions and receive real-tim
 The sample data used in this repository is synthetic and generated using Azure Open AI service. The data is intended for use as sample data only.
 
 ### Solution architecture
-![image](./Documents/Images/ReadMe/ckm-sol-arch.png)
+![image](./docs/Images/ReadMe/ckm-sol-arch.png)
 
 
-<h2><img src="./Documents/Images/ReadMe/quickDeploy.png" width="64">
+<h2><img src="./docs/Images/ReadMe/quickDeploy.png" width="64">
 <br/>
 QUICK DEPLOY
 </h2>
@@ -181,7 +181,7 @@ Additional Steps
 
 2. **Add App Authentication**
    
-    Follow steps in [App Authentication](./Documents/AppAuthentication.md) to configure authenitcation in app service.
+    Follow steps in [App Authentication](./docs/AppAuthentication.md) to configure authenitcation in app service.
 <br/>
 <h2>
 Supporting documentation
@@ -192,8 +192,8 @@ Supporting documentation
 ### How to customize 
 
 If you'd like to customize the solution accelerator, here are some ways you might do that:
-- Ingest your own [audio conversation files](./Documents/ConversationalDataFormat.md) by uploading them into the storage account and run the process data scripts.
-- You can also scale the solution and process large volumes of data by deploying this to Microsoft Fabric by following the steps in [Fabric_deployment.md](./Documents/Fabric_deployment.md)
+- Ingest your own [audio conversation files](./docs/ConversationalDataFormat.md) by uploading them into the storage account and run the process data scripts.
+- You can also scale the solution and process large volumes of data by deploying this to Microsoft Fabric by following the steps in [Fabric_deployment.md](./docs/Fabric_deployment.md)
 
 ### Additional resources
 
