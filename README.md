@@ -182,12 +182,52 @@ Additional Steps
 2. **Add App Authentication**
    
     Follow steps in [App Authentication](./docs/AppAuthentication.md) to configure authenitcation in app service.
+
+
+<h2>
+</br>
+Responsible AI Transparency FAQ 
+</h2>
+
+Please refer to [Transparency FAQ](./TRANSPARENCY_FAQ.md) for responsible AI transparency details of this solution accelerator.
+
 <br/>
 <h2>
 Supporting documentation
 </h2>
 
-### 
+### Costs
+
+Pricing varies per region and usage, so it isn't possible to predict exact costs for your usage.
+The majority of the Azure resources used in this infrastructure are on usage-based pricing tiers.
+However, Azure Container Registry has a fixed cost per registry per day.
+
+You can try the [Azure pricing calculator](https://azure.microsoft.com/en-us/pricing/calculator) for the resources:
+
+* Azure AI Foundry: Free tier. [Pricing](https://azure.microsoft.com/pricing/details/ai-studio/)
+* Azure AI Search: Standard tier, S1. Pricing is based on the number of documents and operations. [Pricing](https://azure.microsoft.com/pricing/details/search/)
+* Azure Storage Account: Standard tier, LRS. Pricing is based on storage and operations. [Pricing](https://azure.microsoft.com/pricing/details/storage/blobs/)
+* Azure Key Vault: Standard tier. Pricing is based on the number of operations. [Pricing](https://azure.microsoft.com/pricing/details/key-vault/)
+* Azure AI Services: S0 tier, defaults to gpt-4o-mini and text-embedding-ada-002 models. Pricing is based on token count. [Pricing](https://azure.microsoft.com/pricing/details/cognitive-services/)
+* Azure Container App: Consumption tier with 0.5 CPU, 1GiB memory/storage. Pricing is based on resource allocation, and each month allows for a certain amount of free usage. [Pricing](https://azure.microsoft.com/pricing/details/container-apps/)
+* Azure Container Registry: Basic tier. [Pricing](https://azure.microsoft.com/pricing/details/container-registry/)
+* Log analytics: Pay-as-you-go tier. Costs based on data ingested. [Pricing](https://azure.microsoft.com/pricing/details/monitor/)
+
+⚠️ To avoid unnecessary costs, remember to take down your app if it's no longer in use,
+either by deleting the resource group in the Portal or running `azd down`.
+
+### Security guidelines
+
+This template uses Azure Key Vault to store all connections to communicate between resources.
+
+This template also uses [Managed Identity](https://learn.microsoft.com/entra/identity/managed-identities-azure-resources/overview) for local development and deployment.
+
+To ensure continued best practices in your own repository, we recommend that anyone creating solutions based on our templates ensure that the [Github secret scanning](https://docs.github.com/code-security/secret-scanning/about-secret-scanning) setting is enabled.
+
+You may want to consider additional security measures, such as:
+
+* Enabling Microsoft Defender for Cloud to [secure your Azure resources](https://learn.microsoft.com/azure/security-center/defender-for-cloud).
+* Protecting the Azure Container Apps instance with a [firewall](https://learn.microsoft.com/azure/container-apps/waf-app-gateway) and/or [Virtual Network](https://learn.microsoft.com/azure/container-apps/networking?tabs=workload-profiles-env%2Cazure-cli).
 
 ### How to customize 
 
@@ -210,19 +250,12 @@ If you'd like to customize the solution accelerator, here are some ways you migh
 
 <!-- - [Speech service documentation - Tutorials, API Reference - Azure AI services - Azure AI services | Microsoft Learn](https://learn.microsoft.com/en-us/azure/ai-services/speech-service/) -->
 
-
-
-<h2>
-</br>
-Responsible AI Transparency FAQ 
-</h2>
-
-Please refer to [Transparency FAQ](./TRANSPARENCY_FAQ.md) for responsible AI transparency details of this solution accelerator.
-
-<br/>
 <br/>
 
 ---
+
+<br/>
+
 
 ## Disclaimers
 
