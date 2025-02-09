@@ -1,74 +1,48 @@
 // Creates Azure dependent resources for Azure AI studio
 param solutionName string
 param solutionLocation string
+param cuLocation string
+param deploymentType string
+param gptModelName string
+param gptModelVersion string
+param gptDeploymentCapacity int
+param embeddingModel string
+param embeddingDeploymentCapacity int
 param managedIdentityObjectId string
-
-// @description('Azure region of the deployment')
-// param location string = resourceGroup().location
-
-// @description('Tags to add to the resources')
-// param tags object = {}
-
-// @description('AI services name')
-// param aiServicesName string
-
-// @description('Application Insights resource name')
-// param applicationInsightsName string
-
-// @description('Container registry name')
-// param containerRegistryName string
-
-// @description('The name of the Key Vault')
-// param keyvaultName string
-
-// @description('Name of the storage account')
-// param storageName string
-
-// @description('Storage SKU')
-// param storageSkuName string = 'Standard_LRS'
 
 var storageName = '${solutionName}hubstorage'
 var storageSkuName = 'Standard_LRS'
 var aiServicesName = '${solutionName}-aiservices'
 var aiServicesName_cu = '${solutionName}-aiservices_cu'
-var location_cu = 'westus'
+var location_cu = cuLocation
 var aiServicesName_m = '${solutionName}-aiservices_m'
 var location_m = solutionLocation
 var applicationInsightsName = '${solutionName}-appinsights'
 var containerRegistryName = '${solutionName}acr'
 var keyvaultName = '${solutionName}-kv'
-var location = 'eastus2' //solutionLocation
+var location = solutionLocation //'eastus2'
 var aiHubName = '${solutionName}-aihub'
 var aiHubFriendlyName = aiHubName
-var aiHubDescription = 'Test'
+var aiHubDescription = 'AI Hub for KM template'
 var aiProjectName = '${solutionName}-aiproject'
 var aiProjectFriendlyName = aiProjectName
 var aiSearchName = '${solutionName}-search'
 var aiModelDeployments = [
   {
-    name: 'gpt-4o-mini'
-    model: 'gpt-4o-mini'
+    name: gptModelName
+    model: gptModelName
     sku: {
-      name: 'GlobalStandard'
-      capacity: 100
+      name: deploymentType
+      capacity: gptDeploymentCapacity
     }
     raiPolicyName: 'Microsoft.Default'
   }
-  // {
-  //   name: 'gpt-4o'
-  //   model: 'gpt-4o'
-  //   sku: {
-  //     name: 'Standard'
-  //     capacity: 20
-  //   }
-  //   raiPolicyName: 'Microsoft.Default'
-  // }
   {
-    name: 'text-embedding-ada-002'
-    model: 'text-embedding-ada-002'
+    name: embeddingModel
+    model: embeddingModel
     sku: {
       name: 'Standard'
-      capacity: 80
+      capacity: embeddingDeploymentCapacity
     }
     raiPolicyName: 'Microsoft.Default'
   }
@@ -201,19 +175,19 @@ resource aiServices 'Microsoft.CognitiveServices/accounts@2021-10-01' = {
   }
 }
 
-resource aiServices_m 'Microsoft.CognitiveServices/accounts@2021-10-01' = {
-  name: aiServicesName_m
-  location: location_m
-  sku: {
-    name: 'S0'
-  }
-  kind: 'AIServices'
-  properties: {
-    apiProperties: {
-      statisticsEnabled: false
-    }
-  }
-}
+// resource aiServices_m 'Microsoft.CognitiveServices/accounts@2021-10-01' = {
+//   name: aiServicesName //aiServicesName_m
+//   location: location_m
+//   sku: {
+//     name: 'S0'
+//   }
+//   kind: 'AIServices'
+//   properties: {
+//     apiProperties: {
+//       statisticsEnabled: false
+//     }
+//   }
+// }
 
 resource aiServices_CU 'Microsoft.CognitiveServices/accounts@2021-10-01' = {
   name: aiServicesName_cu
@@ -231,7 +205,7 @@ resource aiServices_CU 'Microsoft.CognitiveServices/accounts@2021-10-01' = {
 
 @batchSize(1)
 resource aiServicesDeployments 'Microsoft.CognitiveServices/accounts/deployments@2023-05-01' = [for aiModeldeployment in aiModelDeployments: {
-  parent: aiServices_m
+  parent: aiServices //aiServices_m
   name: aiModeldeployment.name
   properties: {
     model: {
@@ -409,25 +383,25 @@ resource aiHub 'Microsoft.MachineLearningServices/workspaces@2023-08-01-preview'
     ]
   }
 
-  resource aiServicesConnection_m 'connections@2024-07-01-preview' = {
-    name: '${aiHubName}-connection-AzureOpenAI_m'
-    properties: {
-      category: 'AIServices'
-      target: aiServices_m.properties.endpoint
-      authType: 'ApiKey'
-      isSharedToAll: true
-      credentials: {
-        key: aiServices_m.listKeys().key1
-      }
-      metadata: {
-        ApiType: 'Azure'
-        ResourceId: aiServices_m.id
-      }
-    }
-    dependsOn: [
-      aiServicesDeployments,aiSearch,aiServicesConnection
-    ]
-  }
+  // resource aiServicesConnection_m 'connections@2024-07-01-preview' = {
+  //   name: '${aiHubName}-connection-AzureOpenAI_m'
+  //   properties: {
+  //     category: 'AIServices'
+  //     target: aiServices_m.properties.endpoint
+  //     authType: 'ApiKey'
+  //     isSharedToAll: true
+  //     credentials: {
+  //       key: aiServices_m.listKeys().key1
+  //     }
+  //     metadata: {
+  //       ApiType: 'Azure'
+  //       ResourceId: aiServices_m.id
+  //     }
+  //   }
+  //   dependsOn: [
+  //     aiServicesDeployments,aiSearch,aiServicesConnection
+  //   ]
+  // }
   
   resource aiSearchConnection 'connections@2024-07-01-preview' = {
     name: '${aiHubName}-connection-AzureAISearch'
@@ -466,12 +440,16 @@ resource aiHubProject 'Microsoft.MachineLearningServices/workspaces@2024-01-01-p
   }
 }
 
-var serverlessModelName = 'Phi-3-medium-4k-instruct'
-var phi3serverlessName = '${solutionName}-${serverlessModelName}'
-resource phi3serverless 'Microsoft.MachineLearningServices/workspaces/serverlessEndpoints@2024-10-01' = {
+var phiModelRegions = ['East US', 'East US 2', 'North Central US', 'South Central US', 'Sweden Central', 'West US', 'West US 3', 'eastus','eastus2','northcentralus','southcentralus','swedencentral','westus','westus3']
+  
+var isInPhiList = contains(phiModelRegions, location)
+
+var serverlessModelName = 'Phi-4' //'Phi-3-medium-4k-instruct'
+var phiserverlessName = '${solutionName}-${serverlessModelName}'
+resource phiserverless 'Microsoft.MachineLearningServices/workspaces/serverlessEndpoints@2024-10-01' = if (isInPhiList) {
   parent: aiHubProject
   location: location
-  name: phi3serverlessName
+  name: phiserverlessName
   properties: {
     authMode: 'Key'
     contentSafety: {
@@ -523,7 +501,8 @@ resource azureOpenAIInferenceEndpoint 'Microsoft.KeyVault/vaults/secrets@2021-11
   parent: keyVault
   name: 'AZURE-OPENAI-INFERENCE-ENDPOINT'
   properties: {
-    value: phi3serverless.properties.inferenceEndpoint.uri
+    value: phiserverless != null ? phiserverless.properties.inferenceEndpoint.uri : ''
+    // value: phiserverless.properties.inferenceEndpoint.uri
   }
 }
 
@@ -531,7 +510,8 @@ resource azureOpenAIInferenceKey 'Microsoft.KeyVault/vaults/secrets@2021-11-01-p
   parent: keyVault
   name: 'AZURE-OPENAI-INFERENCE-KEY'
   properties: {
-    value: listKeys(phi3serverless.id, '2024-10-01').primaryKey
+    value: phiserverless != null ? listKeys(phiserverless.id, '2024-10-01').primaryKey : ''
+    // listKeys(phiserverless.id, '2024-10-01').primaryKey
   }
 }
 
@@ -539,7 +519,15 @@ resource azureOpenAIApiKeyEntry 'Microsoft.KeyVault/vaults/secrets@2021-11-01-pr
   parent: keyVault
   name: 'AZURE-OPENAI-KEY'
   properties: {
-    value: aiServices_m.listKeys().key1
+    value: aiServices.listKeys().key1 //aiServices_m.listKeys().key1
+  }
+}
+
+resource azureOpenAIDeploymentModel 'Microsoft.KeyVault/vaults/secrets@2021-11-01-preview' = {
+  parent: keyVault
+  name: 'AZURE-OPEN-AI-DEPLOYMENT-MODEL'
+  properties: {
+    value: gptModelName
   }
 }
 
@@ -547,7 +535,7 @@ resource azureOpenAIApiVersionEntry 'Microsoft.KeyVault/vaults/secrets@2021-11-0
   parent: keyVault
   name: 'AZURE-OPENAI-PREVIEW-API-VERSION'
   properties: {
-    value: '2024-02-15-preview'
+    value: gptModelVersion  //'2024-02-15-preview'
   }
 }
 
@@ -555,7 +543,7 @@ resource azureOpenAIEndpointEntry 'Microsoft.KeyVault/vaults/secrets@2021-11-01-
   parent: keyVault
   name: 'AZURE-OPENAI-ENDPOINT'
   properties: {
-    value: aiServices_m.properties.endpoint
+    value: aiServices.properties.endpoint //aiServices_m.properties.endpoint
   }
 }
 
@@ -676,11 +664,11 @@ output keyvaultId string = keyVault.id
 // output storageName string = storageName
 // output storageContainer string = 'data'
 
-output aiServicesTarget string = aiServices_m.properties.endpoint
-output aiServicesName string = aiServicesName_m
-output aiServicesId string = aiServices_m.id
+output aiServicesTarget string = aiServices.properties.endpoint //aiServices_m.properties.endpoint
+output aiServicesName string = aiServicesName //aiServicesName_m
+output aiServicesId string = aiServices.id //aiServices_m.id
 
-output aiInfereceEndpoint string = phi3serverless.properties.inferenceEndpoint.uri
+output aiInfereceEndpoint string = phiserverless.properties.inferenceEndpoint.uri
 
 output aiSearchName string = aiSearchName
 output aiSearchId string = aiSearch.id

@@ -4,27 +4,96 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.33.93.31351",
-      "templateHash": "15437091219796932808"
+      "version": "0.28.1.47646",
+      "templateHash": "4407924750489715241"
     }
   },
   "parameters": {
     "solutionPrefix": {
       "type": "string",
       "minLength": 3,
-      "maxLength": 6,
+      "maxLength": 10,
       "metadata": {
-        "description": "Prefix Name"
+        "description": "A unique prefix for all resources in this deployment. This should be 3-10 characters long."
       }
     },
-    "otherLocation": {
+    "contentUnderstandingLocation": {
       "type": "string",
+      "allowedValues": [
+        "West US",
+        "Sweden Central",
+        "Australia East"
+      ],
       "metadata": {
-        "description": "other Location"
+        "azd": {
+          "type": "location"
+        },
+        "description": "Location for the Content Understanding service deployment:"
+      },
+      "minLength": 1
+    },
+    "secondaryLocation": {
+      "type": "string",
+      "minLength": 1,
+      "metadata": {
+        "description": "Secondary location for databases creation:"
+      }
+    },
+    "deploymentType": {
+      "type": "string",
+      "defaultValue": "GlobalStandard",
+      "allowedValues": [
+        "Standard",
+        "GlobalStandard"
+      ],
+      "minLength": 1,
+      "metadata": {
+        "description": "Deployment Type:"
+      }
+    },
+    "gptModelName": {
+      "type": "string",
+      "defaultValue": "gpt-4o-mini",
+      "allowedValues": [
+        "gpt-4o-mini",
+        "gpt-4o",
+        "gpt-4"
+      ],
+      "minLength": 1,
+      "metadata": {
+        "description": "Name of the GPT model to deploy:"
+      }
+    },
+    "gptDeploymentCapacity": {
+      "type": "int",
+      "defaultValue": 100,
+      "minValue": 10,
+      "metadata": {
+        "description": "Capacity of the GPT deployment"
+      }
+    },
+    "embeddingModel": {
+      "type": "string",
+      "defaultValue": "text-embedding-ada-002",
+      "allowedValues": [
+        "text-embedding-ada-002"
+      ],
+      "minLength": 1,
+      "metadata": {
+        "description": "Name of the Text Embedding model to deploy:"
+      }
+    },
+    "embeddingDeploymentCapacity": {
+      "type": "int",
+      "defaultValue": 80,
+      "minValue": 10,
+      "metadata": {
+        "description": "Capacity of the Embedding Model deployment"
       }
     }
   },
   "variables": {
+    "gptModelVersion": "2024-02-15-preview",
     "resourceGroupLocation": "[resourceGroup().location]",
     "resourceGroupName": "[resourceGroup().name]",
     "solutionLocation": "[variables('resourceGroupLocation')]",
@@ -55,8 +124,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.33.93.31351",
-              "templateHash": "4123789684929590981"
+              "version": "0.28.1.47646",
+              "templateHash": "14133192615685065374"
             }
           },
           "parameters": {
@@ -137,6 +206,27 @@
           "solutionLocation": {
             "value": "[variables('resourceGroupLocation')]"
           },
+          "cuLocation": {
+            "value": "[parameters('contentUnderstandingLocation')]"
+          },
+          "deploymentType": {
+            "value": "[parameters('deploymentType')]"
+          },
+          "gptModelName": {
+            "value": "[parameters('gptModelName')]"
+          },
+          "gptModelVersion": {
+            "value": "[variables('gptModelVersion')]"
+          },
+          "gptDeploymentCapacity": {
+            "value": "[parameters('gptDeploymentCapacity')]"
+          },
+          "embeddingModel": {
+            "value": "[parameters('embeddingModel')]"
+          },
+          "embeddingDeploymentCapacity": {
+            "value": "[parameters('embeddingDeploymentCapacity')]"
+          },
           "managedIdentityObjectId": {
             "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_managed_identity'), '2022-09-01').outputs.managedIdentityOutput.value.objectId]"
           }
@@ -147,8 +237,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.33.93.31351",
-              "templateHash": "11367128092720104793"
+              "version": "0.28.1.47646",
+              "templateHash": "12221064900392012164"
             }
           },
           "parameters": {
@@ -157,6 +247,27 @@
             },
             "solutionLocation": {
               "type": "string"
+            },
+            "cuLocation": {
+              "type": "string"
+            },
+            "deploymentType": {
+              "type": "string"
+            },
+            "gptModelName": {
+              "type": "string"
+            },
+            "gptModelVersion": {
+              "type": "string"
+            },
+            "gptDeploymentCapacity": {
+              "type": "int"
+            },
+            "embeddingModel": {
+              "type": "string"
+            },
+            "embeddingDeploymentCapacity": {
+              "type": "int"
             },
             "managedIdentityObjectId": {
               "type": "string"
@@ -167,13 +278,13 @@
             "storageSkuName": "Standard_LRS",
             "aiServicesName": "[format('{0}-aiservices', parameters('solutionName'))]",
             "aiServicesName_cu": "[format('{0}-aiservices_cu', parameters('solutionName'))]",
-            "location_cu": "westus",
+            "location_cu": "[parameters('cuLocation')]",
             "aiServicesName_m": "[format('{0}-aiservices_m', parameters('solutionName'))]",
             "location_m": "[parameters('solutionLocation')]",
             "applicationInsightsName": "[format('{0}-appinsights', parameters('solutionName'))]",
             "containerRegistryName": "[format('{0}acr', parameters('solutionName'))]",
             "keyvaultName": "[format('{0}-kv', parameters('solutionName'))]",
-            "location": "eastus2",
+            "location": "[parameters('solutionLocation')]",
             "aiHubName": "[format('{0}-aihub', parameters('solutionName'))]",
             "aiHubFriendlyName": "[variables('aiHubName')]",
             "aiHubDescription": "Test",
@@ -182,28 +293,45 @@
             "aiSearchName": "[format('{0}-search', parameters('solutionName'))]",
             "aiModelDeployments": [
               {
-                "name": "gpt-4o-mini",
-                "model": "gpt-4o-mini",
+                "name": "[parameters('gptModelName')]",
+                "model": "[parameters('gptModelName')]",
                 "sku": {
-                  "name": "GlobalStandard",
-                  "capacity": 100
+                  "name": "[parameters('deploymentType')]",
+                  "capacity": "[parameters('gptDeploymentCapacity')]"
                 },
                 "raiPolicyName": "Microsoft.Default"
               },
               {
-                "name": "text-embedding-ada-002",
-                "model": "text-embedding-ada-002",
+                "name": "[parameters('embeddingModel')]",
+                "model": "[parameters('embeddingModel')]",
                 "sku": {
                   "name": "Standard",
-                  "capacity": 80
+                  "capacity": "[parameters('embeddingDeploymentCapacity')]"
                 },
                 "raiPolicyName": "Microsoft.Default"
               }
             ],
             "containerRegistryNameCleaned": "[replace(variables('containerRegistryName'), '-', '')]",
             "storageNameCleaned": "[replace(variables('storageName'), '-', '')]",
-            "serverlessModelName": "Phi-3-medium-4k-instruct",
-            "phi3serverlessName": "[format('{0}-{1}', parameters('solutionName'), variables('serverlessModelName'))]"
+            "phiModelRegions": [
+              "East US",
+              "East US 2",
+              "North Central US",
+              "South Central US",
+              "Sweden Central",
+              "West US",
+              "West US 3",
+              "eastus",
+              "eastus2",
+              "northcentralus",
+              "southcentralus",
+              "swedencentral",
+              "westus",
+              "westus3"
+            ],
+            "isInPhiList": "[contains(variables('phiModelRegions'), variables('location'))]",
+            "serverlessModelName": "Phi-4",
+            "phiserverlessName": "[format('{0}-{1}', parameters('solutionName'), variables('serverlessModelName'))]"
           },
           "resources": [
             {
@@ -227,31 +355,6 @@
                 "[resourceId('Microsoft.MachineLearningServices/workspaces', variables('aiHubName'))]",
                 "[resourceId('Microsoft.Search/searchServices', variables('aiSearchName'))]",
                 "[resourceId('Microsoft.CognitiveServices/accounts', variables('aiServicesName'))]",
-                "aiServicesDeployments"
-              ]
-            },
-            {
-              "type": "Microsoft.MachineLearningServices/workspaces/connections",
-              "apiVersion": "2024-07-01-preview",
-              "name": "[format('{0}/{1}', variables('aiHubName'), format('{0}-connection-AzureOpenAI_m', variables('aiHubName')))]",
-              "properties": {
-                "category": "AIServices",
-                "target": "[reference(resourceId('Microsoft.CognitiveServices/accounts', variables('aiServicesName_m')), '2021-10-01').endpoint]",
-                "authType": "ApiKey",
-                "isSharedToAll": true,
-                "credentials": {
-                  "key": "[listKeys(resourceId('Microsoft.CognitiveServices/accounts', variables('aiServicesName_m')), '2021-10-01').key1]"
-                },
-                "metadata": {
-                  "ApiType": "Azure",
-                  "ResourceId": "[resourceId('Microsoft.CognitiveServices/accounts', variables('aiServicesName_m'))]"
-                }
-              },
-              "dependsOn": [
-                "[resourceId('Microsoft.MachineLearningServices/workspaces', variables('aiHubName'))]",
-                "[resourceId('Microsoft.Search/searchServices', variables('aiSearchName'))]",
-                "[resourceId('Microsoft.CognitiveServices/accounts', variables('aiServicesName_m'))]",
-                "[resourceId('Microsoft.MachineLearningServices/workspaces/connections', variables('aiHubName'), format('{0}-connection-AzureOpenAI', variables('aiHubName')))]",
                 "aiServicesDeployments"
               ]
             },
@@ -401,21 +504,6 @@
             {
               "type": "Microsoft.CognitiveServices/accounts",
               "apiVersion": "2021-10-01",
-              "name": "[variables('aiServicesName_m')]",
-              "location": "[variables('location_m')]",
-              "sku": {
-                "name": "S0"
-              },
-              "kind": "AIServices",
-              "properties": {
-                "apiProperties": {
-                  "statisticsEnabled": false
-                }
-              }
-            },
-            {
-              "type": "Microsoft.CognitiveServices/accounts",
-              "apiVersion": "2021-10-01",
               "name": "[variables('aiServicesName_cu')]",
               "location": "[variables('location_cu')]",
               "sku": {
@@ -437,7 +525,7 @@
               },
               "type": "Microsoft.CognitiveServices/accounts/deployments",
               "apiVersion": "2023-05-01",
-              "name": "[format('{0}/{1}', variables('aiServicesName_m'), variables('aiModelDeployments')[copyIndex()].name)]",
+              "name": "[format('{0}/{1}', variables('aiServicesName'), variables('aiModelDeployments')[copyIndex()].name)]",
               "properties": {
                 "model": {
                   "format": "OpenAI",
@@ -450,7 +538,7 @@
                 "capacity": "[variables('aiModelDeployments')[copyIndex()].sku.capacity]"
               },
               "dependsOn": [
-                "[resourceId('Microsoft.CognitiveServices/accounts', variables('aiServicesName_m'))]"
+                "[resourceId('Microsoft.CognitiveServices/accounts', variables('aiServicesName'))]"
               ]
             },
             {
@@ -583,9 +671,10 @@
               ]
             },
             {
+              "condition": "[variables('isInPhiList')]",
               "type": "Microsoft.MachineLearningServices/workspaces/serverlessEndpoints",
               "apiVersion": "2024-10-01",
-              "name": "[format('{0}/{1}', variables('aiProjectName'), variables('phi3serverlessName'))]",
+              "name": "[format('{0}/{1}', variables('aiProjectName'), variables('phiserverlessName'))]",
               "location": "[variables('location')]",
               "properties": {
                 "authMode": "Key",
@@ -620,11 +709,11 @@
               "apiVersion": "2021-11-01-preview",
               "name": "[format('{0}/{1}', variables('keyvaultName'), 'AZURE-OPENAI-INFERENCE-ENDPOINT')]",
               "properties": {
-                "value": "[reference(resourceId('Microsoft.MachineLearningServices/workspaces/serverlessEndpoints', variables('aiProjectName'), variables('phi3serverlessName')), '2024-10-01').inferenceEndpoint.uri]"
+                "value": "[if(not(equals(reference(resourceId('Microsoft.MachineLearningServices/workspaces/serverlessEndpoints', variables('aiProjectName'), variables('phiserverlessName')), '2024-10-01', 'full'), null())), reference(resourceId('Microsoft.MachineLearningServices/workspaces/serverlessEndpoints', variables('aiProjectName'), variables('phiserverlessName')), '2024-10-01').inferenceEndpoint.uri, '')]"
               },
               "dependsOn": [
                 "[resourceId('Microsoft.KeyVault/vaults', variables('keyvaultName'))]",
-                "[resourceId('Microsoft.MachineLearningServices/workspaces/serverlessEndpoints', variables('aiProjectName'), variables('phi3serverlessName'))]"
+                "[resourceId('Microsoft.MachineLearningServices/workspaces/serverlessEndpoints', variables('aiProjectName'), variables('phiserverlessName'))]"
               ]
             },
             {
@@ -632,11 +721,11 @@
               "apiVersion": "2021-11-01-preview",
               "name": "[format('{0}/{1}', variables('keyvaultName'), 'AZURE-OPENAI-INFERENCE-KEY')]",
               "properties": {
-                "value": "[listKeys(resourceId('Microsoft.MachineLearningServices/workspaces/serverlessEndpoints', variables('aiProjectName'), variables('phi3serverlessName')), '2024-10-01').primaryKey]"
+                "value": "[if(not(equals(reference(resourceId('Microsoft.MachineLearningServices/workspaces/serverlessEndpoints', variables('aiProjectName'), variables('phiserverlessName')), '2024-10-01', 'full'), null())), listKeys(resourceId('Microsoft.MachineLearningServices/workspaces/serverlessEndpoints', variables('aiProjectName'), variables('phiserverlessName')), '2024-10-01').primaryKey, '')]"
               },
               "dependsOn": [
                 "[resourceId('Microsoft.KeyVault/vaults', variables('keyvaultName'))]",
-                "[resourceId('Microsoft.MachineLearningServices/workspaces/serverlessEndpoints', variables('aiProjectName'), variables('phi3serverlessName'))]"
+                "[resourceId('Microsoft.MachineLearningServices/workspaces/serverlessEndpoints', variables('aiProjectName'), variables('phiserverlessName'))]"
               ]
             },
             {
@@ -644,10 +733,21 @@
               "apiVersion": "2021-11-01-preview",
               "name": "[format('{0}/{1}', variables('keyvaultName'), 'AZURE-OPENAI-KEY')]",
               "properties": {
-                "value": "[listKeys(resourceId('Microsoft.CognitiveServices/accounts', variables('aiServicesName_m')), '2021-10-01').key1]"
+                "value": "[listKeys(resourceId('Microsoft.CognitiveServices/accounts', variables('aiServicesName')), '2021-10-01').key1]"
               },
               "dependsOn": [
-                "[resourceId('Microsoft.CognitiveServices/accounts', variables('aiServicesName_m'))]",
+                "[resourceId('Microsoft.CognitiveServices/accounts', variables('aiServicesName'))]",
+                "[resourceId('Microsoft.KeyVault/vaults', variables('keyvaultName'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.KeyVault/vaults/secrets",
+              "apiVersion": "2021-11-01-preview",
+              "name": "[format('{0}/{1}', variables('keyvaultName'), 'AZURE-OPEN-AI-DEPLOYMENT-MODEL')]",
+              "properties": {
+                "value": "[parameters('gptModelName')]"
+              },
+              "dependsOn": [
                 "[resourceId('Microsoft.KeyVault/vaults', variables('keyvaultName'))]"
               ]
             },
@@ -656,7 +756,7 @@
               "apiVersion": "2021-11-01-preview",
               "name": "[format('{0}/{1}', variables('keyvaultName'), 'AZURE-OPENAI-PREVIEW-API-VERSION')]",
               "properties": {
-                "value": "2024-02-15-preview"
+                "value": "[parameters('gptModelVersion')]"
               },
               "dependsOn": [
                 "[resourceId('Microsoft.KeyVault/vaults', variables('keyvaultName'))]"
@@ -667,10 +767,10 @@
               "apiVersion": "2021-11-01-preview",
               "name": "[format('{0}/{1}', variables('keyvaultName'), 'AZURE-OPENAI-ENDPOINT')]",
               "properties": {
-                "value": "[reference(resourceId('Microsoft.CognitiveServices/accounts', variables('aiServicesName_m')), '2021-10-01').endpoint]"
+                "value": "[reference(resourceId('Microsoft.CognitiveServices/accounts', variables('aiServicesName')), '2021-10-01').endpoint]"
               },
               "dependsOn": [
-                "[resourceId('Microsoft.CognitiveServices/accounts', variables('aiServicesName_m'))]",
+                "[resourceId('Microsoft.CognitiveServices/accounts', variables('aiServicesName'))]",
                 "[resourceId('Microsoft.KeyVault/vaults', variables('keyvaultName'))]"
               ]
             },
@@ -848,19 +948,19 @@
             },
             "aiServicesTarget": {
               "type": "string",
-              "value": "[reference(resourceId('Microsoft.CognitiveServices/accounts', variables('aiServicesName_m')), '2021-10-01').endpoint]"
+              "value": "[reference(resourceId('Microsoft.CognitiveServices/accounts', variables('aiServicesName')), '2021-10-01').endpoint]"
             },
             "aiServicesName": {
               "type": "string",
-              "value": "[variables('aiServicesName_m')]"
+              "value": "[variables('aiServicesName')]"
             },
             "aiServicesId": {
               "type": "string",
-              "value": "[resourceId('Microsoft.CognitiveServices/accounts', variables('aiServicesName_m'))]"
+              "value": "[resourceId('Microsoft.CognitiveServices/accounts', variables('aiServicesName'))]"
             },
             "aiInfereceEndpoint": {
               "type": "string",
-              "value": "[reference(resourceId('Microsoft.MachineLearningServices/workspaces/serverlessEndpoints', variables('aiProjectName'), variables('phi3serverlessName')), '2024-10-01').inferenceEndpoint.uri]"
+              "value": "[reference(resourceId('Microsoft.MachineLearningServices/workspaces/serverlessEndpoints', variables('aiProjectName'), variables('phiserverlessName')), '2024-10-01').inferenceEndpoint.uri]"
             },
             "aiSearchName": {
               "type": "string",
@@ -919,8 +1019,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.33.93.31351",
-              "templateHash": "1505719283486163574"
+              "version": "0.28.1.47646",
+              "templateHash": "6339093974920963034"
             }
           },
           "parameters": {
@@ -1017,8 +1117,7 @@
                 "publicAccess": "None"
               },
               "dependsOn": [
-                "[resourceId('Microsoft.Storage/storageAccounts/blobServices', parameters('saName'), 'default')]",
-                "[resourceId('Microsoft.Storage/storageAccounts', parameters('saName'))]"
+                "[resourceId('Microsoft.Storage/storageAccounts/blobServices', parameters('saName'), 'default')]"
               ]
             },
             {
@@ -1091,7 +1190,7 @@
             "value": "[parameters('solutionPrefix')]"
           },
           "solutionLocation": {
-            "value": "[parameters('otherLocation')]"
+            "value": "[parameters('secondaryLocation')]"
           },
           "keyVaultName": {
             "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_ai_foundry'), '2022-09-01').outputs.keyvaultName.value]"
@@ -1103,8 +1202,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.33.93.31351",
-              "templateHash": "3100365088410602500"
+              "version": "0.28.1.47646",
+              "templateHash": "6528561682505001396"
             }
           },
           "parameters": {
@@ -1151,7 +1250,7 @@
           "resources": [
             {
               "copy": {
-                "name": "database::list",
+                "name": "list",
                 "count": "[length(variables('containers'))]"
               },
               "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers",
@@ -1297,7 +1396,7 @@
             "value": "[parameters('solutionPrefix')]"
           },
           "solutionLocation": {
-            "value": "[parameters('otherLocation')]"
+            "value": "[parameters('secondaryLocation')]"
           },
           "keyVaultName": {
             "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_ai_foundry'), '2022-09-01').outputs.keyvaultName.value]"
@@ -1309,8 +1408,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.33.93.31351",
-              "templateHash": "6170430466600233564"
+              "version": "0.28.1.47646",
+              "templateHash": "6997300029110879816"
             }
           },
           "parameters": {
@@ -1486,8 +1585,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.33.93.31351",
-              "templateHash": "8170119391258676410"
+              "version": "0.28.1.47646",
+              "templateHash": "1430108067013901335"
             }
           },
           "parameters": {
@@ -1573,8 +1672,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.33.93.31351",
-              "templateHash": "16955379019952955448"
+              "version": "0.28.1.47646",
+              "templateHash": "3736288497878109757"
             }
           },
           "parameters": {
@@ -1669,8 +1768,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.33.93.31351",
-              "templateHash": "11218339316665984116"
+              "version": "0.28.1.47646",
+              "templateHash": "12501890869520664314"
             }
           },
           "parameters": {
@@ -1859,7 +1958,7 @@
             "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_ai_foundry'), '2022-09-01').outputs.aiSearchTarget.value]"
           },
           "azureOpenAIApiVersion": {
-            "value": "2024-02-15-preview"
+            "value": "[variables('gptModelVersion')]"
           },
           "azureAiProjectConnString": {
             "reference": {
@@ -1902,8 +2001,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.33.93.31351",
-              "templateHash": "16703138208294375442"
+              "version": "0.28.1.47646",
+              "templateHash": "14276024574851422048"
             }
           },
           "parameters": {
@@ -2153,8 +2252,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.33.93.31351",
-              "templateHash": "11904916764630875140"
+              "version": "0.28.1.47646",
+              "templateHash": "5366544535884273146"
             }
           },
           "parameters": {
@@ -2219,7 +2318,7 @@
             "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_ai_foundry'), '2022-09-01').outputs.aiServicesTarget.value]"
           },
           "AzureOpenAIModel": {
-            "value": "gpt-4o-mini"
+            "value": "[parameters('gptModelName')]"
           },
           "AzureOpenAIKey": {
             "reference": {
@@ -2230,7 +2329,7 @@
             }
           },
           "azureOpenAIApiVersion": {
-            "value": "2024-02-15-preview"
+            "value": "[variables('gptModelVersion')]"
           },
           "AZURE_OPENAI_RESOURCE": {
             "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_ai_foundry'), '2022-09-01').outputs.aiServicesName.value]"
@@ -2280,8 +2379,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.33.93.31351",
-              "templateHash": "17494211244945916977"
+              "version": "0.28.1.47646",
+              "templateHash": "12757504858641999956"
             }
           },
           "parameters": {
@@ -2433,7 +2532,7 @@
           },
           "variables": {
             "WebAppImageName": "DOCKER|kmcontainerreg.azurecr.io/km-app:latest",
-            "REACT_APP_LAYOUT_CONFIG": "{\r\n  \"appConfig\": {\r\n    \"THREE_COLUMN\": {\r\n      \"DASHBOARD\": 50,\r\n      \"CHAT\": 33,\r\n      \"CHATHISTORY\": 17\r\n    },\r\n    \"TWO_COLUMN\": {\r\n      \"DASHBOARD_CHAT\": {\r\n        \"DASHBOARD\": 65,\r\n        \"CHAT\": 35\r\n      },\r\n      \"CHAT_CHATHISTORY\": {\r\n        \"CHAT\": 80,\r\n        \"CHATHISTORY\": 20\r\n      }\r\n    }\r\n  },\r\n  \"charts\": [\r\n    {\r\n      \"id\": \"SATISFIED\",\r\n      \"name\": \"Satisfied\",\r\n      \"type\": \"card\",\r\n      \"layout\": { \"row\": 1, \"column\": 1, \"height\": 11 }\r\n    },\r\n    {\r\n      \"id\": \"TOTAL_CALLS\",\r\n      \"name\": \"Total Calls\",\r\n      \"type\": \"card\",\r\n      \"layout\": { \"row\": 1, \"column\": 2, \"span\": 1 }\r\n    },\r\n    {\r\n      \"id\": \"AVG_HANDLING_TIME\",\r\n      \"name\": \"Average Handling Time\",\r\n      \"type\": \"card\",\r\n      \"layout\": { \"row\": 1, \"column\": 3, \"span\": 1 }\r\n    },\r\n    {\r\n      \"id\": \"SENTIMENT\",\r\n      \"name\": \"Topics Overview\",\r\n      \"type\": \"donutchart\",\r\n      \"layout\": { \"row\": 2, \"column\": 1, \"width\": 40, \"height\": 44.5 }\r\n    },\r\n    {\r\n      \"id\": \"AVG_HANDLING_TIME_BY_TOPIC\",\r\n      \"name\": \"Average Handling Time By Topic\",\r\n      \"type\": \"bar\",\r\n      \"layout\": { \"row\": 2, \"column\": 2, \"row-span\": 2, \"width\": 60 }\r\n    },\r\n    {\r\n      \"id\": \"TOPICS\",\r\n      \"name\": \"Trending Topics\",\r\n      \"type\": \"table\",\r\n      \"layout\": { \"row\": 3, \"column\": 1, \"span\": 2 }\r\n    },\r\n    {\r\n      \"id\": \"KEY_PHRASES\",\r\n      \"name\": \"Key Phrases\",\r\n      \"type\": \"wordcloud\",\r\n      \"layout\": { \"row\": 3, \"column\": 2, \"height\": 44.5 }\r\n    }\r\n  ]\r\n}"
+            "REACT_APP_LAYOUT_CONFIG": "{\n  \"appConfig\": {\n    \"THREE_COLUMN\": {\n      \"DASHBOARD\": 50,\n      \"CHAT\": 33,\n      \"CHATHISTORY\": 17\n    },\n    \"TWO_COLUMN\": {\n      \"DASHBOARD_CHAT\": {\n        \"DASHBOARD\": 65,\n        \"CHAT\": 35\n      },\n      \"CHAT_CHATHISTORY\": {\n        \"CHAT\": 80,\n        \"CHATHISTORY\": 20\n      }\n    }\n  },\n  \"charts\": [\n    {\n      \"id\": \"SATISFIED\",\n      \"name\": \"Satisfied\",\n      \"type\": \"card\",\n      \"layout\": { \"row\": 1, \"column\": 1, \"height\": 11 }\n    },\n    {\n      \"id\": \"TOTAL_CALLS\",\n      \"name\": \"Total Calls\",\n      \"type\": \"card\",\n      \"layout\": { \"row\": 1, \"column\": 2, \"span\": 1 }\n    },\n    {\n      \"id\": \"AVG_HANDLING_TIME\",\n      \"name\": \"Average Handling Time\",\n      \"type\": \"card\",\n      \"layout\": { \"row\": 1, \"column\": 3, \"span\": 1 }\n    },\n    {\n      \"id\": \"SENTIMENT\",\n      \"name\": \"Topics Overview\",\n      \"type\": \"donutchart\",\n      \"layout\": { \"row\": 2, \"column\": 1, \"width\": 40, \"height\": 44.5 }\n    },\n    {\n      \"id\": \"AVG_HANDLING_TIME_BY_TOPIC\",\n      \"name\": \"Average Handling Time By Topic\",\n      \"type\": \"bar\",\n      \"layout\": { \"row\": 2, \"column\": 2, \"row-span\": 2, \"width\": 60 }\n    },\n    {\n      \"id\": \"TOPICS\",\n      \"name\": \"Trending Topics\",\n      \"type\": \"table\",\n      \"layout\": { \"row\": 3, \"column\": 1, \"span\": 2 }\n    },\n    {\n      \"id\": \"KEY_PHRASES\",\n      \"name\": \"Key Phrases\",\n      \"type\": \"wordcloud\",\n      \"layout\": { \"row\": 3, \"column\": 2, \"height\": 44.5 }\n    }\n  ]\n}"
           },
           "resources": [
             {

@@ -2,21 +2,74 @@
 targetScope = 'resourceGroup'
 
 @minLength(3)
-@maxLength(6)
-@description('Prefix Name')
+@maxLength(10)
+@description('A unique prefix for all resources in this deployment. This should be 3-10 characters long.')
 param solutionPrefix string
 
-@description('other Location')
-param otherLocation string
+@minLength(1)
+@description('Location for the Content Understanding service deployment:')
+@allowed(['West US'
+'Sweden Central' 
+'Australia East'
+])
+@metadata({
+  azd: {
+    type: 'location'
+  }
+})
+param contentUnderstandingLocation string
 
-@description('Fabric Workspace Id if you have one, else leave it empty. ')
-param fabricWorkspaceId string
+@minLength(1)
+@description('Secondary location for databases creation:')
+param secondaryLocation string
+
+@minLength(1)
+@description('Deployment Type:')
+@allowed([
+  'Standard'
+  'GlobalStandard'
+])
+param deploymentType string = 'GlobalStandard'
+
+@minLength(1)
+@description('Name of the GPT model to deploy:')
+@allowed([
+  'gpt-4o-mini'
+  'gpt-4o'
+  'gpt-4'
+])
+param gptModelName string = 'gpt-4o-mini'
+
+// @minLength(1)
+// @description('Version of the GPT model to deploy:')
+// param gptModelVersion string = '2024-02-15-preview' //'2024-08-06'
+var gptModelVersion = '2024-02-15-preview'
+
+@minValue(10)
+@description('Capacity of the GPT deployment')
+// You can increase this, but capacity is limited per model/region, so you will get errors if you go over
+// https://learn.microsoft.com/en-us/azure/ai-services/openai/quotas-limits
+param gptDeploymentCapacity int = 100
+
+@minLength(1)
+@description('Name of the Text Embedding model to deploy:')
+@allowed([
+  'text-embedding-ada-002'
+])
+param embeddingModel string = 'text-embedding-ada-002'
+
+
+@minValue(10)
+@description('Capacity of the Embedding Model deployment')
+param embeddingDeploymentCapacity int = 80
+
 
 var resourceGroupLocation = resourceGroup().location
 var resourceGroupName = resourceGroup().name
 
 var solutionLocation = resourceGroupLocation
 var baseUrl = 'https://raw.githubusercontent.com/microsoft/Conversation-Knowledge-Mining-Solution-Accelerator/KM-AIFoundry/'
+
 
 // ========== Managed Identity ========== //
 module managedIdentityModule 'deploy_managed_identity.bicep' = {
@@ -28,18 +81,25 @@ module managedIdentityModule 'deploy_managed_identity.bicep' = {
   scope: resourceGroup(resourceGroup().name)
 }
 
+// ==========AI Foundry and related resources ========== //
 module aifoundry 'deploy_ai_foundry.bicep' = {
   name: 'deploy_ai_foundry'
   params: {
     solutionName: solutionPrefix
     solutionLocation: resourceGroupLocation
+    cuLocation: contentUnderstandingLocation
+    deploymentType: deploymentType
+    gptModelName: gptModelName
+    gptModelVersion: gptModelVersion
+    gptDeploymentCapacity: gptDeploymentCapacity
+    embeddingModel: embeddingModel
+    embeddingDeploymentCapacity: embeddingDeploymentCapacity
     managedIdentityObjectId:managedIdentityModule.outputs.managedIdentityOutput.objectId
   }
   scope: resourceGroup(resourceGroup().name)
 }
 
-
-// ========== Storage Account Module ========== //
+// ========== Storage account module ========== //
 module storageAccount 'deploy_storage_account.bicep' = {
   name: 'deploy_storage_account'
   params: {
@@ -51,32 +111,35 @@ module storageAccount 'deploy_storage_account.bicep' = {
   scope: resourceGroup(resourceGroup().name)
 }
 
+// ========== Cosmos DB module ========== //
 module cosmosDBModule 'deploy_cosmos_db.bicep' = {
   name: 'deploy_cosmos_db'
   params: {
     solutionName: solutionPrefix
-    solutionLocation: otherLocation
+    solutionLocation: secondaryLocation
     keyVaultName: aifoundry.outputs.keyvaultName
   }
   scope: resourceGroup(resourceGroup().name)
 }
 
-//========== SQL DB Module ========== //
+//========== SQL DB module ========== //
 module sqlDBModule 'deploy_sql_db.bicep' = {
   name: 'deploy_sql_db'
   params: {
     solutionName: solutionPrefix
-    solutionLocation: otherLocation
+    solutionLocation: secondaryLocation
     keyVaultName: aifoundry.outputs.keyvaultName
   }
   scope: resourceGroup(resourceGroup().name)
 }
 
+//========== Updates to Key Vault ========== //
 resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' existing = {
   name: aifoundry.outputs.keyvaultName
   scope: resourceGroup(resourceGroup().name)
 }
 
+//========== Deployment script to upload sample data ========== //
 module uploadFiles 'deploy_upload_files_script.bicep' = {
   name : 'deploy_upload_files_script'
   params:{
@@ -90,6 +153,7 @@ module uploadFiles 'deploy_upload_files_script.bicep' = {
   dependsOn:[storageAccount,keyVault]
 }
 
+//========== Deployment script to process and index data ========== //
 module createIndex 'deploy_index_scripts.bicep' = {
   name : 'deploy_index_scripts'
   params:{
@@ -101,6 +165,7 @@ module createIndex 'deploy_index_scripts.bicep' = {
   dependsOn:[aifoundry,keyVault,sqlDBModule,uploadFiles]
 }
 
+//========== Azure functions module ========== //
 module azureFunctionsCharts 'deploy_azure_function_charts.bicep' = {
   name : 'deploy_azure_function_charts'
   params:{
@@ -115,6 +180,7 @@ module azureFunctionsCharts 'deploy_azure_function_charts.bicep' = {
   dependsOn:[sqlDBModule,keyVault]
 }
 
+//========== Azure functions module ========== //
 module azureragFunctionsRag 'deploy_azure_function_rag.bicep' = {
   name : 'deploy_azure_function_rag'
   params:{
@@ -124,7 +190,7 @@ module azureragFunctionsRag 'deploy_azure_function_rag.bicep' = {
     azureOpenAIEndpoint:aifoundry.outputs.aiServicesTarget
     azureSearchAdminKey:keyVault.getSecret('AZURE-SEARCH-KEY')
     azureSearchServiceEndpoint:aifoundry.outputs.aiSearchTarget
-    azureOpenAIApiVersion:'2024-02-15-preview'
+    azureOpenAIApiVersion: gptModelVersion //'2024-02-15-preview'
     azureAiProjectConnString:keyVault.getSecret('AZURE-AI-PROJECT-CONN-STRING')
     azureSearchIndex:'call_transcripts_index'
     sqlServerName:sqlDBModule.outputs.sqlServerName
@@ -146,6 +212,7 @@ module azureFunctionURL 'deploy_azure_function_urls.bicep' = {
   dependsOn:[azureFunctionsCharts,azureragFunctionsRag]
 }
 
+//========== App service module ========== //
 module appserviceModule 'deploy_app_service.bicep' = {
   name: 'deploy_app_service'
   params: {
@@ -153,9 +220,9 @@ module appserviceModule 'deploy_app_service.bicep' = {
     solutionName: solutionPrefix
     solutionLocation: solutionLocation
     AzureOpenAIEndpoint:aifoundry.outputs.aiServicesTarget
-    AzureOpenAIModel:'gpt-4o-mini'
+    AzureOpenAIModel: gptModelName //'gpt-4o-mini'
     AzureOpenAIKey:keyVault.getSecret('AZURE-OPENAI-KEY')
-    azureOpenAIApiVersion:'2024-02-15-preview'
+    azureOpenAIApiVersion: gptModelVersion //'2024-02-15-preview'
     AZURE_OPENAI_RESOURCE:aifoundry.outputs.aiServicesName
     CHARTS_URL:azureFunctionURL.outputs.functionURLsOutput.charts_function_url
     FILTERS_URL:azureFunctionURL.outputs.functionURLsOutput.filters_function_url
