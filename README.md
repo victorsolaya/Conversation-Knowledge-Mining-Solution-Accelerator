@@ -11,7 +11,7 @@ User story
 
 This solution accelerator enables customers with large amounts of conversational data to improve decision-making by leveraging intelligence to uncover insights, relationships, and patterns from customer interactions. It empowers users to gain valuable knowledge and drive targeted business impact. 
 
-This solution accelerator leverages Azure AI Foundry, AI Content Understanding, Azure OpenAI,and Azure Search to transform large volumes of conversational data into actionable insights through topic modeling, key phrase extraction, speech-to-text transcription, and interactive chat experiences.
+It leverages Azure AI Foundry, AI Content Understanding, Azure OpenAI, and Azure AI Search to transform large volumes of conversational data into actionable insights through topic modeling, key phrase extraction, speech-to-text transcription, and interactive chat experiences.
 
 
 ### Technical key features
@@ -30,7 +30,7 @@ This solution empowers analysts with tools to ask questions and receive real-tim
 
 The sample data used in this repository is synthetic and generated using Azure Open AI service. The data is intended for use as sample data only.
 
-### Solution accelerator architecture
+### Solution architecture
 ![image](./Documents/Images/ReadMe/ckm-sol-arch.png)
 
 
@@ -42,6 +42,28 @@ Deployment & installation
 ### **Prerequisites**
 
 To use this solution accelerator, you will need access to an [Azure subscription](https://azure.microsoft.com/free/) with permission to create resource groups and resources. 
+
+Please check the link [Azure Products by Region](https://azure.microsoft.com/en-us/explore/global-infrastructure/products-by-region/?products=all&regions=all) and choose a region where  Azure AI Foundry, Azure OpenAI services, Azure AI Search, Azure AI Content Understanding and GPT model capacity are available. 
+
+When you start the deployment using one of the options below, most parameters will have a default name set already. You can update the following settings:
+
+-  Azure region where the resources will be created in
+
+-  Solution prefix, a 3-10 characters alphanumeric value that will be used to prefix resources
+
+-  Content Understanding location from the drop-down list of values
+
+-  Secondary cocation, a less busy location for Azure SQL and CosmoDB resources if you run into any availability constraints 
+
+-  Deployment type from the drop-down list of values
+
+-  GPT model from the drop-down list of values
+
+-  GPT model deployment capacity
+
+-  Embedding model from the drop-down list of values
+
+-  Embedding model capacity
 
 ### **Options**
 Pick from the options below to see step-by-step instructions for: GitHub Codespaces, VS Code Dev Containers, Local Environments, and Bicep deployments.
@@ -113,32 +135,14 @@ Once you've opened the project in [Codespaces](#github-codespaces), in [Dev Cont
 
 
 <details>
-  <summary><b>Deploy with Bicep/ARM solution accelerator</b></summary>
+  <summary><b>Deploy with Bicep/ARM template</b></summary>
 
 ### Quick Deploy (Bicep)
 
-1. Please check the link [Azure Products by Region](https://azure.microsoft.com/en-us/explore/global-infrastructure/products-by-region/?products=all&regions=all) and choose a region where Azure AI Search, Azure OpenAI services, Azure AI Foundry Services are available. 
-
-2. **Deploy Azure resources**  
+1. **Deploy Azure resources**  
    Click the following deployment button to create the required resources for this accelerator directly in your Azure Subscription.
 
-   [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fmicrosoft%2FConversation-Knowledge-Mining-Solution-Accelerator%2FKM-AIFoundry%2Finfra%2Fmain.json)
-
-
-
-
-   1.  Most fields will have a default name set already. You will need to update the following Azure OpenAI settings:
-
-       -  Region - the region where the resources will be created in
-
-       -  Solution Prefix - provide a 6 alphanumeric value that will be used to prefix resources
-
-       - Content Understanding location (West US, Sweden Central or Australia East)
-
-       -  Secondary Location - location for Azure SQL and CosmoDB resources
-
-       
-          
+   [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fmicrosoft%2FConversation-Knowledge-Mining-Solution-Accelerator%2FKM-AIFoundry%2Finfra%2Fmain.json)          
 
 </details>
 <br/>
@@ -183,15 +187,22 @@ Supporting documentation
 ### How to customize 
 
 If you'd like to customize the solution accelerator, here are some ways you might do that:
-- Ingest your own [audio conversation files](./Documents/ConversationalDataFormat.md) by uploading them into the `cu_audio_files_all` lakehouse folder and run the data pipeline
-- Deploy with Microsoft Fabric by following the steps in [Fabric_deployment.md](./Documents/Fabric_deployment.md)
+- Ingest your own [audio conversation files](./Documents/ConversationalDataFormat.md) by uploading them into the storage account and run the process data scripts.
+- You can also scale the solution and process large volumes of data by deploying this to Microsoft Fabric by following the steps in [Fabric_deployment.md](./Documents/Fabric_deployment.md)
 
 ### Additional resources
 
 <!-- - [Microsoft Fabric documentation - Microsoft Fabric | Microsoft Learn](https://learn.microsoft.com/en-us/fabric/) -->
-- [Azure OpenAI Service - Documentation, quickstarts, API reference - Azure AI services | Microsoft Learn](https://learn.microsoft.com/en-us/azure/ai-services/openai/concepts/use-your-data)
-- [Azure AI Content Understanding documentation](https://learn.microsoft.com/en-us/azure/ai-services/content-understanding/)
-- [Azure AI Foundry documentation](https://learn.microsoft.com/en-us/azure/ai-studio/)
+- [Azure AI Foundry documentation](https://learn.microsoft.com/en-us/azure/ai-studio/) 
+- [Azure AI Content Understanding documentation](https://learn.microsoft.com/en-us/azure/ai-services/content-understanding/) 
+- [Azure OpenAI Service](https://learn.microsoft.com/en-us/azure/ai-services/openai/concepts/use-your-data)
+- [Azure AI Search](https://learn.microsoft.com/en-us/azure/search/) 
+- [Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/)
+- [Azure App Service](https://learn.microsoft.com/en-us/azure/app-service/)
+- [Azure SQL Database](https://learn.microsoft.com/en-us/azure/azure-sql/)
+- [Azure Cosmos DB](https://learn.microsoft.com/en-us/azure/cosmos-db/)
+- [Microsoft Fabric](https://learn.microsoft.com/en-us/fabric/)
+
 <!-- - [Speech service documentation - Tutorials, API Reference - Azure AI services - Azure AI services | Microsoft Learn](https://learn.microsoft.com/en-us/azure/ai-services/speech-service/) -->
 
 
