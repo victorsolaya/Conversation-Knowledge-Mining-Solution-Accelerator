@@ -2,8 +2,8 @@
 
 az bicep build --file main.bicep
 
-
 **Creates Resource group**
-az group create --name CKM-v2-BK-001 --location eastus
+az group create --name <your-resource-group-name> --location <yourlocation>
+
 **Deploys bicep template**
-az deployment group create --resource-group CKM-v2-BK-001 --template-file master.bicep
+az deployment group create --resource-group <your-resource-group-name> --template-file master.bicep

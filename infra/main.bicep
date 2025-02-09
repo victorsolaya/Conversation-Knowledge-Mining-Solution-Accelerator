@@ -200,6 +200,7 @@ module azureragFunctionsRag 'deploy_azure_function_rag.bicep' = {
     solutionLocation: solutionLocation
     azureOpenAIApiKey:keyVault.getSecret('AZURE-OPENAI-KEY')
     azureOpenAIEndpoint:aifoundry.outputs.aiServicesTarget
+    azureOpenAIDeploymentModel:gptModelName
     azureSearchAdminKey:keyVault.getSecret('AZURE-SEARCH-KEY')
     azureSearchServiceEndpoint:aifoundry.outputs.aiSearchTarget
     azureOpenAIApiVersion: gptModelVersion //'2024-02-15-preview'

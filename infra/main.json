@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.28.1.47646",
-      "templateHash": "14865316485315574792"
+      "templateHash": "17274705812719175647"
     }
   },
   "parameters": {
@@ -1972,6 +1972,9 @@
           "azureOpenAIEndpoint": {
             "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_ai_foundry'), '2022-09-01').outputs.aiServicesTarget.value]"
           },
+          "azureOpenAIDeploymentModel": {
+            "value": "[parameters('gptModelName')]"
+          },
           "azureSearchAdminKey": {
             "reference": {
               "keyVault": {
@@ -2028,7 +2031,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.28.1.47646",
-              "templateHash": "14276024574851422048"
+              "templateHash": "16604671971872464010"
             }
           },
           "parameters": {
@@ -2048,6 +2051,9 @@
               "type": "string"
             },
             "azureOpenAIEndpoint": {
+              "type": "string"
+            },
+            "azureOpenAIDeploymentModel": {
               "type": "string"
             },
             "azureAiProjectConnString": {
@@ -2187,7 +2193,7 @@
                     },
                     {
                       "name": "AZURE_OPEN_AI_DEPLOYMENT_MODEL",
-                      "value": "gpt-4o-mini"
+                      "value": "[parameters('azureOpenAIDeploymentModel')]"
                     },
                     {
                       "name": "AZURE_AI_SEARCH_ENDPOINT",

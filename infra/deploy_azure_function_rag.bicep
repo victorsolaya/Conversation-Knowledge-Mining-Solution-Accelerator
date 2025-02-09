@@ -5,6 +5,7 @@ param solutionLocation string
 param azureOpenAIApiKey string
 param azureOpenAIApiVersion string
 param azureOpenAIEndpoint string
+param azureOpenAIDeploymentModel string
 @secure()
 param azureAiProjectConnString string
 param aiProjectName string
@@ -124,7 +125,7 @@ resource azurefn 'Microsoft.Web/sites@2023-12-01' = {
         }
         {
           name: 'AZURE_OPEN_AI_DEPLOYMENT_MODEL'
-          value: 'gpt-4o-mini'
+          value: azureOpenAIDeploymentModel
         }
         {
           name: 'AZURE_AI_SEARCH_ENDPOINT'
