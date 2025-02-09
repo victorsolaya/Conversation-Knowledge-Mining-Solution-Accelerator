@@ -5,11 +5,6 @@ param solutionName string
 param solutionLocation string
 param keyVaultName string
 
-// @description('Name')
-// param accountName string = '${ solutionName }-cosmos'
-// param databaseName string = 'db_conversation_history'
-// param collectionName string = 'conversations'
-
 var accountName = '${ solutionName }-cosmos'
 var databaseName = 'db_conversation_history'
 var collectionName = 'conversations'
@@ -120,9 +115,3 @@ resource AZURE_COSMOSDB_ENABLE_FEEDBACK 'Microsoft.KeyVault/vaults/secrets@2021-
 output cosmosAccountName string = cosmos.name
 output cosmosDatabaseName string = databaseName
 output cosmosContainerName string = collectionName
-
-// output cosmosOutput object = {
-//   cosmosAccountName: cosmos.name
-//   cosmosDatabaseName: databaseName
-//   cosmosContainerName: collectionName
-// }

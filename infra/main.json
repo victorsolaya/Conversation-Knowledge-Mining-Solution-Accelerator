@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.28.1.47646",
-      "templateHash": "4407924750489715241"
+      "templateHash": "7667271362850696196"
     }
   },
   "parameters": {
@@ -238,7 +238,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.28.1.47646",
-              "templateHash": "12221064900392012164"
+              "templateHash": "9744047075745016769"
             }
           },
           "parameters": {
@@ -287,7 +287,7 @@
             "location": "[parameters('solutionLocation')]",
             "aiHubName": "[format('{0}-aihub', parameters('solutionName'))]",
             "aiHubFriendlyName": "[variables('aiHubName')]",
-            "aiHubDescription": "Test",
+            "aiHubDescription": "AI Hub for KM template",
             "aiProjectName": "[format('{0}-aiproject', parameters('solutionName'))]",
             "aiProjectFriendlyName": "[variables('aiProjectName')]",
             "aiSearchName": "[format('{0}-search', parameters('solutionName'))]",
