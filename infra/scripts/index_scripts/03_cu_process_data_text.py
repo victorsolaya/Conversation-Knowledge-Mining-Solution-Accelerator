@@ -274,7 +274,7 @@ for path in paths:
     except:
         pass
 
-    if counter % 10 == 0:
+    if docs != [] and counter % 10 == 0:
         result = search_client.upload_documents(documents=docs)
         docs = []
         print(f' {str(counter)} uploaded')
@@ -337,7 +337,7 @@ for path in paths:
     except:
         pass
 
-    if counter % 10 == 0:
+    if docs != [] and counter % 10 == 0:
         result = search_client.upload_documents(documents=docs)
         docs = []
         print(f' {str(counter)} uploaded')
