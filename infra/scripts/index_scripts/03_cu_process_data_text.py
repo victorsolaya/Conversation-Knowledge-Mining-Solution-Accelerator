@@ -13,7 +13,6 @@ from datetime import datetime
 import time
 import base64
 
-
 key_vault_name = 'kv_to-be-replaced'
 
 file_system_client_name = "data"
@@ -21,7 +20,6 @@ directory = 'call_transcripts'
 audio_directory = 'audiodata'
 
 def get_secrets_from_kv(kv_name, secret_name):
-
     # Set the name of the Azure Key Vault  
     key_vault_name = kv_name 
     credential = DefaultAzureCredential()
@@ -30,9 +28,9 @@ def get_secrets_from_kv(kv_name, secret_name):
     secret_client =  SecretClient(vault_url=f"https://{key_vault_name}.vault.azure.net/", credential=credential)  
     return(secret_client.get_secret(secret_name).value)
 
+
 search_endpoint = get_secrets_from_kv(key_vault_name,"AZURE-SEARCH-ENDPOINT")
 search_key =  get_secrets_from_kv(key_vault_name,"AZURE-SEARCH-KEY")
-
 
 openai_api_key  =  get_secrets_from_kv(key_vault_name,"AZURE-OPENAI-KEY")
 openai_api_base =  get_secrets_from_kv(key_vault_name,"AZURE-OPENAI-ENDPOINT")
@@ -171,10 +169,12 @@ conn.commit()
 
 
 create_processed_data_sql = """CREATE TABLE processed_data_key_phrases (
-                ConversationId varchar(255),
-                key_phrase varchar(500), 
-                sentiment varchar(255)
-            );"""
+                    ConversationId varchar(255),
+                    key_phrase varchar(500), 
+                    sentiment varchar(255),
+                    topic varchar(255), 
+                    StartTime varchar(255),
+                    );"""
 cursor.execute(create_processed_data_sql)
 conn.commit()
 
@@ -196,35 +196,34 @@ client = AzureContentUnderstandingClient(
 
 ANALYZER_ID = "ckm-json"
 
-
 def prepare_search_doc(content, document_id): 
     chunks = chunk_data(content)
     chunk_num = 0
     for chunk in chunks:
         chunk_num += 1
-        d = {
-                "chunk_id" : document_id + '_' + str(chunk_num).zfill(2),
-                "content": chunk,       
-            }
-        # counter += 1
+        chunk_id = document_id + '_' + str(chunk_num).zfill(2)
+        # d = {
+        #         "chunk_id" : document_id + '_' + str(chunk_num).zfill(2),
+        #         "content": chunk,       
+        #     }
         try:
-            v_contentVector = get_embeddings(str(d["content"]),openai_api_base,openai_api_version,openai_api_key)
+            v_contentVector = get_embeddings(str(chunk),openai_api_base,openai_api_version,openai_api_key)
         except:
             time.sleep(30)
             try: 
-                v_contentVector = get_embeddings(str(d["content"]),openai_api_base,openai_api_version,openai_api_key)
+                v_contentVector = get_embeddings(str(chunk),openai_api_base,openai_api_version,openai_api_key)
             except: 
                 v_contentVector = []
         result = {
-                "id": base64.urlsafe_b64encode(bytes(d["chunk_id"], encoding='utf-8')).decode('utf-8'),
-                "chunk_id": d["chunk_id"],
-                "content": d["content"],
+                "id": base64.urlsafe_b64encode(bytes(chunk_id, encoding='utf-8')).decode('utf-8'),
+                "chunk_id": chunk_id,
+                "content": chunk,
                 "sourceurl": path.name.split('/')[-1],
                 "contentVector": v_contentVector
             }
     return result
         
-
+conversationIds = []
 docs = []
 counter = 0
 from datetime import datetime, timedelta
@@ -235,7 +234,7 @@ for path in paths:
     data = data_file.readall()
    
     try:
-        # # Analyzer file
+        #Analyzer file
         response = client.begin_analyze(ANALYZER_ID, file_location="", file_data=data)
         result = client.poll_result(response)
         
@@ -245,8 +244,9 @@ for path in paths:
         timestamp_format = "%Y-%m-%d %H_%M_%S"  # Adjust format if necessary
         start_timestamp = datetime.strptime(start_time, timestamp_format)
 
-
         conversation_id = file_name.split('convo_', 1)[1].split('_')[0]
+        conversationIds.append(conversation_id)
+
         duration = int(result['result']['contents'][0]['fields']['Duration']['valueString'])
         end_timestamp = str(start_timestamp + timedelta(seconds=duration))
         end_timestamp = end_timestamp.split(".")[0]
@@ -258,7 +258,6 @@ for path in paths:
         key_phrases = result['result']['contents'][0]['fields']['keyPhrases']['valueString']
         complaint = result['result']['contents'][0]['fields']['complaint']['valueString']
         content = result['result']['contents'][0]['fields']['content']['valueString']
-
 
         cursor.execute(f"INSERT INTO processed_data (ConversationId, EndTime, StartTime, Content, summary, satisfied, sentiment, topic, key_phrases, complaint) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)", (conversation_id, end_timestamp, start_timestamp, content, summary, satisfied, sentiment, topic, key_phrases, complaint))    
         conn.commit()
@@ -285,13 +284,10 @@ if docs != []:
     search_client.upload_documents(documents=docs)
 
    
-
-
 ANALYZER_ID = "ckm-audio"
 
 directory_name = audio_directory
 paths = file_system_client.get_paths(path=directory_name)
-# print(paths)
 
 docs = []
 counter = 0
@@ -304,8 +300,6 @@ for path in paths:
         # # Analyzer file
         response = client.begin_analyze(ANALYZER_ID, file_location="", file_data=data)
         result = client.poll_result(response)
-        # print(result)
-
 
         file_name = path.name.split('/')[-1]
         start_time = file_name.replace(".wav", "")[-19:]
@@ -313,8 +307,9 @@ for path in paths:
         timestamp_format = "%Y-%m-%d %H_%M_%S"  # Adjust format if necessary
         start_timestamp = datetime.strptime(start_time, timestamp_format)
 
-
         conversation_id = file_name.split('convo_', 1)[1].split('_')[0]
+        conversationIds.append(conversation_id)
+
         duration = int(result['result']['contents'][0]['fields']['Duration']['valueString'])
         end_timestamp = str(start_timestamp + timedelta(seconds=duration))
         end_timestamp = end_timestamp.split(".")[0]
@@ -353,47 +348,26 @@ if docs != []:
     search_client.upload_documents(documents=docs)
 
 
-
 ##########################################################
 # load sample data to search index
 sample_import_file = 'sample_search_index_data.json'
 
-# 'infra\data\sample_search_index_data.json'
 with open(sample_import_file, 'r') as file:
     documents = json.load(file)
 batch = [{"@search.action": "upload", **doc} for doc in documents]
 search_client.upload_documents(documents=batch)
+# print(f'Successfully uploaded sample index data')   
 
-print(f'Successfully uploaded sample index data')   
-
-
-# Read JSON file
+# load sample data to database
 sample_processed_data_file = 'sample_processed_data.json'
 import_table = 'processed_data'
 with open(sample_processed_data_file, "r") as f:
     data = json.load(f)
 
-# Insert data
-for row in data:
-    columns = ", ".join(row.keys()) 
-    placeholders = ", ".join(["%s"] * len(row))  
-    values = tuple(row.values())  
-
-    sql = f"INSERT INTO {import_table} ({columns}) VALUES ({placeholders})"
-    cursor.execute(sql, values) 
-
-
+data_list = [list(record.values()) for record in data]
+conn.bulk_copy(import_table,data_list)
 conn.commit()
-print(f"Imported {len(data)} records into {import_table}.")
 
-
-# # Read JSON file
-# sample_processed_data_file = 'sample_processed_data_key_phrases.json'
-# import_table = 'processed_data_key_phrases'
-# with open(sample_processed_data_file, "r") as f:
-#     data = json.load(f)
-
-# # Insert data
 # for row in data:
 #     columns = ", ".join(row.keys()) 
 #     placeholders = ", ".join(["%s"] * len(row))  
@@ -401,6 +375,27 @@ print(f"Imported {len(data)} records into {import_table}.")
 
 #     sql = f"INSERT INTO {import_table} ({columns}) VALUES ({placeholders})"
 #     cursor.execute(sql, values) 
+# conn.commit()
+# print(f"Imported {len(data)} records into {import_table}.")
+
+
+# load key phrases sample data to database
+sample_processed_data_file = 'sample_processed_data_key_phrases.json'
+import_table = 'processed_data_key_phrases'
+with open(sample_processed_data_file, "r") as f:
+    data = json.load(f)
+
+data_list = [list(record.values()) for record in data]
+conn.bulk_copy(import_table,data_list)
+conn.commit()
+
+# for row in data:
+#     columns = ", ".join(row.keys()) 
+#     placeholders = ", ".join(["%s"] * len(row))  
+#     values = tuple(row.values())  
+
+#     sql = f"INSERT INTO {import_table} ({columns}) VALUES ({placeholders})"
+#     cursor.execute(sql, values)
 
 # conn.commit()
 # print(f"Imported {len(data)} records into {import_table}.")
@@ -424,10 +419,9 @@ create_mined_topics_sql = """CREATE TABLE km_mined_topics (
 cursor.execute(create_mined_topics_sql)
 conn.commit()
 
-print("Created mined topics table")
+# print("Created mined topics table")
 
 topics_str = ', '.join(df['topic'].tolist())
-
 
 client = AzureOpenAI(  
         azure_endpoint=openai_api_base,  
@@ -516,7 +510,6 @@ def split_data_into_chunks(text, max_tokens=2000, encoding='gpt-4'):
 
     return all_chunks
 
-
 # Define the max tokens per chunk (4096 for GPT-4)
 max_tokens = 3096
 
@@ -546,17 +539,13 @@ def reduce_data_until_fits(topics_str, max_tokens, client):
 # res = reduce_data_until_fits(topics_str, max_tokens, client)
 res = call_gpt4(topics_str, client)
 
-
 topics_object = res #json.loads(res)
 reduced_data = []
 for object1 in topics_object['topics']:
-    # print(object1['label'],object1['description'])
-    # intert object1['label'],object1['description'] into the mined topics table
     cursor.execute(f"INSERT INTO km_mined_topics (label, description) VALUES (%s,%s)", (object1['label'], object1['description']))
 print("function completed")
 # print(res)
 conn.commit()
-
 
 sql_stmt = 'SELECT label FROM km_mined_topics'
 cursor.execute(sql_stmt)
@@ -564,7 +553,6 @@ cursor.execute(sql_stmt)
 rows = cursor.fetchall()
 column_names = [i[0] for i in cursor.description]
 df_topics = pd.DataFrame(rows, columns=column_names)
-
 
 mined_topics_list = df_topics['label'].tolist()
 mined_topics =  ", ".join(mined_topics_list) 
@@ -605,7 +593,7 @@ rows = cursor.fetchall()
 column_names = [i[0] for i in cursor.description]
 df_processed_data = pd.DataFrame(rows, columns=column_names)
 counter = 0
-
+df_processed_data = df_processed_data[df_processed_data['ConversationId'].isin(conversationIds)]
 
 # call get_mined_topic_mapping function for each row in the dataframe and update the mined_topic column in the database table
 for index, row in df_processed_data.iterrows():
@@ -614,7 +602,6 @@ for index, row in df_processed_data.iterrows():
     cursor.execute(f"UPDATE processed_data SET mined_topic = %s WHERE ConversationId = %s", (mined_topic_str, row['ConversationId']))
     # print(f"Updated mined_topic for ConversationId: {row['ConversationId']}")
 conn.commit()
-
 
 # update processed data to be used in RAG
 cursor.execute('DROP TABLE IF EXISTS km_processed_data')
@@ -634,37 +621,37 @@ create_processed_data_sql = """CREATE TABLE km_processed_data (
             );"""
 cursor.execute(create_processed_data_sql)
 conn.commit()
-# sql_stmt = 'SELECT * FROM processed_data'
+
 sql_stmt = '''select ConversationId, StartTime, EndTime, Content, summary, satisfied, sentiment, 
 key_phrases as keyphrases, complaint, mined_topic as topic from processed_data'''
 
 cursor.execute(sql_stmt)
 
 rows = cursor.fetchall()
-column_names = [i[0] for i in cursor.description]
-df = pd.DataFrame(rows, columns=column_names)
-# df.rename(columns={'mined_topic': 'topic'}, inplace=True)
-# print(df.columns)
-for idx, row in df.iterrows():
-    # row['ConversationId'] = str(uuid.uuid4())
-    cursor.execute(f"INSERT INTO km_processed_data (ConversationId, StartTime, EndTime, Content, summary, satisfied, sentiment, keyphrases, complaint, topic) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)", (row['ConversationId'], row['StartTime'], row['EndTime'], row['Content'], row['summary'], row['satisfied'], row['sentiment'], row['keyphrases'], row['complaint'], row['topic']))
+data_list = [list(row) for row in rows]
+import_table = 'km_processed_data'
+conn.bulk_copy(import_table,data_list)
+# column_names = [i[0] for i in cursor.description]
+# df = pd.DataFrame(rows, columns=column_names)
+# for idx, row in df.iterrows():
+#     cursor.execute(f"INSERT INTO km_processed_data (ConversationId, StartTime, EndTime, Content, summary, satisfied, sentiment, keyphrases, complaint, topic) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)", (row['ConversationId'], row['StartTime'], row['EndTime'], row['Content'], row['summary'], row['satisfied'], row['sentiment'], row['keyphrases'], row['complaint'], row['topic']))
 conn.commit()
 
 # update keyphrase table after the data update
-cursor.execute('DROP TABLE IF EXISTS processed_data_key_phrases')
-conn.commit()
-print("Dropped processed_data_key_phrases table")
+# cursor.execute('DROP TABLE IF EXISTS processed_data_key_phrases')
+# conn.commit()
+# print("Dropped processed_data_key_phrases table")
 
-create_processed_data_sql = """CREATE TABLE processed_data_key_phrases (
-                ConversationId varchar(255),
-                key_phrase varchar(500), 
-                sentiment varchar(255),
-                topic varchar(255), 
-                StartTime varchar(255),
-            );"""
-cursor.execute(create_processed_data_sql)
-conn.commit()
-print('created processed_data_key_phrases table')
+# create_processed_data_sql = """CREATE TABLE processed_data_key_phrases (
+#                 ConversationId varchar(255),
+#                 key_phrase varchar(500), 
+#                 sentiment varchar(255),
+#                 topic varchar(255), 
+#                 StartTime varchar(255),
+#             );"""
+# cursor.execute(create_processed_data_sql)
+# conn.commit()
+# print('created processed_data_key_phrases table')
 
 sql_stmt = '''select ConversationId, key_phrases, sentiment, mined_topic as topic, StartTime from processed_data'''
 cursor.execute(sql_stmt)
@@ -673,29 +660,14 @@ rows = cursor.fetchall()
 column_names = [i[0] for i in cursor.description]
 df = pd.DataFrame(rows, columns=column_names)
 columns_lst = df.columns
-print(columns_lst)
+# print(columns_lst)
 
+df = df[df['ConversationId'].isin(conversationIds)]
 for idx, row in df.iterrows(): 
     key_phrases = row['key_phrases'].split(',')
     for key_phrase in key_phrases:
         key_phrase = key_phrase.strip()
         cursor.execute(f"INSERT INTO processed_data_key_phrases (ConversationId, key_phrase, sentiment, topic, StartTime) VALUES (%s,%s,%s,%s,%s)", (row['ConversationId'], key_phrase, row['sentiment'], row['topic'], row['StartTime']))
-        
-
-# sql_stmt = 'SELECT ConversationId,key_Phrases,sentiment, mined_topic as topic FROM processed_data'
-# cursor.execute(sql_stmt)
-# rows = cursor.fetchall()
-
-# # Generate the SQL query for insertion
-# insert_query = f"INSERT INTO processed_data_key_phrases (ConversationId, key_phrase, sentiment,topic) VALUES (%s, %s, %s, %s)"
-
-# # Perform the bulk insert
-# cursor.executemany(insert_query, rows)
-
-# chunk_size = 1000
-# for i in range(0, len(rows), chunk_size):
-#     cursor.executemany(insert_query, rows[i:i + chunk_size])
-
 conn.commit()
 
 # to adjust the dates to current date
@@ -713,10 +685,7 @@ cursor.execute(f"UPDATE [dbo].[processed_data] SET StartTime = FORMAT(DATEADD(DA
 cursor.execute(f"UPDATE [dbo].[km_processed_data] SET StartTime = FORMAT(DATEADD(DAY, %s, StartTime), 'yyyy-MM-dd HH:mm:ss'), EndTime = FORMAT(DATEADD(DAY, %s, EndTime), 'yyyy-MM-dd HH:mm:ss')", (days_difference, days_difference))
 # Update processed_data_key_phrases table
 cursor.execute(f"UPDATE [dbo].[processed_data_key_phrases] SET StartTime = FORMAT(DATEADD(DAY, %s, StartTime), 'yyyy-MM-dd HH:mm:ss')", (days_difference,))
-# Commit the changes
+
 conn.commit()
-
-
 cursor.close()
 conn.close()
-
