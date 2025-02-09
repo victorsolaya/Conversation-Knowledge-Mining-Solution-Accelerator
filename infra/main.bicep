@@ -3,7 +3,7 @@ targetScope = 'resourceGroup'
 
 @minLength(3)
 @maxLength(10)
-@description('A unique prefix for all resources in this deployment. This should be 3-10 characters long.')
+@description('A unique prefix for all resources in this deployment. This should be 3-10 characters long:')
 param solutionPrefix string
 
 @minLength(1)
@@ -12,6 +12,7 @@ param solutionPrefix string
 'Sweden Central' 
 'Australia East'
 ])
+
 @metadata({
   azd: {
     type: 'location'
@@ -20,11 +21,11 @@ param solutionPrefix string
 param contentUnderstandingLocation string
 
 @minLength(1)
-@description('Secondary location for databases creation:')
+@description('Secondary location for databases creation(example:eastus2):')
 param secondaryLocation string
 
 @minLength(1)
-@description('Deployment Type:')
+@description('GPT model deployment type:')
 @allowed([
   'Standard'
   'GlobalStandard'
@@ -46,7 +47,7 @@ param gptModelName string = 'gpt-4o-mini'
 var gptModelVersion = '2024-02-15-preview'
 
 @minValue(10)
-@description('Capacity of the GPT deployment')
+@description('Capacity of the GPT deployment:')
 // You can increase this, but capacity is limited per model/region, so you will get errors if you go over
 // https://learn.microsoft.com/en-us/azure/ai-services/openai/quotas-limits
 param gptDeploymentCapacity int = 100
@@ -144,13 +145,12 @@ module uploadFiles 'deploy_upload_files_script.bicep' = {
   name : 'deploy_upload_files_script'
   params:{
     solutionLocation: solutionLocation
-    keyVaultName: aifoundry.outputs.keyvaultName
     baseUrl: baseUrl
     storageAccountName: storageAccount.outputs.storageName
     containerName: storageAccount.outputs.storageContainer
     managedIdentityObjectId:managedIdentityModule.outputs.managedIdentityOutput.id
   }
-  dependsOn:[storageAccount,keyVault]
+  // dependsOn:[storageAccount,keyVault]
 }
 
 //========== Deployment script to process and index data ========== //
@@ -162,7 +162,7 @@ module createIndex 'deploy_index_scripts.bicep' = {
     baseUrl:baseUrl
     keyVaultName:aifoundry.outputs.keyvaultName
   }
-  dependsOn:[aifoundry,keyVault,sqlDBModule,uploadFiles]
+  dependsOn:[keyVault,sqlDBModule,uploadFiles]
 }
 
 //========== Azure functions module ========== //
@@ -177,7 +177,7 @@ module azureFunctionsCharts 'deploy_azure_function_charts.bicep' = {
     sqlDbPwd:keyVault.getSecret('SQLDB-PASSWORD')
     managedIdentityObjectId:managedIdentityModule.outputs.managedIdentityOutput.objectId
   }
-  dependsOn:[sqlDBModule,keyVault]
+  dependsOn:[keyVault]
 }
 
 //========== Azure functions module ========== //
@@ -200,7 +200,7 @@ module azureragFunctionsRag 'deploy_azure_function_rag.bicep' = {
     aiProjectName:aifoundry.outputs.aiProjectName
     managedIdentityObjectId:managedIdentityModule.outputs.managedIdentityOutput.objectId
   }
-  dependsOn:[aifoundry,sqlDBModule,keyVault]
+  dependsOn:[keyVault]
 }
 
 module azureFunctionURL 'deploy_azure_function_urls.bicep' = {
@@ -237,5 +237,5 @@ module appserviceModule 'deploy_app_service.bicep' = {
     AZURE_COSMOSDB_ENABLE_FEEDBACK:'True'
   }
   scope: resourceGroup(resourceGroup().name)
-  dependsOn:[aifoundry,cosmosDBModule,sqlDBModule,azureFunctionURL]
+  dependsOn:[sqlDBModule]
 }

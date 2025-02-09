@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.28.1.47646",
-      "templateHash": "7667271362850696196"
+      "templateHash": "16131303092964513590"
     }
   },
   "parameters": {
@@ -14,7 +14,7 @@
       "minLength": 3,
       "maxLength": 10,
       "metadata": {
-        "description": "A unique prefix for all resources in this deployment. This should be 3-10 characters long."
+        "description": "A unique prefix for all resources in this deployment. This should be 3-10 characters long:"
       }
     },
     "contentUnderstandingLocation": {
@@ -36,7 +36,7 @@
       "type": "string",
       "minLength": 1,
       "metadata": {
-        "description": "Secondary location for databases creation:"
+        "description": "Secondary location for databases creation(example:eastus2):"
       }
     },
     "deploymentType": {
@@ -48,7 +48,7 @@
       ],
       "minLength": 1,
       "metadata": {
-        "description": "Deployment Type:"
+        "description": "GPT model deployment type:"
       }
     },
     "gptModelName": {
@@ -69,7 +69,7 @@
       "defaultValue": 100,
       "minValue": 10,
       "metadata": {
-        "description": "Capacity of the GPT deployment"
+        "description": "Capacity of the GPT deployment:"
       }
     },
     "embeddingModel": {
@@ -238,7 +238,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.28.1.47646",
-              "templateHash": "9744047075745016769"
+              "templateHash": "11612888388039495285"
             }
           },
           "parameters": {
@@ -279,8 +279,6 @@
             "aiServicesName": "[format('{0}-aiservices', parameters('solutionName'))]",
             "aiServicesName_cu": "[format('{0}-aiservices_cu', parameters('solutionName'))]",
             "location_cu": "[parameters('cuLocation')]",
-            "aiServicesName_m": "[format('{0}-aiservices_m', parameters('solutionName'))]",
-            "location_m": "[parameters('solutionLocation')]",
             "applicationInsightsName": "[format('{0}-appinsights', parameters('solutionName'))]",
             "containerRegistryName": "[format('{0}acr', parameters('solutionName'))]",
             "keyvaultName": "[format('{0}-kv', parameters('solutionName'))]",
@@ -1563,9 +1561,6 @@
           "solutionLocation": {
             "value": "[variables('solutionLocation')]"
           },
-          "keyVaultName": {
-            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_ai_foundry'), '2022-09-01').outputs.keyvaultName.value]"
-          },
           "baseUrl": {
             "value": "[variables('baseUrl')]"
           },
@@ -1586,7 +1581,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.28.1.47646",
-              "templateHash": "1430108067013901335"
+              "templateHash": "1311463012511991186"
             }
           },
           "parameters": {
@@ -1595,9 +1590,6 @@
               "metadata": {
                 "description": "Specifies the location for resources."
               }
-            },
-            "keyVaultName": {
-              "type": "string"
             },
             "baseUrl": {
               "type": "string"
@@ -1638,7 +1630,6 @@
         }
       },
       "dependsOn": [
-        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_ai_foundry')]",
         "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_managed_identity')]",
         "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_storage_account')]"
       ]

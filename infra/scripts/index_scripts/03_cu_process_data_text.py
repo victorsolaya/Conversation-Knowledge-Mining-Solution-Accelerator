@@ -284,68 +284,68 @@ if docs != []:
     search_client.upload_documents(documents=docs)
 
    
-ANALYZER_ID = "ckm-audio"
+# ANALYZER_ID = "ckm-audio"
 
-directory_name = audio_directory
-paths = file_system_client.get_paths(path=directory_name)
+# directory_name = audio_directory
+# paths = file_system_client.get_paths(path=directory_name)
 
-docs = []
-counter = 0
-# process and upload audio files to search index
-for path in paths:
-    file_client = file_system_client.get_file_client(path.name)
-    data_file = file_client.download_file()
-    data = data_file.readall()
-    try:
-        # # Analyzer file
-        response = client.begin_analyze(ANALYZER_ID, file_location="", file_data=data)
-        result = client.poll_result(response)
+# docs = []
+# counter = 0
+# # process and upload audio files to search index
+# for path in paths:
+#     file_client = file_system_client.get_file_client(path.name)
+#     data_file = file_client.download_file()
+#     data = data_file.readall()
+#     try:
+#         # # Analyzer file
+#         response = client.begin_analyze(ANALYZER_ID, file_location="", file_data=data)
+#         result = client.poll_result(response)
 
-        file_name = path.name.split('/')[-1]
-        start_time = file_name.replace(".wav", "")[-19:]
+#         file_name = path.name.split('/')[-1]
+#         start_time = file_name.replace(".wav", "")[-19:]
         
-        timestamp_format = "%Y-%m-%d %H_%M_%S"  # Adjust format if necessary
-        start_timestamp = datetime.strptime(start_time, timestamp_format)
+#         timestamp_format = "%Y-%m-%d %H_%M_%S"  # Adjust format if necessary
+#         start_timestamp = datetime.strptime(start_time, timestamp_format)
 
-        conversation_id = file_name.split('convo_', 1)[1].split('_')[0]
-        conversationIds.append(conversation_id)
+#         conversation_id = file_name.split('convo_', 1)[1].split('_')[0]
+#         conversationIds.append(conversation_id)
 
-        duration = int(result['result']['contents'][0]['fields']['Duration']['valueString'])
-        end_timestamp = str(start_timestamp + timedelta(seconds=duration))
-        end_timestamp = end_timestamp.split(".")[0]
+#         duration = int(result['result']['contents'][0]['fields']['Duration']['valueString'])
+#         end_timestamp = str(start_timestamp + timedelta(seconds=duration))
+#         end_timestamp = end_timestamp.split(".")[0]
 
-        summary = result['result']['contents'][0]['fields']['summary']['valueString']
-        satisfied = result['result']['contents'][0]['fields']['satisfied']['valueString']
-        sentiment = result['result']['contents'][0]['fields']['sentiment']['valueString']
-        topic = result['result']['contents'][0]['fields']['topic']['valueString']
-        key_phrases = result['result']['contents'][0]['fields']['keyPhrases']['valueString']
-        complaint = result['result']['contents'][0]['fields']['complaint']['valueString']
-        content = result['result']['contents'][0]['fields']['content']['valueString']
-        # print(topic)
-        cursor.execute(f"INSERT INTO processed_data (ConversationId, EndTime, StartTime, Content, summary, satisfied, sentiment, topic, key_phrases, complaint) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)", (conversation_id, end_timestamp, start_timestamp, content, summary, satisfied, sentiment, topic, key_phrases, complaint))    
-        conn.commit()
+#         summary = result['result']['contents'][0]['fields']['summary']['valueString']
+#         satisfied = result['result']['contents'][0]['fields']['satisfied']['valueString']
+#         sentiment = result['result']['contents'][0]['fields']['sentiment']['valueString']
+#         topic = result['result']['contents'][0]['fields']['topic']['valueString']
+#         key_phrases = result['result']['contents'][0]['fields']['keyPhrases']['valueString']
+#         complaint = result['result']['contents'][0]['fields']['complaint']['valueString']
+#         content = result['result']['contents'][0]['fields']['content']['valueString']
+#         # print(topic)
+#         cursor.execute(f"INSERT INTO processed_data (ConversationId, EndTime, StartTime, Content, summary, satisfied, sentiment, topic, key_phrases, complaint) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)", (conversation_id, end_timestamp, start_timestamp, content, summary, satisfied, sentiment, topic, key_phrases, complaint))    
+#         conn.commit()
     
-        # keyPhrases = key_phrases.split(',')
-        # for keyPhrase in keyPhrases:
-        #     cursor.execute(f"INSERT INTO processed_data_key_phrases (ConversationId, key_phrase, sentiment) VALUES (%s,%s,%s)", (conversation_id, keyPhrase, sentiment))
+#         # keyPhrases = key_phrases.split(',')
+#         # for keyPhrase in keyPhrases:
+#         #     cursor.execute(f"INSERT INTO processed_data_key_phrases (ConversationId, key_phrase, sentiment) VALUES (%s,%s,%s)", (conversation_id, keyPhrase, sentiment))
 
-        document_id = conversation_id
+#         document_id = conversation_id
 
-        result = prepare_search_doc(content, document_id)
-        docs.append(result)
-        counter += 1
-    except:
-        pass
+#         result = prepare_search_doc(content, document_id)
+#         docs.append(result)
+#         counter += 1
+#     except:
+#         pass
 
-    if docs != [] and counter % 10 == 0:
-        result = search_client.upload_documents(documents=docs)
-        docs = []
-        print(f' {str(counter)} uploaded')
+#     if docs != [] and counter % 10 == 0:
+#         result = search_client.upload_documents(documents=docs)
+#         docs = []
+#         print(f' {str(counter)} uploaded')
 
 
-# upload the last batch
-if docs != []:
-    search_client.upload_documents(documents=docs)
+# # upload the last batch
+# if docs != []:
+#     search_client.upload_documents(documents=docs)
 
 
 ##########################################################

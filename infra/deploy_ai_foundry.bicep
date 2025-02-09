@@ -15,8 +15,8 @@ var storageSkuName = 'Standard_LRS'
 var aiServicesName = '${solutionName}-aiservices'
 var aiServicesName_cu = '${solutionName}-aiservices_cu'
 var location_cu = cuLocation
-var aiServicesName_m = '${solutionName}-aiservices_m'
-var location_m = solutionLocation
+// var aiServicesName_m = '${solutionName}-aiservices_m'
+// var location_m = solutionLocation
 var applicationInsightsName = '${solutionName}-appinsights'
 var containerRegistryName = '${solutionName}acr'
 var keyvaultName = '${solutionName}-kv'
@@ -661,8 +661,6 @@ resource azureLocatioEntry 'Microsoft.KeyVault/vaults/secrets@2021-11-01-preview
 
 output keyvaultName string = keyvaultName
 output keyvaultId string = keyVault.id
-// output storageName string = storageName
-// output storageContainer string = 'data'
 
 output aiServicesTarget string = aiServices.properties.endpoint //aiServices_m.properties.endpoint
 output aiServicesName string = aiServicesName //aiServicesName_m
@@ -674,18 +672,4 @@ output aiSearchName string = aiSearchName
 output aiSearchId string = aiSearch.id
 output aiSearchTarget string = 'https://${aiSearch.name}.search.windows.net'
 output aiSearchService string = aiSearch.name
-
-// output aifoundryOutput object = {
-//   id: aiHub.id
-//   keyvault: keyVault.id
-// }
-
-
-// output aiHubID string = aiHub.id
 output aiProjectName string = aiHubProject.name
-// // output aiservicesID string = aiServices.id
-// // output aiservicesTarget string = aiServices.properties.endpoint
-// // output storageId string = storage.id
-// output keyvaultId string = keyVault.id
-// // output containerRegistryId string = containerRegistry.id
-// // output applicationInsightsId string = applicationInsights.id
