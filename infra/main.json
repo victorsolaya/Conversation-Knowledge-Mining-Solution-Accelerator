@@ -5,11 +5,11 @@
     "_generator": {
       "name": "bicep",
       "version": "0.30.23.60470",
-      "templateHash": "11317992481192912673"
+      "templateHash": "237990510880029303"
     }
   },
   "parameters": {
-    "solutionPrefix": {
+    "environmentName": {
       "type": "string",
       "minLength": 3,
       "maxLength": 10,
@@ -93,6 +93,7 @@
     }
   },
   "variables": {
+    "solutionPrefix": "[parameters('environmentName')]",
     "gptModelVersion": "2024-02-15-preview",
     "resourceGroupLocation": "[resourceGroup().location]",
     "resourceGroupName": "[resourceGroup().name]",
@@ -112,7 +113,7 @@
         "mode": "Incremental",
         "parameters": {
           "solutionName": {
-            "value": "[parameters('solutionPrefix')]"
+            "value": "[variables('solutionPrefix')]"
           },
           "solutionLocation": {
             "value": "[variables('solutionLocation')]"
@@ -201,7 +202,7 @@
         "mode": "Incremental",
         "parameters": {
           "solutionName": {
-            "value": "[parameters('solutionPrefix')]"
+            "value": "[variables('solutionPrefix')]"
           },
           "solutionLocation": {
             "value": "[variables('resourceGroupLocation')]"
@@ -321,7 +322,7 @@
         "mode": "Incremental",
         "parameters": {
           "solutionName": {
-            "value": "[parameters('solutionPrefix')]"
+            "value": "[variables('solutionPrefix')]"
           },
           "solutionLocation": {
             "value": "[variables('resourceGroupLocation')]"
@@ -1034,7 +1035,7 @@
         "mode": "Incremental",
         "parameters": {
           "solutionName": {
-            "value": "[parameters('solutionPrefix')]"
+            "value": "[variables('solutionPrefix')]"
           },
           "solutionLocation": {
             "value": "[variables('solutionLocation')]"
@@ -1220,7 +1221,7 @@
         "mode": "Incremental",
         "parameters": {
           "solutionName": {
-            "value": "[parameters('solutionPrefix')]"
+            "value": "[variables('solutionPrefix')]"
           },
           "solutionLocation": {
             "value": "[parameters('secondaryLocation')]"
@@ -1426,7 +1427,7 @@
         "mode": "Incremental",
         "parameters": {
           "solutionName": {
-            "value": "[parameters('solutionPrefix')]"
+            "value": "[variables('solutionPrefix')]"
           },
           "solutionLocation": {
             "value": "[parameters('secondaryLocation')]"
@@ -1762,7 +1763,7 @@
         "mode": "Incremental",
         "parameters": {
           "solutionName": {
-            "value": "[parameters('solutionPrefix')]"
+            "value": "[variables('solutionPrefix')]"
           },
           "solutionLocation": {
             "value": "[variables('solutionLocation')]"
@@ -1956,7 +1957,7 @@
         "mode": "Incremental",
         "parameters": {
           "solutionName": {
-            "value": "[parameters('solutionPrefix')]"
+            "value": "[variables('solutionPrefix')]"
           },
           "solutionLocation": {
             "value": "[variables('solutionLocation')]"
@@ -2272,7 +2273,7 @@
         "mode": "Incremental",
         "parameters": {
           "solutionName": {
-            "value": "[parameters('solutionPrefix')]"
+            "value": "[variables('solutionPrefix')]"
           },
           "identity": {
             "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_managed_identity'), '2022-09-01').outputs.managedIdentityOutput.value.id]"
@@ -2341,7 +2342,7 @@
             "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_managed_identity'), '2022-09-01').outputs.managedIdentityOutput.value.id]"
           },
           "solutionName": {
-            "value": "[parameters('solutionPrefix')]"
+            "value": "[variables('solutionPrefix')]"
           },
           "solutionLocation": {
             "value": "[variables('solutionLocation')]"

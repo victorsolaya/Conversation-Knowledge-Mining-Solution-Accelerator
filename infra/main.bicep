@@ -4,7 +4,9 @@ targetScope = 'resourceGroup'
 @minLength(3)
 @maxLength(10)
 @description('A unique prefix for all resources in this deployment. This should be 3-10 characters long:')
-param solutionPrefix string
+param environmentName string
+
+var solutionPrefix = environmentName
 
 @minLength(1)
 @description('Location for the Content Understanding service deployment:')
