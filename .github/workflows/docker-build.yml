@@ -53,7 +53,9 @@ jobs:
           else
             echo "tagname=default" >> $GITHUB_OUTPUT
           fi
-      
+      - name: Print the Tag Name
+        run: echo "The determined tag name is ${{ steps.determine_tag.outputs.tagname }}"
+          
       - name: Build and Push Docker Image for WebApp
         uses: docker/build-push-action@v6
         with:
@@ -62,7 +64,7 @@ jobs:
           push: ${{ github.ref_name == 'main' || github.ref_name == 'dev' || github.ref_name == 'demo' }}
           tags: |
             ${{ secrets.ACR_LOGIN_SERVER }}/km-app:${{ steps.determine_tag.outputs.tagname }}
-            echo secrets.ACR_LOGIN_SERVER
+             echo "The login server is ${{ secrets.ACR_LOGIN_SERVER }}"
             ${{ secrets.ACR_LOGIN_SERVER }}/km-app:${{ steps.determine_tag.outputs.tagname }}_${{ steps.date.outputs.date }}_${{ github.run_number }}
 
       - name: Build and Push Docker Image for km-rag-function
