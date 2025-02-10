@@ -48,15 +48,16 @@ jobs:
       - name: Determine Tag Name Based on Branch
         id: determine_tag
         run: |
-              if [[ "${{ github.ref_name }}" == "main" ]]; then
-                    echo "tagname=${{ secrets.ACR_LOGIN_SERVER }}/km-app:latest" >> $GITHUB_OUTPUT
-                  elif [[ "${{ github.ref_name }}" == "dev" ]]; then
-                    echo "tagname=${{ secrets.ACR_LOGIN_SERVER }}/km-app:dev" >> $GITHUB_OUTPUT
-                  elif [[ "${{ github.ref_name }}" == "demo" ]]; then
-                    echo "tagname=${{ secrets.ACR_LOGIN_SERVER }}/km-app:demo" >> $GITHUB_OUTPUT
-                  else
-                    echo "tagname=${{ secrets.ACR_LOGIN_SERVER }}/km-app:default" >> $GITHUB_OUTPUT
-                  fi
+         if [[ "${{ github.ref_name }}" == "main" ]]; then
+          echo "tagname=latest" >> $GITHUB_OUTPUT
+         elif [[ "${{ github.ref_name }}" == "dev" ]]; then
+          echo "tagname=dev" >> $GITHUB_OUTPUT
+         elif [[ "${{ github.ref_name }}" == "demo" ]]; then
+          echo "tagname=demo" >> $GITHUB_OUTPUT
+         else
+          echo "tagname=default" >> $GITHUB_OUTPUT
+       
+         fi
       - name: Build and Push Docker Image for WebApp
         uses: docker/build-push-action@v6
         with:
@@ -74,8 +75,8 @@ jobs:
           file: ./AzureFunctions/km-rag-function/Dockerfile
           push: ${{ github.ref_name == 'main' || github.ref_name == 'dev' || github.ref_name == 'demo' }}
           tags: |
-            ${{ steps.determine_tag.outputs.tagname }}
-            ${{ steps.determine_tag.outputs.tagname }}_${{ steps.date.outputs.date }}_${{ github.run_number }}
+            ${{ secrets.ACR_LOGIN_SERVER }}/km-rag-function:${{ steps.determine_tag.outputs.tagname }}
+            ${{ secrets.ACR_LOGIN_SERVER }}/km-rag-function:${{ steps.determine_tag.outputs.tagname }}_${{ steps.date.outputs.date }}_${{ github.run_number }}
 
       - name: Build and Push Docker Image for km-charts-function
         uses: docker/build-push-action@v6
