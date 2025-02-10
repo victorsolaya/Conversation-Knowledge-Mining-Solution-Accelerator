@@ -44,11 +44,11 @@ jobs:
       - name: Determine Tag Name Based on Branch
         id: determine_tag
         run: |
-          if [[ "${{ github.ref_name }}" == "main" || "${{ github.head_ref }}" == "main" ]]; then
+          if [[ "${{ github.ref_name }}" == "main" ]]; then
             echo "tagname=latest" >> $GITHUB_OUTPUT
-          elif [[ "${{ github.ref_name }}" == "dev" || "${{ github.head_ref }}" == "dev" ]]; then
+          elif [[ "${{ github.ref_name }}" == "dev" ]]; then
             echo "tagname=dev" >> $GITHUB_OUTPUT
-          elif [[ "${{ github.ref_name }}" == "demo" || "${{ github.head_ref }}" == "demo" ]]; then
+          elif [[ "${{ github.ref_name }}" == "demo"]]; then
             echo "tagname=demo" >> $GITHUB_OUTPUT
           else
             echo "tagname=default" >> $GITHUB_OUTPUT
