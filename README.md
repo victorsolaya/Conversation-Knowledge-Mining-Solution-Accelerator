@@ -138,6 +138,30 @@ Once you've opened the project in [Codespaces](#github-codespaces), in [Dev Cont
 
 </details>
 
+### Azure account setup
+
+1. Sign up for a [free Azure account](https://azure.microsoft.com/free/) and create an Azure Subscription.
+2. Check that you have the necessary permissions:
+    * Your Azure account must have `Microsoft.Authorization/roleAssignments/write` permissions, such as [Role Based Access Control Administrator](https://learn.microsoft.com/azure/role-based-access-control/built-in-roles#role-based-access-control-administrator-preview), [User Access Administrator](https://learn.microsoft.com/azure/role-based-access-control/built-in-roles#user-access-administrator), or [Owner](https://learn.microsoft.com/azure/role-based-access-control/built-in-roles#owner).
+    * Your Azure account also needs `Microsoft.Resources/deployments/write` permissions on the subscription level.
+
+### Deploying with azd
+
+1. Login to Azure:
+
+    ```shell
+    azd auth login
+    ```
+
+2. Provision and deploy all the resources:
+
+    ```shell
+    azd up
+    ```
+
+    It will prompt you to provide an `azd` environment name (like "azureaiapp"), select a subscription from your Azure account, and select a location which has quota for all the resources. Then it will provision the resources in your account and deploy the latest code. If you get an error or timeout with deployment, changing the location can help, as there may be availability constraints for the resources.
+
+3. You can now proceed to run the [development server](#development-server) to test the app locally, or if you are done trying out the app, you can delete the resources by running `azd down`.
 
 <details>
   <summary><b>Deploy with Bicep/ARM template</b></summary>
