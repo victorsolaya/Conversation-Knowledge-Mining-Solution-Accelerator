@@ -1,6 +1,6 @@
 using './main.bicep'
 
-param environmentName = 'ckmazd'
+param environmentName = readEnvironmentVariable('AZURE_ENV_NAME', 'env_name')
 param contentUnderstandingLocation = 'West US'
 param secondaryLocation = 'eastus2'
 param deploymentType = 'GlobalStandard'
