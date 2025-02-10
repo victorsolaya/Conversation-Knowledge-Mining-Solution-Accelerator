@@ -44,16 +44,16 @@ jobs:
       - name: Determine Tag Name Based on Branch
         id: determine_tag
         run: |
-         if [[ "${{ github.ref_name }}" == "main" ]]; then
-          echo "tagname=latest" >> $GITHUB_OUTPUT
-         elif [[ "${{ github.ref_name }}" == "dev" ]]; then
-          echo "tagname=dev" >> $GITHUB_OUTPUT
-         elif [[ "${{ github.ref_name }}" == "demo" ]]; then
-          echo "tagname=demo" >> $GITHUB_OUTPUT
-         else
-          echo "tagname=default" >> $GITHUB_OUTPUT
-       
-         fi
+          if [[ "${{ github.ref_name }}" == "main" || "${{ github.head_ref }}" == "main" ]]; then
+            echo "tagname=latest" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.ref_name }}" == "dev" || "${{ github.head_ref }}" == "dev" ]]; then
+            echo "tagname=dev" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.ref_name }}" == "demo" || "${{ github.head_ref }}" == "demo" ]]; then
+            echo "tagname=demo" >> $GITHUB_OUTPUT
+          else
+            echo "tagname=default" >> $GITHUB_OUTPUT
+          fi
+      
       - name: Build and Push Docker Image for WebApp
         uses: docker/build-push-action@v6
         with:
@@ -62,6 +62,7 @@ jobs:
           push: ${{ github.ref_name == 'main' || github.ref_name == 'dev' || github.ref_name == 'demo' }}
           tags: |
             ${{ secrets.ACR_LOGIN_SERVER }}/km-app:${{ steps.determine_tag.outputs.tagname }}
+            echo secrets.ACR_LOGIN_SERVER
             ${{ secrets.ACR_LOGIN_SERVER }}/km-app:${{ steps.determine_tag.outputs.tagname }}_${{ steps.date.outputs.date }}_${{ github.run_number }}
 
       - name: Build and Push Docker Image for km-rag-function
