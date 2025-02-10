@@ -1,6 +1,6 @@
 using './main.bicep'
 
-param solutionPrefix = 'ckmazd'
+param environmentName = 'ckmazd'
 param contentUnderstandingLocation = 'West US'
 param secondaryLocation = 'eastus2'
 param deploymentType = 'GlobalStandard'
