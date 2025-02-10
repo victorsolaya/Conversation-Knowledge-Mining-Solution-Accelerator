@@ -43,7 +43,7 @@ jobs:
         
       - name: Output ACR Login Server
         run: |
-          echo "ACR Login Server: ${{ secrets.ACR_LOGIN_SERVER }}"
+          echo "ACR Login Server (partial): ${secrets.ACR_LOGIN_SERVER:0:5}****"
 
       - name: Determine Tag Name Based on Branch
         id: determine_tag
