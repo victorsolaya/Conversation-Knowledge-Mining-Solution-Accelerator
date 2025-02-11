@@ -134,6 +134,18 @@ If you're not using one of the above options for opening the project, then you'l
 
 </details>
 
+<details>
+  <summary><b>Deploy with Bicep/ARM template</b></summary>
+
+### Quick Deploy (Bicep)
+
+1. **Deploy Azure resources**  
+   Click the following deployment button to create the required resources for this accelerator directly in your Azure Subscription.
+
+   [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fmicrosoft%2FConversation-Knowledge-Mining-Solution-Accelerator%2FKM-AIFoundry%2Finfra%2Fmain.json)          
+
+</details>
+<br/>
 ## Deploying
 
 Once you've opened the project in [Codespaces](#github-codespaces), in [Dev Containers](#vs-code-dev-containers), or [locally](#local-environment), you can deploy it to Azure.
@@ -163,17 +175,6 @@ Once you've opened the project in [Codespaces](#github-codespaces), in [Dev Cont
 
 3. You can now proceed to run the [development server](#development-server) to test the app locally, or if you are done trying out the app, you can delete the resources by running `azd down`.
 
-<details>
-  <summary><b>Deploy with Bicep/ARM template</b></summary>
-
-### Quick Deploy (Bicep)
-
-1. **Deploy Azure resources**  
-   Click the following deployment button to create the required resources for this accelerator directly in your Azure Subscription.
-
-   [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fmicrosoft%2FConversation-Knowledge-Mining-Solution-Accelerator%2FKM-AIFoundry%2Finfra%2Fmain.json)          
-
-</details>
 <br/>
 <h2>
 Additional Steps
