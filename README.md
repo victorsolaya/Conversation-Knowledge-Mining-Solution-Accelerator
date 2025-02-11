@@ -58,7 +58,7 @@ When you start the deployment using one of the options below, most parameters wi
 
 -  Content Understanding location from the drop-down list of values
 
--  Secondary cocation, a less busy location for Azure SQL and CosmoDB resources if you run into any availability constraints 
+-  Secondary location, a less busy location for Azure SQL and CosmoDB resources if you run into any availability constraints 
 
 -  Deployment type from the drop-down list of values
 
@@ -72,7 +72,6 @@ When you start the deployment using one of the options below, most parameters wi
 
 ### **Options**
 Pick from the options below to see step-by-step instructions for: GitHub Codespaces, VS Code Dev Containers, Local Environments, and Bicep deployments.
-<!-- We recommend using the first option (Bicep) because it is the fastest and easiest way to get started. -->
 
 <details>
   <summary><b>Deploy in GitHub Codespaces</b></summary>
