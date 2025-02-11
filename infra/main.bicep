@@ -66,6 +66,7 @@ param embeddingModel string = 'text-embedding-ada-002'
 @description('Capacity of the Embedding Model deployment')
 param embeddingDeploymentCapacity int = 80
 
+param imageTag string = 'latest'
 
 var resourceGroupLocation = resourceGroup().location
 var resourceGroupName = resourceGroup().name
@@ -183,6 +184,7 @@ module createIndex 'deploy_index_scripts.bicep' = {
 module azureFunctionsCharts 'deploy_azure_function_charts.bicep' = {
   name : 'deploy_azure_function_charts'
   params:{
+    imageTag: imageTag
     solutionName: solutionPrefix
     solutionLocation: solutionLocation
     sqlServerName: sqlDBModule.outputs.sqlServerName
@@ -198,6 +200,7 @@ module azureFunctionsCharts 'deploy_azure_function_charts.bicep' = {
 module azureragFunctionsRag 'deploy_azure_function_rag.bicep' = {
   name : 'deploy_azure_function_rag'
   params:{
+    imageTag: imageTag
     solutionName: solutionPrefix
     solutionLocation: solutionLocation
     azureOpenAIApiKey:keyVault.getSecret('AZURE-OPENAI-KEY')
@@ -231,6 +234,7 @@ module azureFunctionURL 'deploy_azure_function_urls.bicep' = {
 module appserviceModule 'deploy_app_service.bicep' = {
   name: 'deploy_app_service'
   params: {
+    imageTag: imageTag
     identity:managedIdentityModule.outputs.managedIdentityOutput.id
     solutionName: solutionPrefix
     solutionLocation: solutionLocation

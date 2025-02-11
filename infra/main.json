@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.33.93.31351",
-      "templateHash": "9851416176604449359"
+      "templateHash": "9583552693408867324"
     }
   },
   "parameters": {
@@ -90,6 +90,10 @@
       "metadata": {
         "description": "Capacity of the Embedding Model deployment"
       }
+    },
+    "imageTag": {
+      "type": "string",
+      "defaultValue": "latest"
     }
   },
   "variables": {
@@ -1763,6 +1767,9 @@
         },
         "mode": "Incremental",
         "parameters": {
+          "imageTag": {
+            "value": "[parameters('imageTag')]"
+          },
           "solutionName": {
             "value": "[variables('solutionPrefix')]"
           },
@@ -1797,7 +1804,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.33.93.31351",
-              "templateHash": "11218339316665984116"
+              "templateHash": "8291781429768450130"
             }
           },
           "parameters": {
@@ -1824,12 +1831,15 @@
             },
             "managedIdentityObjectId": {
               "type": "string"
+            },
+            "imageTag": {
+              "type": "string"
             }
           },
           "variables": {
             "functionAppName": "[format('{0}-charts-fn', parameters('solutionName'))]",
             "storageaccountname": "[format('{0}chartsfnacc', parameters('solutionName'))]",
-            "dockerImage": "DOCKER|kmcontainerreg.azurecr.io/km-charts-function:latest",
+            "dockerImage": "[format('DOCKER|kmcontainerreg.azurecr.io/km-charts-function:{0}', parameters('imageTag'))]",
             "environmentName": "[format('{0}-charts-fn-env', parameters('solutionName'))]"
           },
           "resources": [
@@ -1957,6 +1967,9 @@
         },
         "mode": "Incremental",
         "parameters": {
+          "imageTag": {
+            "value": "[parameters('imageTag')]"
+          },
           "solutionName": {
             "value": "[variables('solutionPrefix')]"
           },
@@ -2033,7 +2046,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.33.93.31351",
-              "templateHash": "13267579186151664804"
+              "templateHash": "10412104505605413963"
             }
           },
           "parameters": {
@@ -2087,12 +2100,15 @@
             },
             "managedIdentityObjectId": {
               "type": "string"
+            },
+            "imageTag": {
+              "type": "string"
             }
           },
           "variables": {
             "functionAppName": "[format('{0}-rag-fn', parameters('solutionName'))]",
             "storageaccountname": "[format('{0}ragfnacc', parameters('solutionName'))]",
-            "dockerImage": "DOCKER|kmcontainerreg.azurecr.io/km-rag-function:latest",
+            "dockerImage": "[format('DOCKER|kmcontainerreg.azurecr.io/km-rag-function:{0}', parameters('imageTag'))]",
             "environmentName": "[format('{0}-rag-fn-env', parameters('solutionName'))]"
           },
           "resources": [
@@ -2339,6 +2355,9 @@
         },
         "mode": "Incremental",
         "parameters": {
+          "imageTag": {
+            "value": "[parameters('imageTag')]"
+          },
           "identity": {
             "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_managed_identity'), '2022-09-01').outputs.managedIdentityOutput.value.id]"
           },
@@ -2414,7 +2433,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.33.93.31351",
-              "templateHash": "17494211244945916977"
+              "templateHash": "1923507558856922316"
             }
           },
           "parameters": {
@@ -2562,10 +2581,13 @@
               "metadata": {
                 "description": "Enable feedback in Cosmos DB"
               }
+            },
+            "imageTag": {
+              "type": "string"
             }
           },
           "variables": {
-            "WebAppImageName": "DOCKER|kmcontainerreg.azurecr.io/km-app:latest",
+            "WebAppImageName": "[format('DOCKER|kmcontainerreg.azurecr.io/km-app:{0}', parameters('imageTag'))]",
             "REACT_APP_LAYOUT_CONFIG": "{\r\n  \"appConfig\": {\r\n    \"THREE_COLUMN\": {\r\n      \"DASHBOARD\": 50,\r\n      \"CHAT\": 33,\r\n      \"CHATHISTORY\": 17\r\n    },\r\n    \"TWO_COLUMN\": {\r\n      \"DASHBOARD_CHAT\": {\r\n        \"DASHBOARD\": 65,\r\n        \"CHAT\": 35\r\n      },\r\n      \"CHAT_CHATHISTORY\": {\r\n        \"CHAT\": 80,\r\n        \"CHATHISTORY\": 20\r\n      }\r\n    }\r\n  },\r\n  \"charts\": [\r\n    {\r\n      \"id\": \"SATISFIED\",\r\n      \"name\": \"Satisfied\",\r\n      \"type\": \"card\",\r\n      \"layout\": { \"row\": 1, \"column\": 1, \"height\": 11 }\r\n    },\r\n    {\r\n      \"id\": \"TOTAL_CALLS\",\r\n      \"name\": \"Total Calls\",\r\n      \"type\": \"card\",\r\n      \"layout\": { \"row\": 1, \"column\": 2, \"span\": 1 }\r\n    },\r\n    {\r\n      \"id\": \"AVG_HANDLING_TIME\",\r\n      \"name\": \"Average Handling Time\",\r\n      \"type\": \"card\",\r\n      \"layout\": { \"row\": 1, \"column\": 3, \"span\": 1 }\r\n    },\r\n    {\r\n      \"id\": \"SENTIMENT\",\r\n      \"name\": \"Topics Overview\",\r\n      \"type\": \"donutchart\",\r\n      \"layout\": { \"row\": 2, \"column\": 1, \"width\": 40, \"height\": 44.5 }\r\n    },\r\n    {\r\n      \"id\": \"AVG_HANDLING_TIME_BY_TOPIC\",\r\n      \"name\": \"Average Handling Time By Topic\",\r\n      \"type\": \"bar\",\r\n      \"layout\": { \"row\": 2, \"column\": 2, \"row-span\": 2, \"width\": 60 }\r\n    },\r\n    {\r\n      \"id\": \"TOPICS\",\r\n      \"name\": \"Trending Topics\",\r\n      \"type\": \"table\",\r\n      \"layout\": { \"row\": 3, \"column\": 1, \"span\": 2 }\r\n    },\r\n    {\r\n      \"id\": \"KEY_PHRASES\",\r\n      \"name\": \"Key Phrases\",\r\n      \"type\": \"wordcloud\",\r\n      \"layout\": { \"row\": 3, \"column\": 2, \"height\": 44.5 }\r\n    }\r\n  ]\r\n}"
           },
           "resources": [
