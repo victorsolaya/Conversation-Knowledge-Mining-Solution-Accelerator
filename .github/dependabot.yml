@@ -1,37 +1,37 @@
 version: 2
 updates:
-  # GitHub Actions dependencies
-  - package-ecosystem: "github-actions"
-    directory: "/"
-    schedule:
-      interval: "monthly"
-    commit-message:
-      prefix: "build"
-    target-branch: "dependabotchanges"
-    open-pull-requests-limit: 30
+ # GitHub Actions dependencies
+ - package-ecosystem: "github-actions"
+   directory: "/"
+   schedule:
+     interval: "monthly"
+   commit-message:
+     prefix: "build"
+   target-branch: "dependabotchanges"
+   open-pull-requests-limit: 30
 
-  - package-ecosystem: "pip"
-    directory: "/App"
-    schedule:
-      interval: "monthly"
-    commit-message:
-      prefix: "build"
-    target-branch: "dependabotchanges"
-    open-pull-requests-limit: 60
+ - package-ecosystem: "pip"
+   directory: "/App"
+   schedule:
+     interval: "monthly"
+   commit-message:
+     prefix: "build"
+   target-branch: "dependabotchanges"
+   open-pull-requests-limit: 60
 
-  - package-ecosystem: "npm"
-    directory: "/App/frontend"
-    schedule:
-      interval: "monthly"
-    commit-message:
-      prefix: "build"
-    target-branch: "dependabotchanges"
-    open-pull-requests-limit: 60
-    registries:
-      - azure_devops_registry
+ - package-ecosystem: "npm"
+   directory: "/App/frontend"
+   schedule:
+     interval: "monthly"
+   commit-message:
+     prefix: "build"
+   target-branch: "dependabotchanges"
+   open-pull-requests-limit: 60
+   registries:
+     - npm_public_registry  # Only use public npm registry
 
 registries:
-  azure_devops_registry:
-    type: npm-registry
-    url: https://pkgs.dev.azure.com/CSACTOSOL/KnowledgeMining/_packaging/KnowledgeMining/npm/registry
-    token: ${{ secrets.AZURE_DEVOPS_PAT }}
+ npm_public_registry:
+   type: "npm-registry"
+   url: "https://registry.npmjs.org/"
+   token: ${{ secrets.TOKEN }}
