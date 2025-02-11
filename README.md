@@ -125,7 +125,7 @@ If you're not using one of the above options for opening the project, then you'l
 2. Download the project code:
 
     ```shell
-    azd init -t microsoft/Conversation-Knowledge-Mining-Solution-Accelerator/
+    azd init -t microsoft/Conversation-Knowledge-Mining-Solution-Accelerator/ --branch KM-AIFoundry
     ```
 
 3. Open the project folder in your terminal or editor.
