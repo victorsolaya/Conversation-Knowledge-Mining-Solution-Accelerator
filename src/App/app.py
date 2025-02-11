@@ -209,15 +209,10 @@ def process_rag_response(rag_response, query):
     """
 
     try:
-        # Fetch API URL and key from environment variables
-        AZURE_OPENAI_ENDPOINT = os.getenv("AZURE_OPENAI_ENDPOINT")
-        API_KEY = os.getenv("AZURE_OPENAI_API_KEY")
-        logger.info(f">>>AZURE_OPENAI_ENDPOINT: {AZURE_OPENAI_ENDPOINT}")
-
-        endpoint = AZURE_OPENAI_ENDPOINT  # os.environ.get("AZURE_OPEN_AI_ENDPOINT")
-        api_key = API_KEY  # os.environ.get("AZURE_OPEN_AI_API_KEY")
-        api_version = "2024-05-01-preview"  # os.environ.get("OPENAI_API_VERSION")
-        deployment = "gpt-4o-mini"  # os.environ.get("AZURE_OPEN_AI_DEPLOYMENT_MODEL")
+        endpoint = AZURE_OPENAI_ENDPOINT
+        api_key = AZURE_OPENAI_API_KEY
+        api_version = AZURE_OPENAI_PREVIEW_API_VERSION
+        deployment = AZURE_OPENAI_DEPLOYMENT_NAME
 
         # "2023-09-01-preview"
         client = openai.AzureOpenAI(

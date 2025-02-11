@@ -371,7 +371,7 @@ resource aiHub 'Microsoft.MachineLearningServices/workspaces@2023-08-01-preview'
   resource aiServicesConnection 'connections@2024-07-01-preview' = {
     name: '${aiHubName}-connection-AzureOpenAI'
     properties: {
-      category: 'AzureOpenAI'
+      category: 'AIServices'
       target: aiServices.properties.endpoint
       authType: 'ApiKey'
       isSharedToAll: true
@@ -387,26 +387,6 @@ resource aiHub 'Microsoft.MachineLearningServices/workspaces@2023-08-01-preview'
       aiServicesDeployments,aiSearch
     ]
   }
-
-  // resource aiServicesConnection_m 'connections@2024-07-01-preview' = {
-  //   name: '${aiHubName}-connection-AzureOpenAI_m'
-  //   properties: {
-  //     category: 'AIServices'
-  //     target: aiServices_m.properties.endpoint
-  //     authType: 'ApiKey'
-  //     isSharedToAll: true
-  //     credentials: {
-  //       key: aiServices_m.listKeys().key1
-  //     }
-  //     metadata: {
-  //       ApiType: 'Azure'
-  //       ResourceId: aiServices_m.id
-  //     }
-  //   }
-  //   dependsOn: [
-  //     aiServicesDeployments,aiSearch,aiServicesConnection
-  //   ]
-  // }
   
   resource aiSearchConnection 'connections@2024-07-01-preview' = {
     name: '${aiHubName}-connection-AzureAISearch'
