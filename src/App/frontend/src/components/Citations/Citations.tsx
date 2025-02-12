@@ -1,11 +1,7 @@
 import React, { useMemo } from 'react';
-// import sampledata from '../../sampleResponseCitation.json';
-// import { AskResponse, Citation } from '../../api/models';
 import { parseAnswer } from './AnswerParser';
 import { useAppContext } from '../../state/useAppContext';
 import { actionConstants } from '../../state/ActionConstants';
-// import { parseAnswer } from "./AnswerParser";
-// import styles from "./Citations.css";
 import "./Citations.css";
 import { AskResponse, Citation } from '../../types/AppTypes';
 
@@ -17,11 +13,9 @@ interface Props {
 }
 
 const Citations = ({ answer, index }: Props) => {
-    // console.log("answer", answer);
     
     const { state, dispatch } = useAppContext();
     const parsedAnswer = useMemo(() => parseAnswer(answer), [answer]);
-    // console.log("parsedAnswer::", parsedAnswer);
     const filePathTruncationLimit = 50;
     const createCitationFilepath = (
         citation: Citation,
@@ -29,17 +23,7 @@ const Citations = ({ answer, index }: Props) => {
         truncate: boolean = false
     ) => {
         let citationFilename = "";
-
-        // if (citation.filepath && citation.chunk_id != null) {
-        //     if (truncate && citation.filepath.length > filePathTruncationLimit) {
-        //         const citationLength = citation.filepath.length;
-        //         citationFilename = `${citation.filepath.substring(0, 20)}...${citation.filepath.substring(citationLength - 20)} - Part ${citation.chunk_id}`;
-        //     } else {
-        //         citationFilename = `${citation.filepath} - Part ${citation.chunk_id}`;
-        //     }
-        // } else {
             citationFilename =  citation.title ? (citation.title ?? `Citation ${index}`) : `Citation ${index}`;
-        // }
         return citationFilename;
     };
 

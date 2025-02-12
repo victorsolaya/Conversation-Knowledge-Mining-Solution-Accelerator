@@ -9,7 +9,6 @@ import {
   StackItem,
   Text,
 } from "@fluentui/react";
-// import _ from "lodash";
 import styles from "./ChatHistoryListItemGroups.module.css";
 import { ChatHistoryListItemCell } from "../ChatHistoryListItemCell/ChatHistoryListItemCell";
 import { Conversation } from "../../types/AppTypes";

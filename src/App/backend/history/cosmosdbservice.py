@@ -158,7 +158,8 @@ class CosmosConversationClient:
             "updatedAt": datetime.utcnow().isoformat(),
             "conversationId": conversation_id,
             "role": input_message["role"],
-            "content": input_message["content"],
+            "content": input_message,
+    
         }
 
         if self.enable_message_feedback:
