@@ -200,4 +200,3 @@ class CosmosConversationClient:
             messages.append(item)
 
         return messages
-    
