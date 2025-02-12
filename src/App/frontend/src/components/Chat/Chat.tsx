@@ -27,10 +27,7 @@ import { callConversationApi, getIsChartDisplayDefault, historyUpdate } from "..
 import { ChatAdd24Regular } from "@fluentui/react-icons";
 import { generateUUIDv4 } from "../../configs/Utils";
 import ChatChart from "../ChatChart/ChatChart";
-import { endianness } from "os";
 import Citations from "../Citations/Citations";
-import { json } from "d3";
-// import Citations from "../Citations/Citations";
 
 type ChatProps = {
   onHandlePanelStates: (name: string) => void;
@@ -51,7 +48,6 @@ const Chat: React.FC<ChatProps> = ({
   const questionInputRef = useRef<HTMLTextAreaElement>(null);
   const [isChartLoading, setIsChartLoading] = useState(false)
   const abortFuncs = useRef([] as AbortController[]);
-  // const [lastRagResponse, setLastRagResponse] = useState<string | null>(null);
   const chatMessageStreamEnd = useRef<HTMLDivElement | null>(null);
   const [isCharthDisplayDefault , setIsCharthDisplayDefault] = useState(false);
   
@@ -88,7 +84,6 @@ const Chat: React.FC<ChatProps> = ({
       .then(async (res) => {
         if (!res.ok) {
           if (!messages) {
-            // setAnswers([...messages, errorChatMsg]);
             let err: Error = {
               ...new Error(),
               message: "Failure fetching current chat state.",
@@ -137,21 +132,15 @@ const Chat: React.FC<ChatProps> = ({
 
 
   const parseCitationFromMessage = (message : any) => {
-    // console.log("parseCitationFromMessage", message);
-    // const dummyres = '\"citations\": [ {\"content\":\"Lost phone\",\"url\":\"https://google.com\",\"title\":\"\"}, {\"content\":\"Phone freezing\",\"url\":\"\",\"title\":\"User Experience Report 1\"}, {\"content\":\"Internet speed issues\",\"url\":\"\",\"title\":\"\"}, {\"content\":\"Activation delays\",\"url\":\"\",\"title\":\"Experience Report\"}, {\"content\":\"Slow internet\",\"url\":\"\",\"title\":\"\"}, {\"content\":\"Network connectivity issues\",\"url\":\"\",\"title\":\"\"}, {\"content\":\"Poor network coverage\",\"url\":\"\",\"title\":\"abcd Report\"}, {\"content\":\"Voicemail not working\",\"url\":\"\",\"title\":\"\"} ] }';
-    // // if (message.role === TOOL) {
-    // message =dummyres;
+
       try {
         message = '{'+ message 
         const toolMessage = JSON.parse(message as string) as ToolMessageContent;
-        // console.log("toolMessage citations", toolMessage.citations);
         
         return toolMessage.citations;
       } catch {
         console.log("ERROR WHIEL PARSING TOOL CONTENT");
-        // return [];
       }
-    // }
     return [];
   };
   const isChartQuery = (query: string) => {
@@ -264,10 +253,6 @@ const Chat: React.FC<ChatProps> = ({
               runningText = text;
               isChartResponseReceived = true;
             }
-            // if (textObj?.object?.message) {
-            //   runningText = text;
-            //   isChartResponseReceived = true;
-            // }
             if (textObj?.error) {
               hasError = true;
               runningText = text;
@@ -509,7 +494,6 @@ const Chat: React.FC<ChatProps> = ({
                   } else if (isChartQuery(userMessage)) {
                     runningText = runningText + textValue;
                   } else if (typeof parsed === "object" && !hasError) {
-                    console.log(":::parsed::::",parsed);
                     const responseContent  = parsed?.choices?.[0]?.messages?.[0]?.content;
                      
                     const answerKey = `"answer":`;
@@ -657,6 +641,7 @@ const Chat: React.FC<ChatProps> = ({
           ];
         }
       }
+      console.log("line 66o:updatedMessages:::", updatedMessages)
       saveToDB(updatedMessages, conversationId, isChatReq);
     } catch (e) {
       console.log("Catched with an error while chat and save", e);
@@ -733,10 +718,6 @@ const Chat: React.FC<ChatProps> = ({
     dispatch({ type: actionConstants.NEW_CONVERSATION_START });
   };
   const { messages, citations } = state.chat;
-  useEffect(()=>{
-    // console.log('messages::', messages)
-    // console.log('citations::', citations)
-  },[citations, messages]);
   return (
     <div className="chat-container">
       <div className="chat-header">
@@ -800,7 +781,6 @@ const Chat: React.FC<ChatProps> = ({
                   );
                 }
                 if (typeof msg.content === "string") {
-                  // console.log("mesg.conent:::", msg)
                   return (
                     <div className="assistant-message">
                       <ReactMarkdown

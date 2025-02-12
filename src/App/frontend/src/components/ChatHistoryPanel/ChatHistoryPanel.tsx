@@ -136,15 +136,6 @@ export const ChatHistoryPanel: React.FC<ChatHistoryPanelProps> = (props) => {
             />
           </Stack>
 
-          {/* <Stack horizontal>
-            <CommandBarButton
-              iconProps={{ iconName: "Cancel" }}
-              title={"Hide"}
-              aria-label={"hide button"}
-              role="button"
-              // onClick={() => setShowHistoryPanel(false)}
-            />
-          </Stack> */}
         </Stack>
       </Stack>
       <Stack

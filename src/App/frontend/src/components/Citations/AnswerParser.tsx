@@ -1,5 +1,3 @@
-// import { AskResponse, Citation } from "../../api";
-import { cloneDeep } from "lodash-es";
 import { AskResponse, Citation } from "../../types/AppTypes";
 
 
@@ -16,7 +14,7 @@ const isDuplicate = (citation: Citation,citationIndex:string) => {
 };
 
 export function parseAnswer(answer: AskResponse): ParsedAnswer {
-    let answerText = answer.answer;
+    // let answerText = answer.answer;
     // const citationLinks = answerText.match(/\[(doc\d\d?\d?)]/g);
 
     // const lengthDocN = "[doc".length;

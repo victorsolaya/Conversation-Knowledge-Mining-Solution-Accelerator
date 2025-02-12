@@ -95,7 +95,7 @@ export const historyRead = async (convId: string): Promise<ChatMessage[]> => {
         return historyReadResponse.messages.map((msg: any) => ({
           id: msg.id,
           role: msg.role,
-          content: msg.content,
+          content: msg.content.content,
           date: msg.createdAt,
           feedback: msg.feedback ?? undefined,
           context: msg.context,
@@ -110,10 +110,11 @@ export const historyRead = async (convId: string): Promise<ChatMessage[]> => {
           const message: ChatMessage = {
             id: msg.id,
             role: msg.role,
-            content: msg.content,
+            content: msg.content.content,
             date: msg.createdAt,
             feedback: msg.feedback ?? undefined,
             context: msg.context,
+            citations: msg.content.citations,
             contentType: msg.contentType,
           };
           messages.push(message);
