@@ -542,7 +542,8 @@ const Chat: React.FC<ChatProps> = ({
         }
         // END OF STREAMING
         if (hasError) {
-          const errorMsg = JSON.parse(runningText).error;
+          const errorMsg = JSON.parse(runningText).error === "Attempted to access streaming response content, without having called `read()`."?"An error occurred. Please try again later.": JSON.parse(runningText).error;
+          
           const errorMessage: ChatMessage = {
             id: generateUUIDv4(),
             role: ASSISTANT,
