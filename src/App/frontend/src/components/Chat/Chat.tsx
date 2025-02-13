@@ -642,7 +642,6 @@ const Chat: React.FC<ChatProps> = ({
           ];
         }
       }
-      console.log("line 66o:updatedMessages:::", updatedMessages)
       saveToDB(updatedMessages, conversationId, isChatReq);
     } catch (e) {
       console.log("Catched with an error while chat and save", e);
@@ -759,6 +758,8 @@ const Chat: React.FC<ChatProps> = ({
           messages.map((msg, index) => (
             <div key={index} className={`chat-message ${msg.role}`}>
               {(() => {
+                 const isLastAssistantMessage =
+                 msg.role === "assistant" && index === messages.length - 1;
                 if ((msg.role === "user") && typeof msg.content === "string") {
                   if (msg.content == "show in a graph by default") return null;
                     return (
@@ -788,16 +789,25 @@ const Chat: React.FC<ChatProps> = ({
                         remarkPlugins={[remarkGfm, supersub]}
                         children={msg.content}
                       />
-                      <Citations
-                      answer={{
-                        answer: msg.content,
-                        citations:
-                          msg.role === ASSISTANT
-                            ? parseCitationFromMessage(msg.citations)
-                            : [],
-                      }} 
-                      index={index}
-                      />
+                     {/* Citation Loader: Show only while citations are fetching */}
+                      {isLastAssistantMessage && generatingResponse ? (
+                        <div className="typing-indicator">
+                          <span className="dot"></span>
+                          <span className="dot"></span>
+                          <span className="dot"></span>
+                        </div>
+                      ) : (
+                        <Citations
+                          answer={{
+                            answer: msg.content,
+                            citations:
+                              msg.role === "assistant"
+                                ? parseCitationFromMessage(msg.citations)
+                                : [],
+                          }}
+                          index={index}
+                        />
+                      )}
 
                       <div className="answerDisclaimerContainer">
                         <span className="answerDisclaimer">
