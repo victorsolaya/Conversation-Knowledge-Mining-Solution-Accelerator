@@ -6,8 +6,6 @@ targetScope = 'resourceGroup'
 @description('A unique prefix for all resources in this deployment. This should be 3-10 characters long:')
 param environmentName string
 
-var solutionPrefix = environmentName
-
 @minLength(1)
 @description('Location for the Content Understanding service deployment:')
 @allowed(['West US'
@@ -68,8 +66,10 @@ param embeddingDeploymentCapacity int = 80
 
 param imageTag string = 'latest'
 
+var uniqueId = toLower(uniqueString(subscription().id, environmentName, resourceGroup().location))
+var solutionPrefix = 'km${padLeft(take(uniqueId, 12), 12, '0')}'
 var resourceGroupLocation = resourceGroup().location
-var resourceGroupName = resourceGroup().name
+// var resourceGroupName = resourceGroup().name
 
 var solutionLocation = resourceGroupLocation
 var baseUrl = 'https://raw.githubusercontent.com/microsoft/Conversation-Knowledge-Mining-Solution-Accelerator/main/'
@@ -191,7 +191,7 @@ module azureFunctionsCharts 'deploy_azure_function_charts.bicep' = {
     sqlDbName: sqlDBModule.outputs.sqlDbName
     sqlDbUser: sqlDBModule.outputs.sqlDbUser
     sqlDbPwd:keyVault.getSecret('SQLDB-PASSWORD')
-    managedIdentityObjectId:managedIdentityModule.outputs.managedIdentityOutput.objectId
+    // managedIdentityObjectId:managedIdentityModule.outputs.managedIdentityOutput.objectId
   }
   dependsOn:[keyVault]
 }
@@ -225,7 +225,7 @@ module azureFunctionURL 'deploy_azure_function_urls.bicep' = {
   name : 'deploy_azure_function_urls'
   params:{
     solutionName: solutionPrefix
-    identity:managedIdentityModule.outputs.managedIdentityOutput.id
+    // identity:managedIdentityModule.outputs.managedIdentityOutput.id
   }
   dependsOn:[azureFunctionsCharts,azureragFunctionsRag]
 }
@@ -235,9 +235,9 @@ module appserviceModule 'deploy_app_service.bicep' = {
   name: 'deploy_app_service'
   params: {
     imageTag: imageTag
-    identity:managedIdentityModule.outputs.managedIdentityOutput.id
+    // identity:managedIdentityModule.outputs.managedIdentityOutput.id
     solutionName: solutionPrefix
-    solutionLocation: solutionLocation
+    // solutionLocation: solutionLocation
     AzureOpenAIEndpoint:aifoundry.outputs.aiServicesTarget
     AzureOpenAIModel: gptModelName //'gpt-4o-mini'
     AzureOpenAIKey:keyVault.getSecret('AZURE-OPENAI-KEY')
@@ -250,7 +250,7 @@ module appserviceModule 'deploy_app_service.bicep' = {
     GRAPHRAG_URL:azureFunctionURL.outputs.functionURLsOutput.graphrag_function_url
     RAG_URL:azureFunctionURL.outputs.functionURLsOutput.rag_function_url
     AZURE_COSMOSDB_ACCOUNT: cosmosDBModule.outputs.cosmosAccountName
-    AZURE_COSMOSDB_ACCOUNT_KEY: keyVault.getSecret('AZURE-COSMOSDB-ACCOUNT-KEY')
+    // AZURE_COSMOSDB_ACCOUNT_KEY: keyVault.getSecret('AZURE-COSMOSDB-ACCOUNT-KEY')
     AZURE_COSMOSDB_CONVERSATIONS_CONTAINER: cosmosDBModule.outputs.cosmosContainerName
     AZURE_COSMOSDB_DATABASE: cosmosDBModule.outputs.cosmosDatabaseName
     AZURE_COSMOSDB_ENABLE_FEEDBACK:'True'

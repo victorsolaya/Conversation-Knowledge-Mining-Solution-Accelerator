@@ -159,6 +159,67 @@ Once you've opened the project in [Codespaces](#github-codespaces), in [Dev Cont
 
 You can view the permissions for your account and subscription by going to Azure portal, clicking 'Subscriptions' under 'Navigation' and then choosing your subscription from the list. If you try to search for your subscription and it does not come up, make sure no filters are selected. After selecting your subscription, select 'Access control (IAM)' and you can see the roles that are assigned to your account for this subscription. If you want to see more information about the roles, you can go to the 'Role assignments' tab and search by your account name and then click the role you want to view more information about.
 
+## Customizing resource names
+
+By default this template will use a default naming convention to prevent naming collisions within Azure.
+To override default naming conventions the following can be set.
+
+* `AZURE_ENV_CU_LOCATION` - The name of the Content Understanding Location
+* `AZURE_ENV_SECONDARY_LOCATION` - The name of the Secondary Location
+* `AZURE_ENV_MODEL_DEPLOYMENT_TYPE` - The name of the Model Deployment Type
+* `AZURE_ENV_MODEL_NAME` - The name of the Model Name
+* `AZURE_ENV_MODEL_CAPACITY` - The name of the Model Capacity
+* `AZURE_ENV_EMBEDDING_MODEL_NAME` - The name of the Embedding Model
+* `AZURE_ENV_EMBEDDING_MODEL_CAPACITY` - The name of the Embedding Deployment Capacity
+
+To override any of those resource names, run `azd env set <key> <value>` before running `azd up`.
+
+## Customizing deployments
+
+To customize the deployments, you can set the following environment variables:
+
+Change the Content Understanding Location:
+
+```shell
+azd env set AZURE_ENV_CU_LOCATION 'West US'
+```
+
+Change the Secondary Location:
+
+```shell
+azd env set AZURE_ENV_SECONDARY_LOCATION eastus2
+```
+
+Change the Model Deployment Type:
+
+```shell
+azd env set AZURE_ENV_MODEL_DEPLOYMENT_TYPE GlobalStandard
+```
+
+Set the Model Name:
+
+```shell
+azd env set AZURE_ENV_MODEL_NAME gpt-4o-mini
+```
+
+Change the Model Capacity:
+
+```shell
+azd env set AZURE_ENV_MODEL_CAPACITY 100
+```
+
+Change the Embedding Model:
+
+```shell
+azd env set AZURE_ENV_EMBEDDING_MODEL_NAME text-embedding-ada-002
+```
+
+Change the Embedding Deployment Capacity:
+
+```shell
+azd env set AZURE_ENV_EMBEDDING_MODEL_CAPACITY 80
+```
+
 ### Deploying with azd
 
 1. Login to Azure:

@@ -1,6 +1,6 @@
 @description('Specifies the location for resources.')
 param solutionName string 
-param identity string
+// param identity string
 
 var chartsfunctionAppName = '${solutionName}-charts-fn'
 var chartsfunctionName = 'get_metrics'

@@ -6,10 +6,10 @@ targetScope = 'resourceGroup'
 @description('Solution Name')
 param solutionName string
 
-@description('Solution Location')
-param solutionLocation string
+// @description('Solution Location')
+// param solutionLocation string
 
-param identity string
+// param identity string
 
 @description('Name of App Service plan')
 param HostingPlanName string = '${ solutionName }-app-service-plan'
@@ -50,9 +50,9 @@ param USE_CHAT_HISTORY_ENABLED string = ''
 @description('Azure Cosmos DB Account')
 param AZURE_COSMOSDB_ACCOUNT string = ''
 
-@description('Azure Cosmos DB Account Key')
-@secure()
-param AZURE_COSMOSDB_ACCOUNT_KEY string = ''
+// @description('Azure Cosmos DB Account Key')
+// @secure()
+// param AZURE_COSMOSDB_ACCOUNT_KEY string = ''
 
 @description('Azure Cosmos DB Conversations Container')
 param AZURE_COSMOSDB_CONVERSATIONS_CONTAINER string = ''

@@ -6,10 +6,10 @@ param sqlDbName string
 param sqlDbUser string
 @secure()
 param sqlDbPwd string
-param managedIdentityObjectId string
+// param managedIdentityObjectId string
 param imageTag string
 var functionAppName = '${solutionName}-charts-fn'
-var storageaccountname = '${solutionName}chartsfnacc'
+var storageaccountname = '${solutionName}chartfnacc'
 var dockerImage = 'DOCKER|kmcontainerreg.azurecr.io/km-charts-function:${imageTag}'
 var environmentName = '${solutionName}-charts-fn-env'
 
