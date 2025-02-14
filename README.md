@@ -220,8 +220,6 @@ Change the Embedding Deployment Capacity:
 azd env set AZURE_ENV_EMBEDDING_MODEL_CAPACITY 80
 ```
 
-You can view the permissions for your account and subscription by going to Azure portal, clicking 'Subscriptions' under 'Navigation' and then choosing your subscription from the list. If you try to search for your subscription and it does not come up, make sure no filters are selected. After selecting your subscription, select 'Access control (IAM)' and you can see the roles that are assigned to your account for this subscription. If you want to see more information about the roles, you can go to the 'Role assignments' tab and search by your account name and then click the role you want to view more information about.
-
 ### Deploying with azd
 
 1. Login to Azure:
