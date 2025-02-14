@@ -74,9 +74,6 @@ resource storageAccounts_default_data 'Microsoft.Storage/storageAccounts/blobSer
     denyEncryptionScopeOverride: false
     publicAccess: 'None'
   }
-  dependsOn: [
-    storageAccounts_resource
-  ]
 }
 
 // resource storageAccounts_default_input 'Microsoft.Storage/storageAccounts/blobServices/containers@2022-09-01' = {

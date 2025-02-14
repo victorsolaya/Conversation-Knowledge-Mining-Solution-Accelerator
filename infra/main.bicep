@@ -216,7 +216,7 @@ module azureragFunctionsRag 'deploy_azure_function_rag.bicep' = {
     sqlDbUser:sqlDBModule.outputs.sqlDbUser
     sqlDbPwd:keyVault.getSecret('SQLDB-PASSWORD')
     aiProjectName:aifoundry.outputs.aiProjectName
-    managedIdentityObjectId:managedIdentityModule.outputs.managedIdentityOutput.objectId
+    // managedIdentityObjectId:managedIdentityModule.outputs.managedIdentityOutput.objectId
   }
   dependsOn:[keyVault]
 }

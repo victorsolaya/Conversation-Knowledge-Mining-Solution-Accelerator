@@ -18,7 +18,7 @@ param sqlDbName string
 param sqlDbUser string
 @secure()
 param sqlDbPwd string
-param managedIdentityObjectId string
+// param managedIdentityObjectId string
 param imageTag string
 var functionAppName = '${solutionName}-rag-fn'
 var storageaccountname = '${solutionName}ragfnacc'

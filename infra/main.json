@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.33.93.31351",
-      "templateHash": "9583552693408867324"
+      "version": "0.28.1.47646",
+      "templateHash": "12766041167398442432"
     }
   },
   "parameters": {
@@ -97,10 +97,10 @@
     }
   },
   "variables": {
-    "solutionPrefix": "[parameters('environmentName')]",
     "gptModelVersion": "2024-02-15-preview",
+    "uniqueId": "[toLower(uniqueString(subscription().id, parameters('environmentName'), resourceGroup().location))]",
+    "solutionPrefix": "[format('km{0}', padLeft(take(variables('uniqueId'), 12), 12, '0'))]",
     "resourceGroupLocation": "[resourceGroup().location]",
-    "resourceGroupName": "[resourceGroup().name]",
     "solutionLocation": "[variables('resourceGroupLocation')]",
     "baseUrl": "https://raw.githubusercontent.com/microsoft/Conversation-Knowledge-Mining-Solution-Accelerator/main/"
   },
@@ -129,8 +129,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.33.93.31351",
-              "templateHash": "4123789684929590981"
+              "version": "0.28.1.47646",
+              "templateHash": "14133192615685065374"
             }
           },
           "parameters": {
@@ -221,8 +221,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.33.93.31351",
-              "templateHash": "4388214478635448075"
+              "version": "0.28.1.47646",
+              "templateHash": "9096960510978747660"
             }
           },
           "parameters": {
@@ -365,8 +365,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.33.93.31351",
-              "templateHash": "18123322246729358641"
+              "version": "0.28.1.47646",
+              "templateHash": "17067117464506504820"
             }
           },
           "parameters": {
@@ -1057,8 +1057,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.33.93.31351",
-              "templateHash": "1505719283486163574"
+              "version": "0.28.1.47646",
+              "templateHash": "17222683008908251854"
             }
           },
           "parameters": {
@@ -1078,7 +1078,7 @@
             },
             "saName": {
               "type": "string",
-              "defaultValue": "[format('{0}storageaccount', parameters('solutionName'))]",
+              "defaultValue": "[format('{0}storage', parameters('solutionName'))]",
               "metadata": {
                 "description": "Name"
               }
@@ -1155,8 +1155,7 @@
                 "publicAccess": "None"
               },
               "dependsOn": [
-                "[resourceId('Microsoft.Storage/storageAccounts/blobServices', parameters('saName'), 'default')]",
-                "[resourceId('Microsoft.Storage/storageAccounts', parameters('saName'))]"
+                "[resourceId('Microsoft.Storage/storageAccounts/blobServices', parameters('saName'), 'default')]"
               ]
             },
             {
@@ -1241,8 +1240,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.33.93.31351",
-              "templateHash": "3100365088410602500"
+              "version": "0.28.1.47646",
+              "templateHash": "6528561682505001396"
             }
           },
           "parameters": {
@@ -1289,7 +1288,7 @@
           "resources": [
             {
               "copy": {
-                "name": "database::list",
+                "name": "list",
                 "count": "[length(variables('containers'))]"
               },
               "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers",
@@ -1447,8 +1446,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.33.93.31351",
-              "templateHash": "6170430466600233564"
+              "version": "0.28.1.47646",
+              "templateHash": "6997300029110879816"
             }
           },
           "parameters": {
@@ -1621,8 +1620,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.33.93.31351",
-              "templateHash": "509460209037223451"
+              "version": "0.28.1.47646",
+              "templateHash": "1311463012511991186"
             }
           },
           "parameters": {
@@ -1704,8 +1703,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.33.93.31351",
-              "templateHash": "16955379019952955448"
+              "version": "0.28.1.47646",
+              "templateHash": "3736288497878109757"
             }
           },
           "parameters": {
@@ -1792,9 +1791,6 @@
               },
               "secretName": "SQLDB-PASSWORD"
             }
-          },
-          "managedIdentityObjectId": {
-            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_managed_identity'), '2022-09-01').outputs.managedIdentityOutput.value.objectId]"
           }
         },
         "template": {
@@ -1803,8 +1799,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.33.93.31351",
-              "templateHash": "8291781429768450130"
+              "version": "0.28.1.47646",
+              "templateHash": "3075889647785880770"
             }
           },
           "parameters": {
@@ -1829,16 +1825,13 @@
             "sqlDbPwd": {
               "type": "securestring"
             },
-            "managedIdentityObjectId": {
-              "type": "string"
-            },
             "imageTag": {
               "type": "string"
             }
           },
           "variables": {
             "functionAppName": "[format('{0}-charts-fn', parameters('solutionName'))]",
-            "storageaccountname": "[format('{0}chartsfnacc', parameters('solutionName'))]",
+            "storageaccountname": "[format('{0}chartfnacc', parameters('solutionName'))]",
             "dockerImage": "[format('DOCKER|kmcontainerreg.azurecr.io/km-charts-function:{0}', parameters('imageTag'))]",
             "environmentName": "[format('{0}-charts-fn-env', parameters('solutionName'))]"
           },
@@ -1953,7 +1946,6 @@
       },
       "dependsOn": [
         "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_ai_foundry')]",
-        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_managed_identity')]",
         "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_sql_db')]"
       ]
     },
@@ -2034,9 +2026,6 @@
           },
           "aiProjectName": {
             "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_ai_foundry'), '2022-09-01').outputs.aiProjectName.value]"
-          },
-          "managedIdentityObjectId": {
-            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_managed_identity'), '2022-09-01').outputs.managedIdentityOutput.value.objectId]"
           }
         },
         "template": {
@@ -2045,8 +2034,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.33.93.31351",
-              "templateHash": "10412104505605413963"
+              "version": "0.28.1.47646",
+              "templateHash": "7978725857339866942"
             }
           },
           "parameters": {
@@ -2097,9 +2086,6 @@
             },
             "sqlDbPwd": {
               "type": "securestring"
-            },
-            "managedIdentityObjectId": {
-              "type": "string"
             },
             "imageTag": {
               "type": "string"
@@ -2275,7 +2261,6 @@
       },
       "dependsOn": [
         "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_ai_foundry')]",
-        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_managed_identity')]",
         "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_sql_db')]"
       ]
     },
@@ -2291,9 +2276,6 @@
         "parameters": {
           "solutionName": {
             "value": "[variables('solutionPrefix')]"
-          },
-          "identity": {
-            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_managed_identity'), '2022-09-01').outputs.managedIdentityOutput.value.id]"
           }
         },
         "template": {
@@ -2302,8 +2284,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.33.93.31351",
-              "templateHash": "11904916764630875140"
+              "version": "0.28.1.47646",
+              "templateHash": "5504175264354263888"
             }
           },
           "parameters": {
@@ -2312,9 +2294,6 @@
               "metadata": {
                 "description": "Specifies the location for resources."
               }
-            },
-            "identity": {
-              "type": "string"
             }
           },
           "variables": {
@@ -2340,8 +2319,7 @@
       },
       "dependsOn": [
         "[resourceId('Microsoft.Resources/deployments', 'deploy_azure_function_charts')]",
-        "[resourceId('Microsoft.Resources/deployments', 'deploy_azure_function_rag')]",
-        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_managed_identity')]"
+        "[resourceId('Microsoft.Resources/deployments', 'deploy_azure_function_rag')]"
       ]
     },
     {
@@ -2358,14 +2336,8 @@
           "imageTag": {
             "value": "[parameters('imageTag')]"
           },
-          "identity": {
-            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_managed_identity'), '2022-09-01').outputs.managedIdentityOutput.value.id]"
-          },
           "solutionName": {
             "value": "[variables('solutionPrefix')]"
-          },
-          "solutionLocation": {
-            "value": "[variables('solutionLocation')]"
           },
           "AzureOpenAIEndpoint": {
             "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_ai_foundry'), '2022-09-01').outputs.aiServicesTarget.value]"
@@ -2408,14 +2380,6 @@
           "AZURE_COSMOSDB_ACCOUNT": {
             "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_cosmos_db'), '2022-09-01').outputs.cosmosAccountName.value]"
           },
-          "AZURE_COSMOSDB_ACCOUNT_KEY": {
-            "reference": {
-              "keyVault": {
-                "id": "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.KeyVault/vaults', reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_ai_foundry'), '2022-09-01').outputs.keyvaultName.value)]"
-              },
-              "secretName": "AZURE-COSMOSDB-ACCOUNT-KEY"
-            }
-          },
           "AZURE_COSMOSDB_CONVERSATIONS_CONTAINER": {
             "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_cosmos_db'), '2022-09-01').outputs.cosmosContainerName.value]"
           },
@@ -2432,8 +2396,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.33.93.31351",
-              "templateHash": "1923507558856922316"
+              "version": "0.28.1.47646",
+              "templateHash": "10345305852452938336"
             }
           },
           "parameters": {
@@ -2444,15 +2408,6 @@
               "metadata": {
                 "description": "Solution Name"
               }
-            },
-            "solutionLocation": {
-              "type": "string",
-              "metadata": {
-                "description": "Solution Location"
-              }
-            },
-            "identity": {
-              "type": "string"
             },
             "HostingPlanName": {
               "type": "string",
@@ -2554,13 +2509,6 @@
                 "description": "Azure Cosmos DB Account"
               }
             },
-            "AZURE_COSMOSDB_ACCOUNT_KEY": {
-              "type": "securestring",
-              "defaultValue": "",
-              "metadata": {
-                "description": "Azure Cosmos DB Account Key"
-              }
-            },
             "AZURE_COSMOSDB_CONVERSATIONS_CONTAINER": {
               "type": "string",
               "defaultValue": "",
@@ -2588,7 +2536,7 @@
           },
           "variables": {
             "WebAppImageName": "[format('DOCKER|kmcontainerreg.azurecr.io/km-app:{0}', parameters('imageTag'))]",
-            "REACT_APP_LAYOUT_CONFIG": "{\r\n  \"appConfig\": {\r\n    \"THREE_COLUMN\": {\r\n      \"DASHBOARD\": 50,\r\n      \"CHAT\": 33,\r\n      \"CHATHISTORY\": 17\r\n    },\r\n    \"TWO_COLUMN\": {\r\n      \"DASHBOARD_CHAT\": {\r\n        \"DASHBOARD\": 65,\r\n        \"CHAT\": 35\r\n      },\r\n      \"CHAT_CHATHISTORY\": {\r\n        \"CHAT\": 80,\r\n        \"CHATHISTORY\": 20\r\n      }\r\n    }\r\n  },\r\n  \"charts\": [\r\n    {\r\n      \"id\": \"SATISFIED\",\r\n      \"name\": \"Satisfied\",\r\n      \"type\": \"card\",\r\n      \"layout\": { \"row\": 1, \"column\": 1, \"height\": 11 }\r\n    },\r\n    {\r\n      \"id\": \"TOTAL_CALLS\",\r\n      \"name\": \"Total Calls\",\r\n      \"type\": \"card\",\r\n      \"layout\": { \"row\": 1, \"column\": 2, \"span\": 1 }\r\n    },\r\n    {\r\n      \"id\": \"AVG_HANDLING_TIME\",\r\n      \"name\": \"Average Handling Time\",\r\n      \"type\": \"card\",\r\n      \"layout\": { \"row\": 1, \"column\": 3, \"span\": 1 }\r\n    },\r\n    {\r\n      \"id\": \"SENTIMENT\",\r\n      \"name\": \"Topics Overview\",\r\n      \"type\": \"donutchart\",\r\n      \"layout\": { \"row\": 2, \"column\": 1, \"width\": 40, \"height\": 44.5 }\r\n    },\r\n    {\r\n      \"id\": \"AVG_HANDLING_TIME_BY_TOPIC\",\r\n      \"name\": \"Average Handling Time By Topic\",\r\n      \"type\": \"bar\",\r\n      \"layout\": { \"row\": 2, \"column\": 2, \"row-span\": 2, \"width\": 60 }\r\n    },\r\n    {\r\n      \"id\": \"TOPICS\",\r\n      \"name\": \"Trending Topics\",\r\n      \"type\": \"table\",\r\n      \"layout\": { \"row\": 3, \"column\": 1, \"span\": 2 }\r\n    },\r\n    {\r\n      \"id\": \"KEY_PHRASES\",\r\n      \"name\": \"Key Phrases\",\r\n      \"type\": \"wordcloud\",\r\n      \"layout\": { \"row\": 3, \"column\": 2, \"height\": 44.5 }\r\n    }\r\n  ]\r\n}"
+            "REACT_APP_LAYOUT_CONFIG": "{\n  \"appConfig\": {\n    \"THREE_COLUMN\": {\n      \"DASHBOARD\": 50,\n      \"CHAT\": 33,\n      \"CHATHISTORY\": 17\n    },\n    \"TWO_COLUMN\": {\n      \"DASHBOARD_CHAT\": {\n        \"DASHBOARD\": 65,\n        \"CHAT\": 35\n      },\n      \"CHAT_CHATHISTORY\": {\n        \"CHAT\": 80,\n        \"CHATHISTORY\": 20\n      }\n    }\n  },\n  \"charts\": [\n    {\n      \"id\": \"SATISFIED\",\n      \"name\": \"Satisfied\",\n      \"type\": \"card\",\n      \"layout\": { \"row\": 1, \"column\": 1, \"height\": 11 }\n    },\n    {\n      \"id\": \"TOTAL_CALLS\",\n      \"name\": \"Total Calls\",\n      \"type\": \"card\",\n      \"layout\": { \"row\": 1, \"column\": 2, \"span\": 1 }\n    },\n    {\n      \"id\": \"AVG_HANDLING_TIME\",\n      \"name\": \"Average Handling Time\",\n      \"type\": \"card\",\n      \"layout\": { \"row\": 1, \"column\": 3, \"span\": 1 }\n    },\n    {\n      \"id\": \"SENTIMENT\",\n      \"name\": \"Topics Overview\",\n      \"type\": \"donutchart\",\n      \"layout\": { \"row\": 2, \"column\": 1, \"width\": 40, \"height\": 44.5 }\n    },\n    {\n      \"id\": \"AVG_HANDLING_TIME_BY_TOPIC\",\n      \"name\": \"Average Handling Time By Topic\",\n      \"type\": \"bar\",\n      \"layout\": { \"row\": 2, \"column\": 2, \"row-span\": 2, \"width\": 60 }\n    },\n    {\n      \"id\": \"TOPICS\",\n      \"name\": \"Trending Topics\",\n      \"type\": \"table\",\n      \"layout\": { \"row\": 3, \"column\": 1, \"span\": 2 }\n    },\n    {\n      \"id\": \"KEY_PHRASES\",\n      \"name\": \"Key Phrases\",\n      \"type\": \"wordcloud\",\n      \"layout\": { \"row\": 3, \"column\": 2, \"height\": 44.5 }\n    }\n  ]\n}"
           },
           "resources": [
             {
@@ -2747,7 +2695,6 @@
         "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_ai_foundry')]",
         "[resourceId('Microsoft.Resources/deployments', 'deploy_azure_function_urls')]",
         "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_cosmos_db')]",
-        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_managed_identity')]",
         "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_sql_db')]"
       ]
     }
