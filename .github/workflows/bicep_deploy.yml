@@ -1,4 +1,4 @@
-name: CI-Validate Deployment-CKM-V2
+name: Validate Deployment - CKM V2
 on:
   push:
     branches:
