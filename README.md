@@ -236,7 +236,9 @@ azd env set AZURE_ENV_EMBEDDING_MODEL_CAPACITY 80
 
     It will prompt you to provide an `azd` environment name (like "azureaiapp"), select a subscription from your Azure account, and select a location which has quota for all the resources. Then it will provision the resources in your account and deploy the latest code. If you get an error or timeout with deployment, changing the location can help, as there may be availability constraints for the resources.
 
-3. You can now proceed to run the [development server](#development-server) to test the app locally, or if you are done trying out the app, you can delete the resources by running `azd down`.
+3. Open [Azure Portal](https://portal.azure.com/), go to the deployed resource group, find the App Service and get the app URL from Default Domain.
+  
+4. You can now proceed to run the [development server](#development-server) to test the app locally, or if you are done trying out the app, you can delete the resources by running `azd down`.
 
 <br/>
 <h2>
