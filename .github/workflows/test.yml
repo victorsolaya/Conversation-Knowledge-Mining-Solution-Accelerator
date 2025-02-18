@@ -1,4 +1,4 @@
-name: Test Workflow with Coverage
+name: Test Workflow with Coverage - KM Generic
 
 on:
   push:
