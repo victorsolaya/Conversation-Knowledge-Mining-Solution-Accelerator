@@ -176,6 +176,8 @@ To override any of those resource names, run `azd env set <key> <value>` before 
 
 ## Customizing deployments
 
+Note: Environment name, a 3-10 characters alphanumeric value that will be used to prefix resources
+
 To customize the deployments, you can set the following environment variables:
 
 Change the Content Understanding Location:
