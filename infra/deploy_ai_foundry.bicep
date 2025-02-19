@@ -261,7 +261,7 @@ resource storage 'Microsoft.Storage/storageAccounts@2022-09-01' = {
     accessTier: 'Hot'
     allowBlobPublicAccess: false
     allowCrossTenantReplication: false
-    allowSharedKeyAccess: true
+    allowSharedKeyAccess: false
     encryption: {
       keySource: 'Microsoft.Storage'
       requireInfrastructureEncryption: false
