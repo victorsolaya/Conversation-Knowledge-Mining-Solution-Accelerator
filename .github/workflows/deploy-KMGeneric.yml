@@ -41,7 +41,7 @@ jobs:
 
       - name: Create Resource Group
         run: |
-          az group create --name ${{ env.RESOURCE_GROUP_NAME }} --location westeurope
+          az group create --name ${{ env.RESOURCE_GROUP_NAME }} --location eastus
 
       - name: Generate Unique Solution Prefix
         id: generate_solution_prefix
