@@ -65,7 +65,7 @@ jobs:
           set -e
           az deployment group create \
             --resource-group ${{ env.RESOURCE_GROUP_NAME }} \
-            --template-file infra/main.bicep \.
+            --template-file infra/main.bicep \
             --parameters otherLocation=centralus imageTag=${{ steps.determine_tag.outputs.tagname }}
 
       
