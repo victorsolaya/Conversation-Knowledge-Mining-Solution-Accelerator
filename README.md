@@ -48,7 +48,7 @@ QUICK DEPLOY
 
 To deploy this solution accelerator, you will need access to an [Azure subscription](https://azure.microsoft.com/free/) with permission to create resource groups and resources. 
 
-Please check the link [Azure Products by Region](https://azure.microsoft.com/en-us/explore/global-infrastructure/products-by-region/?products=all&regions=all) and choose a region where  Azure AI Foundry, Azure OpenAI Services, Azure AI Search, Azure AI Content Understanding, Embedding Deployment Capacity and GPT Model Capacity are available. 
+Please check the link [Azure Products by Region](https://azure.microsoft.com/en-us/explore/global-infrastructure/products-by-region/?products=all&regions=all) and choose a region where  Azure AI Foundry, Azure OpenAI Services, Azure AI Search, Azure AI Content Understanding, Embedding Deployment Capacity and GPT Model Capacity are available. Recommended regions are eastus, eastus2.
 
 When you start the deployment using one of the options below, most parameters will have a default name set already. You can update the following settings:
 
@@ -277,6 +277,7 @@ Additional Steps
    
     Follow steps in [App Authentication](./docs/AppAuthentication.md) to configure authenitcation in app service.
 
+    Note: Authentication changes can take up to 10 minutes 
 
 <h2>
 </br>
