@@ -254,6 +254,7 @@ Additional Steps
 
     - **Azure CLI** installed.
     - **Python 3** installed.
+    - **[Microsoft ODBC Driver 17 for SQL Server](https://learn.microsoft.com/en-us/sql/connect/odbc/download-odbc-driver-for-sql-server?view=sql-server-ver16#version-17)** installed.
     ## Usage
 
     1. Clone the repository:
