@@ -176,6 +176,8 @@ To override any of those resource names, run `azd env set <key> <value>` before 
 
 ## Customizing deployments
 
+Note: Environment name, a 3-10 characters alphanumeric value that will be used to prefix resources
+
 To customize the deployments, you can set the following environment variables:
 
 Change the Content Understanding Location:
@@ -252,8 +254,9 @@ Additional Steps
 
     Before running the script, ensure you have:
 
-    - **Azure CLI** installed.
-    - **Python 3** installed.
+    - **[Azure CLI](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli#install)** installed.
+    - **[Python 3]( https://www.python.org/downloads/)** installed.
+    - **[Microsoft ODBC Driver 17 for SQL Server](https://learn.microsoft.com/en-us/sql/connect/odbc/download-odbc-driver-for-sql-server?view=sql-server-ver16#version-17)** installed.
     ## Usage
 
     1. Clone the repository:
@@ -263,10 +266,11 @@ Additional Steps
     
     2. Navigate to script directory
         ```sh
-        cd Deployment\scripts\add_user_scripts
+        cd infra\scripts\add_user_scripts
 
     3. Run the script
         ```sh
+        chmod +x ./add_user.sh
         ./add_user.sh <resourcegroupname> <solution_prefix>
 
 2. **Add App Authentication**
