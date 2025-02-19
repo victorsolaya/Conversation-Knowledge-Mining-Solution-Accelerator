@@ -43,16 +43,16 @@ jobs:
         run: |
           az group create --name ${{ env.RESOURCE_GROUP_NAME }} --location westeurope
 
-      # - name: Generate Unique Solution Prefix
-      #   id: generate_solution_prefix
-      #   run: |
-      #     set -e
-      #     COMMON_PART="km"
-      #     TIMESTAMP=$(date +%s)  
-      #     UPDATED_TIMESTAMP=$(echo $TIMESTAMP | tail -c 3) 
-      #     UNIQUE_SOLUTION_PREFIX="${COMMON_PART}${UPDATED_TIMESTAMP}"
-      #     echo "SOLUTION_PREFIX=${UNIQUE_SOLUTION_PREFIX}" >> $GITHUB_ENV
-      #     echo "Generated SOLUTION_PREFIX: ${UNIQUE_SOLUTION_PREFIX}" 
+      - name: Generate Unique Solution Prefix
+        id: generate_solution_prefix
+        run: |
+          set -e
+          COMMON_PART="km"
+          TIMESTAMP=$(date +%s)  
+          UPDATED_TIMESTAMP=$(echo $TIMESTAMP | tail -c 3) 
+          UNIQUE_SOLUTION_PREFIX="${COMMON_PART}${UPDATED_TIMESTAMP}"
+          echo "SOLUTION_PREFIX=${UNIQUE_SOLUTION_PREFIX}" >> $GITHUB_ENV
+          echo "Generated SOLUTION_PREFIX: ${UNIQUE_SOLUTION_PREFIX}" 
 
 
       - name: Determine Tag Name Based on Branch
@@ -66,9 +66,7 @@ jobs:
           az deployment group create \
             --resource-group ${{ env.RESOURCE_GROUP_NAME }} \
             --template-file infra/main.bicep \
-            --parameters imageTag=${{ steps.determine_tag.outputs.tagname }}
-
-      
+            --parameters contentUnderstandingLocation='West US' environmentName=${{ env.SOLUTION_PREFIX }} secondaryLocation=eastus2 imageTag=${{ steps.determine_tag.outputs.tagname }}
 
       - name: Send Notification on Failure
         if: failure()
