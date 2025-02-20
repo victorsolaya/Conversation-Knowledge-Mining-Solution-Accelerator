@@ -4,7 +4,7 @@
 environment:
   name: conversation-knowledge-mining
   location: eastus
-
+name: conversation-knowledge-mining
 metadata:
   template: conversation-knowledge-mining@1.0
 
