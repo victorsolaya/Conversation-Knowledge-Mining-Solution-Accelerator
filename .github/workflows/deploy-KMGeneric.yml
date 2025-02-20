@@ -6,9 +6,11 @@ on:
       - main
       - dev
       - demo
+  workflow_dispatch:
 
   schedule:
     - cron: '0 0,12 * * *'  # Runs at 12:00 AM and 12:00 PM GMT
+
     
 jobs:
   deploy:
@@ -41,7 +43,7 @@ jobs:
 
       - name: Create Resource Group
         run: |
-          az group create --name ${{ env.RESOURCE_GROUP_NAME }} --location eastus
+          az group create --name ${{ env.RESOURCE_GROUP_NAME }} --location eastus2
 
       - name: Generate Unique Solution Prefix
         id: generate_solution_prefix
@@ -49,7 +51,7 @@ jobs:
           set -e
           COMMON_PART="km"
           TIMESTAMP=$(date +%s)  
-          UPDATED_TIMESTAMP=$(echo $TIMESTAMP | tail -c 3) 
+          UPDATED_TIMESTAMP=$(echo $TIMESTAMP | tail -c 5) 
           UNIQUE_SOLUTION_PREFIX="${COMMON_PART}${UPDATED_TIMESTAMP}"
           echo "SOLUTION_PREFIX=${UNIQUE_SOLUTION_PREFIX}" >> $GITHUB_ENV
           echo "Generated SOLUTION_PREFIX: ${UNIQUE_SOLUTION_PREFIX}" 
@@ -57,7 +59,7 @@ jobs:
 
       - name: Determine Tag Name Based on Branch
         id: determine_tag
-        run: echo "tagname=${{ github.ref_name == 'main' && 'latest' || github.ref_name == 'dev' && 'dev' || github.ref_name == 'demo' && 'demo' || github.head_ref || 'default' }}" >> $GITHUB_OUTPUT
+        run: echo "tagname=${{ github.ref_name == 'main' && 'latest' || github.ref_name == 'dev' && 'dev' || github.ref_name == 'demo' && 'demo' || github.ref_name == 'dependabotchanges' && 'dependabotchanges' || github.head_ref || 'default' }}" >> $GITHUB_OUTPUT
 
       - name: Deploy Bicep Template
         id: deploy
@@ -66,7 +68,27 @@ jobs:
           az deployment group create \
             --resource-group ${{ env.RESOURCE_GROUP_NAME }} \
             --template-file infra/main.bicep \
-            --parameters contentUnderstandingLocation='West US' environmentName=${{ env.SOLUTION_PREFIX }} secondaryLocation=eastus2 imageTag=${{ steps.determine_tag.outputs.tagname }}
+            --parameters environmentName=${{env.SOLUTION_PREFIX}} contentUnderstandingLocation="West US" secondaryLocation="eastus2" imageTag=${{ steps.determine_tag.outputs.tagname }}
+     
+            
+      - name: Extract AI Services and Key Vault Names
+        if: always()
+        run: |
+              echo "Fetching AI Services and Key Vault names before deletion..."
+              
+              # # Get Key Vault name
+              # KEYVAULT_NAME=$(az resource list --resource-group ${{ env.RESOURCE_GROUP_NAME }} --resource-type "Microsoft.KeyVault/vaults" --query "[].name" -o tsv)
+              # echo "Detected Key Vault: $KEYVAULT_NAME"
+              # echo "KEYVAULT_NAME=$KEYVAULT_NAME" >> $GITHUB_ENV
+          
+              # Get AI Services names and convert them into a space-separated string
+              AI_SERVICES=$(az resource list --resource-group ${{ env.RESOURCE_GROUP_NAME }} --resource-type "Microsoft.CognitiveServices/accounts" --query "[].name" -o tsv | tr '\n' ' ')
+              
+              echo "Detected AI Services: $AI_SERVICES"
+              echo "AI_SERVICES=$AI_SERVICES" >> $GITHUB_ENV
+          
+ 
+      
 
       - name: Send Notification on Failure
         if: failure()
@@ -88,7 +110,7 @@ jobs:
 
 
       - name: Delete Bicep Deployment
-        
+        if: always()
         run: |
               set -e  
               echo "Checking if resource group exists..."
@@ -103,4 +125,60 @@ jobs:
               else
                 echo "Resource group does not exists."
               fi
+
+      - name: Wait for Soft Deletion of Key Vault and AI Services
+        if: always()
+        run: |
+                echo "Waiting for resources to be soft deleted..."
+            
+                # Wait for Key Vault to be soft deleted
+                if [ -n "${{ env.KEYVAULT_NAME }}" ]; then
+                  while true; do
+                    DELETED_VAULT=$(az keyvault show-deleted --name ${{ env.KEYVAULT_NAME }} --query "id" -o tsv 2>/dev/null || echo "")
+                    if [ -n "$DELETED_VAULT" ]; then
+                      echo "Key Vault soft deleted!"
+                      break
+                    fi
+                    echo "Key Vault not yet soft deleted. Retrying in 15s..."
+                    sleep 15
+                  done
+                fi
+
+            
+                # Wait for AI Services to be soft deleted
+                for AI_SERVICE in ${{ env.AI_SERVICES }}; do
+                  while true; do
+                    DELETED_AI_SERVICE=$(az cognitiveservices account list-deleted --query "[?name=='$AI_SERVICE'].id" -o tsv 2>/dev/null || echo "")
+                    if [ -n "$DELETED_AI_SERVICE" ]; then
+                      echo "AI Service $AI_SERVICE is soft deleted!"
+                      break
+                    fi
+                    echo "AI Service $AI_SERVICE not yet soft deleted. Retrying in 15s..."
+                    sleep 15
+                  done
+                done
+            
+      
+      - name: Purge Key Vault and AI Services
+        if: always()
+        run: |
+                  echo "Purging soft deleted resources..."
+                  
+                  # Ensure AI_SERVICES is properly split into individual services
+                  IFS=' ' read -r -a SERVICES <<< "${{ env.AI_SERVICES }}"
+        
+                  for AI_SERVICE in "${SERVICES[@]}"; do
+                    echo "Checking location for AI Service: $AI_SERVICE"
+        
+                    # Fetch AI Service location
+                    SERVICE_LOCATION=$(az cognitiveservices account list-deleted --query "[?name=='$AI_SERVICE'].location" -o tsv 2>/dev/null || echo "")
+        
+                    if [ -n "$SERVICE_LOCATION" ]; then
+                      echo "Purging AI Service $AI_SERVICE in $SERVICE_LOCATION"
+                      az cognitiveservices account purge --location "$SERVICE_LOCATION" --resource-group "${{ env.RESOURCE_GROUP_NAME }}" --name "$AI_SERVICE"
+                    else
+                      echo "Could not determine location for AI Service: $AI_SERVICE. Skipping purge."
+                    fi
+                  done
+        shell: bash
         
