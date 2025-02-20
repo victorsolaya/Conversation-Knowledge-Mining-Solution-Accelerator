@@ -70,14 +70,14 @@ Please check the link [Azure Products by Region](https://azure.microsoft.com/en-
 
 -  Embedding model capacity
 
-### Quota Recommendations
-- Please deploy with minimum **30k tokens**.
-- For optimal performance, it is recommended to increase token to **100K**
-- You can also view the Quotas tab in [Azure OpenAI studio](https://oai.azure.com/)
-  to understand how much capacity you have.
-
-![image](./docs/Images/ReadMe/quotaImage.png)
-
+### [Optional]: Quota Recommendations
+- The default for the GPT model capacity in deployment is **30k tokens**.
+    - For optimal performance, it is recommended to increase to **100k tokens**. 
+- Navigate to the [Azure AI Foundry portal](https://ai.azure.com/)
+- Select the AI Project you are using for this accelerator if you are not already in the project.
+- Select `Management center` from the bottom left navigation menu
+- Select `Quota`, click the `GlobalStandard` dropdown and select the GPT model and region you are using for this accelerator to see your available quota. 
+- Request more quota or delete any unused model deployments as needed. 
  
 
 ### **Options**
@@ -211,7 +211,7 @@ azd env set AZURE_ENV_MODEL_NAME gpt-4o-mini
 Change the Model Capacity (choose a number based on available GPT model capacity in your subscription)
 
 ```shell
-azd env set AZURE_ENV_MODEL_CAPACITY 100
+azd env set AZURE_ENV_MODEL_CAPACITY 30
 ```
 
 Change the Embedding Model 
