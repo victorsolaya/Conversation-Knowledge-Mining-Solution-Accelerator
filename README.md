@@ -76,7 +76,7 @@ Please check the link [Azure Products by Region](https://azure.microsoft.com/en-
 - You can also view the Quotas tab in [Azure OpenAI studio](https://oai.azure.com/)
   to understand how much capacity you have.
 
-![image](./docs/Images/ReadMe/quotaimage.png)
+![image](./docs/Images/ReadMe/quotaImage.png)
 
  
 
