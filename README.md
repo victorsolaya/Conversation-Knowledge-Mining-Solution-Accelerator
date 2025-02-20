@@ -73,16 +73,8 @@ Please check the link [Azure Products by Region](https://azure.microsoft.com/en-
 ### Quota Recommendations
 - For optimal performance, we recommend provisioning at least **30k tokens** per deployment.
 - Plan for potential increases in demand and adjust quotas accordingly.
-
-### Check Quota for GPT-4, GPT-4o, and GPT-4o Mini
-
-## Overview
-This guide explains how to check the usage quota for different OpenAI models, including GPT-4, GPT-4o, and GPT-4o Mini.
-
-### Check via OpenAI Dashboard
-1. Go to the [Azure OpenAI Service](https://oai.azure.com/).
-2. Log in with your OpenAI account.
-3. View your usage, quota, and limits.
+- You can also view the Quotas tab in [Azure OpenAI studio](https://oai.azure.com/)
+  to understand how much capacity you have.
 
 ![image](./docs/Images/ReadMe/quotaImage.png)
 
