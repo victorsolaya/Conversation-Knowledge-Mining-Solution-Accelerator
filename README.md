@@ -71,12 +71,12 @@ Please check the link [Azure Products by Region](https://azure.microsoft.com/en-
 -  Embedding model capacity
 
 ### Quota Recommendations
-- For optimal performance, we recommend provisioning at least **30k tokens** per deployment.
-- Plan for potential increases in demand and adjust quotas accordingly.
+- Please deploy with minimum **30k tokens**.
+- For optimal performance, it is recommended to increase token to **100K**
 - You can also view the Quotas tab in [Azure OpenAI studio](https://oai.azure.com/)
   to understand how much capacity you have.
 
-![image](./docs/Images/ReadMe/quotaImage.png)
+![image](./docs/Images/ReadMe/quotaimage.png)
 
  
 
