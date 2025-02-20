@@ -70,6 +70,16 @@ Please check the link [Azure Products by Region](https://azure.microsoft.com/en-
 
 -  Embedding model capacity
 
+### Quota Recommendations
+- Please deploy with minimum **30k tokens**.
+- For optimal performance, it is recommended to increase token to **100K**
+- You can also view the Quotas tab in [Azure OpenAI studio](https://oai.azure.com/)
+  to understand how much capacity you have.
+
+![image](./docs/Images/ReadMe/quotaImage.png)
+
+ 
+
 ### **Options**
 Pick from the options below to see step-by-step instructions for: GitHub Codespaces, VS Code Dev Containers, Local Environments, and Bicep deployments.
 
@@ -303,6 +313,9 @@ You can try the [Azure pricing calculator](https://azure.microsoft.com/en-us/pri
 * Azure Container App: Consumption tier with 0.5 CPU, 1GiB memory/storage. Pricing is based on resource allocation, and each month allows for a certain amount of free usage. [Pricing](https://azure.microsoft.com/pricing/details/container-apps/)
 * Azure Container Registry: Basic tier. [Pricing](https://azure.microsoft.com/pricing/details/container-registry/)
 * Log analytics: Pay-as-you-go tier. Costs based on data ingested. [Pricing](https://azure.microsoft.com/pricing/details/monitor/)
+* Azure SQL Server: General Purpose Tier. [Pricing](https://azure.microsoft.com/pricing/details/azure-sql-database/single/)
+* Azure Cosmos DB: [Pricing](https://azure.microsoft.com/en-us/pricing/details/cosmos-db/autoscale-provisioned/)
+* Azure functions: Consumption tier [Pricing](https://azure.microsoft.com/en-us/pricing/details/functions/)
 
 ⚠️ To avoid unnecessary costs, remember to take down your app if it's no longer in use,
 either by deleting the resource group in the Portal or running `azd down`.
