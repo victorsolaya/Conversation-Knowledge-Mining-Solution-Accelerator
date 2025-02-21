@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.33.93.31351",
-      "templateHash": "3380130655713808317"
+      "templateHash": "11952815099310496665"
     }
   },
   "parameters": {
@@ -2407,7 +2407,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.33.93.31351",
-              "templateHash": "11969665804111861471"
+              "templateHash": "4645048004618498349"
             }
           },
           "parameters": {
@@ -2453,13 +2453,6 @@
               "defaultValue": "[format('{0}-app-service', parameters('solutionName'))]",
               "metadata": {
                 "description": "Name of Web App"
-              }
-            },
-            "ApplicationInsightsName": {
-              "type": "string",
-              "defaultValue": "[format('{0}-app-insights', parameters('solutionName'))]",
-              "metadata": {
-                "description": "Name of Application Insights"
               }
             },
             "AzureOpenAIModel": {
@@ -2687,7 +2680,13 @@
                 "[resourceId('Microsoft.Web/sites', parameters('WebsiteName'))]"
               ]
             }
-          ]
+          ],
+          "outputs": {
+            "webAppUrl": {
+              "type": "string",
+              "value": "[format('https://{0}.azurewebsites.net', parameters('WebsiteName'))]"
+            }
+          }
         }
       },
       "dependsOn": [
@@ -2697,5 +2696,11 @@
         "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_sql_db')]"
       ]
     }
-  ]
+  ],
+  "outputs": {
+    "WEB_APP_URL": {
+      "type": "string",
+      "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_app_service'), '2022-09-01').outputs.webAppUrl.value]"
+    }
+  }
 }

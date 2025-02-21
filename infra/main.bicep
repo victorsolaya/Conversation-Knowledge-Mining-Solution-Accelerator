@@ -259,3 +259,5 @@ module appserviceModule 'deploy_app_service.bicep' = {
   scope: resourceGroup(resourceGroup().name)
   dependsOn:[sqlDBModule]
 }
+
+output WEB_APP_URL string = appserviceModule.outputs.webAppUrl

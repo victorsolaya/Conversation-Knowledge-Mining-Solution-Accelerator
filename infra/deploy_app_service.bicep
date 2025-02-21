@@ -25,8 +25,8 @@ param HostingPlanSku string = 'P0v3'
 @description('Name of Web App')
 param WebsiteName string = '${ solutionName }-app-service'
 
-@description('Name of Application Insights')
-param ApplicationInsightsName string = '${ solutionName }-app-insights'
+// @description('Name of Application Insights')
+// param ApplicationInsightsName string = '${ solutionName }-app-insights'
 
 @description('Azure OpenAI Model Deployment Name')
 param AzureOpenAIModel string
@@ -260,4 +260,5 @@ resource role 'Microsoft.DocumentDB/databaseAccounts/sqlRoleAssignments@2022-05-
   dependsOn: [Website]
 }
 
+output webAppUrl string = 'https://${WebsiteName}.azurewebsites.net'
 
