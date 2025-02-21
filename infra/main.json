@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.33.93.31351",
-      "templateHash": "15021662036060306033"
+      "templateHash": "6443985593110817960"
     }
   },
   "parameters": {
@@ -366,7 +366,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.33.93.31351",
-              "templateHash": "6605413385617905631"
+              "templateHash": "12900062765650369722"
             }
           },
           "parameters": {
@@ -1018,6 +1018,10 @@
             "aiProjectName": {
               "type": "string",
               "value": "[variables('aiProjectName')]"
+            },
+            "applicationInsightsId": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.Insights/components', variables('applicationInsightsName'))]"
             },
             "storageAccountName": {
               "type": "string",
@@ -2295,6 +2299,9 @@
           "imageTag": {
             "value": "[parameters('imageTag')]"
           },
+          "applicationInsightsId": {
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_ai_foundry'), '2022-09-01').outputs.applicationInsightsId.value]"
+          },
           "solutionName": {
             "value": "[variables('solutionPrefix')]"
           },
@@ -2356,7 +2363,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.33.93.31351",
-              "templateHash": "2254598285697484618"
+              "templateHash": "5835426116727035307"
             }
           },
           "parameters": {
@@ -2402,13 +2409,6 @@
               "defaultValue": "[format('{0}-app-service', parameters('solutionName'))]",
               "metadata": {
                 "description": "Name of Web App"
-              }
-            },
-            "ApplicationInsightsName": {
-              "type": "string",
-              "defaultValue": "[format('{0}-app-insights', parameters('solutionName'))]",
-              "metadata": {
-                "description": "Name of Application Insights"
               }
             },
             "AzureOpenAIModel": {
@@ -2491,6 +2491,9 @@
             },
             "imageTag": {
               "type": "string"
+            },
+            "applicationInsightsId": {
+              "type": "string"
             }
           },
           "variables": {
@@ -2550,7 +2553,7 @@
                   "appSettings": [
                     {
                       "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
-                      "value": "[reference(resourceId('Microsoft.Insights/components', parameters('ApplicationInsightsName')), '2015-05-01').InstrumentationKey]"
+                      "value": "[reference(parameters('applicationInsightsId'), '2015-05-01').InstrumentationKey]"
                     },
                     {
                       "name": "AZURE_OPENAI_API_VERSION",
@@ -2641,22 +2644,8 @@
                 }
               },
               "dependsOn": [
-                "[resourceId('Microsoft.Insights/components', parameters('ApplicationInsightsName'))]",
                 "[resourceId('Microsoft.Web/serverfarms', parameters('HostingPlanName'))]"
               ]
-            },
-            {
-              "type": "Microsoft.Insights/components",
-              "apiVersion": "2020-02-02",
-              "name": "[parameters('ApplicationInsightsName')]",
-              "location": "[resourceGroup().location]",
-              "tags": {
-                "[format('hidden-link:{0}', resourceId('Microsoft.Web/sites', parameters('ApplicationInsightsName')))]": "Resource"
-              },
-              "properties": {
-                "Application_Type": "web"
-              },
-              "kind": "web"
             },
             {
               "type": "Microsoft.DocumentDB/databaseAccounts/sqlRoleAssignments",
@@ -2671,7 +2660,13 @@
                 "[resourceId('Microsoft.Web/sites', parameters('WebsiteName'))]"
               ]
             }
-          ]
+          ],
+          "outputs": {
+            "webAppUrl": {
+              "type": "string",
+              "value": "[format('https://{0}.azurewebsites.net', parameters('WebsiteName'))]"
+            }
+          }
         }
       },
       "dependsOn": [
@@ -2681,5 +2676,11 @@
         "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_sql_db')]"
       ]
     }
-  ]
+  ],
+  "outputs": {
+    "WEB_APP_URL": {
+      "type": "string",
+      "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_app_service'), '2022-09-01').outputs.webAppUrl.value]"
+    }
+  }
 }

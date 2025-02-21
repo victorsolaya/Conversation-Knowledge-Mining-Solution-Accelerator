@@ -237,6 +237,7 @@ module appserviceModule 'deploy_app_service.bicep' = {
   name: 'deploy_app_service'
   params: {
     imageTag: imageTag
+    applicationInsightsId: aifoundry.outputs.applicationInsightsId
     // identity:managedIdentityModule.outputs.managedIdentityOutput.id
     solutionName: solutionPrefix
     // solutionLocation: solutionLocation
@@ -260,3 +261,5 @@ module appserviceModule 'deploy_app_service.bicep' = {
   scope: resourceGroup(resourceGroup().name)
   dependsOn:[sqlDBModule]
 }
+
+output WEB_APP_URL string = appserviceModule.outputs.webAppUrl
