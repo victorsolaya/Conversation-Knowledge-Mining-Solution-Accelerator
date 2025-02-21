@@ -64,9 +64,9 @@ Please check the link [Azure Products by Region](https://azure.microsoft.com/en-
 
 -  GPT model from the drop-down list of values
 
--  GPT model deployment capacity
+-  GPT model deployment capacity (GPT-4, GPT-4o, and GPT-4o Mini)
 
--  Embedding model from the drop-down list of values
+-  Embedding model from the drop-down list of values (text-embedding-ada-002)
 
 -  Embedding model capacity
 
@@ -76,7 +76,8 @@ Please check the link [Azure Products by Region](https://azure.microsoft.com/en-
 - Navigate to the [Azure AI Foundry portal](https://ai.azure.com/)
 - Select the AI Project you are using for this accelerator if you are not already in the project.
 - Select `Management center` from the bottom left navigation menu
-- Select `Quota`, click the `GlobalStandard` dropdown and select the GPT model and region you are using for this accelerator to see your available quota. 
+- Select `Quota`, click the `GlobalStandard` dropdown and select the GPT model (`GPT-4 / GPT-4o / GPT-4o mini`) or embeddings model (`text-embedding-ada-002`) and region you are using for this accelerator to see your available quota. Please note `GPT-4o mini` and `text-embedding-ada-002` are used as default.
+
 - Request more quota or delete any unused model deployments as needed. 
  
 
