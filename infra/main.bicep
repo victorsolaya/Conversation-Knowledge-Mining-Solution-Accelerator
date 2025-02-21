@@ -192,6 +192,7 @@ module azureFunctionsCharts 'deploy_azure_function_charts.bicep' = {
     sqlDbUser: sqlDBModule.outputs.sqlDbUser
     sqlDbPwd:keyVault.getSecret('SQLDB-PASSWORD')
     // managedIdentityObjectId:managedIdentityModule.outputs.managedIdentityOutput.objectId
+    storageAccountName:aifoundry.outputs.storageAccountName
   }
   dependsOn:[keyVault]
 }
@@ -217,6 +218,7 @@ module azureragFunctionsRag 'deploy_azure_function_rag.bicep' = {
     sqlDbPwd:keyVault.getSecret('SQLDB-PASSWORD')
     aiProjectName:aifoundry.outputs.aiProjectName
     // managedIdentityObjectId:managedIdentityModule.outputs.managedIdentityOutput.objectId
+    storageAccountName:aifoundry.outputs.storageAccountName
   }
   dependsOn:[keyVault]
 }
