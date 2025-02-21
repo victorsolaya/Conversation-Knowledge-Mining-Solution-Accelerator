@@ -76,7 +76,7 @@ Please check the link [Azure Products by Region](https://azure.microsoft.com/en-
 - Navigate to the [Azure AI Foundry portal](https://ai.azure.com/)
 - Select the AI Project you are using for this accelerator if you are not already in the project.
 - Select `Management center` from the bottom left navigation menu
-- Select `Quota`, click the `GlobalStandard` dropdown and select the GPT model and region you are using for this accelerator to see your available quota. 
+- Select `Quota`, click the `GlobalStandard` dropdown and select the GPT model (GPT-4, GPT-4o, GPT-4o Mini, text-embedding-ada-002) and region you are using for this accelerator to see your available quota.
 - Request more quota or delete any unused model deployments as needed. 
  
 
