@@ -235,6 +235,7 @@ module appserviceModule 'deploy_app_service.bicep' = {
   name: 'deploy_app_service'
   params: {
     imageTag: imageTag
+    applicationInsightsId: aifoundry.outputs.applicationInsightsId
     // identity:managedIdentityModule.outputs.managedIdentityOutput.id
     solutionName: solutionPrefix
     // solutionLocation: solutionLocation

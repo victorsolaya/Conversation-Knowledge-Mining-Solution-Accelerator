@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.33.93.31351",
-      "templateHash": "10535791601593705798"
+      "templateHash": "3380130655713808317"
     }
   },
   "parameters": {
@@ -366,7 +366,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.33.93.31351",
-              "templateHash": "7803735516770365352"
+              "templateHash": "10245804339746056471"
             }
           },
           "parameters": {
@@ -1018,6 +1018,10 @@
             "aiProjectName": {
               "type": "string",
               "value": "[variables('aiProjectName')]"
+            },
+            "applicationInsightsId": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.Insights/components', variables('applicationInsightsName'))]"
             }
           }
         }
@@ -2339,6 +2343,9 @@
           "imageTag": {
             "value": "[parameters('imageTag')]"
           },
+          "applicationInsightsId": {
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_ai_foundry'), '2022-09-01').outputs.applicationInsightsId.value]"
+          },
           "solutionName": {
             "value": "[variables('solutionPrefix')]"
           },
@@ -2400,7 +2407,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.33.93.31351",
-              "templateHash": "2717758861842552802"
+              "templateHash": "11969665804111861471"
             }
           },
           "parameters": {
@@ -2535,6 +2542,9 @@
             },
             "imageTag": {
               "type": "string"
+            },
+            "applicationInsightsId": {
+              "type": "string"
             }
           },
           "variables": {
@@ -2570,7 +2580,7 @@
                   "appSettings": [
                     {
                       "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
-                      "value": "[reference(resourceId('Microsoft.Insights/components', parameters('ApplicationInsightsName')), '2015-05-01').InstrumentationKey]"
+                      "value": "[reference(parameters('applicationInsightsId'), '2015-05-01').InstrumentationKey]"
                     },
                     {
                       "name": "AZURE_OPENAI_API_VERSION",
@@ -2661,22 +2671,8 @@
                 }
               },
               "dependsOn": [
-                "[resourceId('Microsoft.Insights/components', parameters('ApplicationInsightsName'))]",
                 "[resourceId('Microsoft.Web/serverfarms', parameters('HostingPlanName'))]"
               ]
-            },
-            {
-              "type": "Microsoft.Insights/components",
-              "apiVersion": "2020-02-02",
-              "name": "[parameters('ApplicationInsightsName')]",
-              "location": "[resourceGroup().location]",
-              "tags": {
-                "[format('hidden-link:{0}', resourceId('Microsoft.Web/sites', parameters('ApplicationInsightsName')))]": "Resource"
-              },
-              "properties": {
-                "Application_Type": "web"
-              },
-              "kind": "web"
             },
             {
               "type": "Microsoft.DocumentDB/databaseAccounts/sqlRoleAssignments",

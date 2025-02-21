@@ -64,6 +64,7 @@ param AZURE_COSMOSDB_DATABASE string = ''
 param AZURE_COSMOSDB_ENABLE_FEEDBACK string = 'True'
 
 param imageTag string
+param applicationInsightsId string
 // var WebAppImageName = 'DOCKER|byoaiacontainer.azurecr.io/byoaia-app:latest'
 
 // var WebAppImageName = 'DOCKER|ncwaappcontainerreg1.azurecr.io/ncqaappimage:v1.0.0'
@@ -158,7 +159,7 @@ resource Website 'Microsoft.Web/sites@2020-06-01' = {
       appSettings: [
         {
           name: 'APPINSIGHTS_INSTRUMENTATIONKEY'
-          value: reference(ApplicationInsights.id, '2015-05-01').InstrumentationKey
+          value: reference(applicationInsightsId, '2015-05-01').InstrumentationKey
         }
         {
           name: 'AZURE_OPENAI_API_VERSION'
@@ -228,17 +229,17 @@ resource Website 'Microsoft.Web/sites@2020-06-01' = {
   dependsOn: [HostingPlan]
 }
 
-resource ApplicationInsights 'Microsoft.Insights/components@2020-02-02' = {
-  name: ApplicationInsightsName
-  location: resourceGroup().location
-  tags: {
-    'hidden-link:${resourceId('Microsoft.Web/sites',ApplicationInsightsName)}': 'Resource'
-  }
-  properties: {
-    Application_Type: 'web'
-  }
-  kind: 'web'
-}
+// resource ApplicationInsights 'Microsoft.Insights/components@2020-02-02' = {
+//   name: ApplicationInsightsName
+//   location: resourceGroup().location
+//   tags: {
+//     'hidden-link:${resourceId('Microsoft.Web/sites',ApplicationInsightsName)}': 'Resource'
+//   }
+//   properties: {
+//     Application_Type: 'web'
+//   }
+//   kind: 'web'
+// }
 
 resource cosmos 'Microsoft.DocumentDB/databaseAccounts@2022-08-15' existing = {
   name: AZURE_COSMOSDB_ACCOUNT
