@@ -155,6 +155,8 @@ resource Website 'Microsoft.Web/sites@2020-06-01' = {
   properties: {
     serverFarmId: HostingPlanName
     siteConfig: {
+      alwaysOn: true
+      ftpsState: 'Disabled'
       appSettings: [
         {
           name: 'APPINSIGHTS_INSTRUMENTATIONKEY'
@@ -223,6 +225,18 @@ resource Website 'Microsoft.Web/sites@2020-06-01' = {
         }
       ]
       linuxFxVersion: WebAppImageName
+    }
+  }
+  resource basicPublishingCredentialsPoliciesFtp 'basicPublishingCredentialsPolicies' = {
+    name: 'ftp'
+    properties: {
+      allow: false
+    }
+  }
+  resource basicPublishingCredentialsPoliciesScm 'basicPublishingCredentialsPolicies' = {
+    name: 'scm'
+    properties: {
+      allow: false
     }
   }
   dependsOn: [HostingPlan]
