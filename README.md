@@ -64,9 +64,9 @@ Please check the link [Azure Products by Region](https://azure.microsoft.com/en-
 
 -  GPT model from the drop-down list of values
 
--  GPT model deployment capacity
+-  GPT model deployment capacity (GPT-4, GPT-4o, and GPT-4o Mini)
 
--  Embedding model from the drop-down list of values
+-  Embedding model from the drop-down list of values (text-embedding-ada-002)
 
 -  Embedding model capacity
 
