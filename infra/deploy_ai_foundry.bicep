@@ -658,3 +658,4 @@ output aiSearchId string = aiSearch.id
 output aiSearchTarget string = 'https://${aiSearch.name}.search.windows.net'
 output aiSearchService string = aiSearch.name
 output aiProjectName string = aiHubProject.name
+output storageAccountName string = storageNameCleaned
