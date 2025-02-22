@@ -46,40 +46,68 @@ QUICK DEPLOY
 
 ### **Prerequisites**
 
-To deploy this solution accelerator, you will need access to an [Azure subscription](https://azure.microsoft.com/free/) with permission to create resource groups and resources. 
+To deploy this solution accelerator, ensure you have access to an [Azure subscription](https://azure.microsoft.com/free/) with the necessary permissions to create **resource groups and resources**.  
 
-Please check the link [Azure Products by Region](https://azure.microsoft.com/en-us/explore/global-infrastructure/products-by-region/?products=all&regions=all) and choose a region where  Azure AI Foundry, Azure OpenAI Services, Azure AI Search, Azure AI Content Understanding, Embedding Deployment Capacity and GPT Model Capacity are available. Recommended regions are eastus, eastus2.
+Check the [Azure Products by Region](https://azure.microsoft.com/en-us/explore/global-infrastructure/products-by-region/?products=all&regions=all) page and select a **region** where the following services are available:  
 
-> When you start the deployment using one of the options below, most parameters will have a default name set already. You can update the following settings:
+- **Azure AI Foundry**  
+- **Azure OpenAI Services**  
+- **Azure AI Search**  
+- **Azure AI Content Understanding**  
+- **Embedding Deployment Capacity**  
+- **GPT Model Capacity**  
 
--  Azure region where the resources will be created in
+#### **Recommended Deployment Regions**  
 
--  Environment name, a 3-10 characters alphanumeric value that will be used to prefix resources
+| **Region**  | **Availability**  |  
+|------------|------------------|  
+| **eastus**  | ✅ Recommended   |  
+| **eastus2** | ✅ Recommended   |  
 
--  Content Understanding location from the drop-down list of values
+#### **Configurable Deployment Settings**  
 
--  Secondary location, a less busy location for Azure SQL and CosmoDB resources if you run into any availability constraints 
+When you start the deployment, most parameters will have **default values**, but you can update the following:  
 
--  Deployment type from the drop-down list of values
+| **Setting** | **Description** |  
+|------------|----------------|  
+| **Azure Region** | The region where resources will be created. |  
+| **Environment Name** | A **3-10 character alphanumeric value** used to prefix resources. |  
+| **Content Understanding Location** | Select from a **drop-down list** of values. |  
+| **Secondary Location** | A **less busy** region for **Azure SQL and CosmosDB**, useful in case of availability constraints. |  
+| **Deployment Type** | Select from a **drop-down list**. |  
+| **GPT Model** | Choose from **GPT-4, GPT-4o, GPT-4o Mini**. |  
+| **GPT Model Deployment Capacity** | Configure capacity for **GPT models**. |  
+| **Embedding Model** | Default: **text-embedding-ada-002**. |  
+| **Embedding Model Capacity** | Set the capacity for **embedding models**. |  
 
--  GPT model from the drop-down list of values
+---
 
--  GPT model deployment capacity (GPT-4, GPT-4o, and GPT-4o Mini)
+### **[Optional] Quota Recommendations**  
 
--  Embedding model from the drop-down list of values (text-embedding-ada-002)
+By default, the **GPT model capacity** in deployment is set to **30k tokens**.  
 
--  Embedding model capacity
+#### **Recommended Quota for Optimal Performance**  
 
-### [Optional]: Quota Recommendations
-- The default for the GPT model capacity in deployment is **30k tokens**.
-    - For optimal performance, it is recommended to increase to **100k tokens**. 
-- Navigate to the [Azure AI Foundry portal](https://ai.azure.com/)
-- Select the AI Project you are using for this accelerator if you are not already in the project.
-- Select `Management center` from the bottom left navigation menu
-- Select `Quota`, click the `GlobalStandard` dropdown and select the GPT model (`GPT-4 / GPT-4o / GPT-4o mini`) or embeddings model (`text-embedding-ada-002`) and region you are using for this accelerator to see your available quota. Please note `GPT-4o mini` and `text-embedding-ada-002` are used as default.
+| **Model Type**        | **Default Capacity** | **Recommended Capacity** |  
+|----------------------|--------------------|--------------------|  
+| **GPT Model**       | 30k tokens         | 100k tokens       |  
 
-- Request more quota or delete any unused model deployments as needed. 
- 
+To adjust quota settings, follow these steps:  
+
+#### **How to Check & Update Quota**  
+
+1. **Navigate** to the [Azure AI Foundry portal](https://portal.azure.com/).  
+2. **Select** the AI Project associated with this accelerator.  
+3. **Go to** the `Management Center` from the bottom-left navigation menu.  
+4. Select `Quota`  
+   - Click on the `GlobalStandard` dropdown.  
+   - Select the required **GPT model** (`GPT-4, GPT-4o, GPT-4o Mini`) or **Embeddings model** (`text-embedding-ada-002`).  
+   - Choose the **region** where the deployment is hosted.  
+5. Request More Quota or delete any unused model deployments as needed.  
+
+> **Note:** The default models used are **GPT-4o Mini** and **text-embedding-ada-002**.
+
+---
 
 ### **Options**
 Pick from the options below to see step-by-step instructions for: GitHub Codespaces, VS Code Dev Containers, Local Environments, and Bicep deployments.
@@ -87,7 +115,7 @@ Pick from the options below to see step-by-step instructions for: GitHub Codespa
 <details>
   <summary><b>Deploy in GitHub Codespaces</b></summary>
 
- ### GitHub Codpespaces
+### GitHub Codpespaces
 
 You can run this solution accelerator virtually by using GitHub Codespaces. The button will open a web-based VS Code instance in your browser:
 
