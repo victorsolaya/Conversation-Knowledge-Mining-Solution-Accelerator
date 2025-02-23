@@ -59,10 +59,8 @@ Check the [Azure Products by Region](https://azure.microsoft.com/en-us/explore/g
 
 #### **Recommended Deployment Regions**  
 
-| **Region**  | **Availability**  |  
-|------------|------------------|  
-| **eastus**  | ✅ Recommended   |  
-| **eastus2** | ✅ Recommended   |  
+> ✅ **eastus** (East US)  
+> ✅ **eastus2** (East US 2)  
 
 #### **Configurable Deployment Settings**  
 
@@ -75,7 +73,7 @@ When you start the deployment, most parameters will have **default values**, but
 | **Content Understanding Location** | Select from a **drop-down list** of values. |  
 | **Secondary Location** | A **less busy** region for **Azure SQL and CosmosDB**, useful in case of availability constraints. |  
 | **Deployment Type** | Select from a **drop-down list**. |  
-| **GPT Model** | Choose from **GPT-4, GPT-4o, GPT-4o Mini**. |  
+| **GPT Model** | Choose from **GPT-4, GPT-4o, GPT-4o Mini**. <br> **Default models:** GPT-4o Mini and text-embedding-ada-002. |  
 | **GPT Model Deployment Capacity** | Configure capacity for **GPT models**. |  
 | **Embedding Model** | Default: **text-embedding-ada-002**. |  
 | **Embedding Model Capacity** | Set the capacity for **embedding models**. |  
@@ -104,8 +102,9 @@ To adjust quota settings, follow these steps:
    - Select the required **GPT model** (`GPT-4, GPT-4o, GPT-4o Mini`) or **Embeddings model** (`text-embedding-ada-002`).  
    - Choose the **region** where the deployment is hosted.  
 5. Request More Quota or delete any unused model deployments as needed.  
+<br>
 
-> **Note:** The default models used are **GPT-4o Mini** and **text-embedding-ada-002**.
+**⚠️ Warning:**  **Insufficient quota can cause deployment issues.** Ensure you have the recommended capacity.
 
 ---
 
@@ -216,7 +215,7 @@ By default this template will use the environment name as the prefix to prevent 
 Change the Content Understanding Location (allowed values: West US, Sweden Central, Australia East)
 
 ```shell
-azd env set AZURE_ENV_CU_LOCATION 'West US'
+azd env set AZURE_ENV_CU_LOCATION 'westus'
 ```
 
 Change the Secondary Location (example: eastus2, westus2, etc.)
