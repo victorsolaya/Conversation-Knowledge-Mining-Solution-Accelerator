@@ -14,10 +14,11 @@ param managedIdentityObjectId string
 var storageName = '${solutionName}hubstorage'
 var storageSkuName = 'Standard_LRS'
 var aiServicesName = '${solutionName}-aiservices'
-var aiServicesName_cu = '${solutionName}-aiservices_cu'
+var aiServicesName_cu = '${solutionName}-aiservices-cu'
 var location_cu = cuLocation
 // var aiServicesName_m = '${solutionName}-aiservices_m'
 // var location_m = solutionLocation
+var workspaceName = '${solutionName}-workspace'
 var applicationInsightsName = '${solutionName}-appinsights'
 var containerRegistryName = '${solutionName}acr'
 var keyvaultName = '${solutionName}-kv'
@@ -55,21 +56,27 @@ resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' existing = {
   name: keyVaultName
 }
 
+resource logAnalytics 'Microsoft.OperationalInsights/workspaces@2023-09-01' = {
+  name: workspaceName
+  location: location
+  tags: {}
+  properties: {
+    retentionInDays: 30
+    sku: {
+      name: 'PerGB2018'
+    }
+  }
+}
+
 resource applicationInsights 'Microsoft.Insights/components@2020-02-02' = {
   name: applicationInsightsName
   location: location
   kind: 'web'
   properties: {
     Application_Type: 'web'
-    DisableIpMasking: false
-    DisableLocalAuth: false
-    Flow_Type: 'Bluefield'
-    ForceCustomerStorageForProfiler: false
-    ImmediatePurgeDataOn30Days: true
-    IngestionMode: 'ApplicationInsights'
     publicNetworkAccessForIngestion: 'Enabled'
     publicNetworkAccessForQuery: 'Disabled'
-    Request_Source: 'rest'
+    WorkspaceResourceId: logAnalytics.id
   }
 }
 
@@ -194,7 +201,7 @@ resource aiServices 'Microsoft.CognitiveServices/accounts@2021-10-01' = {
 //   }
 // }
 
-resource aiServices_CU 'Microsoft.CognitiveServices/accounts@2021-10-01' = {
+resource aiServices_CU 'Microsoft.CognitiveServices/accounts@2024-04-01-preview' = {
   name: aiServicesName_cu
   location: location_cu
   sku: {
@@ -202,6 +209,7 @@ resource aiServices_CU 'Microsoft.CognitiveServices/accounts@2021-10-01' = {
   }
   kind: 'AIServices'
   properties: {
+    customSubDomainName: aiServicesName_cu
     apiProperties: {
       statisticsEnabled: false
     }
