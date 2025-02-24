@@ -14,7 +14,7 @@ param managedIdentityObjectId string
 var storageName = '${solutionName}hubstorage'
 var storageSkuName = 'Standard_LRS'
 var aiServicesName = '${solutionName}-aiservices'
-var aiServicesName_cu = '${solutionName}-aiservices_cu'
+var aiServicesName_cu = '${solutionName}-aiservices-cu'
 var location_cu = cuLocation
 // var aiServicesName_m = '${solutionName}-aiservices_m'
 // var location_m = solutionLocation
@@ -201,7 +201,7 @@ resource aiServices 'Microsoft.CognitiveServices/accounts@2021-10-01' = {
 //   }
 // }
 
-resource aiServices_CU 'Microsoft.CognitiveServices/accounts@2021-10-01' = {
+resource aiServices_CU 'Microsoft.CognitiveServices/accounts@2024-04-01-preview' = {
   name: aiServicesName_cu
   location: location_cu
   sku: {
@@ -209,6 +209,7 @@ resource aiServices_CU 'Microsoft.CognitiveServices/accounts@2021-10-01' = {
   }
   kind: 'AIServices'
   properties: {
+    customSubDomainName: aiServicesName_cu
     apiProperties: {
       statisticsEnabled: false
     }
