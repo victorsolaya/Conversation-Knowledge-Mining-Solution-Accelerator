@@ -280,12 +280,18 @@ Additional Steps
         chmod +x ./add_user.sh
         ./add_user.sh <resourcegroupname> <solution_prefix>
 
+    ## Authentication
+
+    To authenticate with Azure Developer CLI (`azd`), use the following command with your **Tenant ID**:
+
+    ```sh
+    azd auth login --tenant-id <tenant-id>
+
 2. **Add App Authentication**
    
     Follow steps in [App Authentication](./docs/AppAuthentication.md) to configure authenitcation in app service.
 
     Note: Authentication changes can take up to 10 minutes 
-
 
 ## Golden Path Questions
 
