@@ -50,10 +50,4 @@ If you don’t want to delete the entire resource group, follow these steps:
 
 📌 **Tip:** If a resource fails to delete, check if it's **locked** under the **Locks** section and remove the lock.
 
----
 
-## **6. Remove Azure Developer CLI Environment (Optional)**
-If you deployed using `azd`, clean up the environment:
-
-```sh
-azd down
