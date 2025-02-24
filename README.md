@@ -286,10 +286,8 @@ Additional Steps
 
     Note: Authentication changes can take up to 10 minutes 
 
-<h2>
-</br>
 
-## Getting Started
+## Golden Path Questions
 
 To help you get started, here are some **Golden Path Questions** you can ask in the app:
 
@@ -301,6 +299,9 @@ To help you get started, here are some **Golden Path Questions** you can ask in 
 
 These questions serve as a great starting point to explore insights from the data.
 
+</br>
+
+<h2>
 </br>
 Responsible AI Transparency FAQ 
 </h2>
