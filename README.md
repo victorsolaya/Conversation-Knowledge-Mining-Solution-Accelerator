@@ -251,7 +251,7 @@ azd env set AZURE_ENV_EMBEDDING_MODEL_CAPACITY 80
     azd auth login
     ```
 
-    ### To authenticate with Azure Developer CLI (`azd`), use the following command with your **Tenant ID**:
+    #### To authenticate with Azure Developer CLI (`azd`), use the following command with your **Tenant ID**:
 
     ```sh
     azd auth login --tenant-id <tenant-id>
