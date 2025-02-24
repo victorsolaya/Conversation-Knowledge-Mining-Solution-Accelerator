@@ -54,7 +54,7 @@ Please check the link [Azure Products by Region](https://azure.microsoft.com/en-
 
 -  Azure region where the resources will be created in
 
--  Environment name, a 3-10 characters alphanumeric value that will be used to prefix resources
+-  Environment name, a 3-20 characters alphanumeric value that will be used to prefix resources
 
 -  Content Understanding location from the drop-down list of values
 
@@ -199,7 +199,7 @@ You can view the permissions for your account and subscription by following the 
 By default this template will use the environment name as the prefix to prevent naming collisions within Azure. The parameters below show the default values. You only need to run the statements below if you need to change the values. 
 
 
-> To override any of the parameters, run `azd env set <key> <value>` before running `azd up`. On the first azd command, it will prompt you for the environment name. Be sure to choose 3-10 charaters alphanumeric unique name. 
+> To override any of the parameters, run `azd env set <key> <value>` before running `azd up`. On the first azd command, it will prompt you for the environment name. Be sure to choose 3-20 charaters alphanumeric unique name. 
 
 Change the Content Understanding Location (allowed values: West US, Sweden Central, Australia East)
 
