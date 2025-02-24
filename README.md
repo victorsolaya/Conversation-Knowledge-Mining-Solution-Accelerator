@@ -52,7 +52,8 @@ Check the [Azure Products by Region](https://azure.microsoft.com/en-us/explore/g
 
 - **Azure AI Foundry**  
 - **Azure OpenAI Services**  
-- **Azure AI Search**  
+- **Azure AI Search**
+- **Azure Semantic Search**
 - **Azure AI Content Understanding**  
 - **Embedding Deployment Capacity**  
 - **GPT Model Capacity**  
