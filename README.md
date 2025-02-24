@@ -311,9 +311,9 @@ Additional Steps
 3. **Deleting Resources After a Failed Deployment**
      Follow steps in [Delete Resource Group](./docs/DeleteResourceGroup.md) If your deployment fails and you need to clean up the resources.
 
-## Golden Path Questions
+## Sample Questions
 
-To help you get started, here are some **Golden Path Questions** you can ask in the app:
+To help you get started, here are some **Sample Questions** you can ask in the app:
 
 - Total number of calls by date for the last 7 days
 - Show average handling time by topics in minutes
