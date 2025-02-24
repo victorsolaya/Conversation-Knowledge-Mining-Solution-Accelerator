@@ -80,7 +80,7 @@ resource containerRegistry 'Microsoft.ContainerRegistry/registries@2021-09-01' =
     name: 'Premium'
   }
   properties: {
-    adminUserEnabled: true
+    adminUserEnabled: false
     dataEndpointEnabled: false
     networkRuleBypassOptions: 'AzureServices'
     networkRuleSet: {
