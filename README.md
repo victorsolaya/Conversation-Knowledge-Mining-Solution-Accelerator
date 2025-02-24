@@ -188,7 +188,7 @@ By default this template will use the environment name as the prefix to prevent 
 Change the Content Understanding Location (allowed values: West US, Sweden Central, Australia East)
 
 ```shell
-azd env set AZURE_ENV_CU_LOCATION 'West US'
+azd env set AZURE_ENV_CU_LOCATION 'westus'
 ```
 
 Change the Secondary Location (example: eastus2, westus2, etc.)
