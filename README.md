@@ -251,6 +251,12 @@ azd env set AZURE_ENV_EMBEDDING_MODEL_CAPACITY 80
     azd auth login
     ```
 
+    ## To authenticate with Azure Developer CLI (`azd`), use the following command with your **Tenant ID**:
+
+    ```sh
+    azd auth login --tenant-id <tenant-id>
+
+
 2. Provision and deploy all the resources:
 
     ```shell
@@ -296,13 +302,6 @@ Additional Steps
         chmod +x ./add_user.sh
         ./add_user.sh <resourcegroupname> <solution_prefix>
 
-    ## Authentication
-
-    To authenticate with Azure Developer CLI (`azd`), use the following command with your **Tenant ID**:
-
-    ```sh
-    azd auth login --tenant-id <tenant-id>
-
 2. **Add App Authentication**
    
     Follow steps in [App Authentication](./docs/AppAuthentication.md) to configure authenitcation in app service.
@@ -316,11 +315,11 @@ Additional Steps
 
 To help you get started, here are some **Golden Path Questions** you can ask in the app:
 
-- **Total number of calls by date for the last 7 days**
-- **Show average handling time by topics in minutes**
-- **What are the top 7 challenges users reported?**
-- **Give a summary of billing issues**
-- **When customers call in about unexpected charges, what types of charges are they seeing?**
+- Total number of calls by date for the last 7 days
+- Show average handling time by topics in minutes
+- What are the top 7 challenges users reported?
+- Give a summary of billing issues
+- When customers call in about unexpected charges, what types of charges are they seeing?
 
 These questions serve as a great starting point to explore insights from the data.
 </br>
