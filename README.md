@@ -293,6 +293,9 @@ Additional Steps
 
     Note: Authentication changes can take up to 10 minutes 
 
+3. **Deleting Resources After a Failed Deployment**
+     Follow steps in [Delete Resource Group](./docs/DeleteResourceGroup.md) If your deployment fails and you need to clean up the resources.
+
 ## Golden Path Questions
 
 To help you get started, here are some **Golden Path Questions** you can ask in the app:
