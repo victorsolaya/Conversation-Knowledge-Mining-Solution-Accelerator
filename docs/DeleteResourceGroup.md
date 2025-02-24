@@ -40,7 +40,7 @@ If you don’t want to delete the entire resource group, follow these steps:
 3. Select the **resource** you want to delete (e.g., App Service, Storage Account).
 4. Click **Delete** at the top.
 
-![Delete Individual Resource](Images/DeleteRG.png)
+![Delete Individual Resource](Images/deleteservices.png)
 
 ---
 
