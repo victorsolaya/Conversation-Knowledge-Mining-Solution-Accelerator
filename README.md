@@ -70,6 +70,22 @@ Please check the link [Azure Products by Region](https://azure.microsoft.com/en-
 
 -  Embedding model capacity
 
+
+### Checking Resource Availability by Region
+
+Before deploying, ensure that the required Azure services are available in your region. Below are links to check service availability:
+
+- [Azure Products by Region](https://azure.microsoft.com/en-us/explore/global-infrastructure/products-by-region/)
+- [Semantic Search Availability](https://learn.microsoft.com/en-us/azure/search/search-region-support)
+
+    ## **Steps to Check Semantic Search Availability**
+    1. Open the [Semantic Search Availability](https://learn.microsoft.com/en-us/azure/search/search-region-support) page.
+    2. Scroll down to the **"Availability by Region"** section.
+    3. Use the table to find supported regions for **Azure AI Search** and its **Semantic Search** feature.
+    4. If your target region is not listed, choose a supported region for deployment.
+
+📌 **Note:** Some features may only be available in specific regions, so ensure compatibility before proceeding.
+
 ### [Optional]: Quota Recommendations
 - The default for the GPT model capacity in deployment is **30k tokens**.
     - For optimal performance, it is recommended to increase to **100k tokens**. 
@@ -188,7 +204,7 @@ By default this template will use the environment name as the prefix to prevent 
 Change the Content Understanding Location (allowed values: West US, Sweden Central, Australia East)
 
 ```shell
-azd env set AZURE_ENV_CU_LOCATION 'West US'
+azd env set AZURE_ENV_CU_LOCATION 'westus'
 ```
 
 Change the Secondary Location (example: eastus2, westus2, etc.)
@@ -234,6 +250,12 @@ azd env set AZURE_ENV_EMBEDDING_MODEL_CAPACITY 80
     ```shell
     azd auth login
     ```
+
+    #### To authenticate with Azure Developer CLI (`azd`), use the following command with your **Tenant ID**:
+
+    ```sh
+    azd auth login --tenant-id <tenant-id>
+
 
 2. Provision and deploy all the resources:
 
@@ -286,6 +308,21 @@ Additional Steps
 
     Note: Authentication changes can take up to 10 minutes 
 
+3. **Deleting Resources After a Failed Deployment**
+     Follow steps in [Delete Resource Group](./docs/DeleteResourceGroup.md) If your deployment fails and you need to clean up the resources.
+
+## Sample Questions
+
+To help you get started, here are some **Sample Questions** you can ask in the app:
+
+- Total number of calls by date for the last 7 days
+- Show average handling time by topics in minutes
+- What are the top 7 challenges users reported?
+- Give a summary of billing issues
+- When customers call in about unexpected charges, what types of charges are they seeing?
+
+These questions serve as a great starting point to explore insights from the data.
+</br>
 <h2>
 </br>
 Responsible AI Transparency FAQ 
