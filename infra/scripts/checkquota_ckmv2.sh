@@ -5,7 +5,6 @@ REGIONS=("eastus" "eastus2" "northcentralus")
 
 SUBSCRIPTION_ID="${AZURE_SUBSCRIPTION_ID}"
 GPT_MIN_CAPACITY="${GPT_MIN_CAPACITY}"
-TEXT_EMBEDDING_MIN_CAPACITY="${TEXT_EMBEDDING_MIN_CAPACITY}"
 AZURE_CLIENT_ID="${AZURE_CLIENT_ID}"
 AZURE_TENANT_ID="${AZURE_TENANT_ID}"
 AZURE_CLIENT_SECRET="${AZURE_CLIENT_SECRET}"
@@ -18,7 +17,7 @@ if ! az login --service-principal -u "$AZURE_CLIENT_ID" -p "$AZURE_CLIENT_SECRET
 fi
 
 echo "🔄 Validating required environment variables..."
-if [[ -z "$SUBSCRIPTION_ID" || -z "$GPT_MIN_CAPACITY" || -z "$TEXT_EMBEDDING_MIN_CAPACITY" ]]; then
+if [[ -z "$SUBSCRIPTION_ID" || -z "$GPT_MIN_CAPACITY" ]]; then
     echo "❌ ERROR: Missing required environment variables."
     exit 1
 fi
