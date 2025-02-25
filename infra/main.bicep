@@ -8,15 +8,14 @@ param environmentName string
 
 @minLength(1)
 @description('Location for the Content Understanding service deployment:')
-@allowed(['West US'
-'Sweden Central' 
-'Australia East'
+@allowed(['westus'
+'swedencentral' 
+'australiaeast'
 ])
-
 @metadata({
-  azd: {
-    type: 'location'
-  }
+  'westus': 'West US'
+  'swedencentral': 'Sweden Central'
+  'australiaeast': 'Australia East'
 })
 param contentUnderstandingLocation string
 
@@ -72,7 +71,7 @@ var resourceGroupLocation = resourceGroup().location
 // var resourceGroupName = resourceGroup().name
 
 var solutionLocation = resourceGroupLocation
-var baseUrl = 'https://raw.githubusercontent.com/microsoft/Conversation-Knowledge-Mining-Solution-Accelerator/main/'
+var baseUrl = 'https://raw.githubusercontent.com/microsoft/Conversation-Knowledge-Mining-Solution-Accelerator/psl-bug-14720/'
 
 
 // ========== Managed Identity ========== //
