@@ -63,6 +63,15 @@ Check the [Azure Products by Region](https://azure.microsoft.com/en-us/explore/g
 > ✅ **eastus** (East US)  
 > ✅ **eastus2** (East US 2)  
 
+
+#### Select a region where Semantic Search Availability is available before proceeding with the deployment.
+
+Steps to Check Semantic Search Availability
+1. Open the [Semantic Search Availability](https://learn.microsoft.com/en-us/azure/search/search-region-support) page.
+2. Scroll down to the **"Availability by Region"** section.
+3. Use the table to find supported regions for **Azure AI Search** and its **Semantic Search** feature.
+4. If your target region is not listed, choose a supported region for deployment.
+
 #### **Configurable Deployment Settings**  
 
 When you start the deployment, most parameters will have **default values**, but you can update the following:  
@@ -70,11 +79,11 @@ When you start the deployment, most parameters will have **default values**, but
 | **Setting** | **Description** |  
 |------------|----------------|  
 | **Azure Region** | The region where resources will be created. |  
-| **Environment Name** | A **3-10 character alphanumeric value** used to prefix resources. |  
+| **Environment Name** | A **3-20 character alphanumeric value** used to prefix resources. |  
 | **Content Understanding Location** | Select from a **drop-down list** of values. |  
 | **Secondary Location** | A **less busy** region for **Azure SQL and CosmosDB**, useful in case of availability constraints. |  
 | **Deployment Type** | Select from a **drop-down list**. |  
-| **GPT Model** | Choose from **GPT-4, GPT-4o, GPT-4o Mini**. <br> **Default models:** GPT-4o Mini and text-embedding-ada-002. |  
+| **GPT Model** | Choose from **GPT-4, GPT-4o, GPT-4o Mini**. <br> **Default models:** GPT-4o Mini |  
 | **GPT Model Deployment Capacity** | Configure capacity for **GPT models**. |  
 | **Embedding Model** | Default: **text-embedding-ada-002**. |  
 | **Embedding Model Capacity** | Set the capacity for **embedding models**. |  
@@ -90,6 +99,7 @@ By default, the **GPT model capacity** in deployment is set to **30k tokens**.
 | **Model Type**        | **Default Capacity** | **Recommended Capacity** |  
 |----------------------|--------------------|--------------------|  
 | **GPT Model**       | 30k tokens         | 100k tokens       |  
+
 
 To adjust quota settings, follow these steps:  
 
