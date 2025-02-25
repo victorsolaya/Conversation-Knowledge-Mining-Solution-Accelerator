@@ -16,9 +16,9 @@
             ]
         }
     },
-    "postCreateCommand": "python3 -m pip install -r infra/scripts/index_scripts/requirements.txt",
+    "postStartCommand": "git pull origin main && python3 -m pip install -r infra/scripts/index_scripts/requirements.txt",
     "remoteUser": "vscode",
     "hostRequirements": {
-        "memory": "8gb"
+        "memory": "4gb"
     }
 }

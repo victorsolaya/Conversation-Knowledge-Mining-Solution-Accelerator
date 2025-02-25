@@ -2,8 +2,8 @@
 targetScope = 'resourceGroup'
 
 @minLength(3)
-@maxLength(10)
-@description('A unique prefix for all resources in this deployment. This should be 3-10 characters long:')
+@maxLength(20)
+@description('A unique prefix for all resources in this deployment. This should be 3-20 characters long:')
 param environmentName string
 
 @minLength(1)

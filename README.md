@@ -211,7 +211,7 @@ You can view the permissions for your account and subscription by following the 
 By default this template will use the environment name as the prefix to prevent naming collisions within Azure. The parameters below show the default values. You only need to run the statements below if you need to change the values. 
 
 
-> To override any of the parameters, run `azd env set <key> <value>` before running `azd up`. On the first azd command, it will prompt you for the environment name. Be sure to choose 3-10 charaters alphanumeric unique name. 
+> To override any of the parameters, run `azd env set <key> <value>` before running `azd up`. On the first azd command, it will prompt you for the environment name. Be sure to choose 3-20 charaters alphanumeric unique name. 
 
 Change the Content Understanding Location (allowed values: West US, Sweden Central, Australia East)
 
@@ -262,6 +262,12 @@ azd env set AZURE_ENV_EMBEDDING_MODEL_CAPACITY 80
     ```shell
     azd auth login
     ```
+
+    #### To authenticate with Azure Developer CLI (`azd`), use the following command with your **Tenant ID**:
+
+    ```sh
+    azd auth login --tenant-id <tenant-id>
+
 
 2. Provision and deploy all the resources:
 
@@ -314,6 +320,21 @@ Additional Steps
 
     Note: Authentication changes can take up to 10 minutes 
 
+3. **Deleting Resources After a Failed Deployment**
+     Follow steps in [Delete Resource Group](./docs/DeleteResourceGroup.md) If your deployment fails and you need to clean up the resources.
+
+## Sample Questions
+
+To help you get started, here are some **Sample Questions** you can ask in the app:
+
+- Total number of calls by date for the last 7 days
+- Show average handling time by topics in minutes
+- What are the top 7 challenges users reported?
+- Give a summary of billing issues
+- When customers call in about unexpected charges, what types of charges are they seeing?
+
+These questions serve as a great starting point to explore insights from the data.
+</br>
 <h2>
 </br>
 Responsible AI Transparency FAQ 
