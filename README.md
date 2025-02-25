@@ -83,7 +83,7 @@ When you start the deployment, most parameters will have **default values**, but
 | **Content Understanding Location** | Select from a **drop-down list** of values. |  
 | **Secondary Location** | A **less busy** region for **Azure SQL and CosmosDB**, useful in case of availability constraints. |  
 | **Deployment Type** | Select from a **drop-down list**. |  
-| **GPT Model** | Choose from **GPT-4, GPT-4o, GPT-4o Mini**. <br> **Default models:** GPT-4o Mini and text-embedding-ada-002. |  
+| **GPT Model** | Choose from **GPT-4, GPT-4o, GPT-4o Mini**. <br> **Default models:** GPT-4o Mini |  
 | **GPT Model Deployment Capacity** | Configure capacity for **GPT models**. |  
 | **Embedding Model** | Default: **text-embedding-ada-002**. |  
 | **Embedding Model Capacity** | Set the capacity for **embedding models**. |  
