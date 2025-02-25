@@ -13,7 +13,7 @@ param environmentName string
 'australiaeast'
 ])
 @metadata({
-  'westus': 'West US'
+  'westus': 'west US'
   'swedencentral': 'Sweden Central'
   'australiaeast': 'Australia East'
 })
