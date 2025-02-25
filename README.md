@@ -64,7 +64,7 @@ Check the [Azure Products by Region](https://azure.microsoft.com/en-us/explore/g
 > ✅ **eastus2** (East US 2)  
 
 
-#### select a region where Semantic Search [Semantic Search Availability](https://learn.microsoft.com/en-us/azure/search/search-region-support) is available before proceeding with the deployment.
+#### Select a region where [Semantic Search Availability](https://learn.microsoft.com/en-us/azure/search/search-region-support) is available before proceeding with the deployment.
 
 **Steps to Check Semantic Search Availability**
 1. Open the [Semantic Search Availability](https://learn.microsoft.com/en-us/azure/search/search-region-support) page.
