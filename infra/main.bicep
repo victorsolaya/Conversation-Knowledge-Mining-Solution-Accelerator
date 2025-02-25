@@ -12,6 +12,12 @@ param environmentName string
 'swedencentral' 
 'australiaeast'
 ])
+
+@metadata({
+  azd: {
+    type: 'location'
+  }
+})
 param contentUnderstandingLocation string
 
 @minLength(1)

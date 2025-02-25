@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.33.93.31351",
-      "templateHash": "14137407721271259391"
+      "templateHash": "12314318848374885693"
     }
   },
   "parameters": {
@@ -24,10 +24,13 @@
         "swedencentral",
         "australiaeast"
       ],
-      "minLength": 1,
       "metadata": {
+        "azd": {
+          "type": "location"
+        },
         "description": "Location for the Content Understanding service deployment:"
-      }
+      },
+      "minLength": 1
     },
     "secondaryLocation": {
       "type": "string",
