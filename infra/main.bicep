@@ -12,11 +12,6 @@ param environmentName string
 'swedencentral' 
 'australiaeast'
 ])
-@metadata({
-  'westus': 'west US'
-  'swedencentral': 'Sweden Central'
-  'australiaeast': 'Australia East'
-})
 param contentUnderstandingLocation string
 
 @minLength(1)
@@ -71,7 +66,7 @@ var resourceGroupLocation = resourceGroup().location
 // var resourceGroupName = resourceGroup().name
 
 var solutionLocation = resourceGroupLocation
-var baseUrl = 'https://raw.githubusercontent.com/microsoft/Conversation-Knowledge-Mining-Solution-Accelerator/psl-bug-14720/'
+var baseUrl = 'https://raw.githubusercontent.com/microsoft/Conversation-Knowledge-Mining-Solution-Accelerator/main/'
 
 
 // ========== Managed Identity ========== //
