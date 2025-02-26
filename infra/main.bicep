@@ -7,6 +7,20 @@ targetScope = 'resourceGroup'
 param environmentName string
 
 @minLength(1)
+@description('Location for all resources')
+// Look for desired models on the availability table:
+// https://learn.microsoft.com/azure/ai-services/openai/concepts/models#global-standard-model-availability
+@allowed([
+  'eastus'
+  'eastus2'
+  'westeurope'
+  'westus'
+  'westus3'
+])
+@default('eastus')
+param location string
+
+@minLength(1)
 @description('Location for the Content Understanding service deployment:')
 @allowed(['West US'
 'Sweden Central' 
