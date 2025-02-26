@@ -145,6 +145,21 @@ module sqlDBModule 'deploy_sql_db.bicep' = {
     solutionName: solutionPrefix
     solutionLocation: secondaryLocation
     keyVaultName: kvault.outputs.keyvaultName
+    managedIdentityName: managedIdentityModule.outputs.managedIdentityOutput.name
+    managedIdentityObjectId: managedIdentityModule.outputs.managedIdentityOutput.objectId
+    managedIdentityId: managedIdentityModule.outputs.managedIdentityOutput.id
+    users: [
+      {
+        principalId: managedIdentityModule.outputs.managedIdentityChartsOutput.clientId  // Replace with actual Principal ID
+        principalName: managedIdentityModule.outputs.managedIdentityChartsOutput.name    // Replace with actual user email or name
+        databaseRoles: ['db_owner']
+      }
+      {
+        principalId: managedIdentityModule.outputs.managedIdentityRagOutput.clientId  // Replace with actual Principal ID
+        principalName: managedIdentityModule.outputs.managedIdentityRagOutput.name    // Replace with actual user email or name
+        databaseRoles: ['db_owner']
+      }
+    ]
   }
   scope: resourceGroup(resourceGroup().name)
 }
@@ -193,6 +208,8 @@ module azureFunctionsCharts 'deploy_azure_function_charts.bicep' = {
     sqlDbPwd:keyVault.getSecret('SQLDB-PASSWORD')
     // managedIdentityObjectId:managedIdentityModule.outputs.managedIdentityOutput.objectId
     storageAccountName:aifoundry.outputs.storageAccountName
+    userassignedIdentityId: managedIdentityModule.outputs.managedIdentityChartsOutput.id
+    userassignedIdentityClientId: managedIdentityModule.outputs.managedIdentityChartsOutput.clientId
   }
   dependsOn:[keyVault]
 }
@@ -219,6 +236,8 @@ module azureragFunctionsRag 'deploy_azure_function_rag.bicep' = {
     aiProjectName:aifoundry.outputs.aiProjectName
     // managedIdentityObjectId:managedIdentityModule.outputs.managedIdentityOutput.objectId
     storageAccountName:aifoundry.outputs.storageAccountName
+    userassignedIdentityId: managedIdentityModule.outputs.managedIdentityRagOutput.id
+    userassignedIdentityClientId: managedIdentityModule.outputs.managedIdentityRagOutput.clientId
   }
   dependsOn:[keyVault]
 }
