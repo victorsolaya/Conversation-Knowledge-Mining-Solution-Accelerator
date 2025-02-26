@@ -1,7 +1,9 @@
-name: 'Stale Bot'
+name: "Manage Stale Issues, PRs & Unmerged Branches"
+
 on:
   schedule:
-    - cron: '30 1 * * *'
+    - cron: '30 1 * * *'  # Runs daily at 1:30 AM UTC
+  workflow_dispatch:  # Allows manual triggering
 
 permissions:
   contents: write
@@ -12,8 +14,60 @@ jobs:
   stale:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/stale@v9
+      - name: Mark Stale Issues and PRs
+        uses: actions/stale@v9
         with:
-          stale-issue-message: 'This issue is stale because it has been open 180 days with no activity. Remove stale label or comment or this will be closed in 30 days.'
+          stale-issue-message: "This issue is stale because it has been open 180 days with no activity. Remove stale label or comment, or it will be closed in 30 days."
+          stale-pr-message: "This PR is stale because it has been open 180 days with no activity. Please update or it will be closed in 30 days."
           days-before-stale: 180
           days-before-close: 30
+          exempt-issue-labels: "keep"
+          exempt-pr-labels: "keep"
+
+  cleanup-branches:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Fetch full history for accurate branch checks
+
+      - name: Fetch All Branches
+        run: git fetch --all --prune
+
+      - name: Create CSV File
+        run: echo "Branch,Last Commit Date,Merged Into,Status" > stale-branches-report.csv
+
+      - name: Identify & List Stale Merged Branches with No Activity in Last 3 Months
+        run: |
+          echo "Checking merged branches with no activity in the last 3 months..."
+          for branch_info in $(git for-each-ref --format '%(refname:short) %(committerdate:unix)' refs/remotes/origin | awk -v date=$(date -d '3 months ago' +%s) '$2 < date {print $1","$2}'); do
+            branch=$(echo $branch_info | cut -d',' -f1)
+            last_commit_date=$(git log -1 --format=%ci origin/$branch || echo "Unknown")
+            merged_into=$(git branch -r --contains $branch | grep -E 'origin/main|origin/dev' | awk -F'/' '{print $2}' | tr '\n' ',' | sed 's/,$//')
+            merged_into=${merged_into:-"Unknown"}
+
+            echo "$branch,$last_commit_date,$merged_into,Marked for Deletion" >> stale-branches-report.csv
+                        
+          done
+
+      - name: Identify & List PR Approved & Merged Branches (Older Than 30 Days)
+        run: |
+          echo "Checking PR branches that were approved and merged more than 30 days ago..."
+          for branch_info in $(gh api repos/${{ github.repository }}/pulls --jq '.[] | select(.merged_at != null and (.base.ref == "main" or .base.ref == "dev")) | select(.merged_at | fromdateiso8601 < (now - 2592000)) | [.head.ref, .merged_at, .base.ref] | @csv'); do
+            branch=$(echo $branch_info | awk -F, '{print $1}' | tr -d '"')
+            last_commit_date=$(git log -1 --format=%ci origin/$branch || echo "Unknown")
+            merged_into=$(echo $branch_info | awk -F, '{print $3}' | tr -d '"')
+
+            echo "$branch,$last_commit_date,$merged_into,Marked for Deletion" >> stale-branches-report.csv
+                        
+          done
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload Stale Branch Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: stale-branches-report
+          path: stale-branches-report.csv
+          retention-days: 30
