@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.33.93.31351",
-      "templateHash": "5446812480962314636"
+      "templateHash": "4520391402196765519"
     }
   },
   "parameters": {
@@ -20,9 +20,9 @@
     "contentUnderstandingLocation": {
       "type": "string",
       "allowedValues": [
-        "West US",
-        "Sweden Central",
-        "Australia East"
+        "westus",
+        "swedencentral",
+        "australiaeast"
       ],
       "metadata": {
         "azd": {
@@ -1513,14 +1513,15 @@
                 "principalId": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_managed_identity'), '2022-09-01').outputs.managedIdentityChartsOutput.value.clientId]",
                 "principalName": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_managed_identity'), '2022-09-01').outputs.managedIdentityChartsOutput.value.name]",
                 "databaseRoles": [
-                  "db_owner"
+                  "db_datareader",
+                  "db_datawriter"
                 ]
               },
               {
                 "principalId": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_managed_identity'), '2022-09-01').outputs.managedIdentityRagOutput.value.clientId]",
                 "principalName": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_managed_identity'), '2022-09-01').outputs.managedIdentityRagOutput.value.name]",
                 "databaseRoles": [
-                  "db_owner"
+                  "db_datareader"
                 ]
               }
             ]
