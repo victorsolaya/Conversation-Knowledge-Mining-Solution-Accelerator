@@ -46,76 +46,47 @@ QUICK DEPLOY
 
 ### **Prerequisites**
 
-To deploy this solution accelerator, ensure you have access to an [Azure subscription](https://azure.microsoft.com/free/) with the necessary permissions to create **resource groups and resources**.  
+To deploy this solution accelerator, ensure you have access to an [Azure subscription](https://azure.microsoft.com/free/) with the necessary permissions to create **resource groups and resources**. Follow the steps in   
 
 Check the [Azure Products by Region](https://azure.microsoft.com/en-us/explore/global-infrastructure/products-by-region/?products=all&regions=all) page and select a **region** where the following services are available:  
 
-- **Azure AI Foundry**  
-- **Azure OpenAI Services**  
-- **Azure AI Search**
-- **Azure Semantic Search**
-- **Azure AI Content Understanding**  
-- **Embedding Deployment Capacity**  
-- **GPT Model Capacity**  
+- Azure AI Foundry 
+- Azure OpenAI Services 
+- Azure AI Search
+- Azure AI Content Understanding
+- Embedding Deployment Capacity  
+- GPT Model Capacity
+- [Azure Semantic Search](./docs/AzureSemanticSearchRegion.md)  
 
-#### **Recommended Deployment Regions**  
+Here are some example regions where the services are available: East US, Australia East, Canada Central, West Europe 
 
-> ✅ **eastus** (East US)  
-> ✅ **eastus2** (East US 2)  
-
-
-#### Select a region where Semantic Search Availability is available before proceeding with the deployment.
-
-Steps to Check Semantic Search Availability
-1. Open the [Semantic Search Availability](https://learn.microsoft.com/en-us/azure/search/search-region-support) page.
-2. Scroll down to the **"Availability by Region"** section.
-3. Use the table to find supported regions for **Azure AI Search** and its **Semantic Search** feature.
-4. If your target region is not listed, choose a supported region for deployment.
 
 #### **Configurable Deployment Settings**  
 
-When you start the deployment, most parameters will have **default values**, but you can update the following:  
+When you start the deployment, most parameters will have **default values**, but you can update the following settings:  
 
-| **Setting** | **Description** |  
-|------------|----------------|  
-| **Azure Region** | The region where resources will be created. |  
-| **Environment Name** | A **3-20 character alphanumeric value** used to prefix resources. |  
-| **Content Understanding Location** | Select from a **drop-down list** of values. |  
-| **Secondary Location** | A **less busy** region for **Azure SQL and CosmosDB**, useful in case of availability constraints. |  
-| **Deployment Type** | Select from a **drop-down list**. |  
-| **GPT Model** | Choose from **GPT-4, GPT-4o, GPT-4o Mini**. <br> **Default models:** GPT-4o Mini |  
-| **GPT Model Deployment Capacity** | Configure capacity for **GPT models**. |  
-| **Embedding Model** | Default: **text-embedding-ada-002**. |  
-| **Embedding Model Capacity** | Set the capacity for **embedding models**. |  
+| **Setting** | **Description** |  **Default value** |
+|------------|----------------|  ------------|
+| **Azure Region** | The region where resources will be created. | East US| 
+| **Environment Name** | A **3-20 character alphanumeric value** used to prefix resources. |  kmtemplate |
+| **Content Understanding Location** | Select from a drop-down list of values. |  West US |
+| **Secondary Location** | A **less busy** region for **Azure SQL and CosmosDB**, useful in case of availability constraints. |  eastus2 |
+| **Deployment Type** | Select from a drop-down list. |  GlobalStandard |
+| **GPT Model** | Choose from **gpt-4, gpt-4o, gpt-4o-mini** | gpt-4o-mini |  
+| **GPT Model Deployment Capacity** | Configure capacity for **GPT models**. | 30k |
+| **Embedding Model** | Default: **text-embedding-ada-002**. |  text-embedding-ada-002 |
+| **Embedding Model Capacity** | Set the capacity for **embedding models**. |  80k |
 
 ---
 
 ### **[Optional] Quota Recommendations**  
-
 By default, the **GPT model capacity** in deployment is set to **30k tokens**.  
+> **We recommend increasing the capacity to 100k tokens for optimal performance.** 
 
-#### **Recommended Quota for Optimal Performance**  
-
-| **Model Type**        | **Default Capacity** | **Recommended Capacity** |  
-|----------------------|--------------------|--------------------|  
-| **GPT Model**       | 30k tokens         | 100k tokens       |  
+To adjust quota settings, follow these [steps](./docs/AzureGPTQuotaSettings.md)  
 
 
-To adjust quota settings, follow these steps:  
-
-#### **How to Check & Update Quota**  
-
-1. **Navigate** to the [Azure AI Foundry portal](https://portal.azure.com/).  
-2. **Select** the AI Project associated with this accelerator.  
-3. **Go to** the `Management Center` from the bottom-left navigation menu.  
-4. Select `Quota`  
-   - Click on the `GlobalStandard` dropdown.  
-   - Select the required **GPT model** (`GPT-4, GPT-4o, GPT-4o Mini`) or **Embeddings model** (`text-embedding-ada-002`).  
-   - Choose the **region** where the deployment is hosted.  
-5. Request More Quota or delete any unused model deployments as needed.  
-<br>
-
-**⚠️ Warning:**  **Insufficient quota can cause deployment issues.** Ensure you have the recommended capacity.
+**⚠️ Warning:**  **Insufficient quota can cause deployment errors.** Please ensure you have the recommended capacity or request for additional capacity before deploying this solution. 
 
 ---
 
@@ -127,7 +98,7 @@ Pick from the options below to see step-by-step instructions for: GitHub Codespa
 
 ### GitHub Codpespaces
 
-You can run this solution accelerator virtually by using GitHub Codespaces. The button will open a web-based VS Code instance in your browser:
+You can run this solution using GitHub Codespaces. The button will open a web-based VS Code instance in your browser:
 
 1. Open the solution accelerator (this may take several minutes):
 
@@ -143,7 +114,7 @@ You can run this solution accelerator virtually by using GitHub Codespaces. The 
 
  ### VS Code Dev Containers
 
-A related option is VS Code Dev Containers, which will open the project in your local VS Code using the [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers):
+You can run this solution in VS Code Dev Containers, which will open the project in your local VS Code using the [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers):
 
 1. Start Docker Desktop (install it if not already installed)
 2. Open the project:
@@ -185,87 +156,21 @@ If you're not using one of the above options for opening the project, then you'l
 <details>
   <summary><b>Deploy with Bicep/ARM template</b></summary>
 
-### Quick Deploy (Bicep)
-
-1. **Deploy Azure resources**  
-   Click the following deployment button to create the required resources for this accelerator directly in your Azure Subscription.
+### Bicep
+ 
+   Click the following deployment button to create the required resources for this solution directly in your Azure Subscription.
 
    [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fmicrosoft%2FConversation-Knowledge-Mining-Solution-Accelerator%2Fmain%2Finfra%2Fmain.json)          
 
 </details>
-<br/>
+
 
 ### Deploying
 
-Once you've opened the project in [Codespaces](#github-codespaces), in [Dev Containers](#vs-code-dev-containers), or [locally](#local-environment), 
+Once you've opened the project in [Codespaces](#github-codespaces) or in [Dev Containers](#vs-code-dev-containers) or [locally](#local-environment), you can deploy it to Azure following the following steps. 
 
-you can deploy it to Azure.
+To change the azd parameters from the default values, follow the steps [here](./docs/CustomizingAzdParameters.md). 
 
-### Azure account setup
-
-1. Sign up for a [free Azure account](https://azure.microsoft.com/free/) and create an Azure Subscription.
-2. Check that you have the necessary permissions:
-    * Your Azure account must have `Microsoft.Authorization/roleAssignments/write` permissions, such as [Role Based Access Control Administrator](https://learn.microsoft.com/azure/role-based-access-control/built-in-roles#role-based-access-control-administrator-preview), [User Access Administrator](https://learn.microsoft.com/azure/role-based-access-control/built-in-roles#user-access-administrator), or [Owner](https://learn.microsoft.com/azure/role-based-access-control/built-in-roles#owner).
-    * Your Azure account also needs `Microsoft.Resources/deployments/write` permissions on the subscription level.
-
-You can view the permissions for your account and subscription by following the steps below: 
-- Navigate to the [Azure Portal](https://portal.azure.com/) and click on `Subscriptions` under 'Navigation' 
-- Select the subscription you are using for this accelerator from the list. 
-    - If you try to search for your subscription and it does not come up, make sure no filters are selected.
-- Select `Access control (IAM)` and you can see the roles that are assigned to your account for this subscription. 
-    - If you want to see more information about the roles, you can go to the `Role assignments`
-     tab and search by your account name and then click the role you want to view more information about.
-
-### [Optional]: Customizing resource names 
-
-By default this template will use the environment name as the prefix to prevent naming collisions within Azure. The parameters below show the default values. You only need to run the statements below if you need to change the values. 
-
-
-> To override any of the parameters, run `azd env set <key> <value>` before running `azd up`. On the first azd command, it will prompt you for the environment name. Be sure to choose 3-20 charaters alphanumeric unique name. 
-
-Change the Content Understanding Location (allowed values: West US, Sweden Central, Australia East)
-
-```shell
-azd env set AZURE_ENV_CU_LOCATION 'westus'
-```
-
-Change the Secondary Location (example: eastus2, westus2, etc.)
-
-```shell
-azd env set AZURE_ENV_SECONDARY_LOCATION eastus2
-```
-
-Change the Model Deployment Type (allowed values: Standard, GlobalStandard)
-
-```shell
-azd env set AZURE_ENV_MODEL_DEPLOYMENT_TYPE GlobalStandard
-```
-
-Set the Model Name (allowed values: gpt-4o-mini, gpt-4o, gpt-4)
-
-```shell
-azd env set AZURE_ENV_MODEL_NAME gpt-4o-mini
-```
-
-Change the Model Capacity (choose a number based on available GPT model capacity in your subscription)
-
-```shell
-azd env set AZURE_ENV_MODEL_CAPACITY 30
-```
-
-Change the Embedding Model 
-
-```shell
-azd env set AZURE_ENV_EMBEDDING_MODEL_NAME text-embedding-ada-002
-```
-
-Change the Embedding Deployment Capacity (choose a number based on available embedding model capacity in your subscription)
-
-```shell
-azd env set AZURE_ENV_EMBEDDING_MODEL_CAPACITY 80
-```
-
-### Deploying with azd
 
 1. Login to Azure:
 
@@ -277,7 +182,7 @@ azd env set AZURE_ENV_EMBEDDING_MODEL_CAPACITY 80
 
     ```sh
     azd auth login --tenant-id <tenant-id>
-
+   ```
 
 2. Provision and deploy all the resources:
 
@@ -287,9 +192,10 @@ azd env set AZURE_ENV_EMBEDDING_MODEL_CAPACITY 80
 
 3. Provide an `azd` environment name (like "ckmapp")
 4. Select a subscription from your Azure account, and select a location which has quota for all the resources. 
-    * Then it will provision the resources in your account and deploy the latest code. If you get an error or timeout with deployment, changing the location can help, as there may be availability constraints for the resources.
+    * This deployment will take *7-10 minutes* to provision the resources in your account and set up the solution with sample data. 
+    * If you get an error or timeout with deployment, changing the location can help, as there may be availability constraints for the resources.
 
-5. Open the [Azure Portal](https://portal.azure.com/), go to the deployed resource group, find the App Service and get the app URL from `Default domain`.
+5. Once the deployment has completed successfully, open the [Azure Portal](https://portal.azure.com/), go to the deployed resource group, find the App Service and get the app URL from `Default domain`.
   
 6. You can now proceed to run the [development server](#development-server) to test the app locally, or if you are done trying out the app, you can delete the resources by running `azd down`.
 
@@ -298,31 +204,9 @@ azd env set AZURE_ENV_EMBEDDING_MODEL_CAPACITY 80
 Additional Steps
 </h2>
 
-1. **Add Azure Function Users to Database**
-    
-    This script automates the process of adding Azure Function identities as users in a database and assigning them appropriate roles.
-    ## Prerequisites
+1. **Add Azure Function Users to Database** 
 
-    Before running the script, ensure you have:
-
-    - **[Azure CLI](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli#install)** installed.
-    - **[Python 3]( https://www.python.org/downloads/)** installed.
-    - **[Microsoft ODBC Driver 17 for SQL Server](https://learn.microsoft.com/en-us/sql/connect/odbc/download-odbc-driver-for-sql-server?view=sql-server-ver16#version-17)** installed.
-    ## Usage
-
-    1. Clone the repository:
-
-        ```sh
-        git clone https://github.com/microsoft/Conversation-Knowledge-Mining-Solution-Accelerator.git
-    
-    2. Navigate to script directory
-        ```sh
-        cd infra\scripts\add_user_scripts
-
-    3. Run the script
-        ```sh
-        chmod +x ./add_user.sh
-        ./add_user.sh <resourcegroupname> <solution_prefix>
+    Follow the steps in [Add Database Users](./docs/AddDatabaseUsers.md)
 
 2. **Add App Authentication**
    
@@ -331,6 +215,7 @@ Additional Steps
     Note: Authentication changes can take up to 10 minutes 
 
 3. **Deleting Resources After a Failed Deployment**
+
      Follow steps in [Delete Resource Group](./docs/DeleteResourceGroup.md) If your deployment fails and you need to clean up the resources.
 
 ## Sample Questions
