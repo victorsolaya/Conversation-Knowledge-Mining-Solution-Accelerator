@@ -202,10 +202,7 @@ def prepare_search_doc(content, document_id):
     for chunk in chunks:
         chunk_num += 1
         chunk_id = document_id + '_' + str(chunk_num).zfill(2)
-        # d = {
-        #         "chunk_id" : document_id + '_' + str(chunk_num).zfill(2),
-        #         "content": chunk,       
-        #     }
+        
         try:
             v_contentVector = get_embeddings(str(chunk),openai_api_base,openai_api_version,openai_api_key)
         except:
@@ -215,7 +212,7 @@ def prepare_search_doc(content, document_id):
             except: 
                 v_contentVector = []
         result = {
-                "id": base64.urlsafe_b64encode(bytes(chunk_id, encoding='utf-8')).decode('utf-8'),
+                "id": chunk_id,
                 "chunk_id": chunk_id,
                 "content": chunk,
                 "sourceurl": path.name.split('/')[-1],
