@@ -58,8 +58,8 @@ DECLARE @cmd NVARCHAR(max) = N'CREATE USER [' + @username + '] WITH SID = ' + @s
 IF NOT EXISTS (SELECT * FROM sys.database_principals WHERE name = @username)
 BEGIN
     EXEC(@cmd)
-    EXEC sp_addrolemember '$($DatabaseRole)', @username;
 END
+EXEC sp_addrolemember '$($DatabaseRole)', @username;
 "@
 
 Write-Output "`nSQL:`n$($sql)`n`n"
