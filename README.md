@@ -88,7 +88,7 @@ To adjust quota settings, follow these [steps](./docs/AzureGPTQuotaSettings.md)
 
 **⚠️ Warning:**  **Insufficient quota can cause deployment errors.** Please ensure you have the recommended capacity or request for additional capacity before deploying this solution. 
 
----
+----
 
 ### **Options**
 Pick from the options below to see step-by-step instructions for: GitHub Codespaces, VS Code Dev Containers, Local Environments, and Bicep deployments.
