@@ -152,12 +152,12 @@ module sqlDBModule 'deploy_sql_db.bicep' = {
       {
         principalId: managedIdentityModule.outputs.managedIdentityChartsOutput.clientId  // Replace with actual Principal ID
         principalName: managedIdentityModule.outputs.managedIdentityChartsOutput.name    // Replace with actual user email or name
-        databaseRoles: ['db_owner']
+        databaseRoles: ['db_datareader', 'db_datawriter']
       }
       {
         principalId: managedIdentityModule.outputs.managedIdentityRagOutput.clientId  // Replace with actual Principal ID
         principalName: managedIdentityModule.outputs.managedIdentityRagOutput.name    // Replace with actual user email or name
-        databaseRoles: ['db_owner']
+        databaseRoles: ['db_datareader']
       }
     ]
   }
