@@ -298,39 +298,14 @@ azd env set AZURE_ENV_EMBEDDING_MODEL_CAPACITY 80
 Additional Steps
 </h2>
 
-1. **Add Azure Function Users to Database**
-    
-    This script automates the process of adding Azure Function identities as users in a database and assigning them appropriate roles.
-    ## Prerequisites
-
-    Before running the script, ensure you have:
-
-    - **[Azure CLI](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli#install)** installed.
-    - **[Python 3]( https://www.python.org/downloads/)** installed.
-    - **[Microsoft ODBC Driver 17 for SQL Server](https://learn.microsoft.com/en-us/sql/connect/odbc/download-odbc-driver-for-sql-server?view=sql-server-ver16#version-17)** installed.
-    ## Usage
-
-    1. Clone the repository:
-
-        ```sh
-        git clone https://github.com/microsoft/Conversation-Knowledge-Mining-Solution-Accelerator.git
-    
-    2. Navigate to script directory
-        ```sh
-        cd infra\scripts\add_user_scripts
-
-    3. Run the script
-        ```sh
-        chmod +x ./add_user.sh
-        ./add_user.sh <resourcegroupname> <solution_prefix>
-
-2. **Add App Authentication**
+1. **Add App Authentication**
    
     Follow steps in [App Authentication](./docs/AppAuthentication.md) to configure authenitcation in app service.
 
     Note: Authentication changes can take up to 10 minutes 
 
-3. **Deleting Resources After a Failed Deployment**
+2. **Deleting Resources After a Failed Deployment**
+
      Follow steps in [Delete Resource Group](./docs/DeleteResourceGroup.md) If your deployment fails and you need to clean up the resources.
 
 ## Sample Questions
