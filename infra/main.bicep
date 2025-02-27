@@ -171,28 +171,18 @@ resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' existing = {
 }
 
 //========== Deployment script to upload sample data ========== //
-module uploadFiles 'deploy_upload_files_script.bicep' = {
+module uploadFiles 'deploy_upload_files_and_index_scripts_script.bicep' = {
   name : 'deploy_upload_files_script'
   params:{
-    solutionLocation: solutionLocation
+    solutionName: solutionPrefix
+    solutionLocation: resourceGroupLocation
     baseUrl: baseUrl
     storageAccountName: storageAccount.outputs.storageName
     containerName: storageAccount.outputs.storageContainer
     managedIdentityObjectId:managedIdentityModule.outputs.managedIdentityOutput.id
-  }
-  // dependsOn:[storageAccount,keyVault]
-}
-
-//========== Deployment script to process and index data ========== //
-module createIndex 'deploy_index_scripts.bicep' = {
-  name : 'deploy_index_scripts'
-  params:{
-    solutionLocation: solutionLocation
-    identity:managedIdentityModule.outputs.managedIdentityOutput.id
-    baseUrl:baseUrl
+    managedIdentityClientId:managedIdentityModule.outputs.managedIdentityOutput.clientId
     keyVaultName:aifoundry.outputs.keyvaultName
   }
-  dependsOn:[keyVault,sqlDBModule,uploadFiles]
 }
 
 //========== Azure functions module ========== //
