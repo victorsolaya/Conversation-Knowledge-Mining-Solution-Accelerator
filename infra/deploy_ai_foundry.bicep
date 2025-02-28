@@ -659,7 +659,7 @@ output aiServicesTarget string = aiServices.properties.endpoint //aiServices_m.p
 output aiServicesName string = aiServicesName //aiServicesName_m
 output aiServicesId string = aiServices.id //aiServices_m.id
 
-output aiInfereceEndpoint string = phiserverless.properties.inferenceEndpoint.uri
+//output aiInfereceEndpoint string = phiserverless.properties.inferenceEndpoint.uri
 
 output aiSearchName string = aiSearchName
 output aiSearchId string = aiSearch.id
