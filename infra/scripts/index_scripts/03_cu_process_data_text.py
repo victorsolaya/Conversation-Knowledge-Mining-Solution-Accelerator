@@ -6,12 +6,13 @@ from azure.keyvault.secrets import SecretClient
 from openai import AzureOpenAI
 import pandas as pd
 
-import pymssql
 import re
 
 from datetime import datetime
 import time
 import base64
+import pyodbc
+import struct
 
 key_vault_name = 'kv_to-be-replaced'
 managed_identity_client_id = 'mici_to-be-replaced'
@@ -137,13 +138,29 @@ search_credential = AzureKeyCredential(search_key)
 search_client = SearchClient(search_endpoint, index_name, search_credential)
 index_client = SearchIndexClient(endpoint=search_endpoint, credential=search_credential)
 
+driver = "{ODBC Driver 17 for SQL Server}"
 server =  get_secrets_from_kv(key_vault_name,"SQLDB-SERVER")
 database = get_secrets_from_kv(key_vault_name,"SQLDB-DATABASE")
 username =  get_secrets_from_kv(key_vault_name,"SQLDB-USERNAME")
 password =  get_secrets_from_kv(key_vault_name,"SQLDB-PASSWORD")
 
+credential = DefaultAzureCredential(managed_identity_client_id=managed_identity_client_id)
 
-conn = pymssql.connect(server, username, password, database)
+token_bytes = credential.get_token(
+    "https://database.windows.net/.default"
+).token.encode("utf-16-LE")
+token_struct = struct.pack(f"<I{len(token_bytes)}s", len(token_bytes), token_bytes)
+SQL_COPT_SS_ACCESS_TOKEN = (
+    1256  # This connection option is defined by microsoft in msodbcsql.h
+)
+
+# Set up the connection
+connection_string = f"DRIVER={driver};SERVER={server};DATABASE={database};"
+conn = pyodbc.connect(
+    connection_string, attrs_before={SQL_COPT_SS_ACCESS_TOKEN: token_struct}
+)
+
+# conn = pymssql.connect(server, username, password, database)
 cursor = conn.cursor()
 print("Connected to the database")
 cursor.execute('DROP TABLE IF EXISTS processed_data')
