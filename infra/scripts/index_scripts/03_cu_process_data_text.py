@@ -138,7 +138,7 @@ search_credential = AzureKeyCredential(search_key)
 search_client = SearchClient(search_endpoint, index_name, search_credential)
 index_client = SearchIndexClient(endpoint=search_endpoint, credential=search_credential)
 
-driver = "{ODBC Driver 17 for SQL Server}"
+driver = "{ODBC Driver 18 for SQL Server}"
 server =  get_secrets_from_kv(key_vault_name,"SQLDB-SERVER")
 database = get_secrets_from_kv(key_vault_name,"SQLDB-DATABASE")
 username =  get_secrets_from_kv(key_vault_name,"SQLDB-USERNAME")
