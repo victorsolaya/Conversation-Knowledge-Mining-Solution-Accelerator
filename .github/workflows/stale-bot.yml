@@ -75,5 +75,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: merged-branches-report
-          path: merged-branches-report.csv
+          path: merged_branches_report.csv
           retention-days: 30
