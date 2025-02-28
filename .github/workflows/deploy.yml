@@ -3,8 +3,8 @@ on:
   push:
     branches:
       - ckm-v2
-  schedule:
-    - cron: '0 6,18 * * *'  # Runs at 6:00 AM and 6:00 PM GMT
+  # schedule:
+  #   - cron: '0 6,18 * * *'  # Runs at 6:00 AM and 6:00 PM GMT
     
 jobs:
   deploy:
