@@ -141,8 +141,6 @@ index_client = SearchIndexClient(endpoint=search_endpoint, credential=search_cre
 driver = "{ODBC Driver 18 for SQL Server}"
 server =  get_secrets_from_kv(key_vault_name,"SQLDB-SERVER")
 database = get_secrets_from_kv(key_vault_name,"SQLDB-DATABASE")
-username =  get_secrets_from_kv(key_vault_name,"SQLDB-USERNAME")
-password =  get_secrets_from_kv(key_vault_name,"SQLDB-PASSWORD")
 
 credential = DefaultAzureCredential(managed_identity_client_id=managed_identity_client_id)
 
@@ -265,6 +263,7 @@ for path in paths:
         duration = int(result['result']['contents'][0]['fields']['Duration']['valueString'])
         end_timestamp = str(start_timestamp + timedelta(seconds=duration))
         end_timestamp = end_timestamp.split(".")[0]
+        start_timestamp = str(start_timestamp).split(".")[0]
 
         summary = result['result']['contents'][0]['fields']['summary']['valueString']
         satisfied = result['result']['contents'][0]['fields']['satisfied']['valueString']
@@ -714,7 +713,7 @@ conn.commit()
 # Get today's date
 today = datetime.today()
 # Get the max StartTime from the processed_data table
-cursor.execute("SELECT MAX(TRY_CAST(StartTime AS DATETIME)) FROM [dbo].[processed_data]")
+cursor.execute("SELECT MAX(CAST(StartTime AS DATETIME)) FROM [dbo].[processed_data]")
 max_start_time = cursor.fetchone()[0]
 # Calculate the days difference
 days_difference = (today - max_start_time).days - 1 if max_start_time else 0
