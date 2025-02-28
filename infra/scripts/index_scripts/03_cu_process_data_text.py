@@ -714,7 +714,7 @@ conn.commit()
 # Get today's date
 today = datetime.today()
 # Get the max StartTime from the processed_data table
-cursor.execute("SELECT MAX(CAST(StartTime AS DATETIME)) FROM [dbo].[processed_data]")
+cursor.execute("SELECT MAX(TRY_CAST(StartTime AS DATETIME)) FROM [dbo].[processed_data]")
 max_start_time = cursor.fetchone()[0]
 # Calculate the days difference
 days_difference = (today - max_start_time).days - 1 if max_start_time else 0
