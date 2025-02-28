@@ -274,12 +274,12 @@ for path in paths:
         complaint = result['result']['contents'][0]['fields']['complaint']['valueString']
         content = result['result']['contents'][0]['fields']['content']['valueString']
 
-        cursor.execute(f"INSERT INTO processed_data (ConversationId, EndTime, StartTime, Content, summary, satisfied, sentiment, topic, key_phrases, complaint) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)", (conversation_id, end_timestamp, start_timestamp, content, summary, satisfied, sentiment, topic, key_phrases, complaint))    
+        cursor.execute(f"INSERT INTO processed_data (ConversationId, EndTime, StartTime, Content, summary, satisfied, sentiment, topic, key_phrases, complaint) VALUES (?,?,?,?,?,?,?,?,?,?)", (conversation_id, end_timestamp, start_timestamp, content, summary, satisfied, sentiment, topic, key_phrases, complaint))    
         conn.commit()
         
         # keyPhrases = key_phrases.split(',')
         # for keyPhrase in keyPhrases:
-        #     cursor.execute(f"INSERT INTO processed_data_key_phrases (ConversationId, key_phrase, sentiment) VALUES (%s,%s,%s)", (conversation_id, keyPhrase, sentiment))
+        #     cursor.execute(f"INSERT INTO processed_data_key_phrases (ConversationId, key_phrase, sentiment) VALUES (?,?,?)", (conversation_id, keyPhrase, sentiment))
 
         document_id = conversation_id
 
@@ -337,12 +337,12 @@ if docs != []:
 #         complaint = result['result']['contents'][0]['fields']['complaint']['valueString']
 #         content = result['result']['contents'][0]['fields']['content']['valueString']
 #         # print(topic)
-#         cursor.execute(f"INSERT INTO processed_data (ConversationId, EndTime, StartTime, Content, summary, satisfied, sentiment, topic, key_phrases, complaint) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)", (conversation_id, end_timestamp, start_timestamp, content, summary, satisfied, sentiment, topic, key_phrases, complaint))    
+#         cursor.execute(f"INSERT INTO processed_data (ConversationId, EndTime, StartTime, Content, summary, satisfied, sentiment, topic, key_phrases, complaint) VALUES (?,?,?,?,?,?,?,?,?,?)", (conversation_id, end_timestamp, start_timestamp, content, summary, satisfied, sentiment, topic, key_phrases, complaint))    
 #         conn.commit()
     
 #         # keyPhrases = key_phrases.split(',')
 #         # for keyPhrase in keyPhrases:
-#         #     cursor.execute(f"INSERT INTO processed_data_key_phrases (ConversationId, key_phrase, sentiment) VALUES (%s,%s,%s)", (conversation_id, keyPhrase, sentiment))
+#         #     cursor.execute(f"INSERT INTO processed_data_key_phrases (ConversationId, key_phrase, sentiment) VALUES (?,?,?)", (conversation_id, keyPhrase, sentiment))
 
 #         document_id = conversation_id
 
@@ -379,13 +379,20 @@ import_table = 'processed_data'
 with open(sample_processed_data_file, "r") as f:
     data = json.load(f)
 
-data_list = [list(record.values()) for record in data]
-conn.bulk_copy(import_table,data_list)
+# Convert data to list of tuples for pyodbc
+data_list = [tuple(record.values()) for record in data]
+columns = ", ".join(data[0].keys())  # Extract column names from first record
+placeholders = ", ".join(["?"] * len(data[0]))  # Create placeholders for values
+
+sql = f"INSERT INTO {import_table} ({columns}) VALUES ({placeholders})"
+
+# Bulk insert using executemany()
+cursor.executemany(sql, data_list)
 conn.commit()
 
 # for row in data:
 #     columns = ", ".join(row.keys()) 
-#     placeholders = ", ".join(["%s"] * len(row))  
+#     placeholders = ", ".join(["?"] * len(row))  
 #     values = tuple(row.values())  
 
 #     sql = f"INSERT INTO {import_table} ({columns}) VALUES ({placeholders})"
@@ -400,13 +407,19 @@ import_table = 'processed_data_key_phrases'
 with open(sample_processed_data_file, "r") as f:
     data = json.load(f)
 
-data_list = [list(record.values()) for record in data]
-conn.bulk_copy(import_table,data_list)
+data_list = [tuple(record.values()) for record in data]
+columns = ", ".join(data[0].keys())  # Extract column names from first record
+placeholders = ", ".join(["?"] * len(data[0]))  # Create placeholders for values
+
+sql = f"INSERT INTO {import_table} ({columns}) VALUES ({placeholders})"
+
+# Bulk insert using executemany()
+cursor.executemany(sql, data_list)
 conn.commit()
 
 # for row in data:
 #     columns = ", ".join(row.keys()) 
-#     placeholders = ", ".join(["%s"] * len(row))  
+#     placeholders = ", ".join(["?"] * len(row))  
 #     values = tuple(row.values())  
 
 #     sql = f"INSERT INTO {import_table} ({columns}) VALUES ({placeholders})"
@@ -557,7 +570,7 @@ res = call_gpt4(topics_str, client)
 topics_object = res #json.loads(res)
 reduced_data = []
 for object1 in topics_object['topics']:
-    cursor.execute(f"INSERT INTO km_mined_topics (label, description) VALUES (%s,%s)", (object1['label'], object1['description']))
+    cursor.execute(f"INSERT INTO km_mined_topics (label, description) VALUES (?,?)", (object1['label'], object1['description']))
 print("function completed")
 # print(res)
 conn.commit()
@@ -614,7 +627,7 @@ df_processed_data = df_processed_data[df_processed_data['ConversationId'].isin(c
 for index, row in df_processed_data.iterrows():
     # print(row['topic'])
     mined_topic_str = get_mined_topic_mapping(row['topic'], str(mined_topics_list))
-    cursor.execute(f"UPDATE processed_data SET mined_topic = %s WHERE ConversationId = %s", (mined_topic_str, row['ConversationId']))
+    cursor.execute(f"UPDATE processed_data SET mined_topic = ? WHERE ConversationId = ?", (mined_topic_str, row['ConversationId']))
     # print(f"Updated mined_topic for ConversationId: {row['ConversationId']}")
 conn.commit()
 
@@ -649,7 +662,7 @@ conn.bulk_copy(import_table,data_list)
 # column_names = [i[0] for i in cursor.description]
 # df = pd.DataFrame(rows, columns=column_names)
 # for idx, row in df.iterrows():
-#     cursor.execute(f"INSERT INTO km_processed_data (ConversationId, StartTime, EndTime, Content, summary, satisfied, sentiment, keyphrases, complaint, topic) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)", (row['ConversationId'], row['StartTime'], row['EndTime'], row['Content'], row['summary'], row['satisfied'], row['sentiment'], row['keyphrases'], row['complaint'], row['topic']))
+#     cursor.execute(f"INSERT INTO km_processed_data (ConversationId, StartTime, EndTime, Content, summary, satisfied, sentiment, keyphrases, complaint, topic) VALUES (?,?,?,?,?,?,?,?,?,?)", (row['ConversationId'], row['StartTime'], row['EndTime'], row['Content'], row['summary'], row['satisfied'], row['sentiment'], row['keyphrases'], row['complaint'], row['topic']))
 conn.commit()
 
 # update keyphrase table after the data update
@@ -682,7 +695,7 @@ for idx, row in df.iterrows():
     key_phrases = row['key_phrases'].split(',')
     for key_phrase in key_phrases:
         key_phrase = key_phrase.strip()
-        cursor.execute(f"INSERT INTO processed_data_key_phrases (ConversationId, key_phrase, sentiment, topic, StartTime) VALUES (%s,%s,%s,%s,%s)", (row['ConversationId'], key_phrase, row['sentiment'], row['topic'], row['StartTime']))
+        cursor.execute(f"INSERT INTO processed_data_key_phrases (ConversationId, key_phrase, sentiment, topic, StartTime) VALUES (?,?,?,?,?)", (row['ConversationId'], key_phrase, row['sentiment'], row['topic'], row['StartTime']))
 conn.commit()
 
 # to adjust the dates to current date
@@ -695,11 +708,11 @@ max_start_time = cursor.fetchone()[0]
 days_difference = (today - max_start_time).days - 1 if max_start_time else 0
 
 # Update processed_data table
-cursor.execute(f"UPDATE [dbo].[processed_data] SET StartTime = FORMAT(DATEADD(DAY, %s, StartTime), 'yyyy-MM-dd HH:mm:ss'), EndTime = FORMAT(DATEADD(DAY, %s, EndTime), 'yyyy-MM-dd HH:mm:ss')", (days_difference, days_difference))
+cursor.execute(f"UPDATE [dbo].[processed_data] SET StartTime = FORMAT(DATEADD(DAY, ?, StartTime), 'yyyy-MM-dd HH:mm:ss'), EndTime = FORMAT(DATEADD(DAY, ?, EndTime), 'yyyy-MM-dd HH:mm:ss')", (days_difference, days_difference))
 # Update km_processed_data table
-cursor.execute(f"UPDATE [dbo].[km_processed_data] SET StartTime = FORMAT(DATEADD(DAY, %s, StartTime), 'yyyy-MM-dd HH:mm:ss'), EndTime = FORMAT(DATEADD(DAY, %s, EndTime), 'yyyy-MM-dd HH:mm:ss')", (days_difference, days_difference))
+cursor.execute(f"UPDATE [dbo].[km_processed_data] SET StartTime = FORMAT(DATEADD(DAY, ?, StartTime), 'yyyy-MM-dd HH:mm:ss'), EndTime = FORMAT(DATEADD(DAY, ?, EndTime), 'yyyy-MM-dd HH:mm:ss')", (days_difference, days_difference))
 # Update processed_data_key_phrases table
-cursor.execute(f"UPDATE [dbo].[processed_data_key_phrases] SET StartTime = FORMAT(DATEADD(DAY, %s, StartTime), 'yyyy-MM-dd HH:mm:ss')", (days_difference,))
+cursor.execute(f"UPDATE [dbo].[processed_data_key_phrases] SET StartTime = FORMAT(DATEADD(DAY, ?, StartTime), 'yyyy-MM-dd HH:mm:ss')", (days_difference))
 
 conn.commit()
 cursor.close()
