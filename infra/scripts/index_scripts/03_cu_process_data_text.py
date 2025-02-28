@@ -432,7 +432,8 @@ conn.commit()
 
 sql_stmt = 'SELECT distinct topic FROM processed_data'
 cursor.execute(sql_stmt)
-rows = cursor.fetchall()
+
+rows = [tuple(row) for row in cursor.fetchall()]
 column_names = [i[0] for i in cursor.description]
 df = pd.DataFrame(rows, columns=column_names)
 
@@ -578,7 +579,7 @@ conn.commit()
 sql_stmt = 'SELECT label FROM km_mined_topics'
 cursor.execute(sql_stmt)
 
-rows = cursor.fetchall()
+rows = [tuple(row) for row in cursor.fetchall()]
 column_names = [i[0] for i in cursor.description]
 df_topics = pd.DataFrame(rows, columns=column_names)
 
@@ -617,7 +618,7 @@ def get_mined_topic_mapping(input_text, list_of_topics):
 sql_stmt = 'SELECT * FROM processed_data'
 cursor.execute(sql_stmt)
 
-rows = cursor.fetchall()
+rows = [tuple(row) for row in cursor.fetchall()]
 column_names = [i[0] for i in cursor.description]
 df_processed_data = pd.DataFrame(rows, columns=column_names)
 counter = 0
@@ -658,7 +659,18 @@ cursor.execute(sql_stmt)
 rows = cursor.fetchall()
 data_list = [list(row) for row in rows]
 import_table = 'km_processed_data'
-conn.bulk_copy(import_table,data_list)
+
+columns = ["ConversationId", "StartTime", "EndTime", "Content", "summary", "satisfied", "sentiment", 
+           "keyphrases", "complaint", "topic"]
+columns_str = ", ".join(columns)
+placeholders = ", ".join(["?"] * len(columns))  # Generate `?` placeholders for values
+
+# Insert statement
+insert_sql = f"INSERT INTO {import_table} ({columns_str}) VALUES ({placeholders})"
+
+# Bulk insert using executemany()
+cursor.executemany(insert_sql, data_list)
+
 # column_names = [i[0] for i in cursor.description]
 # df = pd.DataFrame(rows, columns=column_names)
 # for idx, row in df.iterrows():
@@ -683,7 +695,7 @@ conn.commit()
 
 sql_stmt = '''select ConversationId, key_phrases, sentiment, mined_topic as topic, StartTime from processed_data'''
 cursor.execute(sql_stmt)
-rows = cursor.fetchall()
+rows = [tuple(row) for row in cursor.fetchall()]
 
 column_names = [i[0] for i in cursor.description]
 df = pd.DataFrame(rows, columns=column_names)
