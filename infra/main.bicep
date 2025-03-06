@@ -147,19 +147,6 @@ module sqlDBModule 'deploy_sql_db.bicep' = {
     keyVaultName: kvault.outputs.keyvaultName
     managedIdentityName: managedIdentityModule.outputs.managedIdentityOutput.name
     managedIdentityObjectId: managedIdentityModule.outputs.managedIdentityOutput.objectId
-    managedIdentityId: managedIdentityModule.outputs.managedIdentityOutput.id
-    users: [
-      {
-        principalId: managedIdentityModule.outputs.managedIdentityChartsOutput.clientId  // Replace with actual Principal ID
-        principalName: managedIdentityModule.outputs.managedIdentityChartsOutput.name    // Replace with actual user email or name
-        databaseRoles: ['db_datareader', 'db_datawriter']
-      }
-      {
-        principalId: managedIdentityModule.outputs.managedIdentityRagOutput.clientId  // Replace with actual Principal ID
-        principalName: managedIdentityModule.outputs.managedIdentityRagOutput.name    // Replace with actual user email or name
-        databaseRoles: ['db_datareader']
-      }
-    ]
   }
   scope: resourceGroup(resourceGroup().name)
 }
@@ -171,17 +158,31 @@ resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' existing = {
 }
 
 //========== Deployment script to upload sample data ========== //
-module uploadFiles 'deploy_upload_files_and_index_scripts_script.bicep' = {
-  name : 'deploy_upload_files_script'
+module uploadFiles 'deploy_upload_files_create_index_and_sqluser_script.bicep' = {
+  name : 'deploy_upload_files_create_index_and_sqluser_script'
   params:{
     solutionName: solutionPrefix
-    solutionLocation: resourceGroupLocation
+    solutionLocation: secondaryLocation
     baseUrl: baseUrl
     storageAccountName: storageAccount.outputs.storageName
     containerName: storageAccount.outputs.storageContainer
     managedIdentityObjectId:managedIdentityModule.outputs.managedIdentityOutput.id
     managedIdentityClientId:managedIdentityModule.outputs.managedIdentityOutput.clientId
     keyVaultName:aifoundry.outputs.keyvaultName
+    sqlServerName: sqlDBModule.outputs.sqlServerName
+    sqlDbName: sqlDBModule.outputs.sqlDbName
+    sqlUsers: [
+      {
+        principalId: managedIdentityModule.outputs.managedIdentityChartsOutput.clientId  // Replace with actual Principal ID
+        principalName: managedIdentityModule.outputs.managedIdentityChartsOutput.name    // Replace with actual user email or name
+        databaseRoles: ['db_datareader', 'db_datawriter']
+      }
+      {
+        principalId: managedIdentityModule.outputs.managedIdentityRagOutput.clientId  // Replace with actual Principal ID
+        principalName: managedIdentityModule.outputs.managedIdentityRagOutput.name    // Replace with actual user email or name
+        databaseRoles: ['db_datareader']
+      }
+    ]
   }
 }
 
