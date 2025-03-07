@@ -159,7 +159,7 @@ resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' existing = {
 module uploadFiles 'deploy_upload_files_script.bicep' = {
   name : 'deploy_upload_files_script'
   params:{
-    solutionLocation: solutionLocation
+    solutionLocation: secondaryLocation
     baseUrl: baseUrl
     storageAccountName: storageAccount.outputs.storageName
     containerName: storageAccount.outputs.storageContainer
@@ -172,7 +172,7 @@ module uploadFiles 'deploy_upload_files_script.bicep' = {
 module createIndex 'deploy_index_scripts.bicep' = {
   name : 'deploy_index_scripts'
   params:{
-    solutionLocation: solutionLocation
+    solutionLocation: secondaryLocation
     identity:managedIdentityModule.outputs.managedIdentityOutput.id
     baseUrl:baseUrl
     keyVaultName:aifoundry.outputs.keyvaultName

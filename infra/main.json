@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.33.93.31351",
-      "templateHash": "17140771814245764407"
+      "templateHash": "15699139662875746088"
     }
   },
   "parameters": {
@@ -1569,7 +1569,7 @@
         "mode": "Incremental",
         "parameters": {
           "solutionLocation": {
-            "value": "[variables('solutionLocation')]"
+            "value": "[parameters('secondaryLocation')]"
           },
           "baseUrl": {
             "value": "[variables('baseUrl')]"
@@ -1655,7 +1655,7 @@
         "mode": "Incremental",
         "parameters": {
           "solutionLocation": {
-            "value": "[variables('solutionLocation')]"
+            "value": "[parameters('secondaryLocation')]"
           },
           "identity": {
             "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_managed_identity'), '2022-09-01').outputs.managedIdentityOutput.value.id]"
