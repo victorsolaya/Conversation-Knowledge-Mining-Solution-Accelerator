@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.33.93.31351",
-      "templateHash": "13305043815589622401"
+      "templateHash": "6191566775176424772"
     }
   },
   "parameters": {
@@ -404,7 +404,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.33.93.31351",
-              "templateHash": "14779324320329290860"
+              "templateHash": "18431175920737860868"
             }
           },
           "parameters": {
@@ -735,6 +735,32 @@
                 "roleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', 'ba92f5b4-2d11-453d-a403-e96b0029c9fe')]",
                 "principalType": "ServicePrincipal"
               }
+            },
+            {
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2022-04-01",
+              "name": "[guid(resourceGroup().id, parameters('managedIdentityObjectId'), extensionResourceId(resourceId('Microsoft.CognitiveServices/accounts', variables('aiServicesName_cu')), 'Microsoft.Authorization/roleDefinitions', 'a97b65f3-24c7-4388-baec-2e87135dc908'))]",
+              "properties": {
+                "principalId": "[parameters('managedIdentityObjectId')]",
+                "roleDefinitionId": "[extensionResourceId(resourceId('Microsoft.CognitiveServices/accounts', variables('aiServicesName_cu')), 'Microsoft.Authorization/roleDefinitions', 'a97b65f3-24c7-4388-baec-2e87135dc908')]",
+                "principalType": "ServicePrincipal"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.CognitiveServices/accounts', variables('aiServicesName_cu'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2022-04-01",
+              "name": "[guid(resourceGroup().id, parameters('managedIdentityObjectId'), extensionResourceId(resourceId('Microsoft.CognitiveServices/accounts', variables('aiServicesName_cu')), 'Microsoft.Authorization/roleDefinitions', '64702f94-c441-49e6-a78b-ef80e0188fee'))]",
+              "properties": {
+                "principalId": "[parameters('managedIdentityObjectId')]",
+                "roleDefinitionId": "[extensionResourceId(resourceId('Microsoft.CognitiveServices/accounts', variables('aiServicesName_cu')), 'Microsoft.Authorization/roleDefinitions', '64702f94-c441-49e6-a78b-ef80e0188fee')]",
+                "principalType": "ServicePrincipal"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.CognitiveServices/accounts', variables('aiServicesName_cu'))]"
+              ]
             },
             {
               "type": "Microsoft.MachineLearningServices/workspaces",
