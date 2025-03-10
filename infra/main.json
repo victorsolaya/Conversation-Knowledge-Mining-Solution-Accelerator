@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.33.93.31351",
-      "templateHash": "15699139662875746088"
+      "templateHash": "6137238321359558361"
     }
   },
   "parameters": {
@@ -20,7 +20,6 @@
     "contentUnderstandingLocation": {
       "type": "string",
       "allowedValues": [
-        "westus",
         "swedencentral",
         "australiaeast"
       ],

@@ -8,8 +8,7 @@ param environmentName string
 
 @minLength(1)
 @description('Location for the Content Understanding service deployment:')
-@allowed(['westus'
-'swedencentral' 
+@allowed(['swedencentral' 
 'australiaeast'
 ])
 
