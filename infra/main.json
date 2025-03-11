@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.33.93.31351",
-      "templateHash": "13203313012670929207"
+      "templateHash": "18081117431853022936"
     }
   },
   "parameters": {
@@ -403,7 +403,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.33.93.31351",
-              "templateHash": "857948070943776452"
+              "templateHash": "319562905704482740"
             }
           },
           "parameters": {
@@ -1047,6 +1047,10 @@
               "type": "string",
               "value": "[resourceId('Microsoft.Insights/components', variables('applicationInsightsName'))]"
             },
+            "logAnalyticsWorkspaceResourceName": {
+              "type": "string",
+              "value": "[variables('workspaceName')]"
+            },
             "storageAccountName": {
               "type": "string",
               "value": "[variables('storageNameCleaned')]"
@@ -1642,7 +1646,7 @@
     {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2022-09-01",
-      "name": "deploy_upload_files_create_index_and_sqluser_script",
+      "name": "deploy_post_deployment_scripts",
       "properties": {
         "expressionEvaluationOptions": {
           "scope": "inner"
@@ -1672,6 +1676,9 @@
           },
           "keyVaultName": {
             "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_ai_foundry'), '2022-09-01').outputs.keyvaultName.value]"
+          },
+          "logAnalyticsWorkspaceResourceName": {
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_ai_foundry'), '2022-09-01').outputs.logAnalyticsWorkspaceResourceName.value]"
           },
           "sqlServerName": {
             "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_sql_db'), '2022-09-01').outputs.sqlServerName.value]"
@@ -1706,7 +1713,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.33.93.31351",
-              "templateHash": "16628359048490585808"
+              "templateHash": "372110112944771833"
             }
           },
           "parameters": {
@@ -1773,6 +1780,9 @@
             "sqlUsers": {
               "type": "array",
               "defaultValue": []
+            },
+            "logAnalyticsWorkspaceResourceName": {
+              "type": "string"
             }
           },
           "resources": [
@@ -1782,7 +1792,14 @@
               "name": "[parameters('environmentName')]",
               "location": "[parameters('solutionLocation')]",
               "properties": {
-                "zoneRedundant": false
+                "zoneRedundant": false,
+                "appLogsConfiguration": {
+                  "destination": "log-analytics",
+                  "logAnalyticsConfiguration": {
+                    "customerId": "[reference(resourceId('Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsWorkspaceResourceName')), '2020-10-01').customerId]",
+                    "sharedKey": "[listKeys(resourceId('Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsWorkspaceResourceName')), '2020-10-01').primarySharedKey]"
+                  }
+                }
               }
             },
             {

@@ -157,8 +157,8 @@ resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' existing = {
 }
 
 //========== Deployment script to upload sample data ========== //
-module uploadFiles 'deploy_upload_files_create_index_and_sqluser_script.bicep' = {
-  name : 'deploy_upload_files_create_index_and_sqluser_script'
+module uploadFiles 'deploy_post_deployment_scripts.bicep' = {
+  name : 'deploy_post_deployment_scripts'
   params:{
     solutionName: solutionPrefix
     solutionLocation: secondaryLocation
@@ -168,6 +168,7 @@ module uploadFiles 'deploy_upload_files_create_index_and_sqluser_script.bicep' =
     managedIdentityObjectId:managedIdentityModule.outputs.managedIdentityOutput.id
     managedIdentityClientId:managedIdentityModule.outputs.managedIdentityOutput.clientId
     keyVaultName:aifoundry.outputs.keyvaultName
+    logAnalyticsWorkspaceResourceName: aifoundry.outputs.logAnalyticsWorkspaceResourceName
     sqlServerName: sqlDBModule.outputs.sqlServerName
     sqlDbName: sqlDBModule.outputs.sqlDbName
     sqlUsers: [

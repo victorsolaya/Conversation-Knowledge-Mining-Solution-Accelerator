@@ -18,12 +18,25 @@ param sqlServerName string
 param sqlDbName string
 param sqlUsers array = [
 ]
+param logAnalyticsWorkspaceResourceName string
+
+resource logAnalytics 'Microsoft.OperationalInsights/workspaces@2020-10-01' existing = {
+  name: logAnalyticsWorkspaceResourceName
+  scope: resourceGroup()
+}
 
 resource containerAppEnv 'Microsoft.App/managedEnvironments@2022-03-01' = {
   name: environmentName
   location: solutionLocation
   properties: {
     zoneRedundant: false
+    appLogsConfiguration: {
+      destination: 'log-analytics'
+      logAnalyticsConfiguration: {
+        customerId: logAnalytics.properties.customerId
+        sharedKey: logAnalytics.listKeys().primarySharedKey
+      }
+    }
   }
 }
 
