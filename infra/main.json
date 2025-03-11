@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.33.93.31351",
-      "templateHash": "15019674909906266952"
+      "templateHash": "18081117431853022936"
     }
   },
   "parameters": {
@@ -20,7 +20,6 @@
     "contentUnderstandingLocation": {
       "type": "string",
       "allowedValues": [
-        "westus",
         "swedencentral",
         "australiaeast"
       ],
@@ -97,7 +96,7 @@
     }
   },
   "variables": {
-    "gptModelVersion": "2024-02-15-preview",
+    "azureOpenAIApiVersion": "2024-02-15-preview",
     "uniqueId": "[toLower(uniqueString(subscription().id, parameters('environmentName'), resourceGroup().location))]",
     "solutionPrefix": "[format('km{0}', padLeft(take(variables('uniqueId'), 12), 12, '0'))]",
     "resourceGroupLocation": "[resourceGroup().location]",
@@ -381,8 +380,8 @@
           "gptModelName": {
             "value": "[parameters('gptModelName')]"
           },
-          "gptModelVersion": {
-            "value": "[variables('gptModelVersion')]"
+          "azureOpenAIApiVersion": {
+            "value": "[variables('azureOpenAIApiVersion')]"
           },
           "gptDeploymentCapacity": {
             "value": "[parameters('gptDeploymentCapacity')]"
@@ -404,7 +403,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.33.93.31351",
-              "templateHash": "14779324320329290860"
+              "templateHash": "319562905704482740"
             }
           },
           "parameters": {
@@ -426,7 +425,7 @@
             "gptModelName": {
               "type": "string"
             },
-            "gptModelVersion": {
+            "azureOpenAIApiVersion": {
               "type": "string"
             },
             "gptDeploymentCapacity": {
@@ -737,6 +736,32 @@
               }
             },
             {
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2022-04-01",
+              "name": "[guid(resourceGroup().id, parameters('managedIdentityObjectId'), extensionResourceId(resourceId('Microsoft.CognitiveServices/accounts', variables('aiServicesName_cu')), 'Microsoft.Authorization/roleDefinitions', 'a97b65f3-24c7-4388-baec-2e87135dc908'))]",
+              "properties": {
+                "principalId": "[parameters('managedIdentityObjectId')]",
+                "roleDefinitionId": "[extensionResourceId(resourceId('Microsoft.CognitiveServices/accounts', variables('aiServicesName_cu')), 'Microsoft.Authorization/roleDefinitions', 'a97b65f3-24c7-4388-baec-2e87135dc908')]",
+                "principalType": "ServicePrincipal"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.CognitiveServices/accounts', variables('aiServicesName_cu'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2022-04-01",
+              "name": "[guid(resourceGroup().id, parameters('managedIdentityObjectId'), extensionResourceId(resourceId('Microsoft.CognitiveServices/accounts', variables('aiServicesName_cu')), 'Microsoft.Authorization/roleDefinitions', '64702f94-c441-49e6-a78b-ef80e0188fee'))]",
+              "properties": {
+                "principalId": "[parameters('managedIdentityObjectId')]",
+                "roleDefinitionId": "[extensionResourceId(resourceId('Microsoft.CognitiveServices/accounts', variables('aiServicesName_cu')), 'Microsoft.Authorization/roleDefinitions', '64702f94-c441-49e6-a78b-ef80e0188fee')]",
+                "principalType": "ServicePrincipal"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.CognitiveServices/accounts', variables('aiServicesName_cu'))]"
+              ]
+            },
+            {
               "type": "Microsoft.MachineLearningServices/workspaces",
               "apiVersion": "2023-08-01-preview",
               "name": "[variables('aiHubName')]",
@@ -826,7 +851,7 @@
               "apiVersion": "2021-11-01-preview",
               "name": "[format('{0}/{1}', parameters('keyVaultName'), 'AZURE-OPENAI-PREVIEW-API-VERSION')]",
               "properties": {
-                "value": "[parameters('gptModelVersion')]"
+                "value": "[parameters('azureOpenAIApiVersion')]"
               }
             },
             {
@@ -1021,6 +1046,10 @@
             "applicationInsightsId": {
               "type": "string",
               "value": "[resourceId('Microsoft.Insights/components', variables('applicationInsightsName'))]"
+            },
+            "logAnalyticsWorkspaceResourceName": {
+              "type": "string",
+              "value": "[variables('workspaceName')]"
             },
             "storageAccountName": {
               "type": "string",
@@ -1452,28 +1481,6 @@
           },
           "managedIdentityObjectId": {
             "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_managed_identity'), '2022-09-01').outputs.managedIdentityOutput.value.objectId]"
-          },
-          "managedIdentityId": {
-            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_managed_identity'), '2022-09-01').outputs.managedIdentityOutput.value.id]"
-          },
-          "users": {
-            "value": [
-              {
-                "principalId": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_managed_identity'), '2022-09-01').outputs.managedIdentityChartsOutput.value.clientId]",
-                "principalName": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_managed_identity'), '2022-09-01').outputs.managedIdentityChartsOutput.value.name]",
-                "databaseRoles": [
-                  "db_datareader",
-                  "db_datawriter"
-                ]
-              },
-              {
-                "principalId": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_managed_identity'), '2022-09-01').outputs.managedIdentityRagOutput.value.clientId]",
-                "principalName": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_managed_identity'), '2022-09-01').outputs.managedIdentityRagOutput.value.name]",
-                "databaseRoles": [
-                  "db_datareader"
-                ]
-              }
-            ]
           }
         },
         "template": {
@@ -1483,7 +1490,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.33.93.31351",
-              "templateHash": "11474265045594921784"
+              "templateHash": "16605082293199555822"
             }
           },
           "parameters": {
@@ -1501,18 +1508,11 @@
             "keyVaultName": {
               "type": "string"
             },
-            "managedIdentityId": {
-              "type": "string"
-            },
             "managedIdentityObjectId": {
               "type": "string"
             },
             "managedIdentityName": {
               "type": "string"
-            },
-            "users": {
-              "type": "array",
-              "defaultValue": []
             }
           },
           "variables": {
@@ -1530,11 +1530,16 @@
               "location": "[variables('location')]",
               "kind": "v12.0",
               "properties": {
-                "administratorLogin": "[variables('administratorLogin')]",
-                "administratorLoginPassword": "[variables('administratorLoginPassword')]",
                 "publicNetworkAccess": "Enabled",
                 "version": "12.0",
-                "restrictOutboundNetworkAccess": "Disabled"
+                "restrictOutboundNetworkAccess": "Disabled",
+                "administrators": {
+                  "login": "[parameters('managedIdentityName')]",
+                  "sid": "[parameters('managedIdentityObjectId')]",
+                  "tenantId": "[subscription().tenantId]",
+                  "administratorType": "ActiveDirectory",
+                  "azureADOnlyAuthentication": true
+                }
               }
             },
             {
@@ -1585,20 +1590,6 @@
               ]
             },
             {
-              "type": "Microsoft.Sql/servers/administrators",
-              "apiVersion": "2023-08-01-preview",
-              "name": "[format('{0}/{1}', variables('serverName'), 'ActiveDirectory')]",
-              "properties": {
-                "login": "[parameters('managedIdentityName')]",
-                "sid": "[parameters('managedIdentityObjectId')]",
-                "tenantId": "[subscription().tenantId]",
-                "administratorType": "ActiveDirectory"
-              },
-              "dependsOn": [
-                "[resourceId('Microsoft.Sql/servers', variables('serverName'))]"
-              ]
-            },
-            {
               "type": "Microsoft.KeyVault/vaults/secrets",
               "apiVersion": "2021-11-01-preview",
               "name": "[format('{0}/{1}', parameters('keyVaultName'), 'SQLDB-SERVER')]",
@@ -1629,156 +1620,6 @@
               "properties": {
                 "value": "[variables('administratorLoginPassword')]"
               }
-            },
-            {
-              "copy": {
-                "name": "sqluser",
-                "count": "[length(parameters('users'))]"
-              },
-              "type": "Microsoft.Resources/deployments",
-              "apiVersion": "2022-09-01",
-              "name": "[format('sqluser-{0}', guid(variables('location'), parameters('users')[copyIndex()].principalId, parameters('users')[copyIndex()].principalName, variables('sqlDBName'), variables('serverName')))]",
-              "properties": {
-                "expressionEvaluationOptions": {
-                  "scope": "inner"
-                },
-                "mode": "Incremental",
-                "parameters": {
-                  "managedIdentityId": {
-                    "value": "[parameters('managedIdentityId')]"
-                  },
-                  "principalId": {
-                    "value": "[parameters('users')[copyIndex()].principalId]"
-                  },
-                  "principalName": {
-                    "value": "[parameters('users')[copyIndex()].principalName]"
-                  },
-                  "sqlDatabaseName": {
-                    "value": "[variables('sqlDBName')]"
-                  },
-                  "location": {
-                    "value": "[variables('location')]"
-                  },
-                  "sqlServerName": {
-                    "value": "[variables('serverName')]"
-                  },
-                  "databaseRoles": {
-                    "value": "[parameters('users')[copyIndex()].databaseRoles]"
-                  }
-                },
-                "template": {
-                  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
-                  "languageVersion": "2.0",
-                  "contentVersion": "1.0.0.0",
-                  "metadata": {
-                    "_generator": {
-                      "name": "bicep",
-                      "version": "0.33.93.31351",
-                      "templateHash": "10411559921856275300"
-                    }
-                  },
-                  "parameters": {
-                    "location": {
-                      "type": "string",
-                      "metadata": {
-                        "description": "The Azure region for the resource."
-                      }
-                    },
-                    "tags": {
-                      "type": "object",
-                      "defaultValue": {},
-                      "metadata": {
-                        "description": "The tags to associate with this resource."
-                      }
-                    },
-                    "databaseRoles": {
-                      "type": "array",
-                      "items": {
-                        "type": "string"
-                      },
-                      "defaultValue": [
-                        "db_datareader"
-                      ],
-                      "metadata": {
-                        "description": "The database roles to assign to the user."
-                      }
-                    },
-                    "managedIdentityId": {
-                      "type": "string",
-                      "metadata": {
-                        "description": "The ID of the managed identity to be used to run the script."
-                      }
-                    },
-                    "principalId": {
-                      "type": "string",
-                      "metadata": {
-                        "description": "The principal (or object) ID of the user to create."
-                      }
-                    },
-                    "principalName": {
-                      "type": "string",
-                      "metadata": {
-                        "description": "The name of the user to create."
-                      }
-                    },
-                    "sqlDatabaseName": {
-                      "type": "string",
-                      "metadata": {
-                        "description": "The name of the SQL Database resource."
-                      }
-                    },
-                    "sqlServerName": {
-                      "type": "string",
-                      "metadata": {
-                        "description": "The name of the SQL Server resource."
-                      }
-                    },
-                    "uniqueScriptId": {
-                      "type": "string",
-                      "defaultValue": "[newGuid()]",
-                      "metadata": {
-                        "description": "Do not set - unique script ID to force the script to run."
-                      }
-                    }
-                  },
-                  "variables": {
-                    "$fxv#0": "#Requires -Version 7.0\r\n\r\n<#\r\n.SYNOPSIS\r\n    Creates a SQL user and assigns the user account to one or more roles.\r\n\r\n.DESCRIPTION\r\n    During an application deployment, the managed identity (and potentially the developer identity)\r\n    must be added to the SQL database as a user and assigned to one or more roles.  This script\r\n    does exactly that using the owner managed identity.\r\n\r\n.PARAMETER SqlServerName\r\n    The name of the SQL Server resource\r\n.PARAMETER SqlDatabaseName\r\n    The name of the SQL Database resource\r\n.PARAMETER ObjectId\r\n    The Object (Principal) ID of the user to be added.\r\n.PARAMETER DisplayName\r\n    The Object (Principal) display name of the user to be added.\r\n.PARAMETER DatabaseRole\r\n    The database role that needs to be assigned to the user.\r\n#>\r\n\r\nParam(\r\n    [string] $SqlServerName,\r\n    [string] $SqlDatabaseName,\r\n    [string] $ObjectId,\r\n    [string] $DisplayName,\r\n    [string] $DatabaseRole\r\n)\r\n\r\nfunction Resolve-Module($moduleName) {\r\n    # If module is imported; say that and do nothing\r\n    if (Get-Module | Where-Object { $_.Name -eq $moduleName }) {\r\n        Write-Debug \"Module $moduleName is already imported\"\r\n    } elseif (Get-Module -ListAvailable | Where-Object { $_.Name -eq $moduleName }) {\r\n        Import-Module $moduleName\r\n    } elseif (Find-Module -Name $moduleName | Where-Object { $_.Name -eq $moduleName }) {\r\n        Install-Module $moduleName -Force -Scope CurrentUser\r\n        Import-Module $moduleName\r\n    } else {\r\n        Write-Error \"Module $moduleName not found\"\r\n        [Environment]::exit(1)\r\n    }\r\n}\r\n\r\n###\r\n### MAIN SCRIPT\r\n###\r\nResolve-Module -moduleName Az.Resources\r\nResolve-Module -moduleName SqlServer\r\n\r\n$sql = @\"\r\nDECLARE @username nvarchar(max) = N'$($DisplayName)';\r\nDECLARE @clientId uniqueidentifier = '$($ObjectId)';\r\nDECLARE @sid NVARCHAR(max) = CONVERT(VARCHAR(max), CONVERT(VARBINARY(16), @clientId), 1);\r\nDECLARE @cmd NVARCHAR(max) = N'CREATE USER [' + @username + '] WITH SID = ' + @sid + ', TYPE = E;';\r\nIF NOT EXISTS (SELECT * FROM sys.database_principals WHERE name = @username)\r\nBEGIN\r\n    EXEC(@cmd)\r\nEND\r\nEXEC sp_addrolemember '$($DatabaseRole)', @username;\r\n\"@\r\n\r\nWrite-Output \"`nSQL:`n$($sql)`n`n\"\r\n\r\n$token = (Get-AzAccessToken -ResourceUrl https://database.windows.net/).Token\r\nInvoke-SqlCmd -ServerInstance \"$SqlServerName.database.windows.net\" -Database $SqlDatabaseName -AccessToken $token -Query $sql -ErrorAction 'Stop'"
-                  },
-                  "resources": {
-                    "createSqlUserAndRole": {
-                      "copy": {
-                        "name": "createSqlUserAndRole",
-                        "count": "[length(parameters('databaseRoles'))]"
-                      },
-                      "type": "Microsoft.Resources/deploymentScripts",
-                      "apiVersion": "2020-10-01",
-                      "name": "[format('sqlUserRole-{0}', guid(parameters('principalId'), parameters('databaseRoles')[copyIndex()], parameters('sqlServerName'), parameters('sqlDatabaseName')))]",
-                      "location": "[parameters('location')]",
-                      "tags": "[parameters('tags')]",
-                      "kind": "AzurePowerShell",
-                      "identity": {
-                        "type": "UserAssigned",
-                        "userAssignedIdentities": {
-                          "[format('{0}', parameters('managedIdentityId'))]": {}
-                        }
-                      },
-                      "properties": {
-                        "forceUpdateTag": "[parameters('uniqueScriptId')]",
-                        "azPowerShellVersion": "7.4",
-                        "retentionInterval": "PT1H",
-                        "cleanupPreference": "OnSuccess",
-                        "arguments": "[join(createArray(format('-SqlServerName ''{0}''', parameters('sqlServerName')), format('-SqlDatabaseName ''{0}''', parameters('sqlDatabaseName')), format('-ObjectId ''{0}''', parameters('principalId')), format('-DisplayName ''{0}''', parameters('principalName')), format('-DatabaseRole ''{0}''', parameters('databaseRoles')[copyIndex()])), ' ')]",
-                        "scriptContent": "[variables('$fxv#0')]"
-                      }
-                    }
-                  }
-                }
-              },
-              "dependsOn": [
-                "[resourceId('Microsoft.Sql/servers/databases', variables('serverName'), variables('sqlDBName'))]",
-                "[resourceId('Microsoft.Sql/servers', variables('serverName'))]",
-                "[resourceId('Microsoft.Sql/servers/administrators', variables('serverName'), 'ActiveDirectory')]"
-              ]
             }
           ],
           "outputs": {
@@ -1805,7 +1646,7 @@
     {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2022-09-01",
-      "name": "deploy_upload_files_script",
+      "name": "deploy_post_deployment_scripts",
       "properties": {
         "expressionEvaluationOptions": {
           "scope": "inner"
@@ -1816,7 +1657,7 @@
             "value": "[variables('solutionPrefix')]"
           },
           "solutionLocation": {
-            "value": "[variables('resourceGroupLocation')]"
+            "value": "[parameters('secondaryLocation')]"
           },
           "baseUrl": {
             "value": "[variables('baseUrl')]"
@@ -1835,6 +1676,34 @@
           },
           "keyVaultName": {
             "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_ai_foundry'), '2022-09-01').outputs.keyvaultName.value]"
+          },
+          "logAnalyticsWorkspaceResourceName": {
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_ai_foundry'), '2022-09-01').outputs.logAnalyticsWorkspaceResourceName.value]"
+          },
+          "sqlServerName": {
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_sql_db'), '2022-09-01').outputs.sqlServerName.value]"
+          },
+          "sqlDbName": {
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_sql_db'), '2022-09-01').outputs.sqlDbName.value]"
+          },
+          "sqlUsers": {
+            "value": [
+              {
+                "principalId": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_managed_identity'), '2022-09-01').outputs.managedIdentityChartsOutput.value.clientId]",
+                "principalName": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_managed_identity'), '2022-09-01').outputs.managedIdentityChartsOutput.value.name]",
+                "databaseRoles": [
+                  "db_datareader",
+                  "db_datawriter"
+                ]
+              },
+              {
+                "principalId": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_managed_identity'), '2022-09-01').outputs.managedIdentityRagOutput.value.clientId]",
+                "principalName": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_managed_identity'), '2022-09-01').outputs.managedIdentityRagOutput.value.name]",
+                "databaseRoles": [
+                  "db_datareader"
+                ]
+              }
+            ]
           }
         },
         "template": {
@@ -1844,7 +1713,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.33.93.31351",
-              "templateHash": "15667257570001516333"
+              "templateHash": "372110112944771833"
             }
           },
           "parameters": {
@@ -1895,7 +1764,24 @@
               "type": "string",
               "defaultValue": "[format('{0}infra/scripts/run_create_index_scripts.sh', parameters('baseUrl'))]"
             },
+            "createSqlUserAndRoleScriptsUrl": {
+              "type": "string",
+              "defaultValue": "[format('{0}infra/scripts/add_user_scripts/create-sql-user-and-role.ps1', parameters('baseUrl'))]"
+            },
             "keyVaultName": {
+              "type": "string"
+            },
+            "sqlServerName": {
+              "type": "string"
+            },
+            "sqlDbName": {
+              "type": "string"
+            },
+            "sqlUsers": {
+              "type": "array",
+              "defaultValue": []
+            },
+            "logAnalyticsWorkspaceResourceName": {
               "type": "string"
             }
           },
@@ -1906,7 +1792,14 @@
               "name": "[parameters('environmentName')]",
               "location": "[parameters('solutionLocation')]",
               "properties": {
-                "zoneRedundant": false
+                "zoneRedundant": false,
+                "appLogsConfiguration": {
+                  "destination": "log-analytics",
+                  "logAnalyticsConfiguration": {
+                    "customerId": "[reference(resourceId('Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsWorkspaceResourceName')), '2020-10-01').customerId]",
+                    "sharedKey": "[listKeys(resourceId('Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsWorkspaceResourceName')), '2020-10-01').primarySharedKey]"
+                  }
+                }
               }
             },
             {
@@ -1940,7 +1833,7 @@
                       "command": [
                         "/bin/sh",
                         "-c",
-                        "[format('mkdir -p /scripts && apk add --no-cache curl bash jq py3-pip gcc musl-dev libffi-dev openssl-dev python3-dev && pip install --upgrade azure-cli && curl -s -o /scripts/copy_kb_files.sh {0} && chmod +x /scripts/copy_kb_files.sh && sh -x /scripts/copy_kb_files.sh {1} {2} {3} {4} && curl -s -o /scripts/run_create_index_scripts.sh {5} && chmod +x /scripts/run_create_index_scripts.sh && sh -x /scripts/run_create_index_scripts.sh {6} {7} {8}', parameters('setupCopyKbFiles'), parameters('storageAccountName'), parameters('containerName'), parameters('baseUrl'), parameters('managedIdentityClientId'), parameters('setupCreateIndexScriptsUrl'), parameters('baseUrl'), parameters('keyVaultName'), parameters('managedIdentityClientId'))]"
+                        "[format('mkdir -p /scripts && apk add --no-cache curl bash jq py3-pip gcc musl-dev libffi-dev openssl-dev python3-dev && pip install --upgrade azure-cli && apk add --no-cache --virtual .build-deps build-base unixodbc-dev && curl -s -o msodbcsql18_18.4.1.1-1_amd64.apk https://download.microsoft.com/download/7/6/d/76de322a-d860-4894-9945-f0cc5d6a45f8/msodbcsql18_18.4.1.1-1_amd64.apk && curl -s -o mssql-tools18_18.4.1.1-1_amd64.apk https://download.microsoft.com/download/7/6/d/76de322a-d860-4894-9945-f0cc5d6a45f8/mssql-tools18_18.4.1.1-1_amd64.apk && apk add --allow-untrusted msodbcsql18_18.4.1.1-1_amd64.apk && apk add --allow-untrusted mssql-tools18_18.4.1.1-1_amd64.apk && curl -s -o /scripts/copy_kb_files.sh {0} && chmod +x /scripts/copy_kb_files.sh && sh -x /scripts/copy_kb_files.sh {1} {2} {3} {4} && curl -s -o /scripts/run_create_index_scripts.sh {5} && chmod +x /scripts/run_create_index_scripts.sh && sh -x /scripts/run_create_index_scripts.sh {6} {7} {8} && apk add --no-cache ca-certificates less ncurses-terminfo-base krb5-libs libgcc libintl libssl3 libstdc++ tzdata userspace-rcu zlib icu-libs curl && apk -X https://dl-cdn.alpinelinux.org/alpine/edge/main add --no-cache lttng-ust openssh-client && curl -L https://github.com/PowerShell/PowerShell/releases/download/v7.5.0/powershell-7.5.0-linux-musl-x64.tar.gz -o /tmp/powershell.tar.gz && mkdir -p /opt/microsoft/powershell/7 && tar zxf /tmp/powershell.tar.gz -C /opt/microsoft/powershell/7 && chmod +x /opt/microsoft/powershell/7/pwsh && ln -s /opt/microsoft/powershell/7/pwsh /usr/bin/pwsh && curl -s -o /scripts/create-sql-user-and-role.ps1 {9} && chmod +x /scripts/create-sql-user-and-role.ps1 && pwsh -File /scripts/create-sql-user-and-role.ps1 -SqlServerName {10} -SqlDatabaseName {11} -ClientId {12} -DisplayName {13} -ManagedIdentityClientId {14} -DatabaseRole {15} && pwsh -File /scripts/create-sql-user-and-role.ps1 -SqlServerName {16} -SqlDatabaseName {17} -ClientId {18} -DisplayName {19} -ManagedIdentityClientId {20} -DatabaseRole {21} && pwsh -File /scripts/create-sql-user-and-role.ps1 -SqlServerName {22} -SqlDatabaseName {23} -ClientId {24} -DisplayName {25} -ManagedIdentityClientId {26} -DatabaseRole {27} && echo \"Container app setup completed successfully.\"', parameters('setupCopyKbFiles'), parameters('storageAccountName'), parameters('containerName'), parameters('baseUrl'), parameters('managedIdentityClientId'), parameters('setupCreateIndexScriptsUrl'), parameters('baseUrl'), parameters('keyVaultName'), parameters('managedIdentityClientId'), parameters('createSqlUserAndRoleScriptsUrl'), parameters('sqlServerName'), parameters('sqlDbName'), parameters('sqlUsers')[0].principalId, parameters('sqlUsers')[0].principalName, parameters('managedIdentityClientId'), parameters('sqlUsers')[0].databaseRoles[0], parameters('sqlServerName'), parameters('sqlDbName'), parameters('sqlUsers')[0].principalId, parameters('sqlUsers')[0].principalName, parameters('managedIdentityClientId'), parameters('sqlUsers')[0].databaseRoles[1], parameters('sqlServerName'), parameters('sqlDbName'), parameters('sqlUsers')[1].principalId, parameters('sqlUsers')[1].principalName, parameters('managedIdentityClientId'), parameters('sqlUsers')[1].databaseRoles[0])]"
                       ],
                       "env": [
                         {
@@ -1970,6 +1863,7 @@
       "dependsOn": [
         "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_ai_foundry')]",
         "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_managed_identity')]",
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_sql_db')]",
         "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_storage_account')]"
       ]
     },
@@ -2208,7 +2102,7 @@
             "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_ai_foundry'), '2022-09-01').outputs.aiSearchTarget.value]"
           },
           "azureOpenAIApiVersion": {
-            "value": "[variables('gptModelVersion')]"
+            "value": "[variables('azureOpenAIApiVersion')]"
           },
           "azureAiProjectConnString": {
             "reference": {
@@ -2568,7 +2462,7 @@
             }
           },
           "azureOpenAIApiVersion": {
-            "value": "[variables('gptModelVersion')]"
+            "value": "[variables('azureOpenAIApiVersion')]"
           },
           "AZURE_OPENAI_RESOURCE": {
             "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_ai_foundry'), '2022-09-01').outputs.aiServicesName.value]"
@@ -2611,7 +2505,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.33.93.31351",
-              "templateHash": "11186995242820167426"
+              "templateHash": "5835426116727035307"
             }
           },
           "parameters": {
@@ -2746,7 +2640,7 @@
           },
           "variables": {
             "WebAppImageName": "[format('DOCKER|kmcontainerreg.azurecr.io/km-app:{0}', parameters('imageTag'))]",
-            "REACT_APP_LAYOUT_CONFIG": "{\n  \"appConfig\": {\n    \"THREE_COLUMN\": {\n      \"DASHBOARD\": 50,\n      \"CHAT\": 33,\n      \"CHATHISTORY\": 17\n    },\n    \"TWO_COLUMN\": {\n      \"DASHBOARD_CHAT\": {\n        \"DASHBOARD\": 65,\n        \"CHAT\": 35\n      },\n      \"CHAT_CHATHISTORY\": {\n        \"CHAT\": 80,\n        \"CHATHISTORY\": 20\n      }\n    }\n  },\n  \"charts\": [\n    {\n      \"id\": \"SATISFIED\",\n      \"name\": \"Satisfied\",\n      \"type\": \"card\",\n      \"layout\": { \"row\": 1, \"column\": 1, \"height\": 11 }\n    },\n    {\n      \"id\": \"TOTAL_CALLS\",\n      \"name\": \"Total Calls\",\n      \"type\": \"card\",\n      \"layout\": { \"row\": 1, \"column\": 2, \"span\": 1 }\n    },\n    {\n      \"id\": \"AVG_HANDLING_TIME\",\n      \"name\": \"Average Handling Time\",\n      \"type\": \"card\",\n      \"layout\": { \"row\": 1, \"column\": 3, \"span\": 1 }\n    },\n    {\n      \"id\": \"SENTIMENT\",\n      \"name\": \"Topics Overview\",\n      \"type\": \"donutchart\",\n      \"layout\": { \"row\": 2, \"column\": 1, \"width\": 40, \"height\": 44.5 }\n    },\n    {\n      \"id\": \"AVG_HANDLING_TIME_BY_TOPIC\",\n      \"name\": \"Average Handling Time By Topic\",\n      \"type\": \"bar\",\n      \"layout\": { \"row\": 2, \"column\": 2, \"row-span\": 2, \"width\": 60 }\n    },\n    {\n      \"id\": \"TOPICS\",\n      \"name\": \"Trending Topics\",\n      \"type\": \"table\",\n      \"layout\": { \"row\": 3, \"column\": 1, \"span\": 2 }\n    },\n    {\n      \"id\": \"KEY_PHRASES\",\n      \"name\": \"Key Phrases\",\n      \"type\": \"wordcloud\",\n      \"layout\": { \"row\": 3, \"column\": 2, \"height\": 44.5 }\n    }\n  ]\n}"
+            "REACT_APP_LAYOUT_CONFIG": "{\r\n  \"appConfig\": {\r\n    \"THREE_COLUMN\": {\r\n      \"DASHBOARD\": 50,\r\n      \"CHAT\": 33,\r\n      \"CHATHISTORY\": 17\r\n    },\r\n    \"TWO_COLUMN\": {\r\n      \"DASHBOARD_CHAT\": {\r\n        \"DASHBOARD\": 65,\r\n        \"CHAT\": 35\r\n      },\r\n      \"CHAT_CHATHISTORY\": {\r\n        \"CHAT\": 80,\r\n        \"CHATHISTORY\": 20\r\n      }\r\n    }\r\n  },\r\n  \"charts\": [\r\n    {\r\n      \"id\": \"SATISFIED\",\r\n      \"name\": \"Satisfied\",\r\n      \"type\": \"card\",\r\n      \"layout\": { \"row\": 1, \"column\": 1, \"height\": 11 }\r\n    },\r\n    {\r\n      \"id\": \"TOTAL_CALLS\",\r\n      \"name\": \"Total Calls\",\r\n      \"type\": \"card\",\r\n      \"layout\": { \"row\": 1, \"column\": 2, \"span\": 1 }\r\n    },\r\n    {\r\n      \"id\": \"AVG_HANDLING_TIME\",\r\n      \"name\": \"Average Handling Time\",\r\n      \"type\": \"card\",\r\n      \"layout\": { \"row\": 1, \"column\": 3, \"span\": 1 }\r\n    },\r\n    {\r\n      \"id\": \"SENTIMENT\",\r\n      \"name\": \"Topics Overview\",\r\n      \"type\": \"donutchart\",\r\n      \"layout\": { \"row\": 2, \"column\": 1, \"width\": 40, \"height\": 44.5 }\r\n    },\r\n    {\r\n      \"id\": \"AVG_HANDLING_TIME_BY_TOPIC\",\r\n      \"name\": \"Average Handling Time By Topic\",\r\n      \"type\": \"bar\",\r\n      \"layout\": { \"row\": 2, \"column\": 2, \"row-span\": 2, \"width\": 60 }\r\n    },\r\n    {\r\n      \"id\": \"TOPICS\",\r\n      \"name\": \"Trending Topics\",\r\n      \"type\": \"table\",\r\n      \"layout\": { \"row\": 3, \"column\": 1, \"span\": 2 }\r\n    },\r\n    {\r\n      \"id\": \"KEY_PHRASES\",\r\n      \"name\": \"Key Phrases\",\r\n      \"type\": \"wordcloud\",\r\n      \"layout\": { \"row\": 3, \"column\": 2, \"height\": 44.5 }\r\n    }\r\n  ]\r\n}"
           },
           "resources": [
             {
