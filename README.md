@@ -39,6 +39,29 @@ The sample data used in this repository is synthetic and generated using Azure O
 QUICK DEPLOY
 </h2>
 
+### Check Quota Availability Before Deployment
+
+Before deploying the accelerator, check the quota availability for the model to ensure sufficient capacity:
+
+1. Navigate to the [Azure Portal](https://portal.azure.com).
+2. Click on **Azure Cloud Shell** in the top right navigation menu.
+3. Run the following commands:
+
+    ```sh
+    rm -rf Conversation-Knowledge-Mining-Solution-Accelerator
+    git clone https://github.com/Priyanka-Microsoft/Conversation-Knowledge-Mining-Solution-Accelerator
+    cd ./Conversation-Knowledge-Mining-Solution-Accelerator/infra/scripts
+    sh check_azure_quota_public.sh <model_name> <model_capacity> [<model_region>]
+    ```
+
+    - `<model_name>`: The name of the model that is used in the accelerator (e.g., `gpt-4o`).
+    - `<model_capacity>`: The required capacity for the model (e.g., `30`).
+    - `[<model_region>]` (optional): The Azure region to check first. If not provided, all supported regions will be checked (e.g., `eastus`).
+
+If sufficient quota is available, proceed with the deployment.
+
+---
+
 | [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/microsoft/Conversation-Knowledge-Mining-Solution-Accelerator) | [![Open in Dev Containers](https://img.shields.io/static/v1?style=for-the-badge&label=Dev%20Containers&message=Open&color=blue&logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/microsoft/Conversation-Knowledge-Mining-Solution-Accelerator) | [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fmicrosoft%2FConversation-Knowledge-Mining-Solution-Accelerator%2Fmain%2Finfra%2Fmain.json) |
 |---|---|---|
         
