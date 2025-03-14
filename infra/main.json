@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.33.93.31351",
-      "templateHash": "2116252859433712424"
+      "templateHash": "13599865329986757489"
     }
   },
   "parameters": {
@@ -2157,7 +2157,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.33.93.31351",
-              "templateHash": "11550380045622033908"
+              "templateHash": "13542795043218377011"
             }
           },
           "parameters": {
@@ -2334,6 +2334,10 @@
                     {
                       "name": "SQLDB_USER_MID",
                       "value": "[parameters('userassignedIdentityClientId')]"
+                    },
+                    {
+                      "name": "USE_AI_PROJECT_CLIENT",
+                      "value": "False"
                     }
                   ],
                   "linuxFxVersion": "[variables('dockerImage')]",

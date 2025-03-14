@@ -137,6 +137,10 @@ resource azurefn 'Microsoft.Web/sites@2023-12-01' = {
           name: 'SQLDB_USER_MID'
           value: userassignedIdentityClientId
         }
+        {
+          name:'USE_AI_PROJECT_CLIENT'
+          value:'False'
+        }
       ]
       linuxFxVersion: dockerImage
       functionAppScaleLimit: 10
