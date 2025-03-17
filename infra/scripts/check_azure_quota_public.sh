@@ -1,16 +1,16 @@
 #!/bin/bash
 
 # Parameters
-MODEL_NAME="$1"
+IFS=',' read -r -a MODEL_NAMES <<< "$1"  # Split the comma-separated model names into an array
 CAPACITY="$2"
 USER_REGION="$3"
 
-if [ -z "$MODEL_NAME" ] || [ -z "$CAPACITY" ]; then
-    echo "❌ ERROR: Model name and capacity must be provided as arguments."
+if [ ${#MODEL_NAMES[@]} -ne 2 ] || [ -z "$CAPACITY" ]; then
+    echo "❌ ERROR: Exactly two model names and capacity must be provided as arguments."
     exit 1
 fi
 
-echo "🔄 Using Model: $MODEL_NAME with Minimum Capacity: $CAPACITY"
+echo "🔄 Using Models: ${MODEL_NAMES[0]} and ${MODEL_NAMES[1]} with Minimum Capacity: $CAPACITY"
 
 # Authenticate using Managed Identity
 echo "Authentication using Managed Identity..."
@@ -48,56 +48,62 @@ for REGION in "${REGIONS[@]}"; do
     echo "----------------------------------------"
     echo "🔍 Checking region: $REGION"
 
-    # Check if model is supported in the region
-    # SUPPORTED_MODELS=$(az cognitiveservices account list-skus --location "$REGION" --query "value[].sku.name" -o tsv)
-    # if ! echo "$SUPPORTED_MODELS" | grep -qw "OpenAI.Standard.$MODEL_NAME"; then
-    #     echo "⚠️ WARNING: Model 'OpenAI.Standard.$MODEL_NAME' is NOT available in $REGION. Skipping."
-    #     continue
-    # fi
-
-    # Fetch quota information
+    # Fetch quota information for the region
     QUOTA_INFO=$(az cognitiveservices usage list --location "$REGION" --output json)
     if [ -z "$QUOTA_INFO" ]; then
         echo "⚠️ WARNING: Failed to retrieve quota for region $REGION. Skipping."
         continue
     fi
 
-    # Extract model quota using awk
-    MODEL_INFO=$(echo "$QUOTA_INFO" | awk -v model="\"value\": \"OpenAI.Standard.$MODEL_NAME\"" '
-        BEGIN { RS="},"; FS="," }
-        $0 ~ model { print $0 }
-    ')
+    # Initialize a flag to track if both models have sufficient quota in the region
+    BOTH_MODELS_AVAILABLE=true
 
-    if [ -z "$MODEL_INFO" ]; then
-        echo "⚠️ WARNING: No quota information found for model: OpenAI.Standard.$MODEL_NAME in $REGION. Skipping."
-        continue
-    fi
+    for MODEL_NAME in "${MODEL_NAMES[@]}"; do
+        echo "🔍 Checking model: $MODEL_NAME"
 
-    CURRENT_VALUE=$(echo "$MODEL_INFO" | awk -F': ' '/"currentValue"/ {print $2}' | tr -d ',' | tr -d ' ')
-    LIMIT=$(echo "$MODEL_INFO" | awk -F': ' '/"limit"/ {print $2}' | tr -d ',' | tr -d ' ')
+        # Extract model quota information
+        MODEL_INFO=$(echo "$QUOTA_INFO" | awk -v model="\"value\": \"OpenAI.Standard.$MODEL_NAME\"" '
+            BEGIN { RS="},"; FS="," }
+            $0 ~ model { print $0 }
+        ')
 
-    CURRENT_VALUE=${CURRENT_VALUE:-0}
-    LIMIT=${LIMIT:-0}
+        if [ -z "$MODEL_INFO" ]; then
+            echo "⚠️ WARNING: No quota information found for model: OpenAI.Standard.$MODEL_NAME in $REGION. Skipping."
+            BOTH_MODELS_AVAILABLE=false
+            break  # If any model is not available, no need to check further for this region
+        fi
 
-    CURRENT_VALUE=$(echo "$CURRENT_VALUE" | cut -d'.' -f1)
-    LIMIT=$(echo "$LIMIT" | cut -d'.' -f1)
+        CURRENT_VALUE=$(echo "$MODEL_INFO" | awk -F': ' '/"currentValue"/ {print $2}' | tr -d ',' | tr -d ' ')
+        LIMIT=$(echo "$MODEL_INFO" | awk -F': ' '/"limit"/ {print $2}' | tr -d ',' | tr -d ' ')
 
-    AVAILABLE=$((LIMIT - CURRENT_VALUE))
+        CURRENT_VALUE=${CURRENT_VALUE:-0}
+        LIMIT=${LIMIT:-0}
 
-    echo "✅ Model: OpenAI.Standard.$MODEL_NAME | Used: $CURRENT_VALUE | Limit: $LIMIT | Available: $AVAILABLE"
+        CURRENT_VALUE=$(echo "$CURRENT_VALUE" | cut -d'.' -f1)
+        LIMIT=$(echo "$LIMIT" | cut -d'.' -f1)
 
-    # Check if quota is sufficient
-    if [ "$AVAILABLE" -ge "$CAPACITY" ]; then
-        echo "✅ Model 'OpenAI.Standard.$MODEL_NAME' has enough quota in $REGION."
+        AVAILABLE=$((LIMIT - CURRENT_VALUE))
+
+        echo "✅ Model: OpenAI.Standard.$MODEL_NAME | Used: $CURRENT_VALUE | Limit: $LIMIT | Available: $AVAILABLE"
+
+        # Check if quota is sufficient
+        if [ "$AVAILABLE" -lt "$CAPACITY" ]; then
+            echo "❌ ERROR: 'OpenAI.Standard.$MODEL_NAME' in $REGION has insufficient quota. Required: $CAPACITY, Available: $AVAILABLE"
+            BOTH_MODELS_AVAILABLE=false
+            break
+        fi
+    done
+
+    # If both models have sufficient quota, add region to valid regions
+    if [ "$BOTH_MODELS_AVAILABLE" = true ]; then
+        echo "✅ Both models have sufficient quota in $REGION."
         VALID_REGIONS+=("$REGION")
-    else
-        echo "❌ ERROR: 'OpenAI.Standard.$MODEL_NAME' in $REGION has insufficient quota. Required: $CAPACITY, Available: $AVAILABLE"
     fi
 done
 
 # Determine final result
 if [ ${#VALID_REGIONS[@]} -eq 0 ]; then
-    echo "❌ No region with sufficient quota found. Blocking deployment."
+    echo "❌ No region with sufficient quota found for both models. Blocking deployment."
     exit 0
 else
     echo "✅ Suggested Regions: ${VALID_REGIONS[*]}"
