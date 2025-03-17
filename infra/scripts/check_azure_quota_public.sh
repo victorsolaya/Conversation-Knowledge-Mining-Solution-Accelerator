@@ -1,16 +1,32 @@
 #!/bin/bash
 
 # Parameters
-IFS=',' read -r -a MODEL_NAMES <<< "$1"  # Split the comma-separated model names into an array
-CAPACITY="$2"
-USER_REGION="$3"
+IFS=',' read -r -a MODEL_CAPACITY_PAIRS <<< "$1"  # Split the comma-separated model and capacity pairs into an array
+USER_REGION="$2"
 
-if [ ${#MODEL_NAMES[@]} -ne 2 ] || [ -z "$CAPACITY" ]; then
-    echo "❌ ERROR: Exactly two model names and capacity must be provided as arguments."
+if [ ${#MODEL_CAPACITY_PAIRS[@]} -lt 1 ]; then
+    echo "❌ ERROR: At least one model and capacity pairs must be provided as arguments."
     exit 1
 fi
 
-echo "🔄 Using Models: ${MODEL_NAMES[0]} and ${MODEL_NAMES[1]} with Minimum Capacity: $CAPACITY"
+# Extract model names and required capacities into arrays
+declare -a MODEL_NAMES
+declare -a CAPACITIES
+
+for PAIR in "${MODEL_CAPACITY_PAIRS[@]}"; do
+    MODEL_NAME=$(echo "$PAIR" | cut -d':' -f1)
+    CAPACITY=$(echo "$PAIR" | cut -d':' -f2)
+
+    if [ -z "$MODEL_NAME" ] || [ -z "$CAPACITY" ]; then
+        echo "❌ ERROR: Invalid model and capacity pair '$PAIR'. Both model and capacity must be specified."
+        exit 1
+    fi
+
+    MODEL_NAMES+=("$MODEL_NAME")
+    CAPACITIES+=("$CAPACITY")
+done
+
+echo "🔄 Using Models: ${MODEL_NAMES[*]} with respective Capacities: ${CAPACITIES[*]}"
 
 # Authenticate using Managed Identity
 echo "Authentication using Managed Identity..."
@@ -58,8 +74,11 @@ for REGION in "${REGIONS[@]}"; do
     # Initialize a flag to track if both models have sufficient quota in the region
     BOTH_MODELS_AVAILABLE=true
 
-    for MODEL_NAME in "${MODEL_NAMES[@]}"; do
-        echo "🔍 Checking model: $MODEL_NAME"
+    for index in "${!MODEL_NAMES[@]}"; do
+        MODEL_NAME="${MODEL_NAMES[$index]}"
+        REQUIRED_CAPACITY="${CAPACITIES[$index]}"
+        
+        echo "🔍 Checking model: $MODEL_NAME with required capacity: $REQUIRED_CAPACITY"
 
         # Extract model quota information
         MODEL_INFO=$(echo "$QUOTA_INFO" | awk -v model="\"value\": \"OpenAI.Standard.$MODEL_NAME\"" '
@@ -87,8 +106,8 @@ for REGION in "${REGIONS[@]}"; do
         echo "✅ Model: OpenAI.Standard.$MODEL_NAME | Used: $CURRENT_VALUE | Limit: $LIMIT | Available: $AVAILABLE"
 
         # Check if quota is sufficient
-        if [ "$AVAILABLE" -lt "$CAPACITY" ]; then
-            echo "❌ ERROR: 'OpenAI.Standard.$MODEL_NAME' in $REGION has insufficient quota. Required: $CAPACITY, Available: $AVAILABLE"
+        if [ "$AVAILABLE" -lt "$REQUIRED_CAPACITY" ]; then
+            echo "❌ ERROR: 'OpenAI.Standard.$MODEL_NAME' in $REGION has insufficient quota. Required: $REQUIRED_CAPACITY, Available: $AVAILABLE"
             BOTH_MODELS_AVAILABLE=false
             break
         fi
@@ -96,14 +115,14 @@ for REGION in "${REGIONS[@]}"; do
 
     # If both models have sufficient quota, add region to valid regions
     if [ "$BOTH_MODELS_AVAILABLE" = true ]; then
-        echo "✅ Both models have sufficient quota in $REGION."
+        echo "✅ All models have sufficient quota in $REGION."
         VALID_REGIONS+=("$REGION")
     fi
 done
 
 # Determine final result
 if [ ${#VALID_REGIONS[@]} -eq 0 ]; then
-    echo "❌ No region with sufficient quota found for both models. Blocking deployment."
+    echo "❌ No region with sufficient quota found for all models. Blocking deployment."
     exit 0
 else
     echo "✅ Suggested Regions: ${VALID_REGIONS[*]}"
