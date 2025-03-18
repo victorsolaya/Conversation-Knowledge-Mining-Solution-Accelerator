@@ -48,10 +48,9 @@ Before deploying the accelerator, check the quota availability for the model to 
 3. Run the following commands:
 
     ```sh
-    rm -rf Conversation-Knowledge-Mining-Solution-Accelerator
-    git clone https://github.com/Priyanka-Microsoft/Conversation-Knowledge-Mining-Solution-Accelerator
-    cd ./Conversation-Knowledge-Mining-Solution-Accelerator/infra/scripts
-    sh check_azure_quota_public.sh <model_name:capacity> [<model_region>]
+    curl -L -o check_azure_quota_public.sh "https://raw.githubusercontent.com/microsoft/Conversation-Knowledge-Mining-Solution-Accelerator/psl-check-quota/infra/scripts/check_azure_quota_public.sh"
+    chmod +x checkquota_km.sh
+    ./check_azure_quota_public.sh <model_name:capacity> [<model_region>]
     ```
 
     - `<model_name:capacity>`: The name and required capacity for each model, in the format `model_name:capacity` (e.g., `gpt-4o-mini:30,text-embedding-ada-002:20`).
