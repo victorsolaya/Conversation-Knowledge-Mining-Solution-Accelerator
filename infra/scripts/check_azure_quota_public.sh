@@ -28,23 +28,37 @@ done
 
 echo "🔄 Using Models: ${MODEL_NAMES[*]} with respective Capacities: ${CAPACITIES[*]}"
 
-# Authenticate using Managed Identity
-echo "Authentication using Managed Identity..."
-if ! az login --use-device-code; then
-   echo "❌ Error: Failed to login using Managed Identity."
-   exit 1
+echo "🔄 Fetching available Azure subscriptions..."
+SUBSCRIPTIONS=$(az account list --query "[?state=='Enabled'].{Name:name, ID:id}" --output tsv)
+SUB_COUNT=$(echo "$SUBSCRIPTIONS" | wc -l)
+
+if [ "$SUB_COUNT" -eq 1 ]; then
+    # If only one subscription, automatically select it
+    AZURE_SUBSCRIPTION_ID=$(echo "$SUBSCRIPTIONS" | awk '{print $2}')
+    echo "✅ Using the only available subscription: $AZURE_SUBSCRIPTION_ID"
+else
+    # If multiple subscriptions exist, prompt the user to choose one
+    echo "Multiple subscriptions found:"
+    echo "$SUBSCRIPTIONS" | awk '{print NR")", $1, "-", $2}'
+
+    while true; do
+        echo "Enter the number of the subscription to use:"
+        read SUB_INDEX
+
+        # Validate user input
+        if [[ "$SUB_INDEX" =~ ^[0-9]+$ ]] && [ "$SUB_INDEX" -ge 1 ] && [ "$SUB_INDEX" -le "$SUB_COUNT" ]; then
+            AZURE_SUBSCRIPTION_ID=$(echo "$SUBSCRIPTIONS" | awk -v idx="$SUB_INDEX" 'NR==idx {print $2}')
+            echo "✅ Selected Subscription: $AZURE_SUBSCRIPTION_ID"
+            break
+        else
+            echo "❌ Invalid selection. Please enter a valid number from the list."
+        fi
+    done
 fi
 
-# Fetch the default subscription ID dynamically
-SUBSCRIPTION_ID=$(az account show --query "id" -o tsv)
-
-# Set Azure subscription
-echo "🔄 Setting Azure subscription..."
-if ! az account set --subscription "$SUBSCRIPTION_ID"; then
-    echo "❌ ERROR: Invalid subscription ID or insufficient permissions."
-    exit 1
-fi
-echo "✅ Azure subscription set successfully."
+# Set the selected subscription
+az account set --subscription "$AZURE_SUBSCRIPTION_ID"
+echo "🎯 Active Subscription: $(az account show --query '[name, id]' --output table)"
 
 # List of regions to check
 DEFAULT_REGIONS=("eastus" "uksouth" "eastus2" "northcentralus" "swedencentral" "westus" "westus2" "southcentralus" "canadacentral")
