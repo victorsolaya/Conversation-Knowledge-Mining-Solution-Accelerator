@@ -6,7 +6,7 @@ from azure.identity import DefaultAzureCredential
 from azure.ai.projects import AIProjectClient
 
 from common.config.config import Config
-from common.database.sql_service import get_db_connection
+from common.database.sql_service import execute_sql_query
 
 class ChatWithDataPlugin:
     def __init__(self):
@@ -113,12 +113,8 @@ class ChatWithDataPlugin:
                 sql_query = completion.choices[0].message.content
                 sql_query = sql_query.replace("```sql",'').replace("```",'')
             
-            with get_db_connection() as conn:
-                with conn.cursor() as cursor:
-                    cursor.execute(sql_query)
-                    answer = ''
-                    for row in cursor.fetchall():
-                        answer += str(row)
+            answer = execute_sql_query(sql_query)
+            
         except Exception as e:
             answer = str(e) # 'Information from database could not be retrieved. Please try again later.'
         print(answer)
