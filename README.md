@@ -41,7 +41,9 @@ QUICK DEPLOY
 
 ### Check Quota Availability Before Deployment
 
-Before deploying the accelerator, check the quota availability for the model to ensure sufficient capacity:
+Before deploying the accelerator, check the quota availability for the model to ensure sufficient capacity.
+
+#### **If using Azure Portal and Cloud Shell**
 
 1. Navigate to the [Azure Portal](https://portal.azure.com).
 2. Click on **Azure Cloud Shell** in the top right navigation menu.
@@ -49,12 +51,19 @@ Before deploying the accelerator, check the quota availability for the model to 
 
     ```sh
     curl -L -o check_azure_quota_public.sh "https://raw.githubusercontent.com/microsoft/Conversation-Knowledge-Mining-Solution-Accelerator/psl-check-quota/infra/scripts/check_azure_quota_public.sh"
-    chmod +x checkquota_km.sh
+    chmod +x check_azure_quota_public.sh
     ./check_azure_quota_public.sh <model_name:capacity> [<model_region>]
     ```
+#### **If using VS Code or Codespaces**
 
-    - `<model_name:capacity>`: The name and required capacity for each model, in the format `model_name:capacity` (e.g., `gpt-4o-mini:30,text-embedding-ada-002:20`).
-    - `[<model_region>]` (optional): The Azure region to check first. If not provided, all supported regions will be checked (e.g., `eastus`).
+Simply run the script:
+
+   ```sh
+   ./check_azure_quota_public.sh <model_name:capacity> [<model_region>]
+   ```
+**Parameters**
+- <model_name:capacity>: The name and required capacity for each model, in the format model_name:capacity (e.g., gpt-4o-mini:30,text-embedding-ada-002:20).
+- [<model_region>] (optional): The Azure region to check first. If not provided, all supported regions will be checked (e.g., eastus).
 
 If sufficient quota is available, proceed with the deployment.
 
