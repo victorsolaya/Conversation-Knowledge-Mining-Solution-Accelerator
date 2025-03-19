@@ -4,23 +4,8 @@
 param solutionName string
 param solutionLocation string
 param keyVaultName string
-// param managedIdentityObjectId string
-
-// @description('The name of the SQL logical server.')
-// param serverName string = '${ solutionName }-sql-server'
-
-// @description('The name of the SQL Database.')
-// param sqlDBName string = '${ solutionName }-sql-db'
-
-// @description('Location for all resources.')
-// param location string = solutionLocation
-
-// @description('The administrator username of the SQL logical server.')
-// param administratorLogin string = 'sqladmin'
-
-// @description('The administrator password of the SQL logical server.')
-// @secure()
-// param administratorLoginPassword string = 'TestPassword_1234'
+param managedIdentityObjectId string
+param managedIdentityName string
 
 var serverName = '${ solutionName }-sql-server'
 var sqlDBName = '${ solutionName }-sql-db'
@@ -33,11 +18,16 @@ resource sqlServer 'Microsoft.Sql/servers@2023-08-01-preview' = {
   location: location
   kind:'v12.0'
   properties: {
-      administratorLogin: administratorLogin
-      administratorLoginPassword: administratorLoginPassword
       publicNetworkAccess: 'Enabled'
       version: '12.0'
       restrictOutboundNetworkAccess: 'Disabled'
+      administrators: {
+        login: managedIdentityName
+        sid: managedIdentityObjectId
+        tenantId: subscription().tenantId
+        administratorType: 'ActiveDirectory'
+        azureADOnlyAuthentication: true
+      }
     }
 }
 
@@ -118,10 +108,3 @@ resource sqldbDatabasePwd 'Microsoft.KeyVault/vaults/secrets@2021-11-01-preview'
 output sqlServerName string = '${serverName}.database.windows.net'
 output sqlDbName string = sqlDBName
 output sqlDbUser string = administratorLogin
-
-// output sqlDbOutput object = {
-//   sqlServerName: '${serverName}.database.windows.net' 
-//   sqlDbName: sqlDBName
-//   sqlDbUser: administratorLogin
-//   sqlDbPwd: administratorLoginPassword
-// }

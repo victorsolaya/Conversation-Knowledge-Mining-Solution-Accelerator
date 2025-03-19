@@ -95,7 +95,7 @@ resource containerRegistry 'Microsoft.ContainerRegistry/registries@2021-09-01' =
     }
     policies: {
       quarantinePolicy: {
-        status: 'enabled'
+        status: 'disabled'
       }
       retentionPolicy: {
         status: 'enabled'
@@ -354,6 +354,34 @@ resource storageroleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-
   properties: {
     principalId: managedIdentityObjectId
     roleDefinitionId:blobDataContributor.id
+    principalType: 'ServicePrincipal' 
+  }
+}
+
+resource cognitiveServicesUserRoleDefinition 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = {
+  scope: aiServices_CU
+  name: 'a97b65f3-24c7-4388-baec-2e87135dc908'
+}
+
+resource cognitiveServicesUserAccessProj 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(resourceGroup().id, managedIdentityObjectId, cognitiveServicesUserRoleDefinition.id)
+  properties: {
+    principalId: managedIdentityObjectId
+    roleDefinitionId: cognitiveServicesUserRoleDefinition.id
+    principalType: 'ServicePrincipal' 
+  }
+}
+
+resource aiDeveloperRoleDefinition 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = {
+  scope: aiServices_CU
+  name: '64702f94-c441-49e6-a78b-ef80e0188fee'
+}
+
+resource aiDeveloperAccessProj 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(resourceGroup().id, managedIdentityObjectId, aiDeveloperRoleDefinition.id)
+  properties: {
+    principalId: managedIdentityObjectId
+    roleDefinitionId: aiDeveloperRoleDefinition.id
     principalType: 'ServicePrincipal' 
   }
 }
@@ -671,4 +699,5 @@ output aiSearchService string = aiSearch.name
 output aiProjectName string = aiHubProject.name
 
 output applicationInsightsId string = applicationInsights.id
+output logAnalyticsWorkspaceResourceName string = logAnalytics.name
 output storageAccountName string = storageNameCleaned
