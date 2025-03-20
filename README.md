@@ -39,21 +39,6 @@ The sample data used in this repository is synthetic and generated using Azure O
 QUICK DEPLOY
 </h2>
 
-### ⚠️ Important: Check OpenAI Quota Availability  
-
-Before deploying the accelerator, **ensure sufficient quota is available**.  
-
-🚨 **Failure to check quota may lead to deployment issues.**  
-
-➡️ Refer to **[Quota Check Instructions](./docs/quota_check.md)** for detailed steps.
-
----
-
-| [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/microsoft/Conversation-Knowledge-Mining-Solution-Accelerator) | [![Open in Dev Containers](https://img.shields.io/static/v1?style=for-the-badge&label=Dev%20Containers&message=Open&color=blue&logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/microsoft/Conversation-Knowledge-Mining-Solution-Accelerator) | [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fmicrosoft%2FConversation-Knowledge-Mining-Solution-Accelerator%2Fmain%2Finfra%2Fmain.json) |
-|---|---|---|
-        
-
-
 ### **Prerequisites**
 
 To deploy this solution accelerator, ensure you have access to an [Azure subscription](https://azure.microsoft.com/free/) with the necessary permissions to create **resource groups and resources**. Follow the steps in  [Azure Account Set Up](./docs/AzureAccountSetUp.md) 
@@ -70,7 +55,13 @@ Check the [Azure Products by Region](https://azure.microsoft.com/en-us/explore/g
 
 Here are some example regions where the services are available: East US, East US2, Australia East, UK South, France Central.
 
+### ⚠️ Important: Check Azure OpenAI Quota Availability  
 
+➡️ To ensure sufficient quota is available in your subscription, please follow **[Quota check instructions guide](./docs/quota_check.md)** before you deploy the solution.
+
+| [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/microsoft/Conversation-Knowledge-Mining-Solution-Accelerator) | [![Open in Dev Containers](https://img.shields.io/static/v1?style=for-the-badge&label=Dev%20Containers&message=Open&color=blue&logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/microsoft/Conversation-Knowledge-Mining-Solution-Accelerator) | [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fmicrosoft%2FConversation-Knowledge-Mining-Solution-Accelerator%2Fmain%2Finfra%2Fmain.json) |
+|---|---|---|
+        
 ### **Configurable Deployment Settings**  
 
 When you start the deployment, most parameters will have **default values**, but you can update the following settings:  
@@ -93,10 +84,6 @@ By default, the **GPT model capacity** in deployment is set to **30k tokens**.
 > **We recommend increasing the capacity to 100k tokens for optimal performance.** 
 
 To adjust quota settings, follow these [steps](./docs/AzureGPTQuotaSettings.md)  
-
-
-**⚠️ Warning:**  **Insufficient quota can cause deployment errors.** Please ensure you have the recommended capacity or request for additional capacity before deploying this solution. 
-
 
 ### Deployment Options
 Pick from the options below to see step-by-step instructions for: GitHub Codespaces, VS Code Dev Containers, Local Environments, and Bicep deployments.
