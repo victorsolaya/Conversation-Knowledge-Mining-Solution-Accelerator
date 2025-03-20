@@ -39,42 +39,13 @@ The sample data used in this repository is synthetic and generated using Azure O
 QUICK DEPLOY
 </h2>
 
-### Check Quota Availability Before Deployment
+### ⚠️ Important: Check OpenAI Quota Availability  
 
-Before deploying the accelerator, check the quota availability for the model to ensure sufficient capacity.
+Before deploying the accelerator, **ensure sufficient quota is available**.  
 
-#### **If using Azure Portal and Cloud Shell**
+🚨 **Failure to check quota may lead to deployment issues.**  
 
-1. Navigate to the [Azure Portal](https://portal.azure.com).
-2. Click on **Azure Cloud Shell** in the top right navigation menu.
-3. Run the following commands:
-
-    ```sh
-    curl -L -o check_azure_quota_public.sh "https://raw.githubusercontent.com/microsoft/Conversation-Knowledge-Mining-Solution-Accelerator/main/infra/scripts/quota_check.sh"
-    chmod +x quota_check.sh
-    ./quota_check.sh <model_name:capacity> [<model_region>]
-    ```
-#### **If using VS Code or Codespaces**
-
-1. Run the script:
-
-    ```sh
-    ./quota_check.sh <model_name:capacity> [<model_region>]
-    ```
-     
-   If you see this error:  _bash: az: command not found_
-
-   ```sh
-   curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
-   az login
-   ```
-Then, rerun the script.
-   
-**Parameters**
-- `<model_name:capacity>`: The name and required capacity for each model, in the format model_name:capacity (**e.g., gpt-4o-mini:30,text-embedding-ada-002:20**).
-- `[<model_region>] (optional)`: The Azure region to check first. If not provided, all supported regions will be checked (**e.g., eastus**).
-
-If sufficient quota is available, proceed with the deployment.
+➡️ Refer to **[Quota Check Instructions](quota_check.md)** for detailed steps.
 
 ---
 
