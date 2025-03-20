@@ -13,8 +13,8 @@ param azureSearchAdminKey string
 // param azureOpenAIKeyName string
 // param keyVaultName string
 param userassignedIdentityId string
-var imageName = 'DOCKER|kmcontainerreg.azurecr.io/km-app:${imageTag}'
 
+var imageName = 'DOCKER|kmcontainerreg.azurecr.io/km-app:${imageTag}'
 var name = '${solutionName}-backend-docker'
 
 module appService 'deploy_app_service.bicep' = {

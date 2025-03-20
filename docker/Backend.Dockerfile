@@ -1,6 +1,6 @@
 FROM python:3.11-alpine
- 
-# Install system dependencies
+
+# Install system dependencies required for building and running the application
 RUN apk add --no-cache --virtual .build-deps \  
     build-base \  
     libffi-dev \  
@@ -8,25 +8,28 @@ RUN apk add --no-cache --virtual .build-deps \
     curl \
     unixodbc-dev \  
     libpq
-    
-# Download and install the ODBC Driver and mssql-tools
+
+# Download and install Microsoft ODBC Driver and MSSQL tools
 RUN curl -O https://download.microsoft.com/download/e/4/e/e4e67866-dffd-428c-aac7-8d28ddafb39b/msodbcsql17_17.10.6.1-1_amd64.apk \
     && curl -O https://download.microsoft.com/download/e/4/e/e4e67866-dffd-428c-aac7-8d28ddafb39b/mssql-tools_17.10.1.1-1_amd64.apk \
     && apk add --allow-untrusted msodbcsql17_17.10.6.1-1_amd64.apk \
     && apk add --allow-untrusted mssql-tools_17.10.1.1-1_amd64.apk \
     && rm msodbcsql17_17.10.6.1-1_amd64.apk mssql-tools_17.10.1.1-1_amd64.apk
 
+# Set the working directory inside the container
 WORKDIR /app
 
-# Copy only requirements first to leverage Docker cache
-COPY ./src/Backend/requirements.txt .
+# Copy only the requirements file first to leverage Docker layer caching
+COPY ./src/backend/requirements.txt .
 
-# Install dependencies  
+# Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt && rm -rf /root/.cache  
 
-# Copy backend code
-COPY ./src/Backend/ .
+# Copy the backend application code into the container
+COPY ./src/backend/ .
 
+# Expose port 80 for incoming traffic
 EXPOSE 80
 
+# Start the application using Uvicorn
 CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "80"]
