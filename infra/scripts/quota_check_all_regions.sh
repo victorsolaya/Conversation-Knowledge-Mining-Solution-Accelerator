@@ -1,4 +1,3 @@
-
 #!/bin/bash
 
 # Pre-defined list of models to check
