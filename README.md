@@ -45,7 +45,7 @@ Before deploying the accelerator, **ensure sufficient quota is available**.
 
 🚨 **Failure to check quota may lead to deployment issues.**  
 
-➡️ Refer to **[Quota Check Instructions](quota_check.md)** for detailed steps.
+➡️ Refer to **[Quota Check Instructions](./docs/quota_check.md)** for detailed steps.
 
 ---
 
