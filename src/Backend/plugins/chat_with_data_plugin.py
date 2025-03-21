@@ -6,7 +6,8 @@ from azure.identity import DefaultAzureCredential
 from azure.ai.projects import AIProjectClient
 
 from common.config.config import Config
-from common.database.sql_service import execute_sql_query
+from common.database.sqldb_service import execute_sql_query
+
 
 class ChatWithDataPlugin:
     def __init__(self):
@@ -32,11 +33,12 @@ class ChatWithDataPlugin:
                     credential=DefaultAzureCredential()
                 )
                 client = project.inference.get_chat_completions_client()
-                
+
                 completion = client.complete(
                     model=self.azure_openai_deployment_model,
                     messages=[
-                        {"role": "system", "content": "You are a helpful assistant to respond to any greeting or general questions."},
+                        {"role": "system",
+                         "content": "You are a helpful assistant to respond to any greeting or general questions."},
                         {"role": "user", "content": query},
                     ],
                     temperature=0,
@@ -51,22 +53,22 @@ class ChatWithDataPlugin:
                 completion = client.chat.completions.create(
                     model=self.azure_openai_deployment_model,
                     messages=[
-                        {"role": "system", "content": "You are a helpful assistant to respond to any greeting or general questions."},
+                        {"role": "system",
+                         "content": "You are a helpful assistant to respond to any greeting or general questions."},
                         {"role": "user", "content": query},
                     ],
                     temperature=0,
                 )
             answer = completion.choices[0].message.content
         except Exception as e:
-            answer = str(e) # 'Information from database could not be retrieved. Please try again later.'
+            answer = str(e)  # 'Information from database could not be retrieved. Please try again later.'
         return answer
 
-    
     @kernel_function(name="ChatWithSQLDatabase", description="Given a query, get details from the database")
     def get_SQL_Response(
-        self,
-        input: Annotated[str, "the question"]
-        ):
+            self,
+            input: Annotated[str, "the question"]
+    ):
         query = input
 
         sql_prompt = f'''A valid T-SQL query to find {query} for tables and columns provided below:
@@ -76,7 +78,7 @@ class ChatWithDataPlugin:
                 Columns: ConversationId,key_phrase,sentiment
                 Use ConversationId as the primary key as the primary key in tables for queries but not for any other operations.
                 Only return the generated sql query. do not return anything else.'''
-        
+
         try:
             if self.use_ai_project_client:
                 project = AIProjectClient.from_connection_string(
@@ -94,7 +96,7 @@ class ChatWithDataPlugin:
                     temperature=0,
                 )
                 sql_query = completion.choices[0].message.content
-                sql_query = sql_query.replace("```sql",'').replace("```",'')
+                sql_query = sql_query.replace("```sql", '').replace("```", '')
             else:
                 client = openai.AzureOpenAI(
                     azure_endpoint=self.azure_openai_endpoint,
@@ -111,20 +113,19 @@ class ChatWithDataPlugin:
                     temperature=0,
                 )
                 sql_query = completion.choices[0].message.content
-                sql_query = sql_query.replace("```sql",'').replace("```",'')
-            
+                sql_query = sql_query.replace("```sql", '').replace("```", '')
+
             answer = execute_sql_query(sql_query)
-            
+
         except Exception as e:
-            answer = str(e) # 'Information from database could not be retrieved. Please try again later.'
+            answer = str(e)  # 'Information from database could not be retrieved. Please try again later.'
         print(answer)
         return answer
 
-    
     @kernel_function(name="ChatWithCallTranscripts", description="given a query, get answers from search index")
     def get_answers_from_calltranscripts(
-        self,
-        question: Annotated[str, "the question"]
+            self,
+            question: Annotated[str, "the question"]
     ):
         client = openai.AzureOpenAI(
             azure_endpoint=self.azure_openai_endpoint,
@@ -140,8 +141,8 @@ class ChatWithDataPlugin:
         answer = ''
         try:
             completion = client.chat.completions.create(
-                model = self.azure_openai_deployment_model,
-                messages = [
+                model=self.azure_openai_deployment_model,
+                messages=[
                     {
                         "role": "system",
                         "content": system_message
@@ -151,10 +152,10 @@ class ChatWithDataPlugin:
                         "content": query
                     }
                 ],
-                seed = 42,
-                temperature = 0,
-                max_tokens = 800,
-                extra_body = {
+                seed=42,
+                temperature=0,
+                max_tokens=800,
+                extra_body={
                     "data_sources": [
                         {
                             "type": "azure_search",
@@ -162,12 +163,12 @@ class ChatWithDataPlugin:
                                 "endpoint": self.azure_ai_search_endpoint,
                                 "index_name": self.azure_ai_search_index,
                                 "semantic_configuration": "default",
-                                "query_type": "vector_simple_hybrid", #"vector_semantic_hybrid"
+                                "query_type": "vector_simple_hybrid",  #"vector_semantic_hybrid"
                                 "fields_mapping": {
                                     "content_fields_separator": "\n",
                                     "content_fields": ["content"],
                                     "filepath_field": "chunk_id",
-                                    "title_field": "sourceurl", #null,
+                                    "title_field": "sourceurl",  #null,
                                     "url_field": "sourceurl",
                                     "vector_fields": ["contentVector"]
                                 },

@@ -64,7 +64,8 @@ def adjust_processed_data_dates():
             if days_difference != 0:
                 # Update processed_data table
                 cursor.execute(
-                    "UPDATE [dbo].[processed_data] SET StartTime = FORMAT(DATEADD(DAY, ?, StartTime), 'yyyy-MM-dd HH:mm:ss'), EndTime = FORMAT(DATEADD(DAY, ?, EndTime), 'yyyy-MM-dd HH:mm:ss')",
+                    "UPDATE [dbo].[processed_data] SET StartTime = FORMAT(DATEADD(DAY, ?, StartTime), 'yyyy-MM-dd "
+                    "HH:mm:ss'), EndTime = FORMAT(DATEADD(DAY, ?, EndTime), 'yyyy-MM-dd HH:mm:ss')",
                     (days_difference, days_difference)
                 )
                 # Update km_processed_data table
@@ -122,8 +123,7 @@ def fetch_filters_data():
         # print(nested_json)
         filters_data = nested_json
 
-        json_response = json.dumps(filters_data, indent=4)
-        return json_response
+        return filters_data
 
 
 def fetch_chart_data(chart_filters: ChartFilters = ''):
@@ -276,10 +276,10 @@ def fetch_chart_data(chart_filters: ChartFilters = ''):
         result3 = nested_json3.to_dict(orient='records')
 
         final_result = result1 + result2 + result3
-        json_response = json.dumps(final_result, indent=4)
 
-        return json_response
-    
+        return final_result
+
+
 def execute_sql_query(sql_query):
     """
     Executes a given SQL query and returns the result as a concatenated string.

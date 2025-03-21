@@ -1,5 +1,6 @@
 import logging
 
+
 async def stream_processor(response):
     try:
         async for message in response:
