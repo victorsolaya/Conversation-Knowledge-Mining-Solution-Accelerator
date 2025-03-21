@@ -71,3 +71,17 @@ async def conversation(request: Request):
     except Exception as ex:
         logger.exception("Error in conversation endpoint")
         return JSONResponse(content={"error": str(ex)}, status_code=getattr(ex, "status_code", 500))
+    
+@router.get("/layout-config")
+async def get_layout_config():
+    layout_config_str = os.getenv("REACT_APP_LAYOUT_CONFIG", "")
+    if layout_config_str:
+        return JSONResponse(content={layout_config_str})
+    return JSONResponse(content={"error": "Layout config not found in environment variables"}, status_code=400)
+
+@router.get("/display-chart-default")
+async def get_chart_config():
+    chart_config = os.getenv("DISPLAY_CHART_DEFAULT", "")
+    if chart_config:
+        return JSONResponse(content={"isChartDisplayDefault": chart_config})
+    return JSONResponse(content={"error": "DISPLAY_CHART_DEFAULT flag not found in environment variables"}, status_code=400)
