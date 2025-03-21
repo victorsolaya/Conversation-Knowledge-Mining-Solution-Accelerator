@@ -126,7 +126,7 @@ def fetch_filters_data():
         return filters_data
 
 
-def fetch_chart_data(chart_filters: ChartFilters = ''):
+async def fetch_chart_data(chart_filters: ChartFilters = ''):
     with get_db_connection() as conn, conn.cursor() as cursor:
         where_clause = ''
         req_body = ''

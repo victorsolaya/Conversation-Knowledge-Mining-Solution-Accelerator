@@ -136,7 +136,7 @@ class ChatService:
             logger.error(f"Error in stream_openai_text: {e}", exc_info=True)
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Error streaming OpenAI text")
 
-    def stream_chat_request(self, request_body, query_separator, query):
+    async def stream_chat_request(self, request_body, query_separator, query):
         """
         Handles streaming chat requests.
         """

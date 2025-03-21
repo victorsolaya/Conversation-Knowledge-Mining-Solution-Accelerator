@@ -24,12 +24,12 @@ class ChartService:
                 detail="An error occurred while fetching filter data."
             )
 
-    def fetch_chart_data(self):
+    async def fetch_chart_data(self):
         """
         Fetch chart data.
         """
         try:
-            return fetch_chart_data()
+            return await fetch_chart_data()
         except Exception as e:
             logging.error("Error in fetch_chart_data: %s", e, exc_info=True)
             raise HTTPException(
@@ -37,12 +37,12 @@ class ChartService:
                 detail="An error occurred while fetching chart data."
             )
 
-    def fetch_chart_data_with_filters(self, chart_filters: ChartFilters):
+    async def fetch_chart_data_with_filters(self, chart_filters: ChartFilters):
         """
         Fetch chart data based on applied filters.
         """
         try:
-            return fetch_chart_data(chart_filters)
+            return await fetch_chart_data(chart_filters)
         except Exception as e:
             logging.error("Error in fetch_chart_data_with_filters: %s", e, exc_info=True)
             raise HTTPException(

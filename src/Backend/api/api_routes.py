@@ -63,7 +63,7 @@ async def conversation(request: Request):
         )
         chatservice = ChatService()
         if not is_chart_query:
-            result = chatservice.stream_chat_request(request_json, query_separator, query)
+            result = await chatservice.stream_chat_request(request_json, query_separator, query)
             return StreamingResponse(result, media_type="application/json-lines")
         else:
             result = await chatservice.complete_chat_request(query, last_rag_response)
