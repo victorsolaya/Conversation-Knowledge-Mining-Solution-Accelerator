@@ -224,6 +224,18 @@ module backend_docker 'deploy_backend_docker.bicep'= {
   scope: resourceGroup(resourceGroup().name)
 }
 
+module frontend_docker 'deploy_frontend_docker.bicep'= {
+  name: 'deploy_frontend_docker'
+  params: {
+    imageTag: imageTag
+    appServicePlanId: hostingplan.outputs.name
+    applicationInsightsId: aifoundry.outputs.applicationInsightsId
+    solutionName: solutionPrefix
+    appSettings:{
+      API_URL:backend_docker.outputs.appUrl
+    }
+  }
+  scope: resourceGroup(resourceGroup().name)
+}
 
-
-// output WEB_APP_URL string = appserviceModule.outputs.webAppUrl
+output WEB_APP_URL string = frontend_docker.outputs.appUrl

@@ -8,16 +8,18 @@ param solutionName string
 param appSettings object = {}
 param appServicePlanId string
 param appImageName string
-param userassignedIdentityId string
+param userassignedIdentityId string = ''
+
+var userAssignedIdentities = userassignedIdentityId == '' ? {} : {
+  '${userassignedIdentityId}': {}
+}
 
 resource appService 'Microsoft.Web/sites@2020-06-01' = {
   name: solutionName
   location: resourceGroup().location
   identity: {
-    type: 'SystemAssigned, UserAssigned'
-    userAssignedIdentities: {
-      '${userassignedIdentityId}': {}
-    }
+    type: userassignedIdentityId == '' ? 'SystemAssigned' : 'SystemAssigned, UserAssigned'
+    userAssignedIdentities: userAssignedIdentities
   }
   properties: {
     serverFarmId: appServicePlanId
