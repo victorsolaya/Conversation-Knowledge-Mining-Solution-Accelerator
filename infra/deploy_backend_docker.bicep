@@ -14,8 +14,72 @@ param azureSearchAdminKey string
 // param keyVaultName string
 param userassignedIdentityId string
 
-var imageName = 'DOCKER|kmcontainerreg.azurecr.io/km-backend-app:${imageTag}'
-var name = '${solutionName}-backend-docker'
+var imageName = 'DOCKER|kmcontainerreg.azurecr.io/km-api:${imageTag}'
+var name = '${solutionName}-api-docker'
+
+var reactAppLayoutConfig ='''{
+  "appConfig": {
+    "THREE_COLUMN": {
+      "DASHBOARD": 50,
+      "CHAT": 33,
+      "CHATHISTORY": 17
+    },
+    "TWO_COLUMN": {
+      "DASHBOARD_CHAT": {
+        "DASHBOARD": 65,
+        "CHAT": 35
+      },
+      "CHAT_CHATHISTORY": {
+        "CHAT": 80,
+        "CHATHISTORY": 20
+      }
+    }
+  },
+  "charts": [
+    {
+      "id": "SATISFIED",
+      "name": "Satisfied",
+      "type": "card",
+      "layout": { "row": 1, "column": 1, "height": 11 }
+    },
+    {
+      "id": "TOTAL_CALLS",
+      "name": "Total Calls",
+      "type": "card",
+      "layout": { "row": 1, "column": 2, "span": 1 }
+    },
+    {
+      "id": "AVG_HANDLING_TIME",
+      "name": "Average Handling Time",
+      "type": "card",
+      "layout": { "row": 1, "column": 3, "span": 1 }
+    },
+    {
+      "id": "SENTIMENT",
+      "name": "Topics Overview",
+      "type": "donutchart",
+      "layout": { "row": 2, "column": 1, "width": 40, "height": 44.5 }
+    },
+    {
+      "id": "AVG_HANDLING_TIME_BY_TOPIC",
+      "name": "Average Handling Time By Topic",
+      "type": "bar",
+      "layout": { "row": 2, "column": 2, "row-span": 2, "width": 60 }
+    },
+    {
+      "id": "TOPICS",
+      "name": "Trending Topics",
+      "type": "table",
+      "layout": { "row": 3, "column": 1, "span": 2 }
+    },
+    {
+      "id": "KEY_PHRASES",
+      "name": "Key Phrases",
+      "type": "wordcloud",
+      "layout": { "row": 3, "column": 2, "height": 44.5 }
+    }
+  ]
+}'''
 
 module appService 'deploy_app_service.bicep' = {
   name: '${name}-app-module'
@@ -31,6 +95,7 @@ module appService 'deploy_app_service.bicep' = {
         APPINSIGHTS_INSTRUMENTATIONKEY: reference(applicationInsightsId, '2015-05-01').InstrumentationKey
         AZURE_AI_SEARCH_API_KEY: azureSearchAdminKey
         AZURE_AI_PROJECT_CONN_STRING:azureAiProjectConnString
+        REACT_APP_LAYOUT_CONFIG: reactAppLayoutConfig
       }
     )
   }

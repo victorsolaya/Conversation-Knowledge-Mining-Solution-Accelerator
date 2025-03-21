@@ -5,8 +5,8 @@ param solutionName string
 param appSettings object = {}
 param appServicePlanId string
 
-var imageName = 'DOCKER|kmcontainerreg.azurecr.io/km-frontend-app:${imageTag}'
-var name = '${solutionName}-frontend-docker'
+var imageName = 'DOCKER|kmcontainerreg.azurecr.io/km-app:${imageTag}'
+var name = '${solutionName}-app-docker'
 
 module appService 'deploy_app_service.bicep' = {
   name: '${name}-app-module'

@@ -5,12 +5,12 @@ RUN mkdir -p /home/node/app/node_modules && chown -R node:node /home/node/app
 WORKDIR /home/node/app 
 
 # Install dependencies
-COPY ./frontend/package*.json ./  
+COPY ./src/frontend/package*.json ./  
 USER node
 RUN npm ci  
 
 # Copy source code and build
-COPY --chown=node:node ./frontend/ ./frontend  
+COPY --chown=node:node ./src/frontend/ ./frontend  
 WORKDIR /home/node/app/frontend
 RUN npm run build
 
