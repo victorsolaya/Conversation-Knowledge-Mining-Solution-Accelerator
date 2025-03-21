@@ -232,7 +232,7 @@ module frontend_docker 'deploy_frontend_docker.bicep'= {
     applicationInsightsId: aifoundry.outputs.applicationInsightsId
     solutionName: solutionPrefix
     appSettings:{
-      API_URL:backend_docker.outputs.appUrl
+      API_BASE_URL:backend_docker.outputs.appUrl
     }
   }
   scope: resourceGroup(resourceGroup().name)
