@@ -219,6 +219,7 @@ module backend_docker 'deploy_backend_docker.bicep'= {
         AZURE_AI_SEARCH_INDEX: 'call_transcripts_index'
         SQLDB_USER_MID: managedIdentityModule.outputs.managedIdentityBackendAppOutput.clientId
         USE_AI_PROJECT_CLIENT:'False'
+        DISPLAY_CHART_DEFAULT:'True'
       }
   }
   scope: resourceGroup(resourceGroup().name)

@@ -12,46 +12,42 @@ router = APIRouter()
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-
 @router.get("/fetchChartData")
 async def fetch_chart_data():
     try:
-        chartService = ChartService()
-        response = chartService.fetch_chart_data()
+        chart_service = ChartService()
+        response = chart_service.fetch_chart_data()
         return JSONResponse(content=response)
     except Exception as e:
-        logger.error(f"Error in fetch_chart_data: {str(e)}", exc_info=True)
-        return JSONResponse(content={"error": "Failed to fetch chart data"}, status_code=500)
-
+        logger.exception("Error in fetch_chart_data")
+        return JSONResponse(content={"error": f"Failed to fetch chart data: {str(e)}"}, status_code=500)
 
 @router.post("/fetchChartDataWithFilters")
 async def fetch_chart_data_with_filters(chart_filters: ChartFilters):
     try:
-        chartservice = ChartService()
-        response = await chartservice.fetch_chart_data_with_filters(chart_filters)
+        logger.info(f"Received filters: {chart_filters}")
+        chart_service = ChartService()
+        response = await chart_service.fetch_chart_data_with_filters(chart_filters)
         return JSONResponse(content=response)
     except Exception as e:
-        logger.error(f"Error in fetch_chart_data_with_filters: {str(e)}", exc_info=True)
-        return JSONResponse(content={"error": "Failed to fetch chart data"}, status_code=500)
-
+        logger.exception("Error in fetch_chart_data_with_filters")
+        return JSONResponse(content={"error": f"Failed to fetch chart data: {str(e)}"}, status_code=500)
 
 @router.get("/fetchFilterData")
 async def fetch_filter_data():
     try:
-        chartservice = ChartService()
-        response = chartservice.fetch_filter_data()
+        chart_service = ChartService()
+        response = chart_service.fetch_filter_data()
         return JSONResponse(content=response)
     except Exception as e:
-        logger.error(f"Error in fetch_filter_data: {str(e)}", exc_info=True)
-        return JSONResponse(content={"error": "Failed to fetch filter data"}, status_code=500)
-
+        logger.exception("Error in fetch_filter_data")
+        return JSONResponse(content={"error": f"Failed to fetch filter data: {str(e)}"}, status_code=500)
 
 @router.post("/chat")
 async def conversation(request: Request):
     try:
         # Get the request JSON and last RAG response from the client
         request_json = await request.json()
-
         last_rag_response = request_json.get("last_rag_response")
         logger.info(f"Received last_rag_response: {last_rag_response}")
 
@@ -61,22 +57,23 @@ async def conversation(request: Request):
             term in query.lower()
             for term in ["chart", "graph", "visualize", "plot"]
         )
-        chatservice = ChatService()
+        chat_service = ChatService()
         if not is_chart_query:
-            result = await chatservice.stream_chat_request(request_json, query_separator, query)
+            result = await chat_service.stream_chat_request(request_json, query_separator, query)
             return StreamingResponse(result, media_type="application/json-lines")
         else:
-            result = await chatservice.complete_chat_request(query, last_rag_response)
+            result = await chat_service.complete_chat_request(query, last_rag_response)
             return JSONResponse(content=result)
+
     except Exception as ex:
         logger.exception("Error in conversation endpoint")
         return JSONResponse(content={"error": str(ex)}, status_code=getattr(ex, "status_code", 500))
-    
+
 @router.get("/layout-config")
 async def get_layout_config():
     layout_config_str = os.getenv("REACT_APP_LAYOUT_CONFIG", "")
     if layout_config_str:
-        return JSONResponse(content={layout_config_str})
+        return layout_config_str
     return JSONResponse(content={"error": "Layout config not found in environment variables"}, status_code=400)
 
 @router.get("/display-chart-default")

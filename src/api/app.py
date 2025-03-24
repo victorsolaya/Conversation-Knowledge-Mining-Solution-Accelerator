@@ -2,6 +2,7 @@ from dotenv import load_dotenv
 import uvicorn
 
 from api.api_routes import router as backend_router
+from api.history_routes import router as history_router
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 load_dotenv()
@@ -19,8 +20,9 @@ def create_app() -> FastAPI:
         allow_headers=["*"],
     )
 
-    # Include routers with /api prefix
+    # Include routers
     app.include_router(backend_router, prefix="/api", tags=["backend"])
+    app.include_router(history_router, prefix="/history", tags=["history"])
 
     @app.get("/health")
     async def health_check():
