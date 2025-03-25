@@ -11,10 +11,11 @@ import {
   CosmosDBHealth,
   CosmosDBStatus,
 } from "../types/AppTypes";
+const baseURL = process.env.REACT_APP_API_BASE_URL;// base API URL
 
 export const fetchChartData = async () => {
   try {
-    const response = await fetch("/api/fetchChartData");
+    const response = await fetch(`${baseURL}/api/fetchChartData`);
     if (!response.ok) {
       throw new Error(`Error: ${response.status} ${response.statusText}`);
     }
@@ -28,7 +29,7 @@ export const fetchChartData = async () => {
 
 export const fetchChartDataWithFilters = async (bodyData: any) => {
   try {
-    const response = await fetch("/api/fetchChartDataWithFilters", {
+    const response = await fetch(`${baseURL}/api/fetchChartDataWithFilters`, {
       headers: {
         "Content-Type": "application/json",
       },
@@ -48,7 +49,7 @@ export const fetchChartDataWithFilters = async (bodyData: any) => {
 
 export const fetchFilterData = async () => {
   try {
-    const response = await fetch("/api/fetchFilterData");
+    const response = await fetch(`${baseURL}/api/fetchFilterData`);
     if (!response.ok) {
       throw new Error(`Error: ${response.status} ${response.statusText}`);
     }
@@ -70,7 +71,7 @@ export type UserInfo = {
 };
 
 export async function getUserInfo(): Promise<UserInfo[]> {
-  const response = await fetch("/.auth/me");
+  const response = await fetch(`${baseURL}/.auth/me`);
   if (!response.ok) {
     console.log("No identity provider found. Access to chat will be blocked.");
     return [];
@@ -81,7 +82,7 @@ export async function getUserInfo(): Promise<UserInfo[]> {
 }
 
 export const historyRead = async (convId: string): Promise<ChatMessage[]> => {
-  const response = await fetch("/history/read", {
+  const response = await fetch(`${baseURL}/history/read`, {
     method: "POST",
     body: JSON.stringify({
       conversation_id: convId,
@@ -132,7 +133,7 @@ export const historyRead = async (convId: string): Promise<ChatMessage[]> => {
 export const historyList = async (
   offset = 0
 ): Promise<Conversation[] | null> => {
-  let response = await fetch(`/history/list?offset=${offset}`, {
+  let response = await fetch(`${baseURL}/history/list?offset=${offset}`, {
     method: "GET",
   })
     .then(async (res) => {
@@ -176,7 +177,7 @@ export const historyUpdate = async (
   messages: ChatMessage[],
   convId: string
 ): Promise<Response> => {
-  const response = await fetch("/history/update", {
+  const response = await fetch(`${baseURL}/history/update`, {
     method: "POST",
     body: JSON.stringify({
       conversation_id: convId,
@@ -205,7 +206,7 @@ export async function getLayoutConfig(): Promise<{
   appConfig: AppConfig;
   charts: ChartConfigItem[];
 }> {
-  const response = await fetch("/api/layout-config", {
+  const response = await fetch(`${baseURL}/api/layout-config`, {s
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -228,7 +229,7 @@ export async function getLayoutConfig(): Promise<{
 export async function getIsChartDisplayDefault(): Promise<{
   isChartDisplayDefault: boolean;
 }> {
-  const response = await fetch("/api/display-chart-default", {
+  const response = await fetch(`${baseURL}/api/display-chart-default`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -252,7 +253,7 @@ export async function callConversationApi(
   options: ConversationRequest,
   abortSignal: AbortSignal
 ): Promise<Response> {
-  const response = await fetch("/api/chat", {
+  const response = await fetch(`${baseURL}/api/chat`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -277,7 +278,7 @@ export const historyRename = async (
   convId: string,
   title: string
 ): Promise<Response> => {
-  const response = await fetch("/history/rename", {
+  const response = await fetch(`${baseURL}/history/rename`, {
     method: "POST",
     body: JSON.stringify({
       conversation_id: convId,
@@ -303,7 +304,7 @@ export const historyRename = async (
 };
 
 export const historyDelete = async (convId: string): Promise<Response> => {
-  const response = await fetch("/history/delete", {
+  const response = await fetch(`${baseURL}/history/delete`, {
     method: "DELETE",
     body: JSON.stringify({
       conversation_id: convId,
@@ -328,7 +329,7 @@ export const historyDelete = async (convId: string): Promise<Response> => {
 };
 
 export const historyDeleteAll = async (): Promise<Response> => {
-  const response = await fetch("/history/delete_all", {
+  const response = await fetch(`${baseURL}/history/delete_all`, {
     method: "DELETE",
     body: JSON.stringify({}),
     headers: {
@@ -351,7 +352,7 @@ export const historyDeleteAll = async (): Promise<Response> => {
 };
 
 export const historyEnsure = async (): Promise<CosmosDBHealth> => {
-  const response = await fetch("/history/ensure", {
+  const response = await fetch(`${baseURL}/history/ensure`, {
     method: "GET",
   })
     .then(async (res) => {
@@ -408,7 +409,7 @@ export const historyGenerate = async (
       messages: options.messages,
     });
   }
-  const response = await fetch("/history/generate", {
+  const response = await fetch(`${baseURL}/history/generate`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
