@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.33.93.31351",
-      "templateHash": "9487012189121645615"
+      "templateHash": "15964315668219344553"
     }
   },
   "parameters": {
@@ -2005,7 +2005,8 @@
               "AZURE_AI_SEARCH_ENDPOINT": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_ai_foundry'), '2022-09-01').outputs.aiSearchTarget.value]",
               "AZURE_AI_SEARCH_INDEX": "call_transcripts_index",
               "SQLDB_USER_MID": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_managed_identity'), '2022-09-01').outputs.managedIdentityBackendAppOutput.value.clientId]",
-              "USE_AI_PROJECT_CLIENT": "False"
+              "USE_AI_PROJECT_CLIENT": "False",
+              "DISPLAY_CHART_DEFAULT": "True"
             }
           }
         },
@@ -2305,7 +2306,7 @@
           },
           "appSettings": {
             "value": {
-              "API_BASE_URL": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_backend_docker'), '2022-09-01').outputs.appUrl.value]"
+              "APP_API_BASE_URL": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_backend_docker'), '2022-09-01').outputs.appUrl.value]"
             }
           }
         },
