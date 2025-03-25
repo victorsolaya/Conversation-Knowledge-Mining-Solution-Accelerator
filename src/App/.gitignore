@@ -11,7 +11,6 @@ App/frontend/node_modules
 App/.venv/
 
 # misc
-.env
 .venv/
 .deployment
 .DS_Store
@@ -23,7 +22,6 @@ lib/
 
 .venv
 frontend/node_modules
-.env
 # static
 .azure/
 __pycache__/
