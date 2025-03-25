@@ -1,7 +1,7 @@
 import logging
 import uuid
 from typing import Optional
-from fastapi import HTTPException
+from fastapi import HTTPException, status
 from openai import AsyncAzureOpenAI
 from common.config.config import Config
 from common.database.cosmosdb_service import CosmosConversationClient
@@ -144,35 +144,63 @@ class HistoryService:
     async def update_conversation(self, user_id: str, request_json: dict):
         conversation_id = request_json.get("conversation_id")
         messages = request_json.get("messages", [])
-
         if not conversation_id:
             raise ValueError("No conversation_id found")
-
         cosmos_conversation_client = self.init_cosmosdb_client()
+        # Retrieve or create conversation
         conversation = await cosmos_conversation_client.get_conversation(user_id, conversation_id)
-
         if not conversation:
             title = await self.generate_title(messages)
-            conversation = await cosmos_conversation_client.create_conversation(user_id, conversation_id, title)
-
-        user_message = next((msg for msg in reversed(messages) if msg["role"] == "user"), None)
-        if user_message:
-            await cosmos_conversation_client.create_message(
-                uuid=str(uuid.uuid4()), conversation_id=conversation_id, user_id=user_id, input_message=user_message
+            conversation = await cosmos_conversation_client.create_conversation(
+                user_id=user_id, conversation_id=conversation_id, title=title
             )
+            conversation_id = conversation["id"]
 
-        assistant_message = messages[-1] if messages and messages[-1]["role"] == "assistant" else None
-        if assistant_message:
-            if len(messages) > 1 and messages[-2]["role"] == "tool":
+        # Format the incoming message object in the "chat/completions" messages format then write it to the
+        # conversation history in cosmos
+        messages = request_json["messages"]
+        if len(messages) > 0 and messages[0]["role"] == "user":
+            user_message = next(
+                (
+                    message
+                    for message in reversed(messages)
+                    if message["role"] == "user"
+                ),
+                None,
+            )
+            createdMessageValue = await cosmos_conversation_client.create_message(
+                uuid=str(uuid.uuid4()),
+                conversation_id=conversation_id,
+                user_id=user_id,
+                input_message=user_message,
+            )
+            if createdMessageValue == "Conversation not found":
+                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Conversation not found")
+        else:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="User message not found")
+
+        # Format the incoming message object in the "chat/completions" messages format
+        # then write it to the conversation history in cosmos
+        messages = request_json["messages"]
+        if len(messages) > 0 and messages[-1]["role"] == "assistant":
+            if len(messages) > 1 and messages[-2].get("role", None) == "tool":
+                # write the tool message first
                 await cosmos_conversation_client.create_message(
-                    uuid=str(uuid.uuid4()), conversation_id=conversation_id, user_id=user_id, input_message=messages[-2]
+                    uuid=str(uuid.uuid4()),
+                    conversation_id=conversation_id,
+                    user_id=user_id,
+                    input_message=messages[-2],
                 )
+            # write the assistant message
             await cosmos_conversation_client.create_message(
-                uuid=assistant_message["id"], conversation_id=conversation_id, user_id=user_id, input_message=assistant_message
+                uuid=messages[-1]["id"],
+                conversation_id=conversation_id,
+                user_id=user_id,
+                input_message=messages[-1],
             )
         else:
-            raise ValueError("No assistant messages found")
-
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No assistant message found")
+        await cosmos_conversation_client.cosmosdb_client.close()
         return {"id": conversation["id"], "title": conversation["title"], "updatedAt": conversation.get("updatedAt")}
 
     async def rename_conversation(self, user_id: str, conversation_id, title):
