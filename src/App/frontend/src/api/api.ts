@@ -206,7 +206,7 @@ export async function getLayoutConfig(): Promise<{
   appConfig: AppConfig;
   charts: ChartConfigItem[];
 }> {
-  const response = await fetch(`${baseURL}/api/layout-config`, {s
+  const response = await fetch(`${baseURL}/api/layout-config`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
