@@ -105,7 +105,7 @@ const Dashboard: React.FC = () => {
 
   useEffect(() => {
     getUserInfo().then((res) => {
-      const name: string = res[0].user_claims.find((claim: any) => claim.typ === 'name')?.val ?? ''
+      const name: string = res[0]?.user_claims?.find((claim: any) => claim.type === 'name')?.val ?? ''
       setName(name)
     }).catch((err) => {
       console.error('Error fetching user info: ', err)
