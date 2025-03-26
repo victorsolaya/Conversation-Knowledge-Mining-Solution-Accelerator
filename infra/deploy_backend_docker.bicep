@@ -15,7 +15,7 @@ param azureSearchAdminKey string
 param userassignedIdentityId string
 
 var imageName = 'DOCKER|kmcontainerreg.azurecr.io/km-api:${imageTag}'
-var name = '${solutionName}-api-docker'
+var name = '${solutionName}-api'
 
 var reactAppLayoutConfig ='''{
   "appConfig": {
