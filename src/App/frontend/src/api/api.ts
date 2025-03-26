@@ -73,15 +73,29 @@ export type UserInfo = {
 export async function getUserInfo(): Promise<UserInfo[]> {
   const response = await fetch(`/.auth/me`);
   if (!response.ok) {
-    console.log("No identity provider found. Access to chat will be blocked.");
+    console.error("No identity provider found. Access to chat will be blocked.");
     return [];
   }
-
   const payload = await response.json();
+  const userClaims = payload[0]?.user_claims || [];
+  const objectIdClaim = userClaims.find(
+    (claim: any) =>
+      claim.typ === "http://schemas.microsoft.com/identity/claims/objectidentifier"
+  );
+  const userId = objectIdClaim?.val;
+  if (userId) {
+    localStorage.setItem("userId", userId);
+  }
   return payload;
 }
 
+
+function getUserIdFromLocalStorage(): string | null {
+  return localStorage.getItem("userId");
+}
+
 export const historyRead = async (convId: string): Promise<ChatMessage[]> => {
+  const userId = getUserIdFromLocalStorage();
   const response = await fetch(`${baseURL}/history/read`, {
     method: "POST",
     body: JSON.stringify({
@@ -89,6 +103,7 @@ export const historyRead = async (convId: string): Promise<ChatMessage[]> => {
     }),
     headers: {
       "Content-Type": "application/json",
+      "X-Ms-Client-Principal-Id": userId || "",
     },
   })
     .then(async (res) => {
@@ -133,9 +148,14 @@ export const historyRead = async (convId: string): Promise<ChatMessage[]> => {
 export const historyList = async (
   offset = 0
 ): Promise<Conversation[] | null> => {
+  const userId = getUserIdFromLocalStorage();
   let response = await fetch(`${baseURL}/history/list?offset=${offset}`, {
     method: "GET",
-  })
+  headers: {
+    "Content-Type": "application/json",
+    "X-Ms-Client-Principal-Id": userId || "",
+  },
+})
     .then(async (res) => {
       let payload = await res.json();
       if (!Array.isArray(payload)) {
@@ -177,6 +197,7 @@ export const historyUpdate = async (
   messages: ChatMessage[],
   convId: string
 ): Promise<Response> => {
+  const userId = getUserIdFromLocalStorage();
   const response = await fetch(`${baseURL}/history/update`, {
     method: "POST",
     body: JSON.stringify({
@@ -185,6 +206,7 @@ export const historyUpdate = async (
     }),
     headers: {
       "Content-Type": "application/json",
+      "X-Ms-Client-Principal-Id": userId || "",
     },
   })
     .then(async (res) => {
@@ -206,10 +228,12 @@ export async function getLayoutConfig(): Promise<{
   appConfig: AppConfig;
   charts: ChartConfigItem[];
 }> {
+  const userId = getUserIdFromLocalStorage();
   const response = await fetch(`${baseURL}/api/layout-config`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
+      "X-Ms-Client-Principal-Id": userId || "",
     },
   });
   try {
@@ -229,10 +253,12 @@ export async function getLayoutConfig(): Promise<{
 export async function getIsChartDisplayDefault(): Promise<{
   isChartDisplayDefault: boolean;
 }> {
+  const userId = getUserIdFromLocalStorage();
   const response = await fetch(`${baseURL}/api/display-chart-default`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
+      "X-Ms-Client-Principal-Id": userId || "",
     },
   });
   try {
@@ -253,10 +279,12 @@ export async function callConversationApi(
   options: ConversationRequest,
   abortSignal: AbortSignal
 ): Promise<Response> {
+  const userId = getUserIdFromLocalStorage();
   const response = await fetch(`${baseURL}/api/chat`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      "X-Ms-Client-Principal-Id": userId || "",
     },
     body: JSON.stringify({
       messages: options.messages,
@@ -278,6 +306,7 @@ export const historyRename = async (
   convId: string,
   title: string
 ): Promise<Response> => {
+  const userId = getUserIdFromLocalStorage();
   const response = await fetch(`${baseURL}/history/rename`, {
     method: "POST",
     body: JSON.stringify({
@@ -286,6 +315,7 @@ export const historyRename = async (
     }),
     headers: {
       "Content-Type": "application/json",
+      "X-Ms-Client-Principal-Id": userId || "",
     },
   })
     .then((res) => {
@@ -304,6 +334,7 @@ export const historyRename = async (
 };
 
 export const historyDelete = async (convId: string): Promise<Response> => {
+  const userId = getUserIdFromLocalStorage();
   const response = await fetch(`${baseURL}/history/delete`, {
     method: "DELETE",
     body: JSON.stringify({
@@ -311,6 +342,7 @@ export const historyDelete = async (convId: string): Promise<Response> => {
     }),
     headers: {
       "Content-Type": "application/json",
+      "X-Ms-Client-Principal-Id": userId || "",
     },
   })
     .then((res) => {
@@ -329,11 +361,13 @@ export const historyDelete = async (convId: string): Promise<Response> => {
 };
 
 export const historyDeleteAll = async (): Promise<Response> => {
+  const userId = getUserIdFromLocalStorage();
   const response = await fetch(`${baseURL}/history/delete_all`, {
     method: "DELETE",
     body: JSON.stringify({}),
     headers: {
       "Content-Type": "application/json",
+      "X-Ms-Client-Principal-Id": userId || "",
     },
   })
     .then((res) => {
@@ -352,8 +386,13 @@ export const historyDeleteAll = async (): Promise<Response> => {
 };
 
 export const historyEnsure = async (): Promise<CosmosDBHealth> => {
+  const userId = getUserIdFromLocalStorage();
   const response = await fetch(`${baseURL}/history/ensure`, {
     method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      "X-Ms-Client-Principal-Id": userId || "",
+    },
   })
     .then(async (res) => {
       const respJson = await res.json();
@@ -409,10 +448,12 @@ export const historyGenerate = async (
       messages: options.messages,
     });
   }
+  const userId = getUserIdFromLocalStorage();
   const response = await fetch(`${baseURL}/history/generate`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      "X-Ms-Client-Principal-Id": userId || "",
     },
     body: body,
     signal: abortSignal,
