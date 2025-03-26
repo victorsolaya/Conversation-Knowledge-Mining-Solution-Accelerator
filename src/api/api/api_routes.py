@@ -1,3 +1,4 @@
+import json
 import logging
 import os
 from fastapi import APIRouter, Request
@@ -78,7 +79,12 @@ async def conversation(request: Request):
 async def get_layout_config():
     layout_config_str = os.getenv("REACT_APP_LAYOUT_CONFIG", "")
     if layout_config_str:
-        return layout_config_str
+        try:
+            layout_config_json = json.loads(layout_config_str)  # Parse the string into JSON
+            return JSONResponse(content=layout_config_json)    # Return the parsed JSON
+        except json.JSONDecodeError as e:
+            logger.exception("Failed to parse layout config JSON")
+            return JSONResponse(content={"error": f"Invalid JSON format: {str(e)}"}, status_code=400)
     return JSONResponse(content={"error": "Layout config not found in environment variables"}, status_code=400)
 
 
