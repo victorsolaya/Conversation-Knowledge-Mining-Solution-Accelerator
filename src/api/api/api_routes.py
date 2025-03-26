@@ -12,6 +12,7 @@ router = APIRouter()
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
 @router.get("/fetchChartData")
 async def fetch_chart_data():
     try:
@@ -21,6 +22,7 @@ async def fetch_chart_data():
     except Exception as e:
         logger.exception("Error in fetch_chart_data")
         return JSONResponse(content={"error": f"Failed to fetch chart data: {str(e)}"}, status_code=500)
+
 
 @router.post("/fetchChartDataWithFilters")
 async def fetch_chart_data_with_filters(chart_filters: ChartFilters):
@@ -33,6 +35,7 @@ async def fetch_chart_data_with_filters(chart_filters: ChartFilters):
         logger.exception("Error in fetch_chart_data_with_filters")
         return JSONResponse(content={"error": f"Failed to fetch chart data: {str(e)}"}, status_code=500)
 
+
 @router.get("/fetchFilterData")
 async def fetch_filter_data():
     try:
@@ -42,6 +45,7 @@ async def fetch_filter_data():
     except Exception as e:
         logger.exception("Error in fetch_filter_data")
         return JSONResponse(content={"error": f"Failed to fetch filter data: {str(e)}"}, status_code=500)
+
 
 @router.post("/chat")
 async def conversation(request: Request):
@@ -69,12 +73,14 @@ async def conversation(request: Request):
         logger.exception("Error in conversation endpoint")
         return JSONResponse(content={"error": str(ex)}, status_code=getattr(ex, "status_code", 500))
 
+
 @router.get("/layout-config")
 async def get_layout_config():
     layout_config_str = os.getenv("REACT_APP_LAYOUT_CONFIG", "")
     if layout_config_str:
         return layout_config_str
     return JSONResponse(content={"error": "Layout config not found in environment variables"}, status_code=400)
+
 
 @router.get("/display-chart-default")
 async def get_chart_config():

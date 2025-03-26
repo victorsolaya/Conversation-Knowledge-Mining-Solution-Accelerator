@@ -8,6 +8,7 @@ from common.database.sqldb_service import adjust_processed_data_dates, fetch_cha
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
 class ChartService:
     """
     Service class for handling chart-related data retrieval.

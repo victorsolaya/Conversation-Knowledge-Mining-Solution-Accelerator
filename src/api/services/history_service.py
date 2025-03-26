@@ -12,6 +12,7 @@ from helpers.chat_helper import complete_chat_request
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
 class HistoryService:
     def __init__(self):
         config = Config()
@@ -27,7 +28,7 @@ class HistoryService:
             and self.azure_cosmosdb_account
             and self.azure_cosmosdb_database
             and self.azure_cosmosdb_conversations_container
-            )
+        )
 
         self.azure_openai_endpoint = config.azure_openai_endpoint
         self.azure_openai_key = config.azure_openai_api_key
@@ -42,7 +43,8 @@ class HistoryService:
 
         try:
             cosmos_endpoint = f"https://{self.azure_cosmosdb_account}.documents.azure.com:443/"
-            credential = DefaultAzureCredential() if not self.azure_cosmosdb_account_key else self.azure_cosmosdb_account_key
+            credential = DefaultAzureCredential(
+            ) if not self.azure_cosmosdb_account_key else self.azure_cosmosdb_account_key
 
             return CosmosConversationClient(
                 cosmosdb_endpoint=cosmos_endpoint,
@@ -60,7 +62,8 @@ class HistoryService:
 
         try:
             if not self.azure_openai_endpoint and not self.azure_openai_resource:
-                raise ValueError("AZURE_OPENAI_ENDPOINT or AZURE_OPENAI_RESOURCE is required")
+                raise ValueError(
+                    "AZURE_OPENAI_ENDPOINT or AZURE_OPENAI_RESOURCE is required")
 
             endpoint = self.azure_openai_endpoint or f"https://{self.azure_openai_resource}.openai.azure.com/"
             api_key = self.azure_openai_key
@@ -69,8 +72,7 @@ class HistoryService:
             if not api_key:
                 logger.debug("Using Azure AD authentication for OpenAI")
                 ad_token_provider = get_bearer_token_provider(
-                    DefaultAzureCredential(), "https://cognitiveservices.azure.com/.default"
-                )
+                    DefaultAzureCredential(), "https://cognitiveservices.azure.com/.default")
 
             if not self.azure_openai_deployment_name:
                 raise ValueError("AZURE_OPENAI_MODEL is required")
@@ -93,7 +95,8 @@ class HistoryService:
             "Do not include any other commentary or description."
         )
 
-        messages = [{"role": msg["role"], "content": msg["content"]} for msg in conversation_messages if msg["role"] == "user"]
+        messages = [{"role": msg["role"], "content": msg["content"]}
+                    for msg in conversation_messages if msg["role"] == "user"]
         messages.append({"role": "user", "content": title_prompt})
 
         try:
@@ -131,11 +134,14 @@ class HistoryService:
             if messages and messages[-1]["role"] == "user":
                 created_message = await cosmos_conversation_client.create_message(conversation_id, user_id, messages[-1])
                 if created_message == "Conversation not found":
-                    raise ValueError(f"Conversation not found for ID: {conversation_id}")
+                    raise ValueError(
+                        f"Conversation not found for ID: {conversation_id}")
             else:
                 raise ValueError("No user message found")
 
-            request_body = {"messages": messages, "history_metadata": {"conversation_id": conversation_id}}
+            request_body = {
+                "messages": messages, "history_metadata": {
+                    "conversation_id": conversation_id}}
             return await complete_chat_request(request_body)
         except Exception as e:
             logger.exception("Error in add_conversation")
@@ -175,9 +181,13 @@ class HistoryService:
                 input_message=user_message,
             )
             if createdMessageValue == "Conversation not found":
-                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Conversation not found")
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Conversation not found")
         else:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="User message not found")
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="User message not found")
 
         # Format the incoming message object in the "chat/completions" messages format
         # then write it to the conversation history in cosmos
@@ -199,9 +209,14 @@ class HistoryService:
                 input_message=messages[-1],
             )
         else:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No assistant message found")
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="No assistant message found")
         await cosmos_conversation_client.cosmosdb_client.close()
-        return {"id": conversation["id"], "title": conversation["title"], "updatedAt": conversation.get("updatedAt")}
+        return {
+            "id": conversation["id"],
+            "title": conversation["title"],
+            "updatedAt": conversation.get("updatedAt")}
 
     async def rename_conversation(self, user_id: str, conversation_id, title):
         if not conversation_id:
@@ -211,7 +226,9 @@ class HistoryService:
         conversation = await cosmos_conversation_client.get_conversation(user_id, conversation_id)
 
         if not conversation:
-            raise HTTPException(status_code=404, detail=f"Conversation {conversation_id} was not found. It either does not exist or the logged-in user does not have access to it.")
+            raise HTTPException(
+                status_code=404,
+                detail=f"Conversation {conversation_id} was not found. It either does not exist or the logged-in user does not have access to it.")
 
         conversation["title"] = title
         updated_conversation = await cosmos_conversation_client.upsert_conversation(
@@ -220,30 +237,37 @@ class HistoryService:
 
         return updated_conversation
 
-    async def update_message_feedback(self, user_id: str, message_id: str, message_feedback: str) -> Optional[dict]:
+    async def update_message_feedback(
+            self,
+            user_id: str,
+            message_id: str,
+            message_feedback: str) -> Optional[dict]:
         try:
-            logger.info(f"Updating feedback for message_id: {message_id} by user: {user_id}")
+            logger.info(
+                f"Updating feedback for message_id: {message_id} by user: {user_id}")
             cosmos_conversation_client = self.init_cosmosdb_client()
             updated_message = await cosmos_conversation_client.update_message_feedback(user_id, message_id, message_feedback)
 
             if updated_message:
-                logger.info(f"Successfully updated message_id: {message_id} with feedback: {message_feedback}")
+                logger.info(
+                    f"Successfully updated message_id: {message_id} with feedback: {message_feedback}")
                 return updated_message
             else:
                 logger.warning(f"Message ID {message_id} not found or access denied")
                 return None
         except Exception as e:
-            logger.exception(f"Error updating message feedback for message_id: {message_id}")
+            logger.exception(
+                f"Error updating message feedback for message_id: {message_id}")
             raise
 
     async def delete_conversation(self, user_id: str, conversation_id: str) -> bool:
         """
         Deletes a conversation and its messages from the database if the user has access.
-        
+
         Args:
             user_id (str): The ID of the authenticated user.
             conversation_id (str): The ID of the conversation to delete.
-        
+
         Returns:
             bool: True if the conversation was deleted successfully, False otherwise.
         """
@@ -258,7 +282,8 @@ class HistoryService:
                 return False
 
             if conversation["userId"] != user_id:
-                logger.warning(f"User {user_id} does not have permission to delete {conversation_id}.")
+                logger.warning(
+                    f"User {user_id} does not have permission to delete {conversation_id}.")
                 return False
 
             # Delete associated messages first (if applicable)
@@ -273,8 +298,8 @@ class HistoryService:
         except Exception as e:
             logger.exception(f"Error deleting conversation {conversation_id}: {e}")
             return False
-        
-    async def get_conversations(self, user_id: str, offset: int, limit: int ):
+
+    async def get_conversations(self, user_id: str, offset: int, limit: int):
         """
         Retrieves a list of conversations for a given user.
 
@@ -295,7 +320,7 @@ class HistoryService:
         except Exception as e:
             logger.exception(f"Error retrieving conversations for user {user_id}")
             return []
-        
+
     async def get_messages(self, user_id: str, conversation_id: str):
         """
         Retrieves all messages for a given conversation ID if the user has access.
@@ -323,9 +348,10 @@ class HistoryService:
             return messages
 
         except Exception as e:
-            logger.exception(f"Error retrieving messages for conversation {conversation_id}: {e}")
+            logger.exception(
+                f"Error retrieving messages for conversation {conversation_id}: {e}")
             return []
-        
+
     async def get_conversation_messages(self, user_id: str, conversation_id: str):
         """
         Retrieves a single conversation and its messages for a given user.
@@ -345,7 +371,8 @@ class HistoryService:
             # Fetch the conversation details
             conversation = await cosmos_conversation_client.get_conversation(user_id, conversation_id)
             if not conversation:
-                logger.warning(f"Conversation {conversation_id} not found for user {user_id}.")
+                logger.warning(
+                    f"Conversation {conversation_id} not found for user {user_id}.")
                 return None
 
             # Get messages related to the conversation
@@ -365,9 +392,10 @@ class HistoryService:
 
             return messages
         except Exception as e:
-            logger.exception(f"Error retrieving conversation {conversation_id} for user {user_id}")
+            logger.exception(
+                f"Error retrieving conversation {conversation_id} for user {user_id}")
             return None
-        
+
     async def clear_messages(self, user_id: str, conversation_id: str) -> bool:
         """
         Clears all messages in a conversation while keeping the conversation itself.
@@ -391,19 +419,22 @@ class HistoryService:
                 return False
 
             if conversation["user_id"] != user_id:
-                logger.warning(f"User {user_id} does not have permission to clear messages in {conversation_id}.")
+                logger.warning(
+                    f"User {user_id} does not have permission to clear messages in {conversation_id}.")
                 return False
 
             # Delete all messages associated with the conversation
             await cosmos_conversation_client.delete_messages(conversation_id, user_id)
 
-            logger.info(f"Successfully cleared messages in conversation {conversation_id}.")
+            logger.info(
+                f"Successfully cleared messages in conversation {conversation_id}.")
             return True
 
         except Exception as e:
-            logger.exception(f"Error clearing messages for conversation {conversation_id}: {e}")
+            logger.exception(
+                f"Error clearing messages for conversation {conversation_id}: {e}")
             return False
-        
+
     async def ensure_cosmos(self):
         """
         Retrieves a list of conversations for a given user.
@@ -421,6 +452,3 @@ class HistoryService:
         except Exception as e:
             logger.exception(f"Error ensuring CosmosDB configuration: {e}")
             return False, str(e)
-
-
-

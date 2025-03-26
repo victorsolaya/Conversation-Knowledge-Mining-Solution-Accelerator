@@ -22,8 +22,12 @@ class ChatWithDataPlugin:
         self.use_ai_project_client = config.use_ai_project_client
         self.azure_ai_project_conn_string = config.azure_ai_project_conn_string
 
-    @kernel_function(name="Greeting", description="Respond to any greeting or general questions")
-    def greeting(self, input: Annotated[str, "the question"]) -> Annotated[str, "The output is a string"]:
+    @kernel_function(name="Greeting",
+                     description="Respond to any greeting or general questions")
+    def greeting(self,
+                 input: Annotated[str,
+                                  "the question"]) -> Annotated[str,
+                                                                "The output is a string"]:
         query = input
 
         try:
@@ -61,10 +65,12 @@ class ChatWithDataPlugin:
                 )
             answer = completion.choices[0].message.content
         except Exception as e:
-            answer = str(e)  # 'Information from database could not be retrieved. Please try again later.'
+            # 'Information from database could not be retrieved. Please try again later.'
+            answer = str(e)
         return answer
 
-    @kernel_function(name="ChatWithSQLDatabase", description="Given a query, get details from the database")
+    @kernel_function(name="ChatWithSQLDatabase",
+                     description="Given a query, get details from the database")
     def get_SQL_Response(
             self,
             input: Annotated[str, "the question"]
@@ -118,11 +124,13 @@ class ChatWithDataPlugin:
             answer = execute_sql_query(sql_query)
 
         except Exception as e:
-            answer = str(e)  # 'Information from database could not be retrieved. Please try again later.'
+            # 'Information from database could not be retrieved. Please try again later.'
+            answer = str(e)
         print(answer)
         return answer
 
-    @kernel_function(name="ChatWithCallTranscripts", description="given a query, get answers from search index")
+    @kernel_function(name="ChatWithCallTranscripts",
+                     description="given a query, get answers from search index")
     def get_answers_from_calltranscripts(
             self,
             question: Annotated[str, "the question"]
@@ -134,7 +142,7 @@ class ChatWithDataPlugin:
         )
 
         query = question
-        system_message = '''You are an assistant who provides an analyst with helpful information about data. 
+        system_message = '''You are an assistant who provides an analyst with helpful information about data.
         You have access to the call transcripts, call data, topics, sentiments, and key phrases.
         You can use this information to answer questions.
         If you cannot answer the question, always return - I cannot answer this question from the data available. Please rephrase or add more details.'''
@@ -163,12 +171,12 @@ class ChatWithDataPlugin:
                                 "endpoint": self.azure_ai_search_endpoint,
                                 "index_name": self.azure_ai_search_index,
                                 "semantic_configuration": "default",
-                                "query_type": "vector_simple_hybrid",  #"vector_semantic_hybrid"
+                                "query_type": "vector_simple_hybrid",  # "vector_semantic_hybrid"
                                 "fields_mapping": {
                                     "content_fields_separator": "\n",
                                     "content_fields": ["content"],
                                     "filepath_field": "chunk_id",
-                                    "title_field": "sourceurl",  #null,
+                                    "title_field": "sourceurl",  # null,
                                     "url_field": "sourceurl",
                                     "vector_fields": ["contentVector"]
                                 },
@@ -194,6 +202,6 @@ class ChatWithDataPlugin:
                 }
             )
             answer = completion.choices[0]
-        except:
+        except BaseException:
             answer = 'Details could not be retrieved. Please try again later.'
         return answer
