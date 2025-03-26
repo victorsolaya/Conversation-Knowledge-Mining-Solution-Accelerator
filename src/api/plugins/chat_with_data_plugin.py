@@ -180,7 +180,6 @@ class ChatWithDataPlugin:
                                     "url_field": "sourceurl",
                                     "vector_fields": ["contentVector"]
                                 },
-                                "semantic_configuration": 'my-semantic-config',
                                 "in_scope": "true",
                                 "role_information": system_message,
                                 # "vector_filter_mode": "preFilter", #VectorFilterMode.PRE_FILTER,

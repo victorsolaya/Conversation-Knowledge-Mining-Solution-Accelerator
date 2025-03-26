@@ -53,7 +53,7 @@ class HistoryService:
                 container_name=self.azure_cosmosdb_conversations_container,
                 enable_message_feedback=self.azure_cosmosdb_enable_feedback,
             )
-        except Exception as e:
+        except Exception:
             logger.exception("Failed to initialize CosmosDB client")
             raise
 
@@ -84,7 +84,7 @@ class HistoryService:
                 default_headers={"x-ms-useragent": user_agent},
                 azure_endpoint=endpoint,
             )
-        except Exception as e:
+        except Exception:
             logger.exception("Failed to initialize Azure OpenAI client")
             raise
 
@@ -108,8 +108,8 @@ class HistoryService:
                 max_tokens=64,
             )
             return response.choices[0].message.content
-        except Exception as e:
-            logger.error(f"Error generating title: {str(e)}")
+        except Exception:
+            logger.error("Error generating title")
             return messages[-2]["content"]
 
     async def add_conversation(self, user_id: str, request_json: dict):
@@ -143,7 +143,7 @@ class HistoryService:
                 "messages": messages, "history_metadata": {
                     "conversation_id": conversation_id}}
             return await complete_chat_request(request_body)
-        except Exception as e:
+        except Exception:
             logger.exception("Error in add_conversation")
             raise
 
@@ -255,7 +255,7 @@ class HistoryService:
             else:
                 logger.warning(f"Message ID {message_id} not found or access denied")
                 return None
-        except Exception as e:
+        except Exception:
             logger.exception(
                 f"Error updating message feedback for message_id: {message_id}")
             raise
@@ -317,7 +317,7 @@ class HistoryService:
             conversations = await cosmos_conversation_client.get_conversations(user_id, offset=offset, limit=limit)
 
             return conversations or []
-        except Exception as e:
+        except Exception:
             logger.exception(f"Error retrieving conversations for user {user_id}")
             return []
 
@@ -391,7 +391,7 @@ class HistoryService:
             ]
 
             return messages
-        except Exception as e:
+        except Exception:
             logger.exception(
                 f"Error retrieving conversation {conversation_id} for user {user_id}")
             return None

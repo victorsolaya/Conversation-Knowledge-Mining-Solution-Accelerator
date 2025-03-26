@@ -7,6 +7,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 load_dotenv()
 
+
 def create_app() -> FastAPI:
 
     app = FastAPI(title="Conversation Knowledge Mining Solution Accelerator", version="1.0.0")

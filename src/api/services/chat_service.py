@@ -187,7 +187,6 @@ class ChatService:
                     object_hook=lambda d: SimpleNamespace(**d),
                 )
                 yield json.dumps(format_stream_response(completion_chunk_obj, history_metadata, response.headers.get("apim-request-id", ""))) + "\n\n"
-        
         return generate()
 
     async def complete_chat_request(self, query, last_rag_response=None):
