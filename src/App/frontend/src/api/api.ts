@@ -71,7 +71,7 @@ export type UserInfo = {
 };
 
 export async function getUserInfo(): Promise<UserInfo[]> {
-  const response = await fetch(`${baseURL}/.auth/me`);
+  const response = await fetch(`/.auth/me`);
   if (!response.ok) {
     console.log("No identity provider found. Access to chat will be blocked.");
     return [];
