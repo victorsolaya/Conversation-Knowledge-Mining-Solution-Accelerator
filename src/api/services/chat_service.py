@@ -17,6 +17,9 @@ from common.config.config import Config
 from helpers.utils import format_stream_response
 from helpers.streaming_helper import stream_processor
 from plugins.chat_with_data_plugin import ChatWithDataPlugin
+from cachetools import TTLCache
+
+thread_cache = TTLCache(maxsize=1000, ttl=3600)
 
 # Constants
 HOST_NAME = "CKM"
@@ -82,7 +85,7 @@ class ChatService:
             logger.error(f"Error processing RAG response: {e}")
             return {"error": "Chart could not be generated from this data. Please ask a different question."}
 
-    async def stream_openai_text(self, query: str) -> StreamingResponse:
+    async def stream_openai_text(self, conversation_id:str, query: str) -> StreamingResponse:
         """
         Get a streaming text response from OpenAI.
         """
@@ -119,24 +122,26 @@ class ChatService:
                 api_version=config.azure_openai_api_version,
             )
 
-            # Create a conversation thread
-            thread_id = await agent.create_thread()
+            thread_id = thread_cache.get(conversation_id)
+            if not thread_id:
+                thread_id = await agent.create_thread()
+                thread_cache[conversation_id] = thread_id
+
             history: List[ChatMessageContent] = []
 
             # Add user message to the thread
             message = ChatMessageContent(role=AuthorRole.USER, content=query)
             await agent.add_chat_message(thread_id=thread_id, message=message)
-            history.append(message)
 
             # Get the streaming response
-            sk_response = agent.invoke_stream(thread_id=thread_id, messages=history)
+            sk_response = agent.invoke_stream(thread_id=thread_id, messages=[message])
             return StreamingResponse(stream_processor(sk_response), media_type="text/event-stream")
 
         except Exception as e:
             logger.error(f"Error in stream_openai_text: {e}", exc_info=True)
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Error streaming OpenAI text")
 
-    async def stream_chat_request(self, request_body, query_separator, query):
+    async def stream_chat_request(self, request_body, conversation_id, query):
         """
         Handles streaming chat requests.
         """
@@ -145,7 +150,7 @@ class ChatService:
         async def generate():
             assistant_content = ""
             # Call the OpenAI streaming method
-            response = await self.stream_openai_text(query)
+            response = await self.stream_openai_text(conversation_id, query)
             # Stream chunks of data
             async for chunk in response.body_iterator:
                 if isinstance(chunk, dict):

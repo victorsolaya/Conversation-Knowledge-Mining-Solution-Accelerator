@@ -54,9 +54,9 @@ async def conversation(request: Request):
         # Get the request JSON and last RAG response from the client
         request_json = await request.json()
         last_rag_response = request_json.get("last_rag_response")
+        conversation_id = request_json.get("conversation_id")
         logger.info(f"Received last_rag_response: {last_rag_response}")
 
-        query_separator = "&" if os.getenv("USE_GRAPHRAG", "false").lower() == "true" else "?"
         query = request_json.get("messages")[-1].get("content")
         is_chart_query = any(
             term in query.lower()
@@ -64,7 +64,7 @@ async def conversation(request: Request):
         )
         chat_service = ChatService()
         if not is_chart_query:
-            result = await chat_service.stream_chat_request(request_json, query_separator, query)
+            result = await chat_service.stream_chat_request(request_json, conversation_id, query)
             return StreamingResponse(result, media_type="application/json-lines")
         else:
             result = await chat_service.complete_chat_request(query, last_rag_response)
