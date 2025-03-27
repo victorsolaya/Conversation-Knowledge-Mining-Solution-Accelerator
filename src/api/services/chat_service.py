@@ -85,7 +85,7 @@ class ChatService:
             logger.error(f"Error processing RAG response: {e}")
             return {"error": "Chart could not be generated from this data. Please ask a different question."}
 
-    async def stream_openai_text(self, conversation_id:str, query: str) -> StreamingResponse:
+    async def stream_openai_text(self, conversation_id: str, query: str) -> StreamingResponse:
         """
         Get a streaming text response from OpenAI.
         """
@@ -126,8 +126,6 @@ class ChatService:
             if not thread_id:
                 thread_id = await agent.create_thread()
                 thread_cache[conversation_id] = thread_id
-
-            history: List[ChatMessageContent] = []
 
             # Add user message to the thread
             message = ChatMessageContent(role=AuthorRole.USER, content=query)
