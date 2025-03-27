@@ -3,7 +3,6 @@ import logging
 import time
 import uuid
 from types import SimpleNamespace
-from typing import List
 
 import openai
 from fastapi import HTTPException, status
