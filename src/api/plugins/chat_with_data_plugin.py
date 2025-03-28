@@ -170,7 +170,7 @@ class ChatWithDataPlugin:
                             "parameters": {
                                 "endpoint": self.azure_ai_search_endpoint,
                                 "index_name": self.azure_ai_search_index,
-                                "semantic_configuration": "default",
+                                "semantic_configuration": "my-semantic-config",
                                 "query_type": "vector_simple_hybrid",  # "vector_semantic_hybrid"
                                 "fields_mapping": {
                                     "content_fields_separator": "\n",
