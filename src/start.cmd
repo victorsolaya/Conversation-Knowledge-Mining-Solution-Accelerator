@@ -17,15 +17,15 @@ if "%errorlevel%" neq "0" (
 )
 cd ..
 
-echo Starting backend...
-start /B python api/app.py --port=8000
+echo Starting backend in a new terminal...
+start cmd /k "cd api && python app.py --port=8000"
 if "%errorlevel%" neq "0" (
     echo Failed to start backend
     exit /B %errorlevel%
 )
 
-echo Starting frontend...
-start /B cmd /c "cd App && npm start"
+echo Starting frontend in a new terminal...
+start cmd /k "cd App && npm start"
 if "%errorlevel%" neq "0" (
     echo Failed to start frontend
     exit /B %errorlevel%
