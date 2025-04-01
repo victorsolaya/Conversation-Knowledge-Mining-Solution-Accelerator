@@ -4,15 +4,8 @@ param solutionName string
 @secure()
 param appSettings object = {}
 param appServicePlanId string
-@secure()
-param azureOpenAIKey string
-@secure()
-param azureAiProjectConnString string
-@secure()
-param azureSearchAdminKey string
-// param azureOpenAIKeyName string
-// param keyVaultName string
 param userassignedIdentityId string
+param keyVaultName string
 
 var imageName = 'DOCKER|kmcontainerreg.azurecr.io/km-api:${imageTag}'
 var name = '${solutionName}-api'
@@ -91,10 +84,7 @@ module appService 'deploy_app_service.bicep' = {
     appSettings: union(
       appSettings,
       {
-        AZURE_OPENAI_API_KEY: azureOpenAIKey
         APPINSIGHTS_INSTRUMENTATIONKEY: reference(applicationInsightsId, '2015-05-01').InstrumentationKey
-        AZURE_AI_SEARCH_API_KEY: azureSearchAdminKey
-        AZURE_AI_PROJECT_CONN_STRING:azureAiProjectConnString
         REACT_APP_LAYOUT_CONFIG: reactAppLayoutConfig
       }
     )
@@ -117,6 +107,27 @@ resource role 'Microsoft.DocumentDB/databaseAccounts/sqlRoleAssignments@2022-05-
     principalId: appService.outputs.identityPrincipalId
     roleDefinitionId: contributorRoleDefinition.id
     scope: cosmos.id
+  }
+}
+
+resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
+  name: keyVaultName
+}
+
+var keyVaultSecretsOfficerId='b86a8fe4-44ce-4948-aee5-eccb2c155cd7'
+@description('The built-in role for Key Vault Secrets Officer.')
+resource keyVaultSecretsOfficerRoleDefinition 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = {
+  scope: subscription()
+  name: keyVaultSecretsOfficerId
+}
+
+resource keyVaultSecretsOfficerRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  scope: keyVault
+  name: guid(keyVault.id, keyVaultSecretsOfficerRoleDefinition.id)
+  properties: {
+    roleDefinitionId: keyVaultSecretsOfficerRoleDefinition.id
+    principalId: appService.outputs.identityPrincipalId
+    principalType: 'ServicePrincipal'
   }
 }
 

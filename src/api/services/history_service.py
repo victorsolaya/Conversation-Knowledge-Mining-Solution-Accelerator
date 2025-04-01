@@ -21,7 +21,6 @@ class HistoryService:
         self.azure_cosmosdb_database = config.azure_cosmosdb_database
         self.azure_cosmosdb_account = config.azure_cosmosdb_account
         self.azure_cosmosdb_conversations_container = config.azure_cosmosdb_conversations_container
-        self.azure_cosmosdb_account_key = config.azure_cosmosdb_account_key
         self.azure_cosmosdb_enable_feedback = config.azure_cosmosdb_enable_feedback
         self.chat_history_enabled = (
             self.use_chat_history_enabled
@@ -31,7 +30,7 @@ class HistoryService:
         )
 
         self.azure_openai_endpoint = config.azure_openai_endpoint
-        self.azure_openai_key = config.azure_openai_api_key
+        self.azure_openai_api_key = config.azure_openai_api_key
         self.azure_openai_api_version = config.azure_openai_api_version
         self.azure_openai_deployment_name = config.azure_openai_deployment_model
         self.azure_openai_resource = config.azure_openai_resource
@@ -43,12 +42,10 @@ class HistoryService:
 
         try:
             cosmos_endpoint = f"https://{self.azure_cosmosdb_account}.documents.azure.com:443/"
-            credential = DefaultAzureCredential(
-            ) if not self.azure_cosmosdb_account_key else self.azure_cosmosdb_account_key
 
             return CosmosConversationClient(
                 cosmosdb_endpoint=cosmos_endpoint,
-                credential=credential,
+                credential=DefaultAzureCredential(),
                 database_name=self.azure_cosmosdb_database,
                 container_name=self.azure_cosmosdb_conversations_container,
                 enable_message_feedback=self.azure_cosmosdb_enable_feedback,
@@ -66,7 +63,7 @@ class HistoryService:
                     "AZURE_OPENAI_ENDPOINT or AZURE_OPENAI_RESOURCE is required")
 
             endpoint = self.azure_openai_endpoint or f"https://{self.azure_openai_resource}.openai.azure.com/"
-            api_key = self.azure_openai_key
+            api_key = self.azure_openai_api_key
             ad_token_provider = None
 
             if not api_key:

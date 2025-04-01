@@ -63,7 +63,7 @@ param embeddingModel string = 'text-embedding-ada-002'
 @description('Capacity of the Embedding Model deployment')
 param embeddingDeploymentCapacity int = 80
 
-param imageTag string = 'migra'
+param imageTag string = 'latest_migra'
 
 var uniqueId = toLower(uniqueString(subscription().id, environmentName, resourceGroup().location))
 var solutionPrefix = 'km${padLeft(take(uniqueId, 12), 12, '0')}'
@@ -71,7 +71,7 @@ var resourceGroupLocation = resourceGroup().location
 // var resourceGroupName = resourceGroup().name
 
 var solutionLocation = resourceGroupLocation
-var baseUrl = 'https://raw.githubusercontent.com/microsoft/Conversation-Knowledge-Mining-Solution-Accelerator/psl-pk-dev-api-migration/'
+var baseUrl = 'https://raw.githubusercontent.com/microsoft/Conversation-Knowledge-Mining-Solution-Accelerator/main/'
 
 
 // ========== Managed Identity ========== //
@@ -195,17 +195,15 @@ module backend_docker 'deploy_backend_docker.bicep'= {
     appServicePlanId: hostingplan.outputs.name
     applicationInsightsId: aifoundry.outputs.applicationInsightsId
     solutionName: solutionPrefix
-    azureOpenAIKey:keyVault.getSecret('AZURE-OPENAI-KEY')
-    azureAiProjectConnString:keyVault.getSecret('AZURE-AI-PROJECT-CONN-STRING')
-    azureSearchAdminKey:keyVault.getSecret('AZURE-SEARCH-KEY')
     userassignedIdentityId: managedIdentityModule.outputs.managedIdentityBackendAppOutput.id
-    // azureOpenAIKeyName:aifoundry.outputs.azureOpenAIKeyName
-    // keyVaultName: kvault.outputs.keyvaultName
+    keyVaultName:aifoundry.outputs.keyvaultName
     appSettings:{
         AZURE_OPEN_AI_DEPLOYMENT_MODEL:gptModelName
         AZURE_OPEN_AI_ENDPOINT:aifoundry.outputs.aiServicesTarget
         AZURE_OPENAI_API_VERSION: azureOpenAIApiVersion
         AZURE_OPENAI_RESOURCE:aifoundry.outputs.aiServicesName
+        AZURE_OPENAI_API_KEY:'AZURE-OPENAI-KEY'
+        AZURE_KEY_VAULT_URL: kvault.outputs.keyvaultUri
         USE_CHAT_HISTORY_ENABLED:'True'
         AZURE_COSMOSDB_ACCOUNT: cosmosDBModule.outputs.cosmosAccountName
         AZURE_COSMOSDB_CONVERSATIONS_CONTAINER: cosmosDBModule.outputs.cosmosContainerName
@@ -214,11 +212,14 @@ module backend_docker 'deploy_backend_docker.bicep'= {
         SQLDB_DATABASE:sqlDBModule.outputs.sqlDbName
         SQLDB_SERVER: sqlDBModule.outputs.sqlServerName
         SQLDB_USERNAME: sqlDBModule.outputs.sqlDbUser
+        SQLDB_USER_MID: managedIdentityModule.outputs.managedIdentityBackendAppOutput.clientId
+
         OPENAI_API_VERSION: azureOpenAIApiVersion
         AZURE_AI_SEARCH_ENDPOINT: aifoundry.outputs.aiSearchTarget
         AZURE_AI_SEARCH_INDEX: 'call_transcripts_index'
-        SQLDB_USER_MID: managedIdentityModule.outputs.managedIdentityBackendAppOutput.clientId
+        AZURE_AI_SEARCH_API_KEY:'AZURE-SEARCH-KEY'
         USE_AI_PROJECT_CLIENT:'False'
+        AZURE_AI_PROJECT_CONN_STRING:'AZURE-AI-PROJECT-CONN-STRING'
         DISPLAY_CHART_DEFAULT:'True'
       }
   }
