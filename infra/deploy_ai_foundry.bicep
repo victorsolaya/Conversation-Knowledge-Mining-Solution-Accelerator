@@ -701,3 +701,5 @@ output aiProjectName string = aiHubProject.name
 output applicationInsightsId string = applicationInsights.id
 output logAnalyticsWorkspaceResourceName string = logAnalytics.name
 output storageAccountName string = storageNameCleaned
+
+output azureOpenAIKeyName string = azureOpenAIApiKeyEntry.name
