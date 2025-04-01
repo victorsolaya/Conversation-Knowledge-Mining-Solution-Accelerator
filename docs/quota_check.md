@@ -4,7 +4,7 @@ Before deploying the accelerator, **ensure sufficient quota availability** for t
 
 ### 📌 Default Models & Capacities:
 ```
-gpt-4o:30, gpt-4o-mini:30, gpt-4:30, text-embedding-ada-002:80,
+gpt-4o:30, gpt-4o-mini:30, gpt-4:30, text-embedding-ada-002:80
 ```
 ### 📌 Default Regions:
 ```
