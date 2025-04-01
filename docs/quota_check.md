@@ -1,6 +1,6 @@
 ## Check Quota Availability Before Deployment
 
-Before deploying the accelerator, **ensure sufficient quota availability** for the required model.  \
+Before deploying the accelerator, **ensure sufficient quota availability** for the required model.
 
 ### 📌 Default Models & Capacities:
 ```
