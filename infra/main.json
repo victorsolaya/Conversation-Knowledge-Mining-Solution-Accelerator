@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.33.93.31351",
-      "templateHash": "13599865329986757489"
+      "version": "0.34.44.8038",
+      "templateHash": "8943354378090320226"
     }
   },
   "parameters": {
@@ -92,7 +92,7 @@
     },
     "imageTag": {
       "type": "string",
-      "defaultValue": "latest"
+      "defaultValue": "migra"
     }
   },
   "variables": {
@@ -101,7 +101,7 @@
     "solutionPrefix": "[format('km{0}', padLeft(take(variables('uniqueId'), 12), 12, '0'))]",
     "resourceGroupLocation": "[resourceGroup().location]",
     "solutionLocation": "[variables('resourceGroupLocation')]",
-    "baseUrl": "https://raw.githubusercontent.com/microsoft/Conversation-Knowledge-Mining-Solution-Accelerator/main/"
+    "baseUrl": "https://raw.githubusercontent.com/microsoft/Conversation-Knowledge-Mining-Solution-Accelerator/psl-pk-dev-api-migration/"
   },
   "resources": [
     {
@@ -128,8 +128,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.33.93.31351",
-              "templateHash": "8800226751863900201"
+              "version": "0.34.44.8038",
+              "templateHash": "2941318787429287286"
             }
           },
           "parameters": {
@@ -182,17 +182,7 @@
             {
               "type": "Microsoft.ManagedIdentity/userAssignedIdentities",
               "apiVersion": "2023-01-31",
-              "name": "[format('{0}-charts-fn-mi', parameters('solutionName'))]",
-              "location": "[parameters('solutionLocation')]",
-              "tags": {
-                "app": "[parameters('solutionName')]",
-                "location": "[parameters('solutionLocation')]"
-              }
-            },
-            {
-              "type": "Microsoft.ManagedIdentity/userAssignedIdentities",
-              "apiVersion": "2023-01-31",
-              "name": "[format('{0}-rag-fn-mi', parameters('solutionName'))]",
+              "name": "[format('{0}-backend-app-mi', parameters('solutionName'))]",
               "location": "[parameters('solutionLocation')]",
               "tags": {
                 "app": "[parameters('solutionName')]",
@@ -210,22 +200,13 @@
                 "name": "[parameters('miName')]"
               }
             },
-            "managedIdentityChartsOutput": {
+            "managedIdentityBackendAppOutput": {
               "type": "object",
               "value": {
-                "id": "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('{0}-charts-fn-mi', parameters('solutionName')))]",
-                "objectId": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('{0}-charts-fn-mi', parameters('solutionName'))), '2023-01-31').principalId]",
-                "clientId": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('{0}-charts-fn-mi', parameters('solutionName'))), '2023-01-31').clientId]",
-                "name": "[format('{0}-charts-fn-mi', parameters('solutionName'))]"
-              }
-            },
-            "managedIdentityRagOutput": {
-              "type": "object",
-              "value": {
-                "id": "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('{0}-rag-fn-mi', parameters('solutionName')))]",
-                "objectId": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('{0}-rag-fn-mi', parameters('solutionName'))), '2023-01-31').principalId]",
-                "clientId": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('{0}-rag-fn-mi', parameters('solutionName'))), '2023-01-31').clientId]",
-                "name": "[format('{0}-rag-fn-mi', parameters('solutionName'))]"
+                "id": "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('{0}-backend-app-mi', parameters('solutionName')))]",
+                "objectId": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('{0}-backend-app-mi', parameters('solutionName'))), '2023-01-31').principalId]",
+                "clientId": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('{0}-backend-app-mi', parameters('solutionName'))), '2023-01-31').clientId]",
+                "name": "[format('{0}-backend-app-mi', parameters('solutionName'))]"
               }
             }
           }
@@ -259,8 +240,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.33.93.31351",
-              "templateHash": "4317523167912536944"
+              "version": "0.34.44.8038",
+              "templateHash": "11024517080548002305"
             }
           },
           "parameters": {
@@ -402,8 +383,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.33.93.31351",
-              "templateHash": "319562905704482740"
+              "version": "0.34.44.8038",
+              "templateHash": "7008311746261758591"
             }
           },
           "parameters": {
@@ -1054,6 +1035,10 @@
             "storageAccountName": {
               "type": "string",
               "value": "[variables('storageNameCleaned')]"
+            },
+            "azureOpenAIKeyName": {
+              "type": "string",
+              "value": "AZURE-OPENAI-KEY"
             }
           }
         }
@@ -1093,8 +1078,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.33.93.31351",
-              "templateHash": "14620142974675285735"
+              "version": "0.34.44.8038",
+              "templateHash": "17679659647877785824"
             }
           },
           "parameters": {
@@ -1277,8 +1262,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.33.93.31351",
-              "templateHash": "12347068855899407617"
+              "version": "0.34.44.8038",
+              "templateHash": "573049773979289587"
             }
           },
           "parameters": {
@@ -1489,8 +1474,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.33.93.31351",
-              "templateHash": "16605082293199555822"
+              "version": "0.34.44.8038",
+              "templateHash": "12523803244328608887"
             }
           },
           "parameters": {
@@ -1689,18 +1674,11 @@
           "sqlUsers": {
             "value": [
               {
-                "principalId": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_managed_identity'), '2022-09-01').outputs.managedIdentityChartsOutput.value.clientId]",
-                "principalName": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_managed_identity'), '2022-09-01').outputs.managedIdentityChartsOutput.value.name]",
+                "principalId": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_managed_identity'), '2022-09-01').outputs.managedIdentityBackendAppOutput.value.clientId]",
+                "principalName": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_managed_identity'), '2022-09-01').outputs.managedIdentityBackendAppOutput.value.name]",
                 "databaseRoles": [
                   "db_datareader",
                   "db_datawriter"
-                ]
-              },
-              {
-                "principalId": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_managed_identity'), '2022-09-01').outputs.managedIdentityRagOutput.value.clientId]",
-                "principalName": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_managed_identity'), '2022-09-01').outputs.managedIdentityRagOutput.value.name]",
-                "databaseRoles": [
-                  "db_datareader"
                 ]
               }
             ]
@@ -1712,8 +1690,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.33.93.31351",
-              "templateHash": "7497154856203442649"
+              "version": "0.34.44.8038",
+              "templateHash": "6489935757234589237"
             }
           },
           "parameters": {
@@ -1838,7 +1816,7 @@
                       "command": [
                         "/bin/sh",
                         "-c",
-                        "[format('mkdir -p /scripts && apk add --no-cache curl bash jq py3-pip gcc musl-dev libffi-dev openssl-dev python3-dev && pip install --upgrade azure-cli && apk add --no-cache --virtual .build-deps build-base unixodbc-dev && curl -s -o msodbcsql18_18.4.1.1-1_amd64.apk https://download.microsoft.com/download/7/6/d/76de322a-d860-4894-9945-f0cc5d6a45f8/msodbcsql18_18.4.1.1-1_amd64.apk && curl -s -o mssql-tools18_18.4.1.1-1_amd64.apk https://download.microsoft.com/download/7/6/d/76de322a-d860-4894-9945-f0cc5d6a45f8/mssql-tools18_18.4.1.1-1_amd64.apk && apk add --allow-untrusted msodbcsql18_18.4.1.1-1_amd64.apk && apk add --allow-untrusted mssql-tools18_18.4.1.1-1_amd64.apk && curl -s -o /scripts/copy_kb_files.sh {0} && chmod +x /scripts/copy_kb_files.sh && sh -x /scripts/copy_kb_files.sh {1} {2} {3} {4} && curl -s -o /scripts/run_create_index_scripts.sh {5} && chmod +x /scripts/run_create_index_scripts.sh && sh -x /scripts/run_create_index_scripts.sh {6} {7} {8} && apk add --no-cache ca-certificates less ncurses-terminfo-base krb5-libs libgcc libintl libssl3 libstdc++ tzdata userspace-rcu zlib icu-libs curl && apk -X https://dl-cdn.alpinelinux.org/alpine/edge/main add --no-cache lttng-ust openssh-client && curl -L https://github.com/PowerShell/PowerShell/releases/download/v7.5.0/powershell-7.5.0-linux-musl-x64.tar.gz -o /tmp/powershell.tar.gz && mkdir -p /opt/microsoft/powershell/7 && tar zxf /tmp/powershell.tar.gz -C /opt/microsoft/powershell/7 && chmod +x /opt/microsoft/powershell/7/pwsh && ln -s /opt/microsoft/powershell/7/pwsh /usr/bin/pwsh && curl -s -o /scripts/create-sql-user-and-role.ps1 {9} && chmod +x /scripts/create-sql-user-and-role.ps1 && pwsh -File /scripts/create-sql-user-and-role.ps1 -SqlServerName {10} -SqlDatabaseName {11} -ClientId {12} -DisplayName {13} -ManagedIdentityClientId {14} -DatabaseRole {15} && pwsh -File /scripts/create-sql-user-and-role.ps1 -SqlServerName {16} -SqlDatabaseName {17} -ClientId {18} -DisplayName {19} -ManagedIdentityClientId {20} -DatabaseRole {21} && pwsh -File /scripts/create-sql-user-and-role.ps1 -SqlServerName {22} -SqlDatabaseName {23} -ClientId {24} -DisplayName {25} -ManagedIdentityClientId {26} -DatabaseRole {27} && az login --identity --client-id {28} && az containerapp update --name {29} --resource-group {30} --min-replicas 0 --cpu 0.25 --memory 0.5Gi && az containerapp revision deactivate -g {31} --revision $(az containerapp revision list -n {32} -g {33} --query \"[0].name\" -o tsv) && echo \"Container app setup completed successfully.\"', parameters('setupCopyKbFiles'), parameters('storageAccountName'), parameters('containerName'), parameters('baseUrl'), parameters('managedIdentityClientId'), parameters('setupCreateIndexScriptsUrl'), parameters('baseUrl'), parameters('keyVaultName'), parameters('managedIdentityClientId'), parameters('createSqlUserAndRoleScriptsUrl'), parameters('sqlServerName'), parameters('sqlDbName'), parameters('sqlUsers')[0].principalId, parameters('sqlUsers')[0].principalName, parameters('managedIdentityClientId'), parameters('sqlUsers')[0].databaseRoles[0], parameters('sqlServerName'), parameters('sqlDbName'), parameters('sqlUsers')[0].principalId, parameters('sqlUsers')[0].principalName, parameters('managedIdentityClientId'), parameters('sqlUsers')[0].databaseRoles[1], parameters('sqlServerName'), parameters('sqlDbName'), parameters('sqlUsers')[1].principalId, parameters('sqlUsers')[1].principalName, parameters('managedIdentityClientId'), parameters('sqlUsers')[1].databaseRoles[0], parameters('managedIdentityClientId'), parameters('containerAppName'), variables('resourceGroupName'), variables('resourceGroupName'), parameters('containerAppName'), variables('resourceGroupName'))]"
+                        "[format('mkdir -p /scripts && apk add --no-cache curl bash jq py3-pip gcc musl-dev libffi-dev openssl-dev python3-dev && pip install --upgrade azure-cli && apk add --no-cache --virtual .build-deps build-base unixodbc-dev && curl -s -o msodbcsql18_18.4.1.1-1_amd64.apk https://download.microsoft.com/download/7/6/d/76de322a-d860-4894-9945-f0cc5d6a45f8/msodbcsql18_18.4.1.1-1_amd64.apk && curl -s -o mssql-tools18_18.4.1.1-1_amd64.apk https://download.microsoft.com/download/7/6/d/76de322a-d860-4894-9945-f0cc5d6a45f8/mssql-tools18_18.4.1.1-1_amd64.apk && apk add --allow-untrusted msodbcsql18_18.4.1.1-1_amd64.apk && apk add --allow-untrusted mssql-tools18_18.4.1.1-1_amd64.apk && curl -s -o /scripts/copy_kb_files.sh {0} && chmod +x /scripts/copy_kb_files.sh && sh -x /scripts/copy_kb_files.sh {1} {2} {3} {4} && curl -s -o /scripts/run_create_index_scripts.sh {5} && chmod +x /scripts/run_create_index_scripts.sh && sh -x /scripts/run_create_index_scripts.sh {6} {7} {8} && apk add --no-cache ca-certificates less ncurses-terminfo-base krb5-libs libgcc libintl libssl3 libstdc++ tzdata userspace-rcu zlib icu-libs curl && apk -X https://dl-cdn.alpinelinux.org/alpine/edge/main add --no-cache lttng-ust openssh-client && curl -L https://github.com/PowerShell/PowerShell/releases/download/v7.5.0/powershell-7.5.0-linux-musl-x64.tar.gz -o /tmp/powershell.tar.gz && mkdir -p /opt/microsoft/powershell/7 && tar zxf /tmp/powershell.tar.gz -C /opt/microsoft/powershell/7 && chmod +x /opt/microsoft/powershell/7/pwsh && ln -s /opt/microsoft/powershell/7/pwsh /usr/bin/pwsh && curl -s -o /scripts/create-sql-user-and-role.ps1 {9} && chmod +x /scripts/create-sql-user-and-role.ps1 && pwsh -File /scripts/create-sql-user-and-role.ps1 -SqlServerName {10} -SqlDatabaseName {11} -ClientId {12} -DisplayName {13} -ManagedIdentityClientId {14} -DatabaseRole {15} && pwsh -File /scripts/create-sql-user-and-role.ps1 -SqlServerName {16} -SqlDatabaseName {17} -ClientId {18} -DisplayName {19} -ManagedIdentityClientId {20} -DatabaseRole {21} && az login --identity --client-id {22} && az containerapp update --name {23} --resource-group {24} --min-replicas 0 --cpu 0.25 --memory 0.5Gi && az containerapp revision deactivate -g {25} --revision $(az containerapp revision list -n {26} -g {27} --query \"[0].name\" -o tsv) && echo \"Container app setup completed successfully.\"', parameters('setupCopyKbFiles'), parameters('storageAccountName'), parameters('containerName'), parameters('baseUrl'), parameters('managedIdentityClientId'), parameters('setupCreateIndexScriptsUrl'), parameters('baseUrl'), parameters('keyVaultName'), parameters('managedIdentityClientId'), parameters('createSqlUserAndRoleScriptsUrl'), parameters('sqlServerName'), parameters('sqlDbName'), parameters('sqlUsers')[0].principalId, parameters('sqlUsers')[0].principalName, parameters('managedIdentityClientId'), parameters('sqlUsers')[0].databaseRoles[0], parameters('sqlServerName'), parameters('sqlDbName'), parameters('sqlUsers')[0].principalId, parameters('sqlUsers')[0].principalName, parameters('managedIdentityClientId'), parameters('sqlUsers')[0].databaseRoles[1], parameters('managedIdentityClientId'), parameters('containerAppName'), variables('resourceGroupName'), variables('resourceGroupName'), parameters('containerAppName'), variables('resourceGroupName'))]"
                       ],
                       "env": [
                         {
@@ -1875,513 +1853,7 @@
     {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2022-09-01",
-      "name": "deploy_azure_function_charts",
-      "properties": {
-        "expressionEvaluationOptions": {
-          "scope": "inner"
-        },
-        "mode": "Incremental",
-        "parameters": {
-          "imageTag": {
-            "value": "[parameters('imageTag')]"
-          },
-          "solutionName": {
-            "value": "[variables('solutionPrefix')]"
-          },
-          "solutionLocation": {
-            "value": "[variables('solutionLocation')]"
-          },
-          "sqlServerName": {
-            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_sql_db'), '2022-09-01').outputs.sqlServerName.value]"
-          },
-          "sqlDbName": {
-            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_sql_db'), '2022-09-01').outputs.sqlDbName.value]"
-          },
-          "sqlDbUser": {
-            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_sql_db'), '2022-09-01').outputs.sqlDbUser.value]"
-          },
-          "sqlDbPwd": {
-            "reference": {
-              "keyVault": {
-                "id": "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.KeyVault/vaults', reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_ai_foundry'), '2022-09-01').outputs.keyvaultName.value)]"
-              },
-              "secretName": "SQLDB-PASSWORD"
-            }
-          },
-          "storageAccountName": {
-            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_ai_foundry'), '2022-09-01').outputs.storageAccountName.value]"
-          },
-          "userassignedIdentityId": {
-            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_managed_identity'), '2022-09-01').outputs.managedIdentityChartsOutput.value.id]"
-          },
-          "userassignedIdentityClientId": {
-            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_managed_identity'), '2022-09-01').outputs.managedIdentityChartsOutput.value.clientId]"
-          }
-        },
-        "template": {
-          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
-          "contentVersion": "1.0.0.0",
-          "metadata": {
-            "_generator": {
-              "name": "bicep",
-              "version": "0.33.93.31351",
-              "templateHash": "6738503368906728468"
-            }
-          },
-          "parameters": {
-            "solutionName": {
-              "type": "string",
-              "metadata": {
-                "description": "Specifies the location for resources."
-              }
-            },
-            "solutionLocation": {
-              "type": "string"
-            },
-            "sqlServerName": {
-              "type": "string"
-            },
-            "sqlDbName": {
-              "type": "string"
-            },
-            "sqlDbUser": {
-              "type": "string"
-            },
-            "sqlDbPwd": {
-              "type": "securestring"
-            },
-            "imageTag": {
-              "type": "string"
-            },
-            "storageAccountName": {
-              "type": "string"
-            },
-            "userassignedIdentityId": {
-              "type": "string"
-            },
-            "userassignedIdentityClientId": {
-              "type": "string"
-            }
-          },
-          "variables": {
-            "functionAppName": "[format('{0}-charts-fn', parameters('solutionName'))]",
-            "dockerImage": "[format('DOCKER|kmcontainerreg.azurecr.io/km-charts-function:{0}', parameters('imageTag'))]",
-            "environmentName": "[format('{0}-charts-fn-env', parameters('solutionName'))]"
-          },
-          "resources": [
-            {
-              "type": "Microsoft.App/managedEnvironments",
-              "apiVersion": "2024-03-01",
-              "name": "[variables('environmentName')]",
-              "location": "[parameters('solutionLocation')]",
-              "properties": {
-                "zoneRedundant": false,
-                "kedaConfiguration": {},
-                "daprConfiguration": {},
-                "customDomainConfiguration": {},
-                "workloadProfiles": [
-                  {
-                    "workloadProfileType": "Consumption",
-                    "name": "Consumption"
-                  }
-                ],
-                "peerAuthentication": {
-                  "mtls": {
-                    "enabled": false
-                  }
-                },
-                "peerTrafficConfiguration": {
-                  "encryption": {
-                    "enabled": false
-                  }
-                }
-              }
-            },
-            {
-              "type": "Microsoft.Web/sites",
-              "apiVersion": "2023-12-01",
-              "name": "[variables('functionAppName')]",
-              "location": "[parameters('solutionLocation')]",
-              "kind": "functionapp,linux,container,azurecontainerapps",
-              "identity": {
-                "type": "SystemAssigned, UserAssigned",
-                "userAssignedIdentities": {
-                  "[format('{0}', parameters('userassignedIdentityId'))]": {}
-                }
-              },
-              "properties": {
-                "siteConfig": {
-                  "appSettings": [
-                    {
-                      "name": "AzureWebJobsStorage__accountname",
-                      "value": "[parameters('storageAccountName')]"
-                    },
-                    {
-                      "name": "SQLDB_DATABASE",
-                      "value": "[parameters('sqlDbName')]"
-                    },
-                    {
-                      "name": "SQLDB_PASSWORD",
-                      "value": "[parameters('sqlDbPwd')]"
-                    },
-                    {
-                      "name": "SQLDB_SERVER",
-                      "value": "[parameters('sqlServerName')]"
-                    },
-                    {
-                      "name": "SQLDB_USERNAME",
-                      "value": "[parameters('sqlDbUser')]"
-                    },
-                    {
-                      "name": "SQLDB_USER_MID",
-                      "value": "[parameters('userassignedIdentityClientId')]"
-                    }
-                  ],
-                  "linuxFxVersion": "[variables('dockerImage')]",
-                  "functionAppScaleLimit": 10,
-                  "minimumElasticInstanceCount": 0
-                },
-                "managedEnvironmentId": "[resourceId('Microsoft.App/managedEnvironments', variables('environmentName'))]",
-                "workloadProfileName": "Consumption",
-                "resourceConfig": {
-                  "cpu": 1,
-                  "memory": "2Gi"
-                },
-                "storageAccountRequired": false
-              },
-              "dependsOn": [
-                "[resourceId('Microsoft.App/managedEnvironments', variables('environmentName'))]"
-              ]
-            }
-          ]
-        }
-      },
-      "dependsOn": [
-        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_ai_foundry')]",
-        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_managed_identity')]",
-        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_sql_db')]"
-      ]
-    },
-    {
-      "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2022-09-01",
-      "name": "deploy_azure_function_rag",
-      "properties": {
-        "expressionEvaluationOptions": {
-          "scope": "inner"
-        },
-        "mode": "Incremental",
-        "parameters": {
-          "imageTag": {
-            "value": "[parameters('imageTag')]"
-          },
-          "solutionName": {
-            "value": "[variables('solutionPrefix')]"
-          },
-          "solutionLocation": {
-            "value": "[variables('solutionLocation')]"
-          },
-          "azureOpenAIApiKey": {
-            "reference": {
-              "keyVault": {
-                "id": "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.KeyVault/vaults', reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_ai_foundry'), '2022-09-01').outputs.keyvaultName.value)]"
-              },
-              "secretName": "AZURE-OPENAI-KEY"
-            }
-          },
-          "azureOpenAIEndpoint": {
-            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_ai_foundry'), '2022-09-01').outputs.aiServicesTarget.value]"
-          },
-          "azureOpenAIDeploymentModel": {
-            "value": "[parameters('gptModelName')]"
-          },
-          "azureSearchAdminKey": {
-            "reference": {
-              "keyVault": {
-                "id": "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.KeyVault/vaults', reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_ai_foundry'), '2022-09-01').outputs.keyvaultName.value)]"
-              },
-              "secretName": "AZURE-SEARCH-KEY"
-            }
-          },
-          "azureSearchServiceEndpoint": {
-            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_ai_foundry'), '2022-09-01').outputs.aiSearchTarget.value]"
-          },
-          "azureOpenAIApiVersion": {
-            "value": "[variables('azureOpenAIApiVersion')]"
-          },
-          "azureAiProjectConnString": {
-            "reference": {
-              "keyVault": {
-                "id": "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.KeyVault/vaults', reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_ai_foundry'), '2022-09-01').outputs.keyvaultName.value)]"
-              },
-              "secretName": "AZURE-AI-PROJECT-CONN-STRING"
-            }
-          },
-          "azureSearchIndex": {
-            "value": "call_transcripts_index"
-          },
-          "sqlServerName": {
-            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_sql_db'), '2022-09-01').outputs.sqlServerName.value]"
-          },
-          "sqlDbName": {
-            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_sql_db'), '2022-09-01').outputs.sqlDbName.value]"
-          },
-          "sqlDbUser": {
-            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_sql_db'), '2022-09-01').outputs.sqlDbUser.value]"
-          },
-          "sqlDbPwd": {
-            "reference": {
-              "keyVault": {
-                "id": "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.KeyVault/vaults', reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_ai_foundry'), '2022-09-01').outputs.keyvaultName.value)]"
-              },
-              "secretName": "SQLDB-PASSWORD"
-            }
-          },
-          "aiProjectName": {
-            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_ai_foundry'), '2022-09-01').outputs.aiProjectName.value]"
-          },
-          "storageAccountName": {
-            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_ai_foundry'), '2022-09-01').outputs.storageAccountName.value]"
-          },
-          "userassignedIdentityId": {
-            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_managed_identity'), '2022-09-01').outputs.managedIdentityRagOutput.value.id]"
-          },
-          "userassignedIdentityClientId": {
-            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_managed_identity'), '2022-09-01').outputs.managedIdentityRagOutput.value.clientId]"
-          }
-        },
-        "template": {
-          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
-          "contentVersion": "1.0.0.0",
-          "metadata": {
-            "_generator": {
-              "name": "bicep",
-              "version": "0.33.93.31351",
-              "templateHash": "13542795043218377011"
-            }
-          },
-          "parameters": {
-            "solutionName": {
-              "type": "string",
-              "metadata": {
-                "description": "Specifies the location for resources."
-              }
-            },
-            "solutionLocation": {
-              "type": "string"
-            },
-            "azureOpenAIApiKey": {
-              "type": "securestring"
-            },
-            "azureOpenAIApiVersion": {
-              "type": "string"
-            },
-            "azureOpenAIEndpoint": {
-              "type": "string"
-            },
-            "azureOpenAIDeploymentModel": {
-              "type": "string"
-            },
-            "azureAiProjectConnString": {
-              "type": "securestring"
-            },
-            "aiProjectName": {
-              "type": "string"
-            },
-            "azureSearchAdminKey": {
-              "type": "securestring"
-            },
-            "azureSearchServiceEndpoint": {
-              "type": "string"
-            },
-            "azureSearchIndex": {
-              "type": "string"
-            },
-            "sqlServerName": {
-              "type": "string"
-            },
-            "sqlDbName": {
-              "type": "string"
-            },
-            "sqlDbUser": {
-              "type": "string"
-            },
-            "sqlDbPwd": {
-              "type": "securestring"
-            },
-            "imageTag": {
-              "type": "string"
-            },
-            "storageAccountName": {
-              "type": "string"
-            },
-            "userassignedIdentityId": {
-              "type": "string"
-            },
-            "userassignedIdentityClientId": {
-              "type": "string"
-            }
-          },
-          "variables": {
-            "functionAppName": "[format('{0}-rag-fn', parameters('solutionName'))]",
-            "dockerImage": "[format('DOCKER|kmcontainerreg.azurecr.io/km-rag-function:{0}', parameters('imageTag'))]",
-            "environmentName": "[format('{0}-rag-fn-env', parameters('solutionName'))]"
-          },
-          "resources": [
-            {
-              "type": "Microsoft.App/managedEnvironments",
-              "apiVersion": "2024-03-01",
-              "name": "[variables('environmentName')]",
-              "location": "[parameters('solutionLocation')]",
-              "properties": {
-                "zoneRedundant": false,
-                "kedaConfiguration": {},
-                "daprConfiguration": {},
-                "customDomainConfiguration": {},
-                "workloadProfiles": [
-                  {
-                    "workloadProfileType": "Consumption",
-                    "name": "Consumption"
-                  }
-                ],
-                "peerAuthentication": {
-                  "mtls": {
-                    "enabled": false
-                  }
-                },
-                "peerTrafficConfiguration": {
-                  "encryption": {
-                    "enabled": false
-                  }
-                }
-              }
-            },
-            {
-              "type": "Microsoft.Web/sites",
-              "apiVersion": "2023-12-01",
-              "name": "[variables('functionAppName')]",
-              "location": "[parameters('solutionLocation')]",
-              "kind": "functionapp,linux,container,azurecontainerapps",
-              "identity": {
-                "type": "SystemAssigned, UserAssigned",
-                "userAssignedIdentities": {
-                  "[format('{0}', parameters('userassignedIdentityId'))]": {}
-                }
-              },
-              "properties": {
-                "siteConfig": {
-                  "appSettings": [
-                    {
-                      "name": "AzureWebJobsStorage__accountname",
-                      "value": "[parameters('storageAccountName')]"
-                    },
-                    {
-                      "name": "PYTHON_ENABLE_INIT_INDEXING",
-                      "value": "1"
-                    },
-                    {
-                      "name": "PYTHON_ISOLATE_WORKER_DEPENDENCIES",
-                      "value": "1"
-                    },
-                    {
-                      "name": "SQLDB_DATABASE",
-                      "value": "[parameters('sqlDbName')]"
-                    },
-                    {
-                      "name": "SQLDB_PASSWORD",
-                      "value": "[parameters('sqlDbPwd')]"
-                    },
-                    {
-                      "name": "SQLDB_SERVER",
-                      "value": "[parameters('sqlServerName')]"
-                    },
-                    {
-                      "name": "SQLDB_USERNAME",
-                      "value": "[parameters('sqlDbUser')]"
-                    },
-                    {
-                      "name": "AZURE_OPEN_AI_ENDPOINT",
-                      "value": "[parameters('azureOpenAIEndpoint')]"
-                    },
-                    {
-                      "name": "AZURE_OPEN_AI_API_KEY",
-                      "value": "[parameters('azureOpenAIApiKey')]"
-                    },
-                    {
-                      "name": "AZURE_AI_PROJECT_CONN_STRING",
-                      "value": "[parameters('azureAiProjectConnString')]"
-                    },
-                    {
-                      "name": "OPENAI_API_VERSION",
-                      "value": "[parameters('azureOpenAIApiVersion')]"
-                    },
-                    {
-                      "name": "AZURE_OPEN_AI_DEPLOYMENT_MODEL",
-                      "value": "[parameters('azureOpenAIDeploymentModel')]"
-                    },
-                    {
-                      "name": "AZURE_AI_SEARCH_ENDPOINT",
-                      "value": "[parameters('azureSearchServiceEndpoint')]"
-                    },
-                    {
-                      "name": "AZURE_AI_SEARCH_API_KEY",
-                      "value": "[parameters('azureSearchAdminKey')]"
-                    },
-                    {
-                      "name": "AZURE_AI_SEARCH_INDEX",
-                      "value": "[parameters('azureSearchIndex')]"
-                    },
-                    {
-                      "name": "SQLDB_USER_MID",
-                      "value": "[parameters('userassignedIdentityClientId')]"
-                    },
-                    {
-                      "name": "USE_AI_PROJECT_CLIENT",
-                      "value": "False"
-                    }
-                  ],
-                  "linuxFxVersion": "[variables('dockerImage')]",
-                  "functionAppScaleLimit": 10,
-                  "minimumElasticInstanceCount": 0
-                },
-                "managedEnvironmentId": "[resourceId('Microsoft.App/managedEnvironments', variables('environmentName'))]",
-                "workloadProfileName": "Consumption",
-                "resourceConfig": {
-                  "cpu": 1,
-                  "memory": "2Gi"
-                },
-                "storageAccountRequired": false
-              },
-              "dependsOn": [
-                "[resourceId('Microsoft.App/managedEnvironments', variables('environmentName'))]"
-              ]
-            },
-            {
-              "type": "Microsoft.Authorization/roleAssignments",
-              "apiVersion": "2022-04-01",
-              "scope": "[format('Microsoft.MachineLearningServices/workspaces/{0}', parameters('aiProjectName'))]",
-              "name": "[guid(resourceId('Microsoft.Web/sites', variables('functionAppName')), resourceId('Microsoft.MachineLearningServices/workspaces', parameters('aiProjectName')), resourceId('Microsoft.Authorization/roleDefinitions', '64702f94-c441-49e6-a78b-ef80e0188fee'))]",
-              "properties": {
-                "roleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', '64702f94-c441-49e6-a78b-ef80e0188fee')]",
-                "principalId": "[reference(resourceId('Microsoft.Web/sites', variables('functionAppName')), '2023-12-01', 'full').identity.principalId]"
-              },
-              "dependsOn": [
-                "[resourceId('Microsoft.Web/sites', variables('functionAppName'))]"
-              ]
-            }
-          ]
-        }
-      },
-      "dependsOn": [
-        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_ai_foundry')]",
-        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_managed_identity')]",
-        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_sql_db')]"
-      ]
-    },
-    {
-      "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2022-09-01",
-      "name": "deploy_azure_function_urls",
+      "name": "deploy_app_service_plan",
       "properties": {
         "expressionEvaluationOptions": {
           "scope": "inner"
@@ -2398,133 +1870,14 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.33.93.31351",
-              "templateHash": "18414416216987649125"
-            }
+              "version": "0.34.44.8038",
+              "templateHash": "18192780555217274649"
+            },
+            "description": "Creates an Azure App Service plan."
           },
           "parameters": {
             "solutionName": {
-              "type": "string",
-              "metadata": {
-                "description": "Specifies the location for resources."
-              }
-            }
-          },
-          "variables": {
-            "chartsfunctionAppName": "[format('{0}-charts-fn', parameters('solutionName'))]",
-            "chartsfunctionName": "get_metrics",
-            "ragfunctionAppName": "[format('{0}-rag-fn', parameters('solutionName'))]",
-            "ragfunctionName": "stream_openai_text",
-            "graphrag_function_url": "TBD"
-          },
-          "resources": [],
-          "outputs": {
-            "functionURLsOutput": {
-              "type": "object",
-              "value": {
-                "charts_function_url": "[format('https://{0}/api/{1}?data_type=charts', reference(resourceId('Microsoft.Web/sites', variables('chartsfunctionAppName')), '2021-02-01').defaultHostName, variables('chartsfunctionName'))]",
-                "filters_function_url": "[format('https://{0}/api/{1}?data_type=filters', reference(resourceId('Microsoft.Web/sites', variables('chartsfunctionAppName')), '2021-02-01').defaultHostName, variables('chartsfunctionName'))]",
-                "rag_function_url": "[format('https://{0}/api/{1}', reference(resourceId('Microsoft.Web/sites', variables('ragfunctionAppName')), '2021-02-01').defaultHostName, variables('ragfunctionName'))]",
-                "graphrag_function_url": "[variables('graphrag_function_url')]"
-              }
-            }
-          }
-        }
-      },
-      "dependsOn": [
-        "[resourceId('Microsoft.Resources/deployments', 'deploy_azure_function_charts')]",
-        "[resourceId('Microsoft.Resources/deployments', 'deploy_azure_function_rag')]"
-      ]
-    },
-    {
-      "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2022-09-01",
-      "name": "deploy_app_service",
-      "resourceGroup": "[resourceGroup().name]",
-      "properties": {
-        "expressionEvaluationOptions": {
-          "scope": "inner"
-        },
-        "mode": "Incremental",
-        "parameters": {
-          "imageTag": {
-            "value": "[parameters('imageTag')]"
-          },
-          "applicationInsightsId": {
-            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_ai_foundry'), '2022-09-01').outputs.applicationInsightsId.value]"
-          },
-          "solutionName": {
-            "value": "[variables('solutionPrefix')]"
-          },
-          "AzureOpenAIEndpoint": {
-            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_ai_foundry'), '2022-09-01').outputs.aiServicesTarget.value]"
-          },
-          "AzureOpenAIModel": {
-            "value": "[parameters('gptModelName')]"
-          },
-          "AzureOpenAIKey": {
-            "reference": {
-              "keyVault": {
-                "id": "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.KeyVault/vaults', reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_ai_foundry'), '2022-09-01').outputs.keyvaultName.value)]"
-              },
-              "secretName": "AZURE-OPENAI-KEY"
-            }
-          },
-          "azureOpenAIApiVersion": {
-            "value": "[variables('azureOpenAIApiVersion')]"
-          },
-          "AZURE_OPENAI_RESOURCE": {
-            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_ai_foundry'), '2022-09-01').outputs.aiServicesName.value]"
-          },
-          "CHARTS_URL": {
-            "value": "[reference(resourceId('Microsoft.Resources/deployments', 'deploy_azure_function_urls'), '2022-09-01').outputs.functionURLsOutput.value.charts_function_url]"
-          },
-          "FILTERS_URL": {
-            "value": "[reference(resourceId('Microsoft.Resources/deployments', 'deploy_azure_function_urls'), '2022-09-01').outputs.functionURLsOutput.value.filters_function_url]"
-          },
-          "USE_GRAPHRAG": {
-            "value": "False"
-          },
-          "USE_CHAT_HISTORY_ENABLED": {
-            "value": "True"
-          },
-          "GRAPHRAG_URL": {
-            "value": "[reference(resourceId('Microsoft.Resources/deployments', 'deploy_azure_function_urls'), '2022-09-01').outputs.functionURLsOutput.value.graphrag_function_url]"
-          },
-          "RAG_URL": {
-            "value": "[reference(resourceId('Microsoft.Resources/deployments', 'deploy_azure_function_urls'), '2022-09-01').outputs.functionURLsOutput.value.rag_function_url]"
-          },
-          "AZURE_COSMOSDB_ACCOUNT": {
-            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_cosmos_db'), '2022-09-01').outputs.cosmosAccountName.value]"
-          },
-          "AZURE_COSMOSDB_CONVERSATIONS_CONTAINER": {
-            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_cosmos_db'), '2022-09-01').outputs.cosmosContainerName.value]"
-          },
-          "AZURE_COSMOSDB_DATABASE": {
-            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_cosmos_db'), '2022-09-01').outputs.cosmosDatabaseName.value]"
-          },
-          "AZURE_COSMOSDB_ENABLE_FEEDBACK": {
-            "value": "True"
-          }
-        },
-        "template": {
-          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
-          "contentVersion": "1.0.0.0",
-          "metadata": {
-            "_generator": {
-              "name": "bicep",
-              "version": "0.33.93.31351",
-              "templateHash": "5835426116727035307"
-            }
-          },
-          "parameters": {
-            "solutionName": {
-              "type": "string",
-              "minLength": 3,
-              "maxLength": 15,
-              "metadata": {
-                "description": "Solution Name"
-              }
+              "type": "string"
             },
             "HostingPlanName": {
               "type": "string",
@@ -2554,126 +1907,9 @@
               "metadata": {
                 "description": "The pricing tier for the App Service plan"
               }
-            },
-            "WebsiteName": {
-              "type": "string",
-              "defaultValue": "[format('{0}-app-service', parameters('solutionName'))]",
-              "metadata": {
-                "description": "Name of Web App"
-              }
-            },
-            "AzureOpenAIModel": {
-              "type": "string",
-              "metadata": {
-                "description": "Azure OpenAI Model Deployment Name"
-              }
-            },
-            "AzureOpenAIEndpoint": {
-              "type": "string",
-              "defaultValue": "",
-              "metadata": {
-                "description": "Azure Open AI Endpoint"
-              }
-            },
-            "AzureOpenAIKey": {
-              "type": "securestring",
-              "metadata": {
-                "description": "Azure OpenAI Key"
-              }
-            },
-            "azureOpenAIApiVersion": {
-              "type": "string"
-            },
-            "AZURE_OPENAI_RESOURCE": {
-              "type": "string",
-              "defaultValue": ""
-            },
-            "CHARTS_URL": {
-              "type": "string",
-              "defaultValue": ""
-            },
-            "FILTERS_URL": {
-              "type": "string",
-              "defaultValue": ""
-            },
-            "USE_GRAPHRAG": {
-              "type": "string",
-              "defaultValue": ""
-            },
-            "GRAPHRAG_URL": {
-              "type": "string",
-              "defaultValue": ""
-            },
-            "RAG_URL": {
-              "type": "string",
-              "defaultValue": ""
-            },
-            "USE_CHAT_HISTORY_ENABLED": {
-              "type": "string",
-              "defaultValue": ""
-            },
-            "AZURE_COSMOSDB_ACCOUNT": {
-              "type": "string",
-              "defaultValue": "",
-              "metadata": {
-                "description": "Azure Cosmos DB Account"
-              }
-            },
-            "AZURE_COSMOSDB_CONVERSATIONS_CONTAINER": {
-              "type": "string",
-              "defaultValue": "",
-              "metadata": {
-                "description": "Azure Cosmos DB Conversations Container"
-              }
-            },
-            "AZURE_COSMOSDB_DATABASE": {
-              "type": "string",
-              "defaultValue": "",
-              "metadata": {
-                "description": "Azure Cosmos DB Database"
-              }
-            },
-            "AZURE_COSMOSDB_ENABLE_FEEDBACK": {
-              "type": "string",
-              "defaultValue": "True",
-              "metadata": {
-                "description": "Enable feedback in Cosmos DB"
-              }
-            },
-            "imageTag": {
-              "type": "string"
-            },
-            "applicationInsightsId": {
-              "type": "string"
             }
           },
-          "variables": {
-            "WebAppImageName": "[format('DOCKER|kmcontainerreg.azurecr.io/km-app:{0}', parameters('imageTag'))]",
-            "REACT_APP_LAYOUT_CONFIG": "{\r\n  \"appConfig\": {\r\n    \"THREE_COLUMN\": {\r\n      \"DASHBOARD\": 50,\r\n      \"CHAT\": 33,\r\n      \"CHATHISTORY\": 17\r\n    },\r\n    \"TWO_COLUMN\": {\r\n      \"DASHBOARD_CHAT\": {\r\n        \"DASHBOARD\": 65,\r\n        \"CHAT\": 35\r\n      },\r\n      \"CHAT_CHATHISTORY\": {\r\n        \"CHAT\": 80,\r\n        \"CHATHISTORY\": 20\r\n      }\r\n    }\r\n  },\r\n  \"charts\": [\r\n    {\r\n      \"id\": \"SATISFIED\",\r\n      \"name\": \"Satisfied\",\r\n      \"type\": \"card\",\r\n      \"layout\": { \"row\": 1, \"column\": 1, \"height\": 11 }\r\n    },\r\n    {\r\n      \"id\": \"TOTAL_CALLS\",\r\n      \"name\": \"Total Calls\",\r\n      \"type\": \"card\",\r\n      \"layout\": { \"row\": 1, \"column\": 2, \"span\": 1 }\r\n    },\r\n    {\r\n      \"id\": \"AVG_HANDLING_TIME\",\r\n      \"name\": \"Average Handling Time\",\r\n      \"type\": \"card\",\r\n      \"layout\": { \"row\": 1, \"column\": 3, \"span\": 1 }\r\n    },\r\n    {\r\n      \"id\": \"SENTIMENT\",\r\n      \"name\": \"Topics Overview\",\r\n      \"type\": \"donutchart\",\r\n      \"layout\": { \"row\": 2, \"column\": 1, \"width\": 40, \"height\": 44.5 }\r\n    },\r\n    {\r\n      \"id\": \"AVG_HANDLING_TIME_BY_TOPIC\",\r\n      \"name\": \"Average Handling Time By Topic\",\r\n      \"type\": \"bar\",\r\n      \"layout\": { \"row\": 2, \"column\": 2, \"row-span\": 2, \"width\": 60 }\r\n    },\r\n    {\r\n      \"id\": \"TOPICS\",\r\n      \"name\": \"Trending Topics\",\r\n      \"type\": \"table\",\r\n      \"layout\": { \"row\": 3, \"column\": 1, \"span\": 2 }\r\n    },\r\n    {\r\n      \"id\": \"KEY_PHRASES\",\r\n      \"name\": \"Key Phrases\",\r\n      \"type\": \"wordcloud\",\r\n      \"layout\": { \"row\": 3, \"column\": 2, \"height\": 44.5 }\r\n    }\r\n  ]\r\n}"
-          },
           "resources": [
-            {
-              "type": "Microsoft.Web/sites/basicPublishingCredentialsPolicies",
-              "apiVersion": "2020-06-01",
-              "name": "[format('{0}/{1}', parameters('WebsiteName'), 'ftp')]",
-              "properties": {
-                "allow": false
-              },
-              "dependsOn": [
-                "[resourceId('Microsoft.Web/sites', parameters('WebsiteName'))]"
-              ]
-            },
-            {
-              "type": "Microsoft.Web/sites/basicPublishingCredentialsPolicies",
-              "apiVersion": "2020-06-01",
-              "name": "[format('{0}/{1}', parameters('WebsiteName'), 'scm')]",
-              "properties": {
-                "allow": false
-              },
-              "dependsOn": [
-                "[resourceId('Microsoft.Web/sites', parameters('WebsiteName'))]"
-              ]
-            },
             {
               "type": "Microsoft.Web/serverfarms",
               "apiVersion": "2020-06-01",
@@ -2683,155 +1919,642 @@
                 "name": "[parameters('HostingPlanSku')]"
               },
               "properties": {
-                "name": "[parameters('HostingPlanName')]",
                 "reserved": true
               },
               "kind": "linux"
-            },
-            {
-              "type": "Microsoft.Web/sites",
-              "apiVersion": "2020-06-01",
-              "name": "[parameters('WebsiteName')]",
-              "location": "[resourceGroup().location]",
-              "identity": {
-                "type": "SystemAssigned"
-              },
-              "properties": {
-                "serverFarmId": "[parameters('HostingPlanName')]",
-                "siteConfig": {
-                  "alwaysOn": true,
-                  "ftpsState": "Disabled",
-                  "appSettings": [
-                    {
-                      "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
-                      "value": "[reference(parameters('applicationInsightsId'), '2015-05-01').InstrumentationKey]"
-                    },
-                    {
-                      "name": "AZURE_OPENAI_API_VERSION",
-                      "value": "[parameters('azureOpenAIApiVersion')]"
-                    },
-                    {
-                      "name": "AZURE_OPENAI_DEPLOYMENT_NAME",
-                      "value": "[parameters('AzureOpenAIModel')]"
-                    },
-                    {
-                      "name": "AZURE_OPENAI_ENDPOINT",
-                      "value": "[parameters('AzureOpenAIEndpoint')]"
-                    },
-                    {
-                      "name": "AZURE_OPENAI_API_KEY",
-                      "value": "[parameters('AzureOpenAIKey')]"
-                    },
-                    {
-                      "name": "AZURE_OPENAI_RESOURCE",
-                      "value": "[parameters('AZURE_OPENAI_RESOURCE')]"
-                    },
-                    {
-                      "name": "AZURE_OPENAI_PREVIEW_API_VERSION",
-                      "value": "[parameters('azureOpenAIApiVersion')]"
-                    },
-                    {
-                      "name": "USE_CHAT_HISTORY_ENABLED",
-                      "value": "[parameters('USE_CHAT_HISTORY_ENABLED')]"
-                    },
-                    {
-                      "name": "USE_GRAPHRAG",
-                      "value": "[parameters('USE_GRAPHRAG')]"
-                    },
-                    {
-                      "name": "CHART_DASHBOARD_URL",
-                      "value": "[parameters('CHARTS_URL')]"
-                    },
-                    {
-                      "name": "CHART_DASHBOARD_FILTERS_URL",
-                      "value": "[parameters('FILTERS_URL')]"
-                    },
-                    {
-                      "name": "GRAPHRAG_URL",
-                      "value": "[parameters('GRAPHRAG_URL')]"
-                    },
-                    {
-                      "name": "RAG_URL",
-                      "value": "[parameters('RAG_URL')]"
-                    },
-                    {
-                      "name": "REACT_APP_LAYOUT_CONFIG",
-                      "value": "[variables('REACT_APP_LAYOUT_CONFIG')]"
-                    },
-                    {
-                      "name": "AZURE_COSMOSDB_ACCOUNT",
-                      "value": "[parameters('AZURE_COSMOSDB_ACCOUNT')]"
-                    },
-                    {
-                      "name": "AZURE_COSMOSDB_ACCOUNT_KEY",
-                      "value": ""
-                    },
-                    {
-                      "name": "AZURE_COSMOSDB_CONVERSATIONS_CONTAINER",
-                      "value": "[parameters('AZURE_COSMOSDB_CONVERSATIONS_CONTAINER')]"
-                    },
-                    {
-                      "name": "AZURE_COSMOSDB_DATABASE",
-                      "value": "[parameters('AZURE_COSMOSDB_DATABASE')]"
-                    },
-                    {
-                      "name": "AZURE_COSMOSDB_ENABLE_FEEDBACK",
-                      "value": "[parameters('AZURE_COSMOSDB_ENABLE_FEEDBACK')]"
-                    },
-                    {
-                      "name": "SCM_DO_BUILD_DURING_DEPLOYMENT",
-                      "value": "true"
-                    },
-                    {
-                      "name": "UWSGI_PROCESSES",
-                      "value": "2"
-                    },
-                    {
-                      "name": "UWSGI_THREADS",
-                      "value": "2"
-                    }
-                  ],
-                  "linuxFxVersion": "[variables('WebAppImageName')]"
-                }
-              },
-              "dependsOn": [
-                "[resourceId('Microsoft.Web/serverfarms', parameters('HostingPlanName'))]"
-              ]
-            },
-            {
-              "type": "Microsoft.DocumentDB/databaseAccounts/sqlRoleAssignments",
-              "apiVersion": "2022-05-15",
-              "name": "[format('{0}/{1}', parameters('AZURE_COSMOSDB_ACCOUNT'), guid(resourceId('Microsoft.DocumentDB/databaseAccounts/sqlRoleDefinitions', split(format('{0}/00000000-0000-0000-0000-000000000002', parameters('AZURE_COSMOSDB_ACCOUNT')), '/')[0], split(format('{0}/00000000-0000-0000-0000-000000000002', parameters('AZURE_COSMOSDB_ACCOUNT')), '/')[1]), resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('AZURE_COSMOSDB_ACCOUNT'))))]",
-              "properties": {
-                "principalId": "[reference(resourceId('Microsoft.Web/sites', parameters('WebsiteName')), '2020-06-01', 'full').identity.principalId]",
-                "roleDefinitionId": "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlRoleDefinitions', split(format('{0}/00000000-0000-0000-0000-000000000002', parameters('AZURE_COSMOSDB_ACCOUNT')), '/')[0], split(format('{0}/00000000-0000-0000-0000-000000000002', parameters('AZURE_COSMOSDB_ACCOUNT')), '/')[1])]",
-                "scope": "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('AZURE_COSMOSDB_ACCOUNT'))]"
-              },
-              "dependsOn": [
-                "[resourceId('Microsoft.Web/sites', parameters('WebsiteName'))]"
-              ]
             }
           ],
           "outputs": {
-            "webAppUrl": {
+            "id": {
               "type": "string",
-              "value": "[format('https://{0}.azurewebsites.net', parameters('WebsiteName'))]"
+              "value": "[resourceId('Microsoft.Web/serverfarms', parameters('HostingPlanName'))]"
+            },
+            "name": {
+              "type": "string",
+              "value": "[parameters('HostingPlanName')]"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "deploy_backend_docker",
+      "resourceGroup": "[resourceGroup().name]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "imageTag": {
+            "value": "[parameters('imageTag')]"
+          },
+          "appServicePlanId": {
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', 'deploy_app_service_plan'), '2022-09-01').outputs.name.value]"
+          },
+          "applicationInsightsId": {
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_ai_foundry'), '2022-09-01').outputs.applicationInsightsId.value]"
+          },
+          "solutionName": {
+            "value": "[variables('solutionPrefix')]"
+          },
+          "azureOpenAIKey": {
+            "reference": {
+              "keyVault": {
+                "id": "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.KeyVault/vaults', reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_ai_foundry'), '2022-09-01').outputs.keyvaultName.value)]"
+              },
+              "secretName": "AZURE-OPENAI-KEY"
+            }
+          },
+          "azureAiProjectConnString": {
+            "reference": {
+              "keyVault": {
+                "id": "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.KeyVault/vaults', reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_ai_foundry'), '2022-09-01').outputs.keyvaultName.value)]"
+              },
+              "secretName": "AZURE-AI-PROJECT-CONN-STRING"
+            }
+          },
+          "azureSearchAdminKey": {
+            "reference": {
+              "keyVault": {
+                "id": "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.KeyVault/vaults', reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_ai_foundry'), '2022-09-01').outputs.keyvaultName.value)]"
+              },
+              "secretName": "AZURE-SEARCH-KEY"
+            }
+          },
+          "userassignedIdentityId": {
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_managed_identity'), '2022-09-01').outputs.managedIdentityBackendAppOutput.value.id]"
+          },
+          "appSettings": {
+            "value": {
+              "AZURE_OPEN_AI_DEPLOYMENT_MODEL": "[parameters('gptModelName')]",
+              "AZURE_OPEN_AI_ENDPOINT": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_ai_foundry'), '2022-09-01').outputs.aiServicesTarget.value]",
+              "AZURE_OPENAI_API_VERSION": "[variables('azureOpenAIApiVersion')]",
+              "AZURE_OPENAI_RESOURCE": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_ai_foundry'), '2022-09-01').outputs.aiServicesName.value]",
+              "USE_CHAT_HISTORY_ENABLED": "True",
+              "AZURE_COSMOSDB_ACCOUNT": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_cosmos_db'), '2022-09-01').outputs.cosmosAccountName.value]",
+              "AZURE_COSMOSDB_CONVERSATIONS_CONTAINER": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_cosmos_db'), '2022-09-01').outputs.cosmosContainerName.value]",
+              "AZURE_COSMOSDB_DATABASE": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_cosmos_db'), '2022-09-01').outputs.cosmosDatabaseName.value]",
+              "AZURE_COSMOSDB_ENABLE_FEEDBACK": "True",
+              "SQLDB_DATABASE": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_sql_db'), '2022-09-01').outputs.sqlDbName.value]",
+              "SQLDB_SERVER": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_sql_db'), '2022-09-01').outputs.sqlServerName.value]",
+              "SQLDB_USERNAME": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_sql_db'), '2022-09-01').outputs.sqlDbUser.value]",
+              "OPENAI_API_VERSION": "[variables('azureOpenAIApiVersion')]",
+              "AZURE_AI_SEARCH_ENDPOINT": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_ai_foundry'), '2022-09-01').outputs.aiSearchTarget.value]",
+              "AZURE_AI_SEARCH_INDEX": "call_transcripts_index",
+              "SQLDB_USER_MID": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_managed_identity'), '2022-09-01').outputs.managedIdentityBackendAppOutput.value.clientId]",
+              "USE_AI_PROJECT_CLIENT": "False",
+              "DISPLAY_CHART_DEFAULT": "True"
+            }
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.34.44.8038",
+              "templateHash": "2311330138363091145"
+            }
+          },
+          "parameters": {
+            "imageTag": {
+              "type": "string"
+            },
+            "applicationInsightsId": {
+              "type": "string"
+            },
+            "solutionName": {
+              "type": "string"
+            },
+            "appSettings": {
+              "type": "secureObject",
+              "defaultValue": {}
+            },
+            "appServicePlanId": {
+              "type": "string"
+            },
+            "azureOpenAIKey": {
+              "type": "securestring"
+            },
+            "azureAiProjectConnString": {
+              "type": "securestring"
+            },
+            "azureSearchAdminKey": {
+              "type": "securestring"
+            },
+            "userassignedIdentityId": {
+              "type": "string"
+            }
+          },
+          "variables": {
+            "imageName": "[format('DOCKER|kmcontainerreg.azurecr.io/km-api:{0}', parameters('imageTag'))]",
+            "name": "[format('{0}-api', parameters('solutionName'))]",
+            "reactAppLayoutConfig": "{\r\n  \"appConfig\": {\r\n    \"THREE_COLUMN\": {\r\n      \"DASHBOARD\": 50,\r\n      \"CHAT\": 33,\r\n      \"CHATHISTORY\": 17\r\n    },\r\n    \"TWO_COLUMN\": {\r\n      \"DASHBOARD_CHAT\": {\r\n        \"DASHBOARD\": 65,\r\n        \"CHAT\": 35\r\n      },\r\n      \"CHAT_CHATHISTORY\": {\r\n        \"CHAT\": 80,\r\n        \"CHATHISTORY\": 20\r\n      }\r\n    }\r\n  },\r\n  \"charts\": [\r\n    {\r\n      \"id\": \"SATISFIED\",\r\n      \"name\": \"Satisfied\",\r\n      \"type\": \"card\",\r\n      \"layout\": { \"row\": 1, \"column\": 1, \"height\": 11 }\r\n    },\r\n    {\r\n      \"id\": \"TOTAL_CALLS\",\r\n      \"name\": \"Total Calls\",\r\n      \"type\": \"card\",\r\n      \"layout\": { \"row\": 1, \"column\": 2, \"span\": 1 }\r\n    },\r\n    {\r\n      \"id\": \"AVG_HANDLING_TIME\",\r\n      \"name\": \"Average Handling Time\",\r\n      \"type\": \"card\",\r\n      \"layout\": { \"row\": 1, \"column\": 3, \"span\": 1 }\r\n    },\r\n    {\r\n      \"id\": \"SENTIMENT\",\r\n      \"name\": \"Topics Overview\",\r\n      \"type\": \"donutchart\",\r\n      \"layout\": { \"row\": 2, \"column\": 1, \"width\": 40, \"height\": 44.5 }\r\n    },\r\n    {\r\n      \"id\": \"AVG_HANDLING_TIME_BY_TOPIC\",\r\n      \"name\": \"Average Handling Time By Topic\",\r\n      \"type\": \"bar\",\r\n      \"layout\": { \"row\": 2, \"column\": 2, \"row-span\": 2, \"width\": 60 }\r\n    },\r\n    {\r\n      \"id\": \"TOPICS\",\r\n      \"name\": \"Trending Topics\",\r\n      \"type\": \"table\",\r\n      \"layout\": { \"row\": 3, \"column\": 1, \"span\": 2 }\r\n    },\r\n    {\r\n      \"id\": \"KEY_PHRASES\",\r\n      \"name\": \"Key Phrases\",\r\n      \"type\": \"wordcloud\",\r\n      \"layout\": { \"row\": 3, \"column\": 2, \"height\": 44.5 }\r\n    }\r\n  ]\r\n}"
+          },
+          "resources": [
+            {
+              "type": "Microsoft.DocumentDB/databaseAccounts/sqlRoleAssignments",
+              "apiVersion": "2022-05-15",
+              "name": "[format('{0}/{1}', parameters('appSettings').AZURE_COSMOSDB_ACCOUNT, guid(resourceId('Microsoft.DocumentDB/databaseAccounts/sqlRoleDefinitions', parameters('appSettings').AZURE_COSMOSDB_ACCOUNT, '00000000-0000-0000-0000-000000000002'), resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('appSettings').AZURE_COSMOSDB_ACCOUNT)))]",
+              "properties": {
+                "principalId": "[reference(resourceId('Microsoft.Resources/deployments', format('{0}-app-module', variables('name'))), '2022-09-01').outputs.identityPrincipalId.value]",
+                "roleDefinitionId": "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlRoleDefinitions', parameters('appSettings').AZURE_COSMOSDB_ACCOUNT, '00000000-0000-0000-0000-000000000002')]",
+                "scope": "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('appSettings').AZURE_COSMOSDB_ACCOUNT)]"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', format('{0}-app-module', variables('name')))]"
+              ]
+            },
+            {
+              "type": "Microsoft.Resources/deployments",
+              "apiVersion": "2022-09-01",
+              "name": "[format('{0}-app-module', variables('name'))]",
+              "properties": {
+                "expressionEvaluationOptions": {
+                  "scope": "inner"
+                },
+                "mode": "Incremental",
+                "parameters": {
+                  "solutionName": {
+                    "value": "[variables('name')]"
+                  },
+                  "appServicePlanId": {
+                    "value": "[parameters('appServicePlanId')]"
+                  },
+                  "appImageName": {
+                    "value": "[variables('imageName')]"
+                  },
+                  "userassignedIdentityId": {
+                    "value": "[parameters('userassignedIdentityId')]"
+                  },
+                  "appSettings": {
+                    "value": "[union(parameters('appSettings'), createObject('AZURE_OPENAI_API_KEY', parameters('azureOpenAIKey'), 'APPINSIGHTS_INSTRUMENTATIONKEY', reference(parameters('applicationInsightsId'), '2015-05-01').InstrumentationKey, 'AZURE_AI_SEARCH_API_KEY', parameters('azureSearchAdminKey'), 'AZURE_AI_PROJECT_CONN_STRING', parameters('azureAiProjectConnString'), 'REACT_APP_LAYOUT_CONFIG', variables('reactAppLayoutConfig')))]"
+                  }
+                },
+                "template": {
+                  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                  "contentVersion": "1.0.0.0",
+                  "metadata": {
+                    "_generator": {
+                      "name": "bicep",
+                      "version": "0.34.44.8038",
+                      "templateHash": "356166454386735487"
+                    }
+                  },
+                  "parameters": {
+                    "solutionName": {
+                      "type": "string",
+                      "metadata": {
+                        "description": "Solution Name"
+                      }
+                    },
+                    "appSettings": {
+                      "type": "secureObject",
+                      "defaultValue": {}
+                    },
+                    "appServicePlanId": {
+                      "type": "string"
+                    },
+                    "appImageName": {
+                      "type": "string"
+                    },
+                    "userassignedIdentityId": {
+                      "type": "string",
+                      "defaultValue": ""
+                    }
+                  },
+                  "resources": [
+                    {
+                      "type": "Microsoft.Web/sites/basicPublishingCredentialsPolicies",
+                      "apiVersion": "2020-06-01",
+                      "name": "[format('{0}/{1}', parameters('solutionName'), 'ftp')]",
+                      "properties": {
+                        "allow": false
+                      },
+                      "dependsOn": [
+                        "[resourceId('Microsoft.Web/sites', parameters('solutionName'))]"
+                      ]
+                    },
+                    {
+                      "type": "Microsoft.Web/sites/basicPublishingCredentialsPolicies",
+                      "apiVersion": "2020-06-01",
+                      "name": "[format('{0}/{1}', parameters('solutionName'), 'scm')]",
+                      "properties": {
+                        "allow": false
+                      },
+                      "dependsOn": [
+                        "[resourceId('Microsoft.Web/sites', parameters('solutionName'))]"
+                      ]
+                    },
+                    {
+                      "type": "Microsoft.Web/sites",
+                      "apiVersion": "2020-06-01",
+                      "name": "[parameters('solutionName')]",
+                      "location": "[resourceGroup().location]",
+                      "identity": "[if(equals(parameters('userassignedIdentityId'), ''), createObject('type', 'SystemAssigned'), createObject('type', 'SystemAssigned, UserAssigned', 'userAssignedIdentities', createObject(format('{0}', parameters('userassignedIdentityId')), createObject())))]",
+                      "properties": {
+                        "serverFarmId": "[parameters('appServicePlanId')]",
+                        "siteConfig": {
+                          "alwaysOn": true,
+                          "ftpsState": "Disabled",
+                          "linuxFxVersion": "[parameters('appImageName')]"
+                        }
+                      }
+                    },
+                    {
+                      "type": "Microsoft.Web/sites/config",
+                      "apiVersion": "2022-03-01",
+                      "name": "[format('{0}/{1}', parameters('solutionName'), 'logs')]",
+                      "properties": {
+                        "applicationLogs": {
+                          "fileSystem": {
+                            "level": "Verbose"
+                          }
+                        },
+                        "detailedErrorMessages": {
+                          "enabled": true
+                        },
+                        "failedRequestsTracing": {
+                          "enabled": true
+                        },
+                        "httpLogs": {
+                          "fileSystem": {
+                            "enabled": true,
+                            "retentionInDays": 1,
+                            "retentionInMb": 35
+                          }
+                        }
+                      },
+                      "dependsOn": [
+                        "[resourceId('Microsoft.Web/sites', parameters('solutionName'))]",
+                        "[resourceId('Microsoft.Resources/deployments', format('{0}-appSettings', parameters('solutionName')))]"
+                      ]
+                    },
+                    {
+                      "type": "Microsoft.Resources/deployments",
+                      "apiVersion": "2022-09-01",
+                      "name": "[format('{0}-appSettings', parameters('solutionName'))]",
+                      "properties": {
+                        "expressionEvaluationOptions": {
+                          "scope": "inner"
+                        },
+                        "mode": "Incremental",
+                        "parameters": {
+                          "name": {
+                            "value": "[parameters('solutionName')]"
+                          },
+                          "appSettings": {
+                            "value": "[parameters('appSettings')]"
+                          }
+                        },
+                        "template": {
+                          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                          "contentVersion": "1.0.0.0",
+                          "metadata": {
+                            "_generator": {
+                              "name": "bicep",
+                              "version": "0.34.44.8038",
+                              "templateHash": "14980344017942960012"
+                            },
+                            "description": "Updates app settings for an Azure App Service."
+                          },
+                          "parameters": {
+                            "name": {
+                              "type": "string",
+                              "metadata": {
+                                "description": "The name of the app service resource within the current resource group scope"
+                              }
+                            },
+                            "appSettings": {
+                              "type": "secureObject",
+                              "metadata": {
+                                "description": "The app settings to be applied to the app service"
+                              }
+                            }
+                          },
+                          "resources": [
+                            {
+                              "type": "Microsoft.Web/sites/config",
+                              "apiVersion": "2022-03-01",
+                              "name": "[format('{0}/{1}', parameters('name'), 'appsettings')]",
+                              "properties": "[parameters('appSettings')]"
+                            }
+                          ]
+                        }
+                      },
+                      "dependsOn": [
+                        "[resourceId('Microsoft.Web/sites', parameters('solutionName'))]"
+                      ]
+                    }
+                  ],
+                  "outputs": {
+                    "identityPrincipalId": {
+                      "type": "string",
+                      "value": "[reference(resourceId('Microsoft.Web/sites', parameters('solutionName')), '2020-06-01', 'full').identity.principalId]"
+                    },
+                    "appUrl": {
+                      "type": "string",
+                      "value": "[format('https://{0}.azurewebsites.net', parameters('solutionName'))]"
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "outputs": {
+            "appUrl": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.Resources/deployments', format('{0}-app-module', variables('name'))), '2022-09-01').outputs.appUrl.value]"
             }
           }
         }
       },
       "dependsOn": [
         "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_ai_foundry')]",
-        "[resourceId('Microsoft.Resources/deployments', 'deploy_azure_function_urls')]",
         "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_cosmos_db')]",
+        "[resourceId('Microsoft.Resources/deployments', 'deploy_app_service_plan')]",
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_managed_identity')]",
         "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_sql_db')]"
+      ]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "deploy_frontend_docker",
+      "resourceGroup": "[resourceGroup().name]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "imageTag": {
+            "value": "[parameters('imageTag')]"
+          },
+          "appServicePlanId": {
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', 'deploy_app_service_plan'), '2022-09-01').outputs.name.value]"
+          },
+          "applicationInsightsId": {
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_ai_foundry'), '2022-09-01').outputs.applicationInsightsId.value]"
+          },
+          "solutionName": {
+            "value": "[variables('solutionPrefix')]"
+          },
+          "appSettings": {
+            "value": {
+              "APP_API_BASE_URL": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_backend_docker'), '2022-09-01').outputs.appUrl.value]"
+            }
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.34.44.8038",
+              "templateHash": "13062487122244574247"
+            }
+          },
+          "parameters": {
+            "imageTag": {
+              "type": "string"
+            },
+            "applicationInsightsId": {
+              "type": "string"
+            },
+            "solutionName": {
+              "type": "string"
+            },
+            "appSettings": {
+              "type": "secureObject",
+              "defaultValue": {}
+            },
+            "appServicePlanId": {
+              "type": "string"
+            }
+          },
+          "variables": {
+            "imageName": "[format('DOCKER|kmcontainerreg.azurecr.io/km-app:{0}', parameters('imageTag'))]",
+            "name": "[format('{0}-app', parameters('solutionName'))]"
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Resources/deployments",
+              "apiVersion": "2022-09-01",
+              "name": "[format('{0}-app-module', variables('name'))]",
+              "properties": {
+                "expressionEvaluationOptions": {
+                  "scope": "inner"
+                },
+                "mode": "Incremental",
+                "parameters": {
+                  "solutionName": {
+                    "value": "[variables('name')]"
+                  },
+                  "appServicePlanId": {
+                    "value": "[parameters('appServicePlanId')]"
+                  },
+                  "appImageName": {
+                    "value": "[variables('imageName')]"
+                  },
+                  "appSettings": {
+                    "value": "[union(parameters('appSettings'), createObject('APPINSIGHTS_INSTRUMENTATIONKEY', reference(parameters('applicationInsightsId'), '2015-05-01').InstrumentationKey))]"
+                  }
+                },
+                "template": {
+                  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                  "contentVersion": "1.0.0.0",
+                  "metadata": {
+                    "_generator": {
+                      "name": "bicep",
+                      "version": "0.34.44.8038",
+                      "templateHash": "356166454386735487"
+                    }
+                  },
+                  "parameters": {
+                    "solutionName": {
+                      "type": "string",
+                      "metadata": {
+                        "description": "Solution Name"
+                      }
+                    },
+                    "appSettings": {
+                      "type": "secureObject",
+                      "defaultValue": {}
+                    },
+                    "appServicePlanId": {
+                      "type": "string"
+                    },
+                    "appImageName": {
+                      "type": "string"
+                    },
+                    "userassignedIdentityId": {
+                      "type": "string",
+                      "defaultValue": ""
+                    }
+                  },
+                  "resources": [
+                    {
+                      "type": "Microsoft.Web/sites/basicPublishingCredentialsPolicies",
+                      "apiVersion": "2020-06-01",
+                      "name": "[format('{0}/{1}', parameters('solutionName'), 'ftp')]",
+                      "properties": {
+                        "allow": false
+                      },
+                      "dependsOn": [
+                        "[resourceId('Microsoft.Web/sites', parameters('solutionName'))]"
+                      ]
+                    },
+                    {
+                      "type": "Microsoft.Web/sites/basicPublishingCredentialsPolicies",
+                      "apiVersion": "2020-06-01",
+                      "name": "[format('{0}/{1}', parameters('solutionName'), 'scm')]",
+                      "properties": {
+                        "allow": false
+                      },
+                      "dependsOn": [
+                        "[resourceId('Microsoft.Web/sites', parameters('solutionName'))]"
+                      ]
+                    },
+                    {
+                      "type": "Microsoft.Web/sites",
+                      "apiVersion": "2020-06-01",
+                      "name": "[parameters('solutionName')]",
+                      "location": "[resourceGroup().location]",
+                      "identity": "[if(equals(parameters('userassignedIdentityId'), ''), createObject('type', 'SystemAssigned'), createObject('type', 'SystemAssigned, UserAssigned', 'userAssignedIdentities', createObject(format('{0}', parameters('userassignedIdentityId')), createObject())))]",
+                      "properties": {
+                        "serverFarmId": "[parameters('appServicePlanId')]",
+                        "siteConfig": {
+                          "alwaysOn": true,
+                          "ftpsState": "Disabled",
+                          "linuxFxVersion": "[parameters('appImageName')]"
+                        }
+                      }
+                    },
+                    {
+                      "type": "Microsoft.Web/sites/config",
+                      "apiVersion": "2022-03-01",
+                      "name": "[format('{0}/{1}', parameters('solutionName'), 'logs')]",
+                      "properties": {
+                        "applicationLogs": {
+                          "fileSystem": {
+                            "level": "Verbose"
+                          }
+                        },
+                        "detailedErrorMessages": {
+                          "enabled": true
+                        },
+                        "failedRequestsTracing": {
+                          "enabled": true
+                        },
+                        "httpLogs": {
+                          "fileSystem": {
+                            "enabled": true,
+                            "retentionInDays": 1,
+                            "retentionInMb": 35
+                          }
+                        }
+                      },
+                      "dependsOn": [
+                        "[resourceId('Microsoft.Web/sites', parameters('solutionName'))]",
+                        "[resourceId('Microsoft.Resources/deployments', format('{0}-appSettings', parameters('solutionName')))]"
+                      ]
+                    },
+                    {
+                      "type": "Microsoft.Resources/deployments",
+                      "apiVersion": "2022-09-01",
+                      "name": "[format('{0}-appSettings', parameters('solutionName'))]",
+                      "properties": {
+                        "expressionEvaluationOptions": {
+                          "scope": "inner"
+                        },
+                        "mode": "Incremental",
+                        "parameters": {
+                          "name": {
+                            "value": "[parameters('solutionName')]"
+                          },
+                          "appSettings": {
+                            "value": "[parameters('appSettings')]"
+                          }
+                        },
+                        "template": {
+                          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                          "contentVersion": "1.0.0.0",
+                          "metadata": {
+                            "_generator": {
+                              "name": "bicep",
+                              "version": "0.34.44.8038",
+                              "templateHash": "14980344017942960012"
+                            },
+                            "description": "Updates app settings for an Azure App Service."
+                          },
+                          "parameters": {
+                            "name": {
+                              "type": "string",
+                              "metadata": {
+                                "description": "The name of the app service resource within the current resource group scope"
+                              }
+                            },
+                            "appSettings": {
+                              "type": "secureObject",
+                              "metadata": {
+                                "description": "The app settings to be applied to the app service"
+                              }
+                            }
+                          },
+                          "resources": [
+                            {
+                              "type": "Microsoft.Web/sites/config",
+                              "apiVersion": "2022-03-01",
+                              "name": "[format('{0}/{1}', parameters('name'), 'appsettings')]",
+                              "properties": "[parameters('appSettings')]"
+                            }
+                          ]
+                        }
+                      },
+                      "dependsOn": [
+                        "[resourceId('Microsoft.Web/sites', parameters('solutionName'))]"
+                      ]
+                    }
+                  ],
+                  "outputs": {
+                    "identityPrincipalId": {
+                      "type": "string",
+                      "value": "[reference(resourceId('Microsoft.Web/sites', parameters('solutionName')), '2020-06-01', 'full').identity.principalId]"
+                    },
+                    "appUrl": {
+                      "type": "string",
+                      "value": "[format('https://{0}.azurewebsites.net', parameters('solutionName'))]"
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "outputs": {
+            "appUrl": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.Resources/deployments', format('{0}-app-module', variables('name'))), '2022-09-01').outputs.appUrl.value]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_ai_foundry')]",
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_backend_docker')]",
+        "[resourceId('Microsoft.Resources/deployments', 'deploy_app_service_plan')]"
       ]
     }
   ],
   "outputs": {
     "WEB_APP_URL": {
       "type": "string",
-      "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_app_service'), '2022-09-01').outputs.webAppUrl.value]"
+      "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_frontend_docker'), '2022-09-01').outputs.appUrl.value]"
     }
   }
 }

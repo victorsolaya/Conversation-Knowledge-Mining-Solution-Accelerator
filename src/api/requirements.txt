@@ -1,0 +1,27 @@
+# Base packages
+cachetools
+python-dotenv
+fastapi
+uvicorn[standard]
+pydantic[email]
+
+# Azure SDK Core
+azure-core
+requests
+aiohttp
+
+# Azure Services
+azure-identity==1.19.0
+azure-search-documents==11.6.0b3
+azure-ai-projects==1.0.0b5
+azure-ai-inference==1.0.0b7
+azure-cosmos
+
+# Additional utilities
+semantic-kernel==1.19.0
+openai==1.61.0
+pyodbc==5.2.0
+pandas
+Quart==0.19.4
+quart-cors==0.7.0
+Quart-Session==3.0.0

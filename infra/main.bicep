@@ -63,7 +63,7 @@ param embeddingModel string = 'text-embedding-ada-002'
 @description('Capacity of the Embedding Model deployment')
 param embeddingDeploymentCapacity int = 80
 
-param imageTag string = 'latest'
+param imageTag string = 'migra'
 
 var uniqueId = toLower(uniqueString(subscription().id, environmentName, resourceGroup().location))
 var solutionPrefix = 'km${padLeft(take(uniqueId, 12), 12, '0')}'
@@ -71,7 +71,7 @@ var resourceGroupLocation = resourceGroup().location
 // var resourceGroupName = resourceGroup().name
 
 var solutionLocation = resourceGroupLocation
-var baseUrl = 'https://raw.githubusercontent.com/microsoft/Conversation-Knowledge-Mining-Solution-Accelerator/main/'
+var baseUrl = 'https://raw.githubusercontent.com/microsoft/Conversation-Knowledge-Mining-Solution-Accelerator/psl-pk-dev-api-migration/'
 
 
 // ========== Managed Identity ========== //
@@ -173,103 +173,70 @@ module uploadFiles 'deploy_post_deployment_scripts.bicep' = {
     sqlDbName: sqlDBModule.outputs.sqlDbName
     sqlUsers: [
       {
-        principalId: managedIdentityModule.outputs.managedIdentityChartsOutput.clientId  // Replace with actual Principal ID
-        principalName: managedIdentityModule.outputs.managedIdentityChartsOutput.name    // Replace with actual user email or name
+        principalId: managedIdentityModule.outputs.managedIdentityBackendAppOutput.clientId  // Replace with actual Principal ID
+        principalName: managedIdentityModule.outputs.managedIdentityBackendAppOutput.name    // Replace with actual user email or name
         databaseRoles: ['db_datareader', 'db_datawriter']
-      }
-      {
-        principalId: managedIdentityModule.outputs.managedIdentityRagOutput.clientId  // Replace with actual Principal ID
-        principalName: managedIdentityModule.outputs.managedIdentityRagOutput.name    // Replace with actual user email or name
-        databaseRoles: ['db_datareader']
       }
     ]
   }
 }
 
-//========== Azure functions module ========== //
-module azureFunctionsCharts 'deploy_azure_function_charts.bicep' = {
-  name : 'deploy_azure_function_charts'
-  params:{
-    imageTag: imageTag
+module hostingplan 'deploy_app_service_plan.bicep' = {
+  name: 'deploy_app_service_plan'
+  params: {
     solutionName: solutionPrefix
-    solutionLocation: solutionLocation
-    sqlServerName: sqlDBModule.outputs.sqlServerName
-    sqlDbName: sqlDBModule.outputs.sqlDbName
-    sqlDbUser: sqlDBModule.outputs.sqlDbUser
-    sqlDbPwd:keyVault.getSecret('SQLDB-PASSWORD')
-    // managedIdentityObjectId:managedIdentityModule.outputs.managedIdentityOutput.objectId
-    storageAccountName:aifoundry.outputs.storageAccountName
-    userassignedIdentityId: managedIdentityModule.outputs.managedIdentityChartsOutput.id
-    userassignedIdentityClientId: managedIdentityModule.outputs.managedIdentityChartsOutput.clientId
   }
-  dependsOn:[keyVault]
 }
 
-//========== Azure functions module ========== //
-module azureragFunctionsRag 'deploy_azure_function_rag.bicep' = {
-  name : 'deploy_azure_function_rag'
-  params:{
-    imageTag: imageTag
-    solutionName: solutionPrefix
-    solutionLocation: solutionLocation
-    azureOpenAIApiKey:keyVault.getSecret('AZURE-OPENAI-KEY')
-    azureOpenAIEndpoint:aifoundry.outputs.aiServicesTarget
-    azureOpenAIDeploymentModel:gptModelName
-    azureSearchAdminKey:keyVault.getSecret('AZURE-SEARCH-KEY')
-    azureSearchServiceEndpoint:aifoundry.outputs.aiSearchTarget
-    azureOpenAIApiVersion: azureOpenAIApiVersion
-    azureAiProjectConnString:keyVault.getSecret('AZURE-AI-PROJECT-CONN-STRING')
-    azureSearchIndex:'call_transcripts_index'
-    sqlServerName:sqlDBModule.outputs.sqlServerName
-    sqlDbName:sqlDBModule.outputs.sqlDbName
-    sqlDbUser:sqlDBModule.outputs.sqlDbUser
-    sqlDbPwd:keyVault.getSecret('SQLDB-PASSWORD')
-    aiProjectName:aifoundry.outputs.aiProjectName
-    // managedIdentityObjectId:managedIdentityModule.outputs.managedIdentityOutput.objectId
-    storageAccountName:aifoundry.outputs.storageAccountName
-    userassignedIdentityId: managedIdentityModule.outputs.managedIdentityRagOutput.id
-    userassignedIdentityClientId: managedIdentityModule.outputs.managedIdentityRagOutput.clientId
-  }
-  dependsOn:[keyVault]
-}
-
-module azureFunctionURL 'deploy_azure_function_urls.bicep' = {
-  name : 'deploy_azure_function_urls'
-  params:{
-    solutionName: solutionPrefix
-    // identity:managedIdentityModule.outputs.managedIdentityOutput.id
-  }
-  dependsOn:[azureFunctionsCharts,azureragFunctionsRag]
-}
-
-//========== App service module ========== //
-module appserviceModule 'deploy_app_service.bicep' = {
-  name: 'deploy_app_service'
+module backend_docker 'deploy_backend_docker.bicep'= {
+  name: 'deploy_backend_docker'
   params: {
     imageTag: imageTag
+    appServicePlanId: hostingplan.outputs.name
     applicationInsightsId: aifoundry.outputs.applicationInsightsId
-    // identity:managedIdentityModule.outputs.managedIdentityOutput.id
     solutionName: solutionPrefix
-    // solutionLocation: solutionLocation
-    AzureOpenAIEndpoint:aifoundry.outputs.aiServicesTarget
-    AzureOpenAIModel: gptModelName //'gpt-4o-mini'
-    AzureOpenAIKey:keyVault.getSecret('AZURE-OPENAI-KEY')
-    azureOpenAIApiVersion: azureOpenAIApiVersion
-    AZURE_OPENAI_RESOURCE:aifoundry.outputs.aiServicesName
-    CHARTS_URL:azureFunctionURL.outputs.functionURLsOutput.charts_function_url
-    FILTERS_URL:azureFunctionURL.outputs.functionURLsOutput.filters_function_url
-    USE_GRAPHRAG:'False'
-    USE_CHAT_HISTORY_ENABLED:'True'
-    GRAPHRAG_URL:azureFunctionURL.outputs.functionURLsOutput.graphrag_function_url
-    RAG_URL:azureFunctionURL.outputs.functionURLsOutput.rag_function_url
-    AZURE_COSMOSDB_ACCOUNT: cosmosDBModule.outputs.cosmosAccountName
-    // AZURE_COSMOSDB_ACCOUNT_KEY: keyVault.getSecret('AZURE-COSMOSDB-ACCOUNT-KEY')
-    AZURE_COSMOSDB_CONVERSATIONS_CONTAINER: cosmosDBModule.outputs.cosmosContainerName
-    AZURE_COSMOSDB_DATABASE: cosmosDBModule.outputs.cosmosDatabaseName
-    AZURE_COSMOSDB_ENABLE_FEEDBACK:'True'
+    azureOpenAIKey:keyVault.getSecret('AZURE-OPENAI-KEY')
+    azureAiProjectConnString:keyVault.getSecret('AZURE-AI-PROJECT-CONN-STRING')
+    azureSearchAdminKey:keyVault.getSecret('AZURE-SEARCH-KEY')
+    userassignedIdentityId: managedIdentityModule.outputs.managedIdentityBackendAppOutput.id
+    // azureOpenAIKeyName:aifoundry.outputs.azureOpenAIKeyName
+    // keyVaultName: kvault.outputs.keyvaultName
+    appSettings:{
+        AZURE_OPEN_AI_DEPLOYMENT_MODEL:gptModelName
+        AZURE_OPEN_AI_ENDPOINT:aifoundry.outputs.aiServicesTarget
+        AZURE_OPENAI_API_VERSION: azureOpenAIApiVersion
+        AZURE_OPENAI_RESOURCE:aifoundry.outputs.aiServicesName
+        USE_CHAT_HISTORY_ENABLED:'True'
+        AZURE_COSMOSDB_ACCOUNT: cosmosDBModule.outputs.cosmosAccountName
+        AZURE_COSMOSDB_CONVERSATIONS_CONTAINER: cosmosDBModule.outputs.cosmosContainerName
+        AZURE_COSMOSDB_DATABASE: cosmosDBModule.outputs.cosmosDatabaseName
+        AZURE_COSMOSDB_ENABLE_FEEDBACK:'True'
+        SQLDB_DATABASE:sqlDBModule.outputs.sqlDbName
+        SQLDB_SERVER: sqlDBModule.outputs.sqlServerName
+        SQLDB_USERNAME: sqlDBModule.outputs.sqlDbUser
+        OPENAI_API_VERSION: azureOpenAIApiVersion
+        AZURE_AI_SEARCH_ENDPOINT: aifoundry.outputs.aiSearchTarget
+        AZURE_AI_SEARCH_INDEX: 'call_transcripts_index'
+        SQLDB_USER_MID: managedIdentityModule.outputs.managedIdentityBackendAppOutput.clientId
+        USE_AI_PROJECT_CLIENT:'False'
+        DISPLAY_CHART_DEFAULT:'True'
+      }
   }
   scope: resourceGroup(resourceGroup().name)
-  dependsOn:[sqlDBModule]
 }
 
-output WEB_APP_URL string = appserviceModule.outputs.webAppUrl
+module frontend_docker 'deploy_frontend_docker.bicep'= {
+  name: 'deploy_frontend_docker'
+  params: {
+    imageTag: imageTag
+    appServicePlanId: hostingplan.outputs.name
+    applicationInsightsId: aifoundry.outputs.applicationInsightsId
+    solutionName: solutionPrefix
+    appSettings:{
+      APP_API_BASE_URL:backend_docker.outputs.appUrl
+    }
+  }
+  scope: resourceGroup(resourceGroup().name)
+}
+
+output WEB_APP_URL string = frontend_docker.outputs.appUrl
