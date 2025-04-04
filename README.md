@@ -135,7 +135,7 @@ If you're not using one of the above options for opening the project, then you'l
     * [Python 3.9+](https://www.python.org/downloads/)
     * [Docker Desktop](https://www.docker.com/products/docker-desktop/)
     * [Git](https://git-scm.com/downloads)
-    * [Powershell](https://learn.microsoft.com/en-us/powershell/scripting/install/installing-powershell-on-windows?view=powershell-7.5) (Required only for Windows users. Follow the steps [here](./docs/PowershellSetup.md) to add it to the Windows PATH.)
+    * [Powershell](https://learn.microsoft.com/en-us/powershell/scripting/install/installing-powershell-on-windows?view=powershell-7.5)<br/>Required for Windows users only. Follow the steps [here](./docs/PowershellSetup.md) to add it to the Windows PATH.
 
 2. Download the project code:
 
