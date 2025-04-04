@@ -191,7 +191,7 @@ class ChatService:
                         object_hook=lambda d: SimpleNamespace(**d),
                     )
                     yield json.dumps(format_stream_response(completion_chunk_obj, history_metadata, response.headers.get("apim-request-id", ""))) + "\n\n"
-            
+
             except AgentInvokeException as e:
                 error_message = str(e)
                 retry_after = "sometime"
@@ -205,7 +205,7 @@ class ChatService:
                 else:
                     logger.error(f"AgentInvokeException: {error_message}")
                     yield json.dumps({"error": "An error occurred. Please try again later."}) + "\n\n"
-            
+
             except Exception as e:
                 logger.error(f"Error in stream_chat_request: {e}", exc_info=True)
                 yield json.dumps({"error": "An error occurred while processing the request."}) + "\n\n"
