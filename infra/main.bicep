@@ -63,7 +63,7 @@ param embeddingModel string = 'text-embedding-ada-002'
 @description('Capacity of the Embedding Model deployment')
 param embeddingDeploymentCapacity int = 80
 
-param imageTag string = 'latest_migra'
+param imageTag string = 'latest_migrated'
 
 var uniqueId = toLower(uniqueString(subscription().id, environmentName, resourceGroup().location))
 var solutionPrefix = 'km${padLeft(take(uniqueId, 12), 12, '0')}'

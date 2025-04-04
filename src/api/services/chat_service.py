@@ -11,6 +11,7 @@ from semantic_kernel import Kernel
 from semantic_kernel.agents.open_ai import AzureAssistantAgent
 from semantic_kernel.contents.chat_message_content import ChatMessageContent
 from semantic_kernel.contents.utils.author_role import AuthorRole
+from semantic_kernel.exceptions.agent_exceptions import AgentInvokeException  # Import the exception
 
 from common.config.config import Config
 from helpers.utils import format_stream_response
@@ -145,50 +146,70 @@ class ChatService:
         history_metadata = request_body.get("history_metadata", {})
 
         async def generate():
-            assistant_content = ""
-            # Call the OpenAI streaming method
-            response = await self.stream_openai_text(conversation_id, query)
-            # Stream chunks of data
-            async for chunk in response.body_iterator:
-                if isinstance(chunk, dict):
-                    chunk = json.dumps(chunk)  # Convert dict to JSON string
-                assistant_content += chunk
-                chat_completion_chunk = {
-                    "id": "",
-                    "model": "",
-                    "created": 0,
-                    "object": "",
-                    "choices": [
-                        {
-                            "messages": [],
-                            "delta": {},
-                        }
-                    ],
-                    "history_metadata": history_metadata,
-                    "apim-request-id": "",
-                }
+            try:
+                assistant_content = ""
+                # Call the OpenAI streaming method
+                response = await self.stream_openai_text(conversation_id, query)
+                # Stream chunks of data
+                async for chunk in response.body_iterator:
+                    if isinstance(chunk, dict):
+                        chunk = json.dumps(chunk)  # Convert dict to JSON string
+                    assistant_content += chunk
+                    chat_completion_chunk = {
+                        "id": "",
+                        "model": "",
+                        "created": 0,
+                        "object": "",
+                        "choices": [
+                            {
+                                "messages": [],
+                                "delta": {},
+                            }
+                        ],
+                        "history_metadata": history_metadata,
+                        "apim-request-id": "",
+                    }
 
-                chat_completion_chunk["id"] = str(uuid.uuid4())
-                chat_completion_chunk["model"] = "rag-model"
-                chat_completion_chunk["created"] = int(time.time())
-                # chat_completion_chunk["object"] = assistant_content
-                chat_completion_chunk["object"] = "extensions.chat.completion.chunk"
-                chat_completion_chunk["apim-request-id"] = response.headers.get(
-                    "apim-request-id", ""
-                )
-                chat_completion_chunk["choices"][0]["messages"].append(
-                    {"role": "assistant", "content": assistant_content}
-                )
-                chat_completion_chunk["choices"][0]["delta"] = {
-                    "role": "assistant",
-                    "content": assistant_content,
-                }
+                    chat_completion_chunk["id"] = str(uuid.uuid4())
+                    chat_completion_chunk["model"] = "rag-model"
+                    chat_completion_chunk["created"] = int(time.time())
+                    # chat_completion_chunk["object"] = assistant_content
+                    chat_completion_chunk["object"] = "extensions.chat.completion.chunk"
+                    chat_completion_chunk["apim-request-id"] = response.headers.get(
+                        "apim-request-id", ""
+                    )
+                    chat_completion_chunk["choices"][0]["messages"].append(
+                        {"role": "assistant", "content": assistant_content}
+                    )
+                    chat_completion_chunk["choices"][0]["delta"] = {
+                        "role": "assistant",
+                        "content": assistant_content,
+                    }
 
-                completion_chunk_obj = json.loads(
-                    json.dumps(chat_completion_chunk),
-                    object_hook=lambda d: SimpleNamespace(**d),
-                )
-                yield json.dumps(format_stream_response(completion_chunk_obj, history_metadata, response.headers.get("apim-request-id", ""))) + "\n\n"
+                    completion_chunk_obj = json.loads(
+                        json.dumps(chat_completion_chunk),
+                        object_hook=lambda d: SimpleNamespace(**d),
+                    )
+                    yield json.dumps(format_stream_response(completion_chunk_obj, history_metadata, response.headers.get("apim-request-id", ""))) + "\n\n"
+
+            except AgentInvokeException as e:
+                error_message = str(e)
+                retry_after = "sometime"
+                if "Rate limit is exceeded" in error_message:
+                    import re
+                    match = re.search(r"Try again in (\d+) seconds", error_message)
+                    if match:
+                        retry_after = f"{match.group(1)} seconds"
+                    logger.error(f"Rate limit error: {error_message}")
+                    yield json.dumps({"error": f"Rate limit is exceeded. Try again in {retry_after}."}) + "\n\n"
+                else:
+                    logger.error(f"AgentInvokeException: {error_message}")
+                    yield json.dumps({"error": "An error occurred. Please try again later."}) + "\n\n"
+
+            except Exception as e:
+                logger.error(f"Error in stream_chat_request: {e}", exc_info=True)
+                yield json.dumps({"error": "An error occurred while processing the request."}) + "\n\n"
+
         return generate()
 
     async def complete_chat_request(self, query, last_rag_response=None):

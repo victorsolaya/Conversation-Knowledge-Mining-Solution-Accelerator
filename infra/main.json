@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.34.44.8038",
-      "templateHash": "13730134018880843517"
+      "templateHash": "11969070936051168983"
     }
   },
   "parameters": {
@@ -92,7 +92,7 @@
     },
     "imageTag": {
       "type": "string",
-      "defaultValue": "latest_migra"
+      "defaultValue": "latest_migrated"
     }
   },
   "variables": {
@@ -1875,7 +1875,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.34.44.8038",
-              "templateHash": "18192780555217274649"
+              "templateHash": "5000589525239764864"
             },
             "description": "Creates an Azure App Service plan."
           },
@@ -1892,7 +1892,7 @@
             },
             "HostingPlanSku": {
               "type": "string",
-              "defaultValue": "P0v3",
+              "defaultValue": "B2",
               "allowedValues": [
                 "F1",
                 "D1",

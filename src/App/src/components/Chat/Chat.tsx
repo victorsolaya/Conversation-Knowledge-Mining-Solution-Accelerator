@@ -73,7 +73,7 @@ const Chat: React.FC<ChatProps> = ({
       payload: true,
     });
 
-    if ((reqType !== 'graph' && reqType !== 'error') && isCharthDisplayDefault){
+    if (((reqType !== 'graph' && reqType !== 'error') &&  messages[messages.length - 1].role !== ERROR) && isCharthDisplayDefault ){
       setIsChartLoading(true);
       setTimeout(()=>{
         makeApiRequestForChart('show in a graph by default', convId, messages[messages.length - 1].content as string)
@@ -267,7 +267,7 @@ const Chat: React.FC<ChatProps> = ({
           const errorMsg = JSON.parse(runningText).error;
           const errorMessage: ChatMessage = {
             id: generateUUIDv4(),
-            role: ASSISTANT,
+            role: ERROR,
             content: errorMsg,
             date: new Date().toISOString(),
           };
@@ -332,7 +332,7 @@ const Chat: React.FC<ChatProps> = ({
                 parsedChartResponse?.object?.message;
               const errorMessage: ChatMessage = {
                 id: generateUUIDv4(),
-                role: ASSISTANT,
+                role: ERROR,
                 content: errorMsg,
                 date: new Date().toISOString(),
               };
@@ -546,7 +546,7 @@ const Chat: React.FC<ChatProps> = ({
           
           const errorMessage: ChatMessage = {
             id: generateUUIDv4(),
-            role: ASSISTANT,
+            role: ERROR,
             content: errorMsg,
             date: new Date().toISOString(),
           };
@@ -612,7 +612,7 @@ const Chat: React.FC<ChatProps> = ({
                 parsedChartResponse?.object?.message;
               const errorMessage: ChatMessage = {
                 id: generateUUIDv4(),
-                role: ASSISTANT,
+                role: ERROR,
                 content: errorMsg,
                 date: new Date().toISOString(),
               };
