@@ -99,21 +99,25 @@ echo "✅ Retrieved Azure regions. Checking availability..."
 INDEX=1
 
 VALID_REGIONS=()
-TABLE_ROWS=()
-
 for REGION in "${REGIONS[@]}"; do
+    echo "----------------------------------------"
+    echo "🔍 Checking region: $REGION"
+
     QUOTA_INFO=$(az cognitiveservices usage list --location "$REGION" --output json | tr '[:upper:]' '[:lower:]')
     if [ -z "$QUOTA_INFO" ]; then
+        echo "⚠️ WARNING: Failed to retrieve quota for region $REGION. Skipping."
         continue
     fi
 
-    TEMP_TABLE_ROWS=()
     TEXT_EMBEDDING_AVAILABLE=false
     AT_LEAST_ONE_MODEL_AVAILABLE=false
+    TEMP_TABLE_ROWS=()
 
     for index in "${!FINAL_MODEL_NAMES[@]}"; do
         MODEL_NAME="${FINAL_MODEL_NAMES[$index]}"
         REQUIRED_CAPACITY="${FINAL_CAPACITIES[$index]}"
+        FOUND=false
+        INSUFFICIENT_QUOTA=false
 
         if [ "$MODEL_NAME" = "text-embedding-ada-002" ]; then
             MODEL_TYPES=("openai.standard.$MODEL_NAME")
@@ -122,33 +126,66 @@ for REGION in "${REGIONS[@]}"; do
         fi
 
         for MODEL_TYPE in "${MODEL_TYPES[@]}"; do
-            MODEL_INFO=$(echo "$QUOTA_INFO" | awk -v model="\"value\": \"$MODEL_TYPE\"" 'BEGIN { RS="},"; FS="," } $0 ~ model { print $0 }')
-            if [ -z "$MODEL_INFO" ]; then continue; fi
+            FOUND=false
+            INSUFFICIENT_QUOTA=false
+            # echo "🔍 Checking model: $MODEL_NAME with required capacity: $REQUIRED_CAPACITY ($MODEL_TYPE)"
 
-            CURRENT_VALUE=$(echo "$MODEL_INFO" | awk -F': ' '/"currentvalue"/ {print $2}' | tr -d ', ' | cut -d'.' -f1)
-            LIMIT=$(echo "$MODEL_INFO" | awk -F': ' '/"limit"/ {print $2}' | tr -d ', ' | cut -d'.' -f1)
+            MODEL_INFO=$(echo "$QUOTA_INFO" | awk -v model="\"value\": \"$MODEL_TYPE\"" '
+                BEGIN { RS="},"; FS="," }
+                $0 ~ model { print $0 }
+            ')
 
-            CURRENT_VALUE=${CURRENT_VALUE:-0}
-            LIMIT=${LIMIT:-0}
-            AVAILABLE=$((LIMIT - CURRENT_VALUE))
+            if [ -z "$MODEL_INFO" ]; then
+                FOUND=false
+                # echo "⚠️ WARNING: No quota information found for model: $MODEL_NAME in region: $REGION for model type: $MODEL_TYPE."
+                continue
+            fi
 
-            if [ "$AVAILABLE" -ge "$REQUIRED_CAPACITY" ]; then
-                if [ "$MODEL_NAME" = "text-embedding-ada-002" ]; then
-                    TEXT_EMBEDDING_AVAILABLE=true
+            if [ -n "$MODEL_INFO" ]; then
+                FOUND=true
+                CURRENT_VALUE=$(echo "$MODEL_INFO" | awk -F': ' '/"currentvalue"/ {print $2}' | tr -d ',' | tr -d ' ')
+                LIMIT=$(echo "$MODEL_INFO" | awk -F': ' '/"limit"/ {print $2}' | tr -d ',' | tr -d ' ')
+
+                CURRENT_VALUE=${CURRENT_VALUE:-0}
+                LIMIT=${LIMIT:-0}
+
+                CURRENT_VALUE=$(echo "$CURRENT_VALUE" | cut -d'.' -f1)
+                LIMIT=$(echo "$LIMIT" | cut -d'.' -f1)
+
+                AVAILABLE=$((LIMIT - CURRENT_VALUE))
+                # echo "✅ Model: $MODEL_TYPE | Used: $CURRENT_VALUE | Limit: $LIMIT | Available: $AVAILABLE"
+
+                if [ "$AVAILABLE" -ge "$REQUIRED_CAPACITY" ]; then
+                    FOUND=true
+                    if [ "$MODEL_NAME" = "text-embedding-ada-002" ]; then
+                        TEXT_EMBEDDING_AVAILABLE=true
+                    fi
+                    AT_LEAST_ONE_MODEL_AVAILABLE=true
+                    TEMP_TABLE_ROWS+=("$(printf "| %-4s | %-20s | %-43s | %-10s | %-10s | %-10s |" "$INDEX" "$REGION" "$MODEL_TYPE" "$LIMIT" "$CURRENT_VALUE" "$AVAILABLE")")
+                else
+                    INSUFFICIENT_QUOTA=true
                 fi
-                AT_LEAST_ONE_MODEL_AVAILABLE=true
-                TEMP_TABLE_ROWS+=("$(printf "| %-4s | %-20s | %-43s | %-10s | %-10s | %-10s |" "$INDEX" "$REGION" "$MODEL_TYPE" "$LIMIT" "$CURRENT_VALUE" "$AVAILABLE")")
+            fi
+            
+            if [ "$FOUND" = false ]; then
+                # echo "❌ No models found for model: $MODEL_NAME in region: $REGION (${MODEL_TYPES[*]})"
+                :
+            elif [ "$INSUFFICIENT_QUOTA" = true ]; then
+                :
+                # echo "⚠️ Model $MODEL_NAME in region: $REGION has insufficient quota (${MODEL_TYPES[*]})."
             fi
         done
     done
 
-    if { [ "$IS_USER_PROVIDED_PAIRS" = true ] && [ "$INSUFFICIENT_QUOTA" = false ]; } || 
-       { [ "$TEXT_EMBEDDING_AVAILABLE" = true ] && { [ "$APPLY_OR_CONDITION" != true ] || [ "$AT_LEAST_ONE_MODEL_AVAILABLE" = true ]; }; }; then
+if { [ "$IS_USER_PROVIDED_PAIRS" = true ] && [ "$INSUFFICIENT_QUOTA" = false ] && [ "$FOUND" = true ]; } || { [ "$TEXT_EMBEDDING_AVAILABLE" = true ] && { [ "$APPLY_OR_CONDITION" != true ] || [ "$AT_LEAST_ONE_MODEL_AVAILABLE" = true ]; }; }; then
         VALID_REGIONS+=("$REGION")
         TABLE_ROWS+=("${TEMP_TABLE_ROWS[@]}")
+        INDEX=$((INDEX + 1))
+    elif [ ${#USER_PROVIDED_PAIRS[@]} -eq 0 ]; then
+        echo "🚫 Skipping $REGION as it does not meet quota requirements."
     fi
-done
 
+done
 
 if [ ${#TABLE_ROWS[@]} -eq 0 ]; then
     echo "--------------------------------------------------------------------------------------------------------------------"
