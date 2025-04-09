@@ -10,3 +10,4 @@
 /LUISSchemaSerializationTool/LUISSchemaSerializationTool/obj
 .fake
 .azure
+*.pyc
