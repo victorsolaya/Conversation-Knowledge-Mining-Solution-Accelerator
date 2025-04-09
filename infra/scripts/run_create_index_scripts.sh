@@ -18,6 +18,8 @@ curl --output "03_cu_process_data_text.py" ${baseUrl}"infra/scripts/index_script
 curl --output "content_understanding_client.py" ${baseUrl}"infra/scripts/index_scripts/content_understanding_client.py"
 curl --output "ckm-analyzer_config_text.json" ${baseUrl}"infra/data/ckm-analyzer_config_text.json"
 curl --output "ckm-analyzer_config_audio.json" ${baseUrl}"infra/data/ckm-analyzer_config_audio.json"
+curl --output "04_create_cu_template_video.py" ${baseUrl}"infra/scripts/index_scripts/04_create_cu_template_video.py"
+curl --output "ckm-analyzer_config_video.json" ${baseUrl}"infra/data/ckm-analyzer_config_video.json"
 
 curl --output "sample_processed_data.json" ${baseUrl}"infra/data/sample_processed_data.json"
 curl --output "sample_processed_data_key_phrases.json" ${baseUrl}"infra/data/sample_processed_data_key_phrases.json"
@@ -44,6 +46,8 @@ sed -i "s/kv_to-be-replaced/${keyvaultName}/g" "02_create_cu_template_audio.py"
 sed -i "s/mici_to-be-replaced/${managedIdentityClientId}/g" "02_create_cu_template_audio.py"
 sed -i "s/kv_to-be-replaced/${keyvaultName}/g" "03_cu_process_data_text.py"
 sed -i "s/mici_to-be-replaced/${managedIdentityClientId}/g" "03_cu_process_data_text.py"
+sed -i "s/kv_to-be-replaced/${keyvaultName}/g" "04_create_cu_template_video.py"
+sed -i "s/mici_to-be-replaced/${managedIdentityClientId}/g" "02_create_cu_template_video.py"
 
 pip install -r requirements.txt
 
@@ -51,3 +55,4 @@ python 01_create_search_index.py
 python 02_create_cu_template_text.py
 python 02_create_cu_template_audio.py
 python 03_cu_process_data_text.py
+python 04_create_cu_template_video.py
