@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.33.93.31351",
-      "templateHash": "13599865329986757489"
+      "version": "0.34.44.8038",
+      "templateHash": "9207690475359141802"
     }
   },
   "parameters": {
@@ -128,8 +128,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.33.93.31351",
-              "templateHash": "8800226751863900201"
+              "version": "0.34.44.8038",
+              "templateHash": "2718062317870371098"
             }
           },
           "parameters": {
@@ -259,8 +259,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.33.93.31351",
-              "templateHash": "4317523167912536944"
+              "version": "0.34.44.8038",
+              "templateHash": "11024517080548002305"
             }
           },
           "parameters": {
@@ -402,8 +402,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.33.93.31351",
-              "templateHash": "319562905704482740"
+              "version": "0.34.44.8038",
+              "templateHash": "7463011266889657341"
             }
           },
           "parameters": {
@@ -1093,8 +1093,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.33.93.31351",
-              "templateHash": "14620142974675285735"
+              "version": "0.34.44.8038",
+              "templateHash": "17679659647877785824"
             }
           },
           "parameters": {
@@ -1277,8 +1277,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.33.93.31351",
-              "templateHash": "12347068855899407617"
+              "version": "0.34.44.8038",
+              "templateHash": "573049773979289587"
             }
           },
           "parameters": {
@@ -1489,8 +1489,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.33.93.31351",
-              "templateHash": "16605082293199555822"
+              "version": "0.34.44.8038",
+              "templateHash": "12523803244328608887"
             }
           },
           "parameters": {
@@ -1712,8 +1712,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.33.93.31351",
-              "templateHash": "7497154856203442649"
+              "version": "0.34.44.8038",
+              "templateHash": "12449758432080186673"
             }
           },
           "parameters": {
@@ -1924,8 +1924,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.33.93.31351",
-              "templateHash": "6738503368906728468"
+              "version": "0.34.44.8038",
+              "templateHash": "17199249570586107558"
             }
           },
           "parameters": {
@@ -2156,8 +2156,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.33.93.31351",
-              "templateHash": "13542795043218377011"
+              "version": "0.34.44.8038",
+              "templateHash": "8392442477995673035"
             }
           },
           "parameters": {
@@ -2398,8 +2398,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.33.93.31351",
-              "templateHash": "18414416216987649125"
+              "version": "0.34.44.8038",
+              "templateHash": "10339009027263620768"
             }
           },
           "parameters": {
@@ -2513,8 +2513,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.33.93.31351",
-              "templateHash": "5835426116727035307"
+              "version": "0.34.44.8038",
+              "templateHash": "2689043508944421407"
             }
           },
           "parameters": {
@@ -2535,7 +2535,7 @@
             },
             "HostingPlanSku": {
               "type": "string",
-              "defaultValue": "P0v3",
+              "defaultValue": "B2",
               "allowedValues": [
                 "F1",
                 "D1",

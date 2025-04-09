@@ -20,7 +20,7 @@ param HostingPlanName string = '${ solutionName }-app-service-plan'
 )
 // param HostingPlanSku string = 'B1'
 
-param HostingPlanSku string = 'P0v3'
+param HostingPlanSku string = 'B2'
 
 @description('Name of Web App')
 param WebsiteName string = '${ solutionName }-app-service'
