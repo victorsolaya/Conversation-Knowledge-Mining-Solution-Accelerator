@@ -211,7 +211,7 @@ const Chat: React.FC<ChatProps> = ({
     });
     dispatch({
       type: actionConstants.UPDATE_USER_MESSAGE,
-      payload: "",
+      payload:  questionInputRef?.current?.value || "",
     });
     const abortController = new AbortController();
     abortFuncs.current.unshift(abortController);
