@@ -1,0 +1,61 @@
+# # yaml-language-server: $schema=https://raw.githubusercontent.com/Azure/azure-dev/main/schemas/v1.0/azure.yaml.json
+# metadata:
+#     template: azd-init@1.11.1
+environment:
+  name: conversation-knowledge-mining
+  location: eastus
+name: conversation-knowledge-mining
+metadata:
+  template: conversation-knowledge-mining@1.0
+
+hooks:
+  postprovision:
+    windows:
+      run: |
+        Write-Host "Web app URL: "
+        Write-Host "$env:WEB_APP_URL" -ForegroundColor Cyan
+      shell: pwsh
+      continueOnError: false
+      interactive: true
+    posix:
+      run: |
+        echo "Web app URL: "
+        echo $WEB_APP_URL
+      shell: sh
+      continueOnError: false
+      interactive: true
+# environment:
+#   name: conversation-knowledge-mining-solution-accelerator
+#   location: eastus
+
+# metadata:
+#     template: azd-init@1.11.1
+# services:
+#     add-user-scripts:
+#         project: Deployment/scripts/add_user_scripts
+#         host: containerapp
+#         language: python
+#     app:
+#         project: App
+#         host: containerapp
+#         language: python
+#     fabric-scripts:
+#         project: Deployment/scripts/fabric_scripts
+#         host: containerapp
+#         language: python
+#     index-scripts:
+#         project: Deployment/scripts/index_scripts
+#         host: containerapp
+#         language: python
+#     km-charts-function:
+#         project: AzureFunctions/km-charts-function
+#         host: containerapp
+#         language: python
+#         docker:
+#             path: Dockerfile
+#     km-rag-function:
+#         project: AzureFunctions/km-rag-function
+#         host: containerapp
+#         language: python
+#         docker:
+#             path: Dockerfile
