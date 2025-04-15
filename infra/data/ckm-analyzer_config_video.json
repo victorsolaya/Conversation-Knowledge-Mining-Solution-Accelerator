@@ -1,5 +1,5 @@
 {
-    "analyzerId": "ckm-video",
+    "analyzerId": "ckm-analyzer-video",
     "name": "ckm-analyzer-video",
     "description": "Generating content understanding from video.",
     "scenario": "videoShot",

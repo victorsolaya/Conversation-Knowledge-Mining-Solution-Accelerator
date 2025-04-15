@@ -89,8 +89,6 @@ service_client = DataLakeServiceClient(
 )
 
 
-
-
 # Function: Get Embeddings
 def get_embeddings(text, openai_api_base, openai_api_version, openai_api_key):
     model_id = "text-embedding-ada-002"
@@ -203,7 +201,36 @@ conn = pyodbc.connect(
 # conn = pymssql.connect(server, username, password, database)
 cursor = conn.cursor()
 print("Connected to the database")
-cursor.execute("DROP TABLE IF EXISTS processed_data")
+cursor.execute("DROP TABLE IF EXISTS vprocessed_data")
+conn.commit()
+
+create_processed_data_sql = """CREATE TABLE vprocessed_data (
+                ConversationId varchar(255) NOT NULL PRIMARY KEY,
+                EndTime varchar(255),
+                StartTime varchar(255),
+                Content varchar(max),
+                summary varchar(3000),
+                satisfied varchar(255),
+                sentiment varchar(255),
+                topic varchar(255),
+                key_phrases nvarchar(max),
+                complaint varchar(255), 
+                mined_topic varchar(255)
+            );"""
+cursor.execute(create_processed_data_sql)
+conn.commit()
+
+cursor.execute('DROP TABLE IF EXISTS vprocessed_data_key_phrases')
+conn.commit()
+
+create_processed_data_sql = """CREATE TABLE vprocessed_data_key_phrases (
+                    ConversationId varchar(255),
+                    key_phrase varchar(500), 
+                    sentiment varchar(255),
+                    topic varchar(255), 
+                    StartTime varchar(255),
+                    );"""
+cursor.execute(create_processed_data_sql)
 conn.commit()
 
 file_system_client = service_client.get_file_system_client(file_system_client_name)
