@@ -13,9 +13,10 @@ import time
 import base64
 import pyodbc
 import struct
+import sys
 
-key_vault_name = 'kv_to-be-replaced'
-managed_identity_client_id = 'mici_to-be-replaced'
+key_vault_name=sys.argv[1]
+managed_identity_client_id = sys.argv[2]
 
 file_system_client_name = "data"
 directory = 'call_transcripts'
