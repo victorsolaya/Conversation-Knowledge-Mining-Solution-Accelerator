@@ -122,10 +122,7 @@ class ChatService:
                 api_version=config.azure_openai_api_version,
             )
 
-            thread_id = thread_cache.get(conversation_id)
-            if not thread_id:
-                thread_id = await agent.create_thread()
-                thread_cache[conversation_id] = thread_id
+            thread_id = await agent.create_thread()
 
             # Add user message to the thread
             message = ChatMessageContent(role=AuthorRole.USER, content=query)
