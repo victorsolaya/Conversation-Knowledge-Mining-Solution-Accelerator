@@ -122,6 +122,7 @@ class ChatWithDataPlugin:
                 sql_query = sql_query.replace("```sql", '').replace("```", '')
 
             answer = execute_sql_query(sql_query)
+            answer = answer[:20000]
 
         except Exception as e:
             # 'Information from database could not be retrieved. Please try again later.'
