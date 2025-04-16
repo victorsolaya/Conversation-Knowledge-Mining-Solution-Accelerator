@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.34.44.8038",
-      "templateHash": "8480202508545269208"
+      "templateHash": "10251291785467156580"
     }
   },
   "parameters": {
@@ -2013,7 +2013,7 @@
               "AZURE_AI_SEARCH_ENDPOINT": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_ai_foundry'), '2022-09-01').outputs.aiSearchTarget.value]",
               "AZURE_AI_SEARCH_INDEX": "call_transcripts_index",
               "USE_AI_PROJECT_CLIENT": "False",
-              "DISPLAY_CHART_DEFAULT": "True"
+              "DISPLAY_CHART_DEFAULT": "False"
             }
           }
         },

@@ -219,7 +219,7 @@ module backend_docker 'deploy_backend_docker.bicep'= {
         AZURE_AI_SEARCH_ENDPOINT: aifoundry.outputs.aiSearchTarget
         AZURE_AI_SEARCH_INDEX: 'call_transcripts_index'
         USE_AI_PROJECT_CLIENT:'False'
-        DISPLAY_CHART_DEFAULT:'True'
+        DISPLAY_CHART_DEFAULT:'False'
       }
   }
   scope: resourceGroup(resourceGroup().name)
