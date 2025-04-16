@@ -6,7 +6,6 @@ load_dotenv()
 
 class Config:
     def __init__(self):
-        
         # SQL Database configuration
         self.sqldb_database = os.getenv("SQLDB_DATABASE")
         self.sqldb_server = os.getenv("SQLDB_SERVER")

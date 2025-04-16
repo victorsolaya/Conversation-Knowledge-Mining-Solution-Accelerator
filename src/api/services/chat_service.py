@@ -15,7 +15,6 @@ from semantic_kernel.exceptions.agent_exceptions import AgentInvokeException  # 
 
 from common.config.config import Config
 from helpers.utils import format_stream_response
-from helpers.streaming_helper import stream_processor
 from plugins.chat_with_data_plugin import ChatWithDataPlugin
 from cachetools import TTLCache
 
@@ -128,7 +127,7 @@ class ChatService:
                     thread_id = thread_cache.get(conversation_id, None)
                     if thread_id:
                         thread = AzureAIAgentThread(client=agent.client, thread_id=thread_id)
-                    
+
                     truncation_strategy = TruncationObject(type="last_messages", last_messages=2)
 
                     async for response in agent.invoke_stream(messages=query, thread=thread, truncation_strategy=truncation_strategy):

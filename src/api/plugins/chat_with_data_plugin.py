@@ -24,7 +24,7 @@ class ChatWithDataPlugin:
 
     @kernel_function(name="Greeting",
                      description="Respond to any greeting or general questions")
-    def greeting(self, input: Annotated[str,"the question"]) -> Annotated[str,"The output is a string"]:
+    def greeting(self, input: Annotated[str, "the question"]) -> Annotated[str, "The output is a string"]:
         query = input
 
         try:
