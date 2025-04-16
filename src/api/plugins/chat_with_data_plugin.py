@@ -24,10 +24,7 @@ class ChatWithDataPlugin:
 
     @kernel_function(name="Greeting",
                      description="Respond to any greeting or general questions")
-    def greeting(self,
-                 input: Annotated[str,
-                                  "the question"]) -> Annotated[str,
-                                                                "The output is a string"]:
+    def greeting(self, input: Annotated[str,"the question"]) -> Annotated[str,"The output is a string"]:
         query = input
 
         try:
@@ -70,7 +67,7 @@ class ChatWithDataPlugin:
         return answer
 
     @kernel_function(name="ChatWithSQLDatabase",
-                     description="Given a query, get details from the database")
+                     description="Provides quantified results from the database.")
     def get_SQL_Response(
             self,
             input: Annotated[str, "the question"]
@@ -122,6 +119,7 @@ class ChatWithDataPlugin:
                 sql_query = sql_query.replace("```sql", '').replace("```", '')
 
             answer = execute_sql_query(sql_query)
+            answer = answer[:20000] if len(answer) > 20000 else answer
 
         except Exception as e:
             # 'Information from database could not be retrieved. Please try again later.'
@@ -130,7 +128,7 @@ class ChatWithDataPlugin:
         return answer
 
     @kernel_function(name="ChatWithCallTranscripts",
-                     description="given a query, get answers from search index")
+                     description="Provides summaries or detailed explanations from the search index.")
     def get_answers_from_calltranscripts(
             self,
             question: Annotated[str, "the question"]

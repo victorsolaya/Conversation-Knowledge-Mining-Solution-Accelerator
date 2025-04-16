@@ -10,6 +10,7 @@ from fastapi.responses import StreamingResponse
 from azure.identity.aio import DefaultAzureCredential
 
 from semantic_kernel.agents import AzureAIAgent, AzureAIAgentThread
+from azure.ai.projects.models import TruncationObject
 from semantic_kernel.exceptions.agent_exceptions import AgentInvokeException  # Import the exception
 
 from common.config.config import Config
@@ -127,8 +128,11 @@ class ChatService:
                     thread_id = thread_cache.get(conversation_id, None)
                     if thread_id:
                         thread = AzureAIAgentThread(client=agent.client, thread_id=thread_id)
+                    
+                    truncation_strategy = TruncationObject(type="last_messages", last_messages=2)
 
-                    async for response in agent.invoke_stream(messages=query, thread=thread):
+                    async for response in agent.invoke_stream(messages=query, thread=thread, truncation_strategy=truncation_strategy):
+                        print(f"Response: {response.content}", flush=True)
                         yield response.content
 
         except Exception as e:
