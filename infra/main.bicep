@@ -240,8 +240,8 @@ output AZURE_OPENAI_API_VERSION string = aifoundry.outputs.azureOpenAIApiVersion
 output AZURE_OPENAI_RESOURCE string =aifoundry.outputs.azureOpenAIResource
 output AZURE_OPENAI_PREVIEW_API_VERSION string = azureOpenAIApiVersion
 
-output CHARTS_URL string =azureFunctionURL.outputs.functionURLsOutput.charts_function_url
-output FILTERS_URL string =azureFunctionURL.outputs.functionURLsOutput.filters_function_url
+output CHART_DASHBOARD_URL string =azureFunctionURL.outputs.functionURLsOutput.charts_function_url
+output CHART_DASHBOARD_FILTERS_URL string =azureFunctionURL.outputs.functionURLsOutput.filters_function_url
 output USE_GRAPHRAG string ='False'
 output USE_CHAT_HISTORY_ENABLED string ='True'
 output GRAPHRAG_URL string =azureFunctionURL.outputs.functionURLsOutput.graphrag_function_url
