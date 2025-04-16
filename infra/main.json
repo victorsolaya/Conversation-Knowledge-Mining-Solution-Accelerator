@@ -1325,7 +1325,7 @@
           "resources": [
             {
               "copy": {
-                "name": "database::list",
+                "name": "list",
                 "count": "[length(variables('containers'))]"
               },
               "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers",
