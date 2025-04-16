@@ -28,8 +28,8 @@ async def add_conversation(request: Request):
         return response
 
     except Exception as e:
-        logger.exception("Exception in /generate")
-        return JSONResponse(content={"error": str(e)}, status_code=500)
+        logger.exception("Exception in /generate: %s", str(e))
+        return JSONResponse(content={"error": "An internal error has occurred!"}, status_code=500)
 
 
 @router.post("/update")
@@ -64,8 +64,8 @@ async def update_conversation(request: Request):
             status_code=200,
         )
     except Exception as e:
-        logger.exception("Exception in /history/update")
-        return JSONResponse(content={"error": str(e)}, status_code=500)
+        logger.exception("Exception in /history/update: %s", str(e))
+        return JSONResponse(content={"error": "An internal error has occurred!"}, status_code=500)
 
 
 @router.post("/message_feedback")
@@ -104,8 +104,8 @@ async def update_message_feedback(request: Request):
             )
 
     except Exception as e:
-        logger.exception("Exception in /history/message_feedback")
-        return JSONResponse(content={"error": str(e)}, status_code=500)
+        logger.exception("Exception in /history/message_feedback: %s", str(e))
+        return JSONResponse(content={"error": "An internal error has occurred!"}, status_code=500)
 
 
 @router.delete("/delete")
@@ -135,8 +135,8 @@ async def delete_conversation(request: Request):
                 status_code=404,
                 detail=f"Conversation {conversation_id} not found or user does not have permission.")
     except Exception as e:
-        logger.exception("Exception in /history/delete")
-        return JSONResponse(content={"error": str(e)}, status_code=500)
+        logger.exception("Exception in /history/delete: %s", str(e))
+        return JSONResponse(content={"error": "An internal error has occurred!"}, status_code=500)
 
 
 @router.get("/list")
@@ -164,8 +164,8 @@ async def list_conversations(
         return JSONResponse(content=conversations, status_code=200)
 
     except Exception as e:
-        logger.exception("Exception in /history/list")
-        return JSONResponse(content={"error": str(e)}, status_code=500)
+        logger.exception("Exception in /history/list: %s", str(e))
+        return JSONResponse(content={"error": "An internal error has occurred!"}, status_code=500)
 
 
 @router.post("/read")
@@ -197,8 +197,8 @@ async def get_conversation_messages(request: Request):
             status_code=200)
 
     except Exception as e:
-        logger.exception("Exception in /history/read")
-        return JSONResponse(content={"error": str(e)}, status_code=500)
+        logger.exception("Exception in /history/read: %s", str(e))
+        return JSONResponse(content={"error": "An internal error has occurred!"}, status_code=500)
 
 
 @router.post("/rename")
@@ -223,8 +223,8 @@ async def rename_conversation(request: Request):
         return JSONResponse(content=rename_conversation, status_code=200)
 
     except Exception as e:
-        logger.exception("Exception in /history/rename")
-        return JSONResponse(content={"error": str(e)}, status_code=500)
+        logger.exception("Exception in /history/rename: %s", str(e))
+        return JSONResponse(content={"error": "An internal error has occurred!"}, status_code=500)
 
 
 @router.delete("/delete_all")
@@ -252,8 +252,8 @@ async def delete_all_conversations(request: Request):
         )
 
     except Exception as e:
-        logging.exception("Exception in /history/delete_all")
-        return JSONResponse(content={"error": str(e)}, status_code=500)
+        logging.exception("Exception in /history/delete_all: %s", str(e))
+        return JSONResponse(content={"error": "An internal error has occurred!"}, status_code=500)
 
 
 @router.post("/clear")
@@ -285,8 +285,8 @@ async def clear_messages(request: Request):
             status_code=200)
 
     except Exception as e:
-        logger.exception("Exception in /history/clear")
-        return JSONResponse(content={"error": str(e)}, status_code=500)
+        logger.exception("Exception in /history/clear: %s", str(e))
+        return JSONResponse(content={"error": "An internal error has occurred!"}, status_code=500)
 
 
 @router.get("/history/ensure")
@@ -303,15 +303,15 @@ async def ensure_cosmos():
                 "message": "CosmosDB is configured and working"},
             status_code=200)
     except Exception as e:
-        logger.exception("Exception in /history/ensure")
+        logger.exception("Exception in /history/ensure: %s", str(e))
         cosmos_exception = str(e)
 
         if "Invalid credentials" in cosmos_exception:
-            return JSONResponse(content={"error": cosmos_exception}, status_code=401)
+            return JSONResponse(content={"error": "Invalid credentials"}, status_code=401)
         elif "Invalid CosmosDB database name" in cosmos_exception or "Invalid CosmosDB container name" in cosmos_exception:
-            return JSONResponse(content={"error": cosmos_exception}, status_code=422)
+            return JSONResponse(content={"error": "Invalid CosmosDB configuration"}, status_code=422)
         else:
             return JSONResponse(
                 content={
-                    "error": f"CosmosDB is not configured or not working: {cosmos_exception}"},
+                    "error": "CosmosDB is not configured or not working"},
                 status_code=500)

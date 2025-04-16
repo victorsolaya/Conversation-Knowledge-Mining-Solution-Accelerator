@@ -21,8 +21,8 @@ async def fetch_chart_data():
         response = chart_service.fetch_chart_data()
         return JSONResponse(content=response)
     except Exception as e:
-        logger.exception("Error in fetch_chart_data")
-        return JSONResponse(content={"error": f"Failed to fetch chart data: {str(e)}"}, status_code=500)
+        logger.exception("Error in fetch_chart_data: %s", str(e))
+        return JSONResponse(content={"error": "Failed to fetch chart data due to an internal error."}, status_code=500)
 
 
 @router.post("/fetchChartDataWithFilters")
@@ -33,8 +33,8 @@ async def fetch_chart_data_with_filters(chart_filters: ChartFilters):
         response = await chart_service.fetch_chart_data_with_filters(chart_filters)
         return JSONResponse(content=response)
     except Exception as e:
-        logger.exception("Error in fetch_chart_data_with_filters")
-        return JSONResponse(content={"error": f"Failed to fetch chart data: {str(e)}"}, status_code=500)
+        logger.exception("Error in fetch_chart_data_with_filters: %s", str(e))
+        return JSONResponse(content={"error": "Failed to fetch chart data due to an internal error."}, status_code=500)
 
 
 @router.get("/fetchFilterData")
@@ -44,8 +44,8 @@ async def fetch_filter_data():
         response = chart_service.fetch_filter_data()
         return JSONResponse(content=response)
     except Exception as e:
-        logger.exception("Error in fetch_filter_data")
-        return JSONResponse(content={"error": f"Failed to fetch filter data: {str(e)}"}, status_code=500)
+        logger.exception("Error in fetch_filter_data: %s", str(e))
+        return JSONResponse(content={"error": "Failed to fetch filter data due to an internal error."}, status_code=500)
 
 
 @router.post("/chat")
@@ -71,8 +71,8 @@ async def conversation(request: Request):
             return JSONResponse(content=result)
 
     except Exception as ex:
-        logger.exception("Error in conversation endpoint")
-        return JSONResponse(content={"error": str(ex)}, status_code=getattr(ex, "status_code", 500))
+        logger.exception("Error in conversation endpoint: %s", str(ex))
+        return JSONResponse(content={"error": "An internal error occurred while processing the conversation."}, status_code=500)
 
 
 @router.get("/layout-config")
@@ -83,8 +83,8 @@ async def get_layout_config():
             layout_config_json = json.loads(layout_config_str)  # Parse the string into JSON
             return JSONResponse(content=layout_config_json)    # Return the parsed JSON
         except json.JSONDecodeError as e:
-            logger.exception("Failed to parse layout config JSON")
-            return JSONResponse(content={"error": f"Invalid JSON format: {str(e)}"}, status_code=400)
+            logger.exception("Failed to parse layout config JSON: %s", str(e))
+            return JSONResponse(content={"error": "Invalid layout configuration format."}, status_code=400)
     return JSONResponse(content={"error": "Layout config not found in environment variables"}, status_code=400)
 
 
