@@ -16,7 +16,7 @@ zipUrl2=${baseUrl}"infra/data/audio_data.zip"
 
 zipFileName3="video_data.zip"
 extractedFolder3="videodata"
-zipUrl3=${baseUrl}"infra/data/audio_data.zip"
+zipUrl3=${baseUrl}"infra/data/video_data.zip"
 
 # Create folders if they do not exist
 mkdir -p "/mnt/azscripts/azscriptinput/$extractedFolder1"

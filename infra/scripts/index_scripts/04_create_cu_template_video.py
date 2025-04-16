@@ -198,7 +198,6 @@ conn = pyodbc.connect(
     connection_string, attrs_before={SQL_COPT_SS_ACCESS_TOKEN: token_struct}
 )
 
-# conn = pymssql.connect(server, username, password, database)
 cursor = conn.cursor()
 print("Connected to the database")
 cursor.execute("DROP TABLE IF EXISTS vprocessed_data")
@@ -281,7 +280,7 @@ for path in paths:
         content = result["result"]["contents"][0]["fields"]["content"]["valueString"]
         # print(topic)
         cursor.execute(
-            f"INSERT INTO processed_data (ConversationId, EndTime, StartTime, Content, summary, satisfied, sentiment, topic, key_phrases, complaint) VALUES (?,?,?,?,?,?,?,?,?,?)",
+            f"INSERT INTO vprocessed_data (ConversationId, EndTime, StartTime, Content, summary, satisfied, sentiment, topic, key_phrases, complaint) VALUES (?,?,?,?,?,?,?,?,?,?)",
             (
                 conversation_id,
                 end_timestamp,
@@ -300,7 +299,7 @@ for path in paths:
         keyPhrases = key_phrases.split(",")
         for keyPhrase in keyPhrases:
             cursor.execute(
-                f"INSERT INTO processed_data_key_phrases (ConversationId, key_phrase, sentiment) VALUES (?,?,?)",
+                f"INSERT INTO vprocessed_data_key_phrases (ConversationId, key_phrase, sentiment) VALUES (?,?,?)",
                 (conversation_id, keyPhrase, sentiment),
             )
 
@@ -309,8 +308,8 @@ for path in paths:
         result = prepare_search_doc(content, document_id)
         docs.append(result)
         counter += 1
-    except Exception:
-        pass
+    except Exception as e:
+        print(str(e))
 
     if docs != [] and counter % 10 == 0:
         result = search_client.upload_documents(documents=docs)
