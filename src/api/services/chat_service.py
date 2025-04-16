@@ -132,7 +132,6 @@ class ChatService:
                     truncation_strategy = TruncationObject(type="last_messages", last_messages=2)
 
                     async for response in agent.invoke_stream(messages=query, thread=thread, truncation_strategy=truncation_strategy):
-                        print(f"Response: {response.content}", flush=True)
                         yield response.content
 
         except Exception as e:

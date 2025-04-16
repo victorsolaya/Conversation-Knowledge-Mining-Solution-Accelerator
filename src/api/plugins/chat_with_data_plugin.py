@@ -124,7 +124,6 @@ class ChatWithDataPlugin:
         except Exception as e:
             # 'Information from database could not be retrieved. Please try again later.'
             answer = str(e)
-        print(answer)
         return answer
 
     @kernel_function(name="ChatWithCallTranscripts",
