@@ -132,7 +132,7 @@ class ChatService:
 
                     async for response in agent.invoke_stream(messages=query, thread=thread, truncation_strategy=truncation_strategy):
                         yield response.content
-        
+
         except RuntimeError as e:
             if "Rate limit is exceeded" in str(e):
                 logger.error(f"Rate limit error: {e}")
