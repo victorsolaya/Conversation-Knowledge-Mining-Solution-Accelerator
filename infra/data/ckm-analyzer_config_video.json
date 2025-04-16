@@ -2,7 +2,7 @@
     "analyzerId": "ckm-analyzer-video",
     "name": "ckm-analyzer-video",
     "description": "Generating content understanding from video.",
-    "scenario": "videoShot",
+    "scenario": "conversation",
     "config": {
         "returnDetails": false,
         "locales": ["en-US"]

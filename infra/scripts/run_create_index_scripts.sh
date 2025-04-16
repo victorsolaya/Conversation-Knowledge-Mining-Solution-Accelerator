@@ -47,7 +47,7 @@ sed -i "s/mici_to-be-replaced/${managedIdentityClientId}/g" "02_create_cu_templa
 sed -i "s/kv_to-be-replaced/${keyvaultName}/g" "03_cu_process_data_text.py"
 sed -i "s/mici_to-be-replaced/${managedIdentityClientId}/g" "03_cu_process_data_text.py"
 sed -i "s/kv_to-be-replaced/${keyvaultName}/g" "04_create_cu_template_video.py"
-sed -i "s/mici_to-be-replaced/${managedIdentityClientId}/g" "02_create_cu_template_video.py"
+sed -i "s/mici_to-be-replaced/${managedIdentityClientId}/g" "04_create_cu_template_video.py"
 
 pip install -r requirements.txt
 
