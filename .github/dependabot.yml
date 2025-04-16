@@ -11,7 +11,7 @@ updates:
    open-pull-requests-limit: 100
 
  - package-ecosystem: "pip"
-   directory: "/App"
+   directory: "/src/api"
    schedule:
      interval: "monthly"
    commit-message:
@@ -20,7 +20,7 @@ updates:
    open-pull-requests-limit: 100
 
  - package-ecosystem: "npm"
-   directory: "/App/frontend"
+   directory: "/src/App"
    schedule:
      interval: "monthly"
    commit-message:
