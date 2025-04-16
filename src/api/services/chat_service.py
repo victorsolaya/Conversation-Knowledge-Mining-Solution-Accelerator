@@ -11,7 +11,7 @@ from azure.identity.aio import DefaultAzureCredential
 
 from semantic_kernel.agents import AzureAIAgent, AzureAIAgentThread
 from azure.ai.projects.models import TruncationObject
-from semantic_kernel.exceptions.agent_exceptions import AgentInvokeException  # Import the exception
+from semantic_kernel.exceptions.agent_exceptions import AgentException
 
 from common.config.config import Config
 from helpers.utils import format_stream_response
@@ -132,6 +132,14 @@ class ChatService:
 
                     async for response in agent.invoke_stream(messages=query, thread=thread, truncation_strategy=truncation_strategy):
                         yield response.content
+        
+        except RuntimeError as e:
+            if "Rate limit is exceeded" in str(e):
+                logger.error(f"Rate limit error: {e}")
+                raise AgentException(f"Rate limit is exceeded. {str(e)}")
+            else:
+                logger.error(f"RuntimeError: {e}")
+                raise AgentException(f"An unexpected runtime error occurred: {str(e)}")
 
         except Exception as e:
             logger.error(f"Error in stream_openai_text: {e}", exc_info=True)
@@ -185,7 +193,7 @@ class ChatService:
                         )
                         yield json.dumps(format_stream_response(completion_chunk_obj, history_metadata, "")) + "\n\n"
 
-            except AgentInvokeException as e:
+            except AgentException as e:
                 error_message = str(e)
                 retry_after = "sometime"
                 if "Rate limit is exceeded" in error_message:
