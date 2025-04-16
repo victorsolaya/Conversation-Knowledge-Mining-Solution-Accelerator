@@ -709,3 +709,4 @@ output azureOpenAIDeploymentModel string = gptModelName
 output azureOpenAIResource string = aiServicesName
 output azureOpenAIPreviewApiVersion string = azureOpenAIApiVersion
 
+output azureOpenAIKeyName string = azureOpenAIApiKeyEntry.name
