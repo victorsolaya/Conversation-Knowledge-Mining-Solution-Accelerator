@@ -276,3 +276,5 @@ resource role 'Microsoft.DocumentDB/databaseAccounts/sqlRoleAssignments@2022-05-
 
 output webAppUrl string = 'https://${WebsiteName}.azurewebsites.net'
 
+output REACT_APP_LAYOUT_CONFIG string = REACT_APP_LAYOUT_CONFIG
+
