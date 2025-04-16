@@ -199,6 +199,7 @@ module backend_docker 'deploy_backend_docker.bicep'= {
     azureSearchAdminKey:keyVault.getSecret('AZURE-SEARCH-KEY')
     solutionName: solutionPrefix
     userassignedIdentityId: managedIdentityModule.outputs.managedIdentityBackendAppOutput.id
+    aiProjectName: aifoundry.outputs.aiProjectName
     appSettings:{
         AZURE_OPEN_AI_DEPLOYMENT_MODEL:gptModelName
         AZURE_OPEN_AI_ENDPOINT:aifoundry.outputs.aiServicesTarget
@@ -218,7 +219,7 @@ module backend_docker 'deploy_backend_docker.bicep'= {
         AZURE_AI_SEARCH_ENDPOINT: aifoundry.outputs.aiSearchTarget
         AZURE_AI_SEARCH_INDEX: 'call_transcripts_index'
         USE_AI_PROJECT_CLIENT:'False'
-        DISPLAY_CHART_DEFAULT:'True'
+        DISPLAY_CHART_DEFAULT:'False'
       }
   }
   scope: resourceGroup(resourceGroup().name)
