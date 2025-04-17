@@ -7,8 +7,8 @@ import sys
 from pathlib import Path
 from azure.identity import DefaultAzureCredential, get_bearer_token_provider
 
-key_vault_name = 'kv_to-be-replaced'
-managed_identity_client_id = 'mici_to-be-replaced'
+key_vault_name=sys.argv[1]
+managed_identity_client_id = sys.argv[2]
 
 def get_secrets_from_kv(kv_name, secret_name):
 
