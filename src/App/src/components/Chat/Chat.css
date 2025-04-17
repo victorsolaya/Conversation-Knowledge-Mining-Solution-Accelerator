@@ -7,6 +7,13 @@
   --text-area-font: 0.875rem;
 }
 
+.text-area-container {
+  display: flex !important;
+  width: 100% !important;
+  margin: 0.5rem;
+  gap: 0.5rem;
+}
+
 .chat-container {
   display: flex;
   flex-direction: column;

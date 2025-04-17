@@ -1,23 +1,18 @@
-import React, { useEffect, useState, useRef } from "react";
-import Chart from "./components/Chart/Chart";
+import React, { useEffect, useState } from "react";
 import Chat from "./components/Chat/Chat";
 import {
-  Button,
   FluentProvider,
   Subtitle2,
   Body2,
   webLightTheme,
   Avatar,
-  Tag,
 } from "@fluentui/react-components";
-import { SparkleRegular } from "@fluentui/react-icons";
 import "./App.css";
 import { ChatHistoryPanel } from "./components/ChatHistoryPanel/ChatHistoryPanel";
 
 import {
   getUserInfo,
   getLayoutConfig,
-  historyDelete,
   historyDeleteAll,
   historyList,
   historyRead,
@@ -25,29 +20,25 @@ import {
 
 import { useAppContext } from "./state/useAppContext";
 import { actionConstants } from "./state/ActionConstants";
-import { ChatMessage, Conversation } from "./types/AppTypes";
+import { ChatMessage } from "./types/AppTypes";
 import { AppLogo } from "./components/Svg/Svg";
 import CustomSpinner from "./components/CustomSpinner/CustomSpinner";
 import CitationPanel from "./components/CitationPanel/CitationPanel";
 const panels = {
-  DASHBOARD: "DASHBOARD",
   CHAT: "CHAT",
   CHATHISTORY: "CHATHISTORY",
 };
 
 const defaultThreeColumnConfig: Record<string, number> = {
-  [panels.DASHBOARD]: 60,
-  [panels.CHAT]: 40,
-  [panels.CHATHISTORY]: 20,
+  [panels.CHAT]: 70,
+  [panels.CHATHISTORY]: 30,
 };
 const defaultSingleColumnConfig: Record<string, number> = {
-  [panels.DASHBOARD]: 100,
   [panels.CHAT]: 100,
   [panels.CHATHISTORY]: 100,
 };
 
 const defaultPanelShowStates = {
-  [panels.DASHBOARD]: true,
   [panels.CHAT]: true,
   [panels.CHATHISTORY]: false,
 };
@@ -143,12 +134,13 @@ const Dashboard: React.FC = () => {
           break;
         }
       }
-    } else {
-      const threeColumn = appConfig.THREE_COLUMN as Record<string, number>;
-      threeColumn.DASHBOARD =
-        threeColumn.DASHBOARD > 55 ? threeColumn.DASHBOARD : 55;
-      setPanelWidths({ ...threeColumn });
     }
+    //  else {
+    //   const threeColumn = appConfig.THREE_COLUMN as Record<string, number>;
+    //   threeColumn.DASHBOARD =
+    //     threeColumn.DASHBOARD > 55 ? threeColumn.DASHBOARD : 55;
+    //   setPanelWidths({ ...threeColumn });
+    // }
   };
 
   useEffect(() => {
@@ -161,12 +153,6 @@ const Dashboard: React.FC = () => {
       ...panelShowStates,
       [panelName]: !panelShowStates[panelName],
     };
-    const isHiddenBoth = !newState[panels.DASHBOARD] && !newState[panels.CHAT];
-    if (isHiddenBoth && panelName === panels.CHAT) {
-      newState[panels.DASHBOARD] = true;
-    } else if (isHiddenBoth && panelName === panels.DASHBOARD) {
-      newState[panels.CHAT] = true;
-    }
     updateLayoutWidths(newState);
     setPanelShowStates(newState);
   };
@@ -311,36 +297,12 @@ const Dashboard: React.FC = () => {
           </Subtitle2>
         </div>
         <div className="header-right-section">
-          <Button
-            appearance="subtle"
-            onClick={() => onHandlePanelStates(panels.DASHBOARD)}
-          >
-            {`${
-              panelShowStates?.[panels.DASHBOARD] ? "Hide" : "Show"
-            } Dashboard`}
-          </Button>
-          <Button
-            icon={<SparkleRegular />}
-            appearance="subtle"
-            onClick={() => onHandlePanelStates(panels.CHAT)}
-          >
-            {`${panelShowStates?.[panels.CHAT] ? "Hide" : "Show"} Chat`}
-          </Button>
           <div>
             <Avatar name={name} title={name} />
           </div>
         </div>
       </div>
       <div className="main-container">
-        {/* LEFT PANEL: DASHBOARD */}
-        {panelShowStates?.[panels.DASHBOARD] && (
-          <div
-            className="left-section"
-            style={{ width: `${panelWidths[panels.DASHBOARD]}%` }}
-          >
-            <Chart layoutWidthUpdated={layoutWidthUpdated} />
-          </div>
-        )}
         {/* MIDDLE PANEL: CHAT */}
         {panelShowStates?.[panels.CHAT] && (
           <div
@@ -358,9 +320,7 @@ const Dashboard: React.FC = () => {
         {state.citation.showCitation && (
           <div
             style={{
-              // width: `${panelWidths[panels.DASHBOARD]}%`,
               width: `${panelWidths[panels.CHATHISTORY] || 17}%`,
-              // minWidth: '30%'
             }}
           >
             <CitationPanel activeCitation={state.citation.activeCitation}  />

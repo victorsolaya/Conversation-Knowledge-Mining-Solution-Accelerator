@@ -13,53 +13,53 @@ import {
 } from "../types/AppTypes";
 const baseURL = process.env.REACT_APP_API_BASE_URL;// base API URL
 
-export const fetchChartData = async () => {
-  try {
-    const response = await fetch(`${baseURL}/api/fetchChartData`);
-    if (!response.ok) {
-      throw new Error(`Error: ${response.status} ${response.statusText}`);
-    }
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error("Failed to fetch chart data:", error);
-    throw error; // Rethrow the error so the calling function can handle it
-  }
-};
+// export const fetchChartData = async () => {
+//   try {
+//     const response = await fetch(`${baseURL}/api/fetchChartData`);
+//     if (!response.ok) {
+//       throw new Error(`Error: ${response.status} ${response.statusText}`);
+//     }
+//     const data = await response.json();
+//     return data;
+//   } catch (error) {
+//     console.error("Failed to fetch chart data:", error);
+//     throw error; // Rethrow the error so the calling function can handle it
+//   }
+// };
 
-export const fetchChartDataWithFilters = async (bodyData: any) => {
-  try {
-    const response = await fetch(`${baseURL}/api/fetchChartDataWithFilters`, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-      method: "POST",
-      body: JSON.stringify(bodyData),
-    });
-    if (!response.ok) {
-      throw new Error(`Error: ${response.status} ${response.statusText}`);
-    }
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error("Failed to fetch filtered chart data:", error);
-    throw error;
-  }
-};
+// export const fetchChartDataWithFilters = async (bodyData: any) => {
+//   try {
+//     const response = await fetch(`${baseURL}/api/fetchChartDataWithFilters`, {
+//       headers: {
+//         "Content-Type": "application/json",
+//       },
+//       method: "POST",
+//       body: JSON.stringify(bodyData),
+//     });
+//     if (!response.ok) {
+//       throw new Error(`Error: ${response.status} ${response.statusText}`);
+//     }
+//     const data = await response.json();
+//     return data;
+//   } catch (error) {
+//     console.error("Failed to fetch filtered chart data:", error);
+//     throw error;
+//   }
+// };
 
-export const fetchFilterData = async () => {
-  try {
-    const response = await fetch(`${baseURL}/api/fetchFilterData`);
-    if (!response.ok) {
-      throw new Error(`Error: ${response.status} ${response.statusText}`);
-    }
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error("Failed to fetch filter data:", error);
-    throw error;
-  }
-};
+// export const fetchFilterData = async () => {
+//   try {
+//     const response = await fetch(`${baseURL}/api/fetchFilterData`);
+//     if (!response.ok) {
+//       throw new Error(`Error: ${response.status} ${response.statusText}`);
+//     }
+//     const data = await response.json();
+//     return data;
+//   } catch (error) {
+//     console.error("Failed to fetch filter data:", error);
+//     throw error;
+//   }
+// };
 
 export type UserInfo = {
   access_token: string;
@@ -250,30 +250,31 @@ export async function getLayoutConfig(): Promise<{
   };
 }
 
-export async function getIsChartDisplayDefault(): Promise<{
-  isChartDisplayDefault: boolean;
-}> {
-  const userId = getUserIdFromLocalStorage();
-  const response = await fetch(`${baseURL}/api/display-chart-default`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      "X-Ms-Client-Principal-Id": userId || "",
-    },
-  });
-  try {
-    if (response.ok) {
-      const responseData = await response.json();
-      const tempChartDisplayFlag = responseData.isChartDisplayDefault.toLowerCase() == 'true' ? true : false
-      return { isChartDisplayDefault: tempChartDisplayFlag }
-    }
-  } catch {
-    console.error("Failed to get chart config flag");
-  }
-  return {
-    isChartDisplayDefault: true
-  };
-}
+//TBD- this is been called from chat.tsx to get the chart display default value need to check usecase
+// export async function getIsChartDisplayDefault(): Promise<{
+//   isChartDisplayDefault: boolean;
+// }> {
+//   const userId = getUserIdFromLocalStorage();
+//   const response = await fetch(`${baseURL}/api/display-chart-default`, {
+//     method: "GET",
+//     headers: {
+//       "Content-Type": "application/json",
+//       "X-Ms-Client-Principal-Id": userId || "",
+//     },
+//   });
+//   try {
+//     if (response.ok) {
+//       const responseData = await response.json();
+//       const tempChartDisplayFlag = responseData.isChartDisplayDefault.toLowerCase() == 'true' ? true : false
+//       return { isChartDisplayDefault: tempChartDisplayFlag }
+//     }
+//   } catch {
+//     console.error("Failed to get chart config flag");
+//   }
+//   return {
+//     isChartDisplayDefault: true
+//   };
+// }
 
 export async function callConversationApi(
   options: ConversationRequest,

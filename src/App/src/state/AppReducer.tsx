@@ -4,37 +4,37 @@ import { Action, type AppState } from "./AppProvider";
 
 const appReducer = (state: AppState, action: Action): AppState => {
   switch (action.type) {
-    case actionConstants.SET_FILTERS:
-      return {
-        ...state,
-        dashboards: { ...state.dashboards, filtersMeta: action.payload },
-      };
-    case actionConstants.UPDATE_FILTERS_FETCHED_FLAG:
-      return {
-        ...state,
-        dashboards: { ...state.dashboards, filtersMetaFetched: action.payload },
-      };
-    case actionConstants.UPDATE_CHARTS_DATA:
-      return {
-        ...state,
-        dashboards: { ...state.dashboards, charts: action.payload },
-      };
-    case actionConstants.UPDATE_INITIAL_CHARTS_FETCHED_FLAG:
-      return {
-        ...state,
-        dashboards: {
-          ...state.dashboards,
-          initialChartsDataFetched: action.payload,
-        },
-      };
-    case actionConstants.UPDATE_SELECTED_FILTERS:
-      return {
-        ...state,
-        dashboards: {
-          ...state.dashboards,
-          selectedFilters: action.payload,
-        },
-      };
+    // case actionConstants.SET_FILTERS:
+    //   return {
+    //     ...state,
+    //     dashboards: { ...state.dashboards, filtersMeta: action.payload },
+    //   };
+    // case actionConstants.UPDATE_FILTERS_FETCHED_FLAG:
+    //   return {
+    //     ...state,
+    //     dashboards: { ...state.dashboards, filtersMetaFetched: action.payload },
+    //   };
+    // case actionConstants.UPDATE_CHARTS_DATA:
+    //   return {
+    //     ...state,
+    //     dashboards: { ...state.dashboards, charts: action.payload },
+    //   };
+    // case actionConstants.UPDATE_INITIAL_CHARTS_FETCHED_FLAG:
+    //   return {
+    //     ...state,
+    //     dashboards: {
+    //       ...state.dashboards,
+    //       initialChartsDataFetched: action.payload,
+    //     },
+    //   };
+    // case actionConstants.UPDATE_SELECTED_FILTERS:
+    //   return {
+    //     ...state,
+    //     dashboards: {
+    //       ...state.dashboards,
+    //       selectedFilters: action.payload,
+    //     },
+    //   };
     case actionConstants.UPDATE_USER_MESSAGE:
       return {
         ...state,
@@ -236,22 +236,22 @@ const appReducer = (state: AppState, action: Action): AppState => {
           isStreamingInProgress: action.payload,
         },
       };
-    case actionConstants.UPDATE_CHARTS_FETCHING_FLAG:
-      return {
-        ...state,
-        dashboards: {
-          ...state.dashboards,
-          fetchingCharts: action.payload,
-        },
-      };
-    case actionConstants.UPDATE_FILTERS_FETCHING_FLAG:
-      return {
-        ...state,
-        dashboards: {
-          ...state.dashboards,
-          fetchingFilters: action.payload,
-        },
-      };
+    // case actionConstants.UPDATE_CHARTS_FETCHING_FLAG:
+    //   return {
+    //     ...state,
+    //     dashboards: {
+    //       ...state.dashboards,
+    //       fetchingCharts: action.payload,
+    //     },
+    //   };
+    // case actionConstants.UPDATE_FILTERS_FETCHING_FLAG:
+    //   return {
+    //     ...state,
+    //     dashboards: {
+    //       ...state.dashboards,
+    //       fetchingFilters: action.payload,
+    //     },
+    //   };
       case actionConstants.UPDATE_CITATION:
       return {
         ...state,

@@ -95,26 +95,26 @@ const initialState: AppState = {
 };
 
 export type Action =
-  | {
-      type: typeof actionConstants.SET_FILTERS;
-      payload: FilterMetaData;
-    }
-  | {
-      type: typeof actionConstants.UPDATE_FILTERS_FETCHED_FLAG;
-      payload: boolean;
-    }
-  | {
-      type: typeof actionConstants.UPDATE_CHARTS_DATA;
-      payload: ChartConfigItem[];
-    }
-  | {
-      type: typeof actionConstants.UPDATE_INITIAL_CHARTS_FETCHED_FLAG;
-      payload: boolean;
-    }
-  | {
-      type: typeof actionConstants.UPDATE_SELECTED_FILTERS;
-      payload: SelectedFilters;
-    }
+  // | {
+  //     type: typeof actionConstants.SET_FILTERS;
+  //     payload: FilterMetaData;
+  //   }
+  // | {
+  //     type: typeof actionConstants.UPDATE_FILTERS_FETCHED_FLAG;
+  //     payload: boolean;
+  //   }
+  // | {
+  //     type: typeof actionConstants.UPDATE_CHARTS_DATA;
+  //     payload: ChartConfigItem[];
+  //   }
+  // | {
+  //     type: typeof actionConstants.UPDATE_INITIAL_CHARTS_FETCHED_FLAG;
+  //     payload: boolean;
+  //   }
+  // | {
+  //     type: typeof actionConstants.UPDATE_SELECTED_FILTERS;
+  //     payload: SelectedFilters;
+  //   }
   | {
       type: typeof actionConstants.UPDATE_USER_MESSAGE;
       payload: string;
@@ -197,14 +197,14 @@ export type Action =
       type: typeof actionConstants.UPDATE_STREAMING_FLAG;
       payload: boolean;
     }
-  | {
-      type: typeof actionConstants.UPDATE_CHARTS_FETCHING_FLAG;
-      payload: boolean;
-    }
-  | {
-      type: typeof actionConstants.UPDATE_FILTERS_FETCHING_FLAG;
-      payload: boolean;
-    }
+  // | {
+  //     type: typeof actionConstants.UPDATE_CHARTS_FETCHING_FLAG;
+  //     payload: boolean;
+  //   }
+  // | {
+  //     type: typeof actionConstants.UPDATE_FILTERS_FETCHING_FLAG;
+  //     payload: boolean;
+  //   }
   | {
     type: typeof actionConstants.UPDATE_CITATION;
     payload: {activeCitation: any, showCitation: boolean};

@@ -23,7 +23,7 @@ import {
   type ChatMessage,
   ToolMessageContent,
 } from "../../types/AppTypes";
-import { callConversationApi, getIsChartDisplayDefault, historyUpdate } from "../../api/api";
+import { callConversationApi, /*getIsChartDisplayDefault,*/ historyUpdate } from "../../api/api";
 import { ChatAdd24Regular } from "@fluentui/react-icons";
 import { generateUUIDv4 } from "../../configs/Utils";
 import ChatChart from "../ChatChart/ChatChart";
@@ -51,17 +51,17 @@ const Chat: React.FC<ChatProps> = ({
   const chatMessageStreamEnd = useRef<HTMLDivElement | null>(null);
   const [isCharthDisplayDefault , setIsCharthDisplayDefault] = useState(false);
   
-  useEffect(() => {
-    try {
-      const fetchIsChartDisplayDefault = async () => {
-        const chartConfigFlag = await getIsChartDisplayDefault();
-        setIsCharthDisplayDefault(chartConfigFlag.isChartDisplayDefault);
-      };
-      fetchIsChartDisplayDefault();
-    } catch (error) {
-      console.error("Failed to fetch isChartDisplayDefault flag", error);
-    }
-  }, []);
+  // useEffect(() => {
+  //   try {
+  //     const fetchIsChartDisplayDefault = async () => {
+  //       const chartConfigFlag = await getIsChartDisplayDefault();
+  //       setIsCharthDisplayDefault(chartConfigFlag.isChartDisplayDefault);
+  //     };
+  //     fetchIsChartDisplayDefault();
+  //   } catch (error) {
+  //     console.error("Failed to fetch isChartDisplayDefault flag", error);
+  //   }
+  // }, []);
 
   const saveToDB = async (messages: ChatMessage[], convId: string, reqType: string = 'Text') => {
     if (!convId || !messages.length) {
