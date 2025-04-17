@@ -15,7 +15,7 @@ hooks:
         Write-Host "Web app URL: "
         Write-Host "$env:WEB_APP_URL" -ForegroundColor Cyan
         Write-Host "✅ If you want to use the Sample Data, run the following command in the Bash terminal to process it:"
-        ./infra/scripts/process_sample_data.sh <storage_account_name> <storage_container_name> <managed_client_id> <key_vault_name> <sql_server_name> <sql_database_name> <resource_group_name>
+        Write-Host "bash ./infra/scripts/process_sample_data.sh <storage_account_name> <storage_container_name> <managed_client_id> <key_vault_name> <sql_server_name> <sql_database_name> <resource_group_name>" -ForegroundColor Cyan
       shell: pwsh
       continueOnError: false
       interactive: true
@@ -24,7 +24,7 @@ hooks:
         echo "Web app URL: "
         echo $WEB_APP_URL
         echo "✅ If you want to use the Sample Data, run the following command in the Bash terminal to process it:"
-        ./infra/scripts/process_sample_data.sh <storage_account_name> <storage_container_name> <managed_client_id> <key_vault_name> <sql_server_name> <sql_database_name> <resource_group_name>
+        echo "bash ./infra/scripts/process_sample_data.sh <storage_account_name> <storage_container_name> <managed_client_id> <key_vault_name> <sql_server_name> <sql_database_name> <resource_group_name>"
       shell: sh
       continueOnError: false
       interactive: true
