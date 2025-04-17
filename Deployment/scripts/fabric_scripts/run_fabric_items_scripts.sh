@@ -52,6 +52,6 @@ sed -i "s/kv_to-be-replaced/${keyvaultName}/g" "notebooks/03_post_processing.ipy
 sed -i "s/kv_to-be-replaced/${keyvaultName}/g" "notebooks/04_create_calendar_data.ipynb"
 
 
-pip install -r requirements.txt --quiet
+pip install -r requirements.txt --user --quiet
 
 python create_fabric_items.py
