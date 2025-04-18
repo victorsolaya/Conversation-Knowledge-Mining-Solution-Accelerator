@@ -80,7 +80,6 @@ response = client.begin_create_analyzer(
 )
 result = client.poll_result(response)
 
-
 account_name = get_secrets_from_kv(key_vault_name, "ADLS-ACCOUNT-NAME")
 account_url = f"https://{account_name}.dfs.core.windows.net"
 
@@ -176,7 +175,7 @@ def prepare_search_doc(content, document_id):
     return result
 
 
-index_name = "video_index"
+index_name = "call_transcripts_index"
 
 search_credential = AzureKeyCredential(search_key)
 
@@ -197,40 +196,8 @@ connection_string = f"DRIVER={driver};SERVER={server};DATABASE={database};"
 conn = pyodbc.connect(
     connection_string, attrs_before={SQL_COPT_SS_ACCESS_TOKEN: token_struct}
 )
-
 cursor = conn.cursor()
 print("Connected to the database")
-cursor.execute("DROP TABLE IF EXISTS vprocessed_data")
-conn.commit()
-
-create_processed_data_sql = """CREATE TABLE vprocessed_data (
-                ConversationId varchar(255) NOT NULL PRIMARY KEY,
-                EndTime varchar(255),
-                StartTime varchar(255),
-                Content varchar(max),
-                summary varchar(3000),
-                satisfied varchar(255),
-                sentiment varchar(255),
-                topic varchar(255),
-                key_phrases nvarchar(max),
-                complaint varchar(255), 
-                mined_topic varchar(255)
-            );"""
-cursor.execute(create_processed_data_sql)
-conn.commit()
-
-cursor.execute('DROP TABLE IF EXISTS vprocessed_data_key_phrases')
-conn.commit()
-
-create_processed_data_sql = """CREATE TABLE vprocessed_data_key_phrases (
-                    ConversationId varchar(255),
-                    key_phrase varchar(500), 
-                    sentiment varchar(255),
-                    topic varchar(255), 
-                    StartTime varchar(255),
-                    );"""
-cursor.execute(create_processed_data_sql)
-conn.commit()
 
 file_system_client = service_client.get_file_system_client(file_system_client_name)
 paths = file_system_client.get_paths(path=directory_name)
@@ -249,7 +216,7 @@ for path in paths:
         result = client.poll_result(response)
 
         file_name = path.name.split("/")[-1]
-        start_time = file_name.replace(".wav", "")[-19:]
+        start_time = file_name.replace(".mp4", "")[-19:]
 
         timestamp_format = "%Y-%m-%d %H_%M_%S"  # Adjust format if necessary
         start_timestamp = datetime.strptime(start_time, timestamp_format)
@@ -264,9 +231,7 @@ for path in paths:
         end_timestamp = end_timestamp.split(".")[0]
 
         summary = result["result"]["contents"][0]["fields"]["summary"]["valueString"]
-        satisfied = result["result"]["contents"][0]["fields"]["satisfied"][
-            "valueString"
-        ]
+        satisfied = result["result"]["contents"][0]["fields"]["satisfied"].get("valueString")
         sentiment = result["result"]["contents"][0]["fields"]["sentiment"][
             "valueString"
         ]
@@ -274,9 +239,7 @@ for path in paths:
         key_phrases = result["result"]["contents"][0]["fields"]["keyPhrases"][
             "valueString"
         ]
-        complaint = result["result"]["contents"][0]["fields"]["complaint"][
-            "valueString"
-        ]
+        complaint = result["result"]["contents"][0]["fields"]["complaint"].get("valueString")
         content = result["result"]["contents"][0]["fields"]["content"]["valueString"]
         # print(topic)
         cursor.execute(
