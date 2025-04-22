@@ -4,6 +4,7 @@ import openai
 from semantic_kernel.functions.kernel_function_decorator import kernel_function
 from azure.identity import DefaultAzureCredential
 from azure.ai.projects import AIProjectClient
+import copy
 
 from common.config.config import Config
 from common.database.sqldb_service import execute_sql_query
@@ -197,7 +198,13 @@ class ChatWithDataPlugin:
                     ]
                 }
             )
-            answer = completion.choices[0]
+            answer = copy.deepcopy(completion.choices[0])
+
+            # Limit the content inside citations to 300 characters to minimize load
+            if 'citations' in answer.message.context:
+                for citation in answer.message.context['citations']:
+                    if 'content' in citation:
+                        citation['content'] = citation['content'][:300] + '...' if len(citation['content']) > 300 else citation['content']
         except BaseException:
             answer = 'Details could not be retrieved. Please try again later.'
         return answer
