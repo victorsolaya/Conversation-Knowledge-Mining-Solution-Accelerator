@@ -56,7 +56,7 @@ if ($UseManagedIdentity) {
     Connect-AzAccount -Identity
 } else {
     Write-Host "[INFO] Logging in using current user identity..."
-    Connect-AzAccount
+    Connect-AzAccount -UseDeviceAuthentication
 }
 
 # Split the roles by comma and remove any extra spaces
