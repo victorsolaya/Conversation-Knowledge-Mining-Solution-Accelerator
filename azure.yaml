@@ -4,9 +4,9 @@
 environment:
   name: conversation-knowledge-mining
   location: eastus
-name: conversation-knowledge-mining
-metadata:
-  template: conversation-knowledge-mining@1.0
+# name: conversation-knowledge-mining
+# metadata:
+#   template: conversation-knowledge-mining@1.0
 
 hooks:
   postprovision:
@@ -15,7 +15,7 @@ hooks:
         Write-Host "Web app URL: "
         Write-Host "$env:WEB_APP_URL" -ForegroundColor Cyan
         Write-Host "✅ If you want to use the Sample Data, run the following command in the Bash terminal to process it:"
-        Write-Host "bash ./infra/scripts/process_sample_data.sh <storage_account_name> <storage_container_name> <managed_client_id> <key_vault_name> <sql_server_name> <sql_database_name> <resource_group_name>" -ForegroundColor Cyan
+        Write-Host "bash ./infra/scripts/process_sample_data.sh <storage_account_name> <storage_container_name> <managed_client_id> <key_vault_name> <sql_server_name> <sql_database_name> <resource_group_name> <backend_app_managed_client_id> <backend_managed_id_name>" -ForegroundColor Cyan
       shell: pwsh
       continueOnError: false
       interactive: true
@@ -24,7 +24,7 @@ hooks:
         echo "Web app URL: "
         echo $WEB_APP_URL
         echo "✅ If you want to use the Sample Data, run the following command in the Bash terminal to process it:"
-        echo "bash ./infra/scripts/process_sample_data.sh <storage_account_name> <storage_container_name> <managed_client_id> <key_vault_name> <sql_server_name> <sql_database_name> <resource_group_name>"
+        echo "bash ./infra/scripts/process_sample_data.sh <storage_account_name> <storage_container_name> <managed_client_id> <key_vault_name> <sql_server_name> <sql_database_name> <resource_group_name> <backend_app_managed_client_id> <backend_managed_id_name>"
       shell: sh
       continueOnError: false
       interactive: true
