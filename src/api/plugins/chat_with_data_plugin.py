@@ -198,12 +198,12 @@ class ChatWithDataPlugin:
                     ]
                 }
             )
-            answer = copy.deepcopy(completion.choices[0])
+            answer = completion.choices[0]
 
             # Limit the content inside citations to 300 characters to minimize load
-            if 'citations' in answer.message.context:
-                for citation in answer.message.context['citations']:
-                    if 'content' in citation:
+            if hasattr(answer.message, 'context') and 'citations' in answer.message.context:
+                for citation in answer.message.context.get('citations', []):
+                    if isinstance(citation, dict) and 'content' in citation:
                         citation['content'] = citation['content'][:300] + '...' if len(citation['content']) > 300 else citation['content']
         except BaseException:
             answer = 'Details could not be retrieved. Please try again later.'
