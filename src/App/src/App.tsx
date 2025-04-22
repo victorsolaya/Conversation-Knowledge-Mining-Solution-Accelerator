@@ -40,7 +40,7 @@ const defaultSingleColumnConfig: Record<string, number> = {
 
 const defaultPanelShowStates = {
   [panels.CHAT]: true,
-  [panels.CHATHISTORY]: false,
+  [panels.CHATHISTORY]: true,
 };
 
 const Dashboard: React.FC = () => {
@@ -50,7 +50,7 @@ const Dashboard: React.FC = () => {
     Record<string, boolean>
   >({ ...defaultPanelShowStates });
   const [panelWidths, setPanelWidths] = useState<Record<string, number>>({
-    ...defaultSingleColumnConfig,
+    ...defaultThreeColumnConfig,
   });
   const [layoutWidthUpdated, setLayoutWidthUpdated] = useState<boolean>(false);
   const [showClearAllConfirmationDialog, setChowClearAllConfirmationDialog] =
