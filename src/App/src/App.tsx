@@ -40,7 +40,7 @@ const defaultSingleColumnConfig: Record<string, number> = {
 
 const defaultPanelShowStates = {
   [panels.CHAT]: true,
-  [panels.CHATHISTORY]: true,
+  [panels.CHATHISTORY]: false,
 };
 
 const Dashboard: React.FC = () => {
