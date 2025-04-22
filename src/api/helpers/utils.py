@@ -47,4 +47,3 @@ def format_stream_response(chatCompletionChunk, history_metadata, apim_request_i
                     return response_obj
 
     return {}
-
