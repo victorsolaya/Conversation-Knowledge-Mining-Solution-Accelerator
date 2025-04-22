@@ -50,7 +50,7 @@ const Dashboard: React.FC = () => {
     Record<string, boolean>
   >({ ...defaultPanelShowStates });
   const [panelWidths, setPanelWidths] = useState<Record<string, number>>({
-    ...defaultThreeColumnConfig,
+    ...defaultSingleColumnConfig,
   });
   const [layoutWidthUpdated, setLayoutWidthUpdated] = useState<boolean>(false);
   const [showClearAllConfirmationDialog, setChowClearAllConfirmationDialog] =
