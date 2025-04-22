@@ -4,7 +4,6 @@ import openai
 from semantic_kernel.functions.kernel_function_decorator import kernel_function
 from azure.identity import DefaultAzureCredential
 from azure.ai.projects import AIProjectClient
-import copy
 
 from common.config.config import Config
 from common.database.sqldb_service import execute_sql_query
