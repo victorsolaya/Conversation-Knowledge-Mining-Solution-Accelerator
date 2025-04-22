@@ -7,12 +7,13 @@ set -u  # Treat unset variables as error
 # === Configuration Parameters ===
 STORAGE_ACCOUNT_NAME="$1"
 CONTAINER_NAME="$2"
-# BASE_URL="$3"
 MANAGED_IDENTITY_CLIENT_ID="$3"
 KEY_VAULT_NAME="$4"
 SQL_SERVER_NAME="$5"
 SQL_DB_NAME="$6"
 RG_NAME="$7"
+MI_BACKEND_APP="$8"
+DISPLAY_NAME="$9"
 
 # === Functions ===
 log() {
@@ -61,9 +62,9 @@ log "Setting up SQL users and roles..."
 pwsh -File ./infra/scripts/add_user_scripts/create-sql-user-and-role.ps1 \
     -SqlServerName "$SQL_SERVER_NAME" \
     -SqlDatabaseName "$SQL_DB_NAME" \
-    -ClientId "$MANAGED_IDENTITY_CLIENT_ID" \
-    -DisplayName "script-user" \
-    -ManagedIdentityClientId "$MANAGED_IDENTITY_CLIENT_ID" \
-    -DatabaseRole "db_datawriter" \
+    -ClientId "$MI_BACKEND_APP" \
+    -DisplayName "$DISPLAY_NAME" \
+    -ManagedIdentityClientId "$MI_BACKEND_APP" \
+    -DatabaseRole "db_datareader, db_datawriter" \
 
 log "Sample data processing completed successfully!"
