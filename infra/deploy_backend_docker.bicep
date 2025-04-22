@@ -24,7 +24,7 @@ var reactAppLayoutConfig ='''{
         "CHATHISTORY": 30
       }
     }
-  },
+  }
 }'''
 
 module appService 'deploy_app_service.bicep' = {

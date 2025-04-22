@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.34.44.8038",
-      "templateHash": "3737494119896829518"
+      "templateHash": "1780579096197772871"
     }
   },
   "parameters": {
@@ -2024,7 +2024,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.34.44.8038",
-              "templateHash": "14832451506169470299"
+              "templateHash": "2753985816499897391"
             }
           },
           "parameters": {
@@ -2063,7 +2063,7 @@
           "variables": {
             "imageName": "[format('DOCKER|kmcontainerreg.azurecr.io/km-api:{0}', parameters('imageTag'))]",
             "name": "[format('{0}-api', parameters('solutionName'))]",
-            "reactAppLayoutConfig": "{\r\n  \"appConfig\": {\r\n    \"TWO_COLUMN\": {\r\n      \"CHAT_CHATHISTORY\": {\r\n        \"CHAT\": 70,\r\n        \"CHATHISTORY\": 30\r\n      }\r\n    }\r\n  },\r\n}"
+            "reactAppLayoutConfig": "{\r\n  \"appConfig\": {\r\n    \"TWO_COLUMN\": {\r\n      \"CHAT_CHATHISTORY\": {\r\n        \"CHAT\": 70,\r\n        \"CHATHISTORY\": 30\r\n      }\r\n    }\r\n  }\r\n}"
           },
           "resources": [
             {
