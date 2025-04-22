@@ -29,13 +29,13 @@ const panels = {
   CHATHISTORY: "CHATHISTORY",
 };
 
-const defaultThreeColumnConfig: Record<string, number> = {
-  [panels.CHAT]: 70,
-  [panels.CHATHISTORY]: 30,
-};
+// const defaultThreeColumnConfig: Record<string, number> = {
+//   [panels.CHAT]: 70,
+//   [panels.CHATHISTORY]: 30,
+// };
 const defaultSingleColumnConfig: Record<string, number> = {
   [panels.CHAT]: 100,
-  [panels.CHATHISTORY]: 100,
+  [panels.CHATHISTORY]: 30,
 };
 
 const defaultPanelShowStates = {
