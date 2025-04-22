@@ -3,9 +3,7 @@ import logging
 import os
 from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse, StreamingResponse
-from api.models.input_models import ChartFilters
 from services.chat_service import ChatService
-from services.chart_service import ChartService
 
 router = APIRouter()
 
