@@ -30,8 +30,8 @@ const panels = {
 };
 
 const defaultThreeColumnConfig: Record<string, number> = {
-  [panels.CHAT]: 70,
-  [panels.CHATHISTORY]: 30,
+  [panels.CHAT]: 100,
+  [panels.CHATHISTORY]: 0,
 };
 const defaultSingleColumnConfig: Record<string, number> = {
   [panels.CHAT]: 100,
@@ -40,7 +40,7 @@ const defaultSingleColumnConfig: Record<string, number> = {
 
 const defaultPanelShowStates = {
   [panels.CHAT]: true,
-  [panels.CHATHISTORY]: true,
+  [panels.CHATHISTORY]: false,
 };
 
 const Dashboard: React.FC = () => {
