@@ -14,8 +14,10 @@ hooks:
       run: |
         Write-Host "Web app URL: "
         Write-Host "$env:WEB_APP_URL" -ForegroundColor Cyan
+        Write-Host "🚀 If you want to deploy the AI Model, run the following command in the Bash terminal:"
+        Write-Host "bash ./infra/scripts/deploy_ai_model.sh $env:RESOURCE_GROUP_NAME $env:SOLUTION_NAME $env:AZURE_OPEN_AI_MODEL_DEPLOYMENT_TYPE $env:AZURE_OPEN_AI_DEPLOYMENT_MODEL $env:AZURE_OPEN_AI_DEPLOYMENT_MODEL_CAPACITY $env:AZURE_OPENAI_EMBEDDING_MODEL $env:AZURE_OPENAI_EMBEDDING_MODEL_CAPACITY" -ForegroundColor Cyan
         Write-Host "✅ If you want to use the Sample Data, run the following command in the Bash terminal to process it:"
-        Write-Host "bash ./infra/scripts/process_sample_data.sh <storage_account_name> <storage_container_name> <managed_client_id> <key_vault_name> <sql_server_name> <sql_database_name> <resource_group_name> <backend_app_managed_client_id> <backend_managed_id_name>" -ForegroundColor Cyan
+        Write-Host "bash ./infra/scripts/process_sample_data.sh $env:STORAGE_ACCOUNT_NAME $env:STORAGE_CONTAINER_NAME $env:MANAGED_IDENTITY_CLIENT_ID $env:KEY_VAULT_NAME $env:SQLDB_SERVER $env:SQLDB_DATABASE $env:RESOURCE_GROUP_NAME $env:API_APP_MANAGED_IDENTITY_CLIENT_ID $env:API_APP_MANAGED_IDENTITY_NAME" -ForegroundColor Cyan
       shell: pwsh
       continueOnError: false
       interactive: true
@@ -23,8 +25,10 @@ hooks:
       run: |
         echo "Web app URL: "
         echo $WEB_APP_URL
+        echo "🚀 If you want to deploy the AI Model, run the following command in the Bash terminal:"
+        echo "bash ./infra/scripts/deploy_ai_model.sh $env:RESOURCE_GROUP_NAME $env:SOLUTION_NAME $env:AZURE_OPEN_AI_MODEL_DEPLOYMENT_TYPE $env:AZURE_OPEN_AI_DEPLOYMENT_MODEL $env:AZURE_OPEN_AI_DEPLOYMENT_MODEL_CAPACITY $env:AZURE_OPENAI_EMBEDDING_MODEL $env:AZURE_OPENAI_EMBEDDING_MODEL_CAPACITY"
         echo "✅ If you want to use the Sample Data, run the following command in the Bash terminal to process it:"
-        echo "bash ./infra/scripts/process_sample_data.sh <storage_account_name> <storage_container_name> <managed_client_id> <key_vault_name> <sql_server_name> <sql_database_name> <resource_group_name> <backend_app_managed_client_id> <backend_managed_id_name>"
+        echo "bash ./infra/scripts/process_sample_data.sh $STORAGE_ACCOUNT_NAME $STORAGE_CONTAINER_NAME $MANAGED_IDENTITY_CLIENT_ID $KEY_VAULT_NAME $SQLDB_SERVER $SQLDB_DATABASE $RESOURCE_GROUP_NAME $API_APP_MANAGED_IDENTITY_CLIENT_ID $API_APP_MANAGED_IDENTITY_NAME"
       shell: sh
       continueOnError: false
       interactive: true
