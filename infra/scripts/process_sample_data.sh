@@ -15,6 +15,9 @@ RG_NAME="$7"
 MI_BACKEND_APP="$8"
 DISPLAY_NAME="$9"
 
+# Extract the SQL server name without the domain
+SQL_SERVER_NAME=$(echo "$SQL_SERVER_NAME" | cut -d'.' -f1)
+
 # === Functions ===
 log() {
     echo -e "\033[1;32m[INFO]\033[0m $1"

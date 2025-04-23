@@ -2,7 +2,7 @@
 
 # Variables
 DEPLOYMENT_NAME="ai-model-deployment"
-BICEP_FILE="../deploy_ai_model.bicep"
+BICEP_FILE="./infra/deploy_ai_model.bicep"
 
 # Parameters
 RESOURCE_GROUP_NAME="$1"

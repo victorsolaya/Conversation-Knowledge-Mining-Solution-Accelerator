@@ -1,6 +1,6 @@
 using './main.bicep'
 
-param environmentName = readEnvironmentVariable('ENVIRONMENT_NAME', 'env_name')
+param environmentName = readEnvironmentVariable('AZURE_ENV_NAME', 'env_name')
 param contentUnderstandingLocation = readEnvironmentVariable('CONTENT_UNDERSTANDING_LOCATION', 'swedencentral')
 param secondaryLocation = readEnvironmentVariable('SECONDARY_LOCATION', 'eastus2')
 param deploymentType = readEnvironmentVariable('AZURE_OPEN_AI_MODEL_DEPLOYMENT_TYPE', 'GlobalStandard')
