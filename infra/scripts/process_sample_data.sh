@@ -30,46 +30,6 @@ error() {
 
 trap 'error "An unexpected error occurred. Please check the logs."' ERR
 
-# Check if Azure CLI is installed
-if ! command -v az &> /dev/null
-then
-    echo "Azure CLI not found. Installing Azure CLI..."
-    # Install Azure CLI for Debian-based systems
-    curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
-    if ! command -v az &> /dev/null
-    then
-        echo "Azure CLI installation failed. Please install it manually and rerun the script."
-        exit 1
-    fi
-fi
-
-# === Install SQL Driver ===
-log "Installing SQL driver..."
-if [ -f /etc/debian_version ]; then
-    # Debian-based systems (used in the dev container)
-    curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add - \
-        && curl -o /etc/apt/sources.list.d/mssql-release.list https://packages.microsoft.com/config/ubuntu/22.04/prod.list \
-        && apt-get update \
-        && ACCEPT_EULA=Y apt-get install -y msodbcsql18 unixodbc-dev
-log "SQL driver installation completed."
-
-# Check if PowerShell is installed
-if ! command -v pwsh &> /dev/null
-then
-    log "PowerShell not found. Installing PowerShell..."
-    if [ -f /etc/debian_version ]; then
-        # Debian-based systems
-        wget -q https://packages.microsoft.com/config/ubuntu/22.04/packages-microsoft-prod.deb
-        dpkg -i packages-microsoft-prod.deb
-        apt-get update
-        apt-get install -y powershell
-        rm packages-microsoft-prod.deb
-    if ! command -v pwsh &> /dev/null
-    then
-        error "PowerShell installation failed. Please install it manually and rerun the script."
-    fi
-fi
-log "PowerShell installation completed."
 
 # === Step 1: Copy KB files ===
 echo "Running copy_kb_files.sh"
