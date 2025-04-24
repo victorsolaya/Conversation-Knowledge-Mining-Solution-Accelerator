@@ -3,9 +3,8 @@
 # Variables
 storageAccount="$1"
 fileSystem="$2"
-# baseUrl="$3"
-managedIdentityClientId="$4"
-keyVaultName="$5"  # ✅ NEW ARG REQUIRED
+managedIdentityClientId="$3"
+keyVaultName="$4"  # ✅ NEW ARG REQUIRED
 
 zipFileName1="call_transcripts.zip"
 extractedFolder1="call_transcripts"

@@ -30,12 +30,9 @@ error() {
 
 trap 'error "An unexpected error occurred. Please check the logs."' ERR
 
-# basePath="C:/Users/$(whoami)/azscripts/azscriptinput"
-# echo "${basePath}"
-
 # === Step 1: Copy KB files ===
 echo "Running copy_kb_files.sh"
-bash infra/scripts/copy_kb_files.sh "$STORAGE_ACCOUNT_NAME" "$CONTAINER_NAME" "$MANAGED_IDENTITY_CLIENT_ID"
+bash infra/scripts/copy_kb_files.sh "$STORAGE_ACCOUNT_NAME" "$CONTAINER_NAME" "$MANAGED_IDENTITY_CLIENT_ID" "$KEY_VAULT_NAME"
 if [ $? -ne 0 ]; then
     echo "Error: copy_kb_files.sh failed."
     exit 1
@@ -51,13 +48,6 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 echo "run_create_index_scripts.sh completed successfully."
-
-
-# curl -s -o create-sql-user-and-role.ps1 "${BASE_URL}infra/scripts/add_user_scripts/create-sql-user-and-role.ps1"
-# chmod +x create-sql-user-and-role.ps1
-
-# Note: You'll need to pass user info (client ID, display name, role) via environment vars or args.
-# Here is a sample with hardcoded values for demo:
 
 # === Step 3: SQL User & Role Setup ===
 log "Setting up SQL users and roles..."

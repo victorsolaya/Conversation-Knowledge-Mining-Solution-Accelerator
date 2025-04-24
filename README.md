@@ -59,6 +59,8 @@ Here are some example regions where the services are available: East US, East US
 
 ➡️ To ensure sufficient quota is available in your subscription, please follow **[Quota check instructions guide](./docs/quota_check.md)** before you deploy the solution.
 
+
+
 | [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/microsoft/Conversation-Knowledge-Mining-Solution-Accelerator) | [![Open in Dev Containers](https://img.shields.io/static/v1?style=for-the-badge&label=Dev%20Containers&message=Open&color=blue&logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/microsoft/Conversation-Knowledge-Mining-Solution-Accelerator) |
 |---|---|
         
@@ -94,6 +96,14 @@ Pick from the options below to see step-by-step instructions for: GitHub Codespa
 ### GitHub Codespaces
 
 You can run this solution using GitHub Codespaces. The button will open a web-based VS Code instance in your browser:
+
+Make sure the following are installed or available in your Codespace:
+
+- Azure CLI
+- ODBC Driver 18 for SQL Server
+- PowerShell (for compatibility with setup scripts)
+
+---
 
 1. Open the solution accelerator (this may take several minutes):
 
@@ -136,6 +146,7 @@ If you're not using one of the above options for opening the project, then you'l
     * [Docker Desktop](https://www.docker.com/products/docker-desktop/)
     * [Git](https://git-scm.com/downloads)
     * [Powershell](https://learn.microsoft.com/en-us/powershell/scripting/install/installing-powershell-on-windows?view=powershell-7.5)<br/>Required for Windows users only. Follow the steps [here](./docs/PowershellSetup.md) to add it to the Windows PATH.
+    * [ODBC Driver 18 for SQL Server](https://learn.microsoft.com/sql/connect/odbc/download-odbc-driver-for-sql-server)
 
 2. Download the project code:
 
@@ -192,10 +203,31 @@ To change the azd parameters from the default values, follow the steps [here](./
     * This deployment will take *7-10 minutes* to provision the resources in your account and set up the solution with sample data. 
     * If you get an error or timeout with deployment, changing the location can help, as there may be availability constraints for the resources.
 
-5. Once the deployment has completed successfully, open the [Azure Portal](https://portal.azure.com/), go to the deployed resource group, find the App Service and get the app URL from `Default domain`.
+---
+
+### 🔁 Post-Deployment Instructions
+
+Once the resources are deployed, **complete setup by running these scripts** in the terminal:
+
+1. **Deploy AI Models:**
+
+    ```bash
+    bash ./infra/scripts/deploy_ai_models.sh <resource_group_name> <deployment_name> <solution_name> <gpt4o_model_name> <embedding_model_name>
+    ```
+
+2. **Process Sample Data (Optional):**
+
+    ```bash
+    bash ./infra/scripts/process_sample_data.sh <storage_account_name> <storage_container_name> <managed_client_id> <key_vault_name> <sql_server_name> <sql_database_name> <resource_group_name> <backend_app_managed_client_id> <backend_managed_id_name>
+    ```
+
+---
+
+5. Once the deployment and post-deployment steps are completed successfully, open the [Azure Portal](https://portal.azure.com/), go to the deployed resource group, find the App Service and get the app URL from `Default domain`.
 
 6. You can now delete the resources by running `azd down`, if you are done trying out the application. 
 <!-- 6. You can now proceed to run the [development server](#development-server) to test the app locally, or if you are done trying out the app, you can delete the resources by running `azd down`. -->
+
 
 <h2>
 Additional Steps
