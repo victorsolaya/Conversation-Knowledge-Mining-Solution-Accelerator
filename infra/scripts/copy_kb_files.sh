@@ -4,7 +4,7 @@
 storageAccount="$1"
 fileSystem="$2"
 managedIdentityClientId="$3"
-keyVaultName="$4"  # ✅ NEW ARG REQUIRED
+keyVaultName="$4"
 
 zipFileName1="call_transcripts.zip"
 extractedFolder1="call_transcripts"
@@ -25,12 +25,22 @@ if az account show &> /dev/null; then
 else
     if [ -n "$managedIdentityClientId" ]; then
         echo "Authenticating with Managed Identity..."
-        az login --identity --client-id ${managedIdentityClientId}
+        if ! az login --identity --client-id "$managedIdentityClientId" &> /dev/null; then
+            echo "Failed to authenticate with Managed Identity. Falling back to Azure CLI login."
+            az login
+            if [ $? -ne 0 ]; then
+                echo "Azure CLI login failed. Please authenticate manually and rerun the script."
+                exit 1
+            fi
+        fi
     else
-        echo "Authenticating with Azure CLI..."
+        echo "No Managed Identity Client ID provided. Attempting Azure CLI login..."
         az login
+        if [ $? -ne 0 ]; then
+            echo "Azure CLI login failed. Please authenticate manually and rerun the script."
+            exit 1
+        fi
     fi
-    echo "Not authenticated with Azure. Attempting to authenticate..."
 fi
 
 echo "Getting signed in user id"

@@ -30,6 +30,21 @@ error() {
 
 trap 'error "An unexpected error occurred. Please check the logs."' ERR
 
+# # === Install SQL Driver ===
+# log "Installing SQL driver..."
+
+# if [ -f /etc/debian_version ]; then
+#     # Debian-based systems (used in the dev container)
+#     curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add - \
+#         && curl -o /etc/apt/sources.list.d/mssql-release.list https://packages.microsoft.com/config/ubuntu/22.04/prod.list \
+#         && apt-get update \
+#         && ACCEPT_EULA=Y apt-get install -y msodbcsql18 unixodbc-dev
+# else
+#     error "Unsupported operating system. Please use a Debian-based system."
+# fi
+
+# log "SQL driver installation completed."
+
 # === Step 1: Copy KB files ===
 echo "Running copy_kb_files.sh"
 bash infra/scripts/copy_kb_files.sh "$STORAGE_ACCOUNT_NAME" "$CONTAINER_NAME" "$MANAGED_IDENTITY_CLIENT_ID" "$KEY_VAULT_NAME"

@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.34.44.8038",
-      "templateHash": "5763934863219284595"
+      "templateHash": "16954169516642030194"
     }
   },
   "parameters": {
@@ -2320,11 +2320,11 @@
       "type": "string",
       "value": "[parameters('environmentName')]"
     },
-    "CONTENT_UNDERSTANDING_LOCATION": {
+    "AZURE_CONTENT_UNDERSTANDING_LOCATION": {
       "type": "string",
       "value": "[parameters('contentUnderstandingLocation')]"
     },
-    "SECONDARY_LOCATION": {
+    "AZURE_SECONDARY_LOCATION": {
       "type": "string",
       "value": "[parameters('secondaryLocation')]"
     },

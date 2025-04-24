@@ -2,13 +2,10 @@
 echo "started the script"
 
 # Variables
-# baseUrl="$1"
 keyvaultName="$1"
 managedIdentityClientId="$2"
 serverName="$3"
 resourceGroup="$4"
-# requirementFile="requirements.txt"
-# requirementFileUrl=${baseUrl}"infra/scripts/index_scripts/requirements.txt"
 
 echo "Script Started"
 
@@ -17,15 +14,23 @@ if az account show &> /dev/null; then
     echo "Already authenticated with Azure."
 else
     if [ -n "$managedIdentityClientId" ]; then
-        # Use managed identity if running in Azure
         echo "Authenticating with Managed Identity..."
-        az login --identity --client-id ${managedIdentityClientId}
+        if ! az login --identity --client-id "$managedIdentityClientId" &> /dev/null; then
+            echo "Failed to authenticate with Managed Identity. Falling back to Azure CLI login."
+            az login
+            if [ $? -ne 0 ]; then
+                echo "Azure CLI login failed. Please authenticate manually and rerun the script."
+                exit 1
+            fi
+        fi
     else
-        # Use Azure CLI login if running locally
-        echo "Authenticating with Azure CLI..."
+        echo "No Managed Identity Client ID provided. Attempting Azure CLI login..."
         az login
+        if [ $? -ne 0 ]; then
+            echo "Azure CLI login failed. Please authenticate manually and rerun the script."
+            exit 1
+        fi
     fi
-    echo "Not authenticated with Azure. Attempting to authenticate..."
 fi
 
 echo "Getting signed in user id"
@@ -56,15 +61,15 @@ pip install pyodbc
 echo "Download completed"
 
 #Replace key vault name 
-sed -i "s/kv_to-be-replaced/${keyvaultName}/g" "01_create_search_index.py"
-sed -i "s/kv_to-be-replaced/${keyvaultName}/g" "02_create_cu_template_text.py"
-sed -i "s/kv_to-be-replaced/${keyvaultName}/g" "02_create_cu_template_audio.py"
-sed -i "s/kv_to-be-replaced/${keyvaultName}/g" "03_cu_process_data_text.py"
+sed -i "s/kv_to-be-replaced/${keyvaultName}/g" "infra/scripts/index_scripts/01_create_search_index.py"
+sed -i "s/kv_to-be-replaced/${keyvaultName}/g" "infra/scripts/index_scripts/02_create_cu_template_text.py"
+sed -i "s/kv_to-be-replaced/${keyvaultName}/g" "infra/scripts/index_scripts/02_create_cu_template_audio.py"
+sed -i "s/kv_to-be-replaced/${keyvaultName}/g" "infra/scripts/index_scripts/03_cu_process_data_text.py"
 if [ -n "$managedIdentityClientId" ]; then
-    sed -i "s/mici_to-be-replaced/${managedIdentityClientId}/g" "01_create_search_index.py"
-    sed -i "s/mici_to-be-replaced/${managedIdentityClientId}/g" "02_create_cu_template_text.py"
-    sed -i "s/mici_to-be-replaced/${managedIdentityClientId}/g" "02_create_cu_template_audio.py"
-    sed -i "s/mici_to-be-replaced/${managedIdentityClientId}/g" "03_cu_process_data_text.py"
+    sed -i "s/mici_to-be-replaced/${managedIdentityClientId}/g" "infra/scripts/index_scripts/01_create_search_index.py"
+    sed -i "s/mici_to-be-replaced/${managedIdentityClientId}/g" "infra/scripts/index_scripts/02_create_cu_template_text.py"
+    sed -i "s/mici_to-be-replaced/${managedIdentityClientId}/g" "infra/scripts/index_scripts/02_create_cu_template_audio.py"
+    sed -i "s/mici_to-be-replaced/${managedIdentityClientId}/g" "infra/scripts/index_scripts/03_cu_process_data_text.py"
 fi
 
 # create virtual environment
@@ -110,20 +115,6 @@ if [ $? -ne 0 ]; then
 fi
 
 echo "Processing the data"
-
-# Authenticate with Azure
-if az account show &> /dev/null; then
-    echo "Already authenticated with Azure."
-else
-    if [ -n "$managedIdentityClientId" ]; then
-        echo "Authenticating with Managed Identity..."
-        az login --identity --client-id ${managedIdentityClientId}
-    else
-        echo "Authenticating with Azure CLI..."
-        az login --use-device-code
-    fi
-    echo "Not authenticated with Azure. Attempting to authenticate..."
-fi
 
 user=$(az account show --query user.name --output tsv)
 
