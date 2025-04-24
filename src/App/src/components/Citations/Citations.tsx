@@ -32,7 +32,7 @@ const Citations = ({ answer, index }: Props) => {
     ) => {
         dispatch({
             type: actionConstants.UPDATE_CITATION,
-            payload: { showCitation: true, activeCitation: citation },
+            payload: { showCitation: true, activeCitation: citation, currentConversationIdForCitation: state?.selectedConversationId},
         });
     };
 
