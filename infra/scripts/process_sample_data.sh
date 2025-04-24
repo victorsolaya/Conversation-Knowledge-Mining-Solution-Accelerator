@@ -51,9 +51,6 @@ if [ -f /etc/debian_version ]; then
         && curl -o /etc/apt/sources.list.d/mssql-release.list https://packages.microsoft.com/config/ubuntu/22.04/prod.list \
         && apt-get update \
         && ACCEPT_EULA=Y apt-get install -y msodbcsql18 unixodbc-dev
-else
-    error "Unsupported operating system. Please use a Debian-based system."
-fi
 log "SQL driver installation completed."
 
 # Check if PowerShell is installed
@@ -67,10 +64,6 @@ then
         apt-get update
         apt-get install -y powershell
         rm packages-microsoft-prod.deb
-    else
-        error "Unsupported operating system. Please use a Debian-based system."
-    fi
-
     if ! command -v pwsh &> /dev/null
     then
         error "PowerShell installation failed. Please install it manually and rerun the script."
