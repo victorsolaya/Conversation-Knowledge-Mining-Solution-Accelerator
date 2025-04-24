@@ -45,7 +45,6 @@ fi
 
 # === Install SQL Driver ===
 log "Installing SQL driver..."
-
 if [ -f /etc/debian_version ]; then
     # Debian-based systems (used in the dev container)
     curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add - \
@@ -55,8 +54,29 @@ if [ -f /etc/debian_version ]; then
 else
     error "Unsupported operating system. Please use a Debian-based system."
 fi
-
 log "SQL driver installation completed."
+
+# Check if PowerShell is installed
+if ! command -v pwsh &> /dev/null
+then
+    log "PowerShell not found. Installing PowerShell..."
+    if [ -f /etc/debian_version ]; then
+        # Debian-based systems
+        wget -q https://packages.microsoft.com/config/ubuntu/22.04/packages-microsoft-prod.deb
+        dpkg -i packages-microsoft-prod.deb
+        apt-get update
+        apt-get install -y powershell
+        rm packages-microsoft-prod.deb
+    else
+        error "Unsupported operating system. Please use a Debian-based system."
+    fi
+
+    if ! command -v pwsh &> /dev/null
+    then
+        error "PowerShell installation failed. Please install it manually and rerun the script."
+    fi
+fi
+log "PowerShell installation completed."
 
 # === Step 1: Copy KB files ===
 echo "Running copy_kb_files.sh"
