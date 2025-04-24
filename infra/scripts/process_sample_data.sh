@@ -30,6 +30,19 @@ error() {
 
 trap 'error "An unexpected error occurred. Please check the logs."' ERR
 
+# Check if Azure CLI is installed
+if ! command -v az &> /dev/null
+then
+    echo "Azure CLI not found. Installing Azure CLI..."
+    # Install Azure CLI for Debian-based systems
+    curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+    if ! command -v az &> /dev/null
+    then
+        echo "Azure CLI installation failed. Please install it manually and rerun the script."
+        exit 1
+    fi
+fi
+
 # === Install SQL Driver ===
 log "Installing SQL driver..."
 

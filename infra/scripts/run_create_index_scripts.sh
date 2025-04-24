@@ -54,23 +54,6 @@ else
     echo "User already has the Key Vault Administrator role."
 fi
 
- 
-# RUN apt-get install python3 python3-dev g++ unixodbc-dev unixodbc libpq-dev
-pip install pyodbc
-
-echo "Download completed"
-
-#Replace key vault name 
-sed -i "s/kv_to-be-replaced/${keyvaultName}/g" "infra/scripts/index_scripts/01_create_search_index.py"
-sed -i "s/kv_to-be-replaced/${keyvaultName}/g" "infra/scripts/index_scripts/02_create_cu_template_text.py"
-sed -i "s/kv_to-be-replaced/${keyvaultName}/g" "infra/scripts/index_scripts/02_create_cu_template_audio.py"
-sed -i "s/kv_to-be-replaced/${keyvaultName}/g" "infra/scripts/index_scripts/03_cu_process_data_text.py"
-if [ -n "$managedIdentityClientId" ]; then
-    sed -i "s/mici_to-be-replaced/${managedIdentityClientId}/g" "infra/scripts/index_scripts/01_create_search_index.py"
-    sed -i "s/mici_to-be-replaced/${managedIdentityClientId}/g" "infra/scripts/index_scripts/02_create_cu_template_text.py"
-    sed -i "s/mici_to-be-replaced/${managedIdentityClientId}/g" "infra/scripts/index_scripts/02_create_cu_template_audio.py"
-    sed -i "s/mici_to-be-replaced/${managedIdentityClientId}/g" "infra/scripts/index_scripts/03_cu_process_data_text.py"
-fi
 
 # create virtual environment
 # Check if the virtual environment already exists

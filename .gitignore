@@ -10,3 +10,5 @@
 .fake
 .azure
 .idea
+scriptenv/
+__pycache__/
