@@ -173,18 +173,29 @@ resource containerRegistry 'Microsoft.ContainerRegistry/registries@2021-09-01' =
 
 var storageNameCleaned = replace(storageName, '-', '')
 
-resource aiServices 'Microsoft.CognitiveServices/accounts@2024-04-01-preview' = {
+resource aiServices 'Microsoft.CognitiveServices/accounts@2025-04-01-preview' = {
   name: aiServicesName
   location: location
   sku: {
     name: 'S0'
   }
   kind: 'AIServices'
+  identity: {
+    type: 'SystemAssigned'
+  }
   properties: {
+    allowProjectManagement: true
     customSubDomainName: aiServicesName
+    networkAcls: {
+      defaultAction: 'Allow'
+      virtualNetworkRules: []
+      ipRules: []
+    }
     apiProperties: {
       statisticsEnabled: false
     }
+    publicNetworkAccess: 'Enabled'
+    disableLocalAuth: false //needs to be false to access keys 
   }
 }
 
@@ -202,23 +213,34 @@ resource aiServices 'Microsoft.CognitiveServices/accounts@2024-04-01-preview' = 
 //   }
 // }
 
-resource aiServices_CU 'Microsoft.CognitiveServices/accounts@2024-04-01-preview' = {
+resource aiServices_CU 'Microsoft.CognitiveServices/accounts@2025-04-01-preview' = {
   name: aiServicesName_cu
   location: location_cu
   sku: {
     name: 'S0'
   }
   kind: 'AIServices'
+  identity: {
+    type: 'SystemAssigned'
+  }
   properties: {
+    allowProjectManagement: true
     customSubDomainName: aiServicesName_cu
+    networkAcls: {
+      defaultAction: 'Allow'
+      virtualNetworkRules: []
+      ipRules: []
+    }
     apiProperties: {
       statisticsEnabled: false
     }
+    publicNetworkAccess: 'Enabled'
+    disableLocalAuth: false //needs to be false to access keys 
   }
 }
 
 @batchSize(1)
-resource aiServicesDeployments 'Microsoft.CognitiveServices/accounts/deployments@2023-05-01' = [for aiModeldeployment in aiModelDeployments: {
+resource aiServicesDeployments 'Microsoft.CognitiveServices/accounts/deployments@2024-10-01' = [for aiModeldeployment in aiModelDeployments: {
   parent: aiServices //aiServices_m
   name: aiModeldeployment.name
   properties: {
@@ -234,7 +256,7 @@ resource aiServicesDeployments 'Microsoft.CognitiveServices/accounts/deployments
   }
 }]
 
-resource aiSearch 'Microsoft.Search/searchServices@2023-11-01' = {
+resource aiSearch 'Microsoft.Search/searchServices@2024-06-01-preview' = {
     name: aiSearchName
     location: solutionLocation
     sku: {
@@ -386,79 +408,126 @@ resource aiDeveloperAccessProj 'Microsoft.Authorization/roleAssignments@2022-04-
   }
 }
 
-resource aiHub 'Microsoft.MachineLearningServices/workspaces@2023-08-01-preview' = {
-  name: aiHubName
-  location: location
+// resource aiHub 'Microsoft.MachineLearningServices/workspaces@2023-08-01-preview' = {
+//   name: aiHubName
+//   location: location
+//   identity: {
+//     type: 'SystemAssigned'
+//   }
+//   properties: {
+//     // organization
+//     friendlyName: aiHubFriendlyName
+//     description: aiHubDescription
+
+//     // dependent resources
+//     keyVault: keyVault.id
+//     storageAccount: storage.id
+//     applicationInsights: applicationInsights.id
+//     containerRegistry: containerRegistry.id
+//   }
+//   kind: 'hub'
+
+//   resource aiServicesConnection 'connections@2024-07-01-preview' = {
+//     name: '${aiHubName}-connection-AzureOpenAI'
+//     properties: {
+//       category: 'AIServices'
+//       target: aiServices.properties.endpoint
+//       authType: 'ApiKey'
+//       isSharedToAll: true
+//       credentials: {
+//         key: aiServices.listKeys().key1
+//       }
+//       metadata: {
+//         ApiType: 'Azure'
+//         ResourceId: aiServices.id
+//       }
+//     }
+//     dependsOn: [
+//       aiServicesDeployments,aiSearch
+//     ]
+//   }
+  
+//   resource aiSearchConnection 'connections@2024-07-01-preview' = {
+//     name: '${aiHubName}-connection-AzureAISearch'
+//     properties: {
+//       category: 'CognitiveSearch'
+//       target: 'https://${aiSearch.name}.search.windows.net'
+//       authType: 'ApiKey'
+//       isSharedToAll: true
+//       credentials: {
+//         key: aiSearch.listAdminKeys().primaryKey
+//       }
+//       metadata: {
+//         type:'azure_ai_search'
+//         ApiType: 'Azure'
+//         ResourceId: aiSearch.id
+//         ApiVersion:'2024-05-01-preview'
+//         DeploymentApiVersion:'2023-11-01'
+//       }
+//     }
+//   }
+//   dependsOn: [
+//     aiServicesDeployments,aiSearch
+//   ]
+// }
+
+// resource aiHubProject 'Microsoft.MachineLearningServices/workspaces@2024-01-01-preview' = {
+//   name: aiProjectName
+//   location: location
+//   kind: 'Project'
+//   identity: {
+//     type: 'SystemAssigned'
+//   }
+//   properties: {
+//     friendlyName: aiProjectFriendlyName
+//     hubResourceId: aiHub.id
+//   }
+// }
+
+resource aiProject 'Microsoft.CognitiveServices/accounts/projects@2025-04-01-preview' = {
+  parent: aiServices
+  name: aiProjectName
+  location: solutionLocation
   identity: {
     type: 'SystemAssigned'
   }
   properties: {
-    // organization
-    friendlyName: aiHubFriendlyName
-    description: aiHubDescription
-
-    // dependent resources
-    keyVault: keyVault.id
-    storageAccount: storage.id
-    applicationInsights: applicationInsights.id
-    containerRegistry: containerRegistry.id
+    description: 'AI Project'
+    displayName: aiProjectName
   }
-  kind: 'hub'
-
-  resource aiServicesConnection 'connections@2024-07-01-preview' = {
-    name: '${aiHubName}-connection-AzureOpenAI'
-    properties: {
-      category: 'AIServices'
-      target: aiServices.properties.endpoint
-      authType: 'ApiKey'
-      isSharedToAll: true
-      credentials: {
-        key: aiServices.listKeys().key1
-      }
-      metadata: {
-        ApiType: 'Azure'
-        ResourceId: aiServices.id
-      }
-    }
-    dependsOn: [
-      aiServicesDeployments,aiSearch
-    ]
-  }
-  
-  resource aiSearchConnection 'connections@2024-07-01-preview' = {
-    name: '${aiHubName}-connection-AzureAISearch'
-    properties: {
-      category: 'CognitiveSearch'
-      target: 'https://${aiSearch.name}.search.windows.net'
-      authType: 'ApiKey'
-      isSharedToAll: true
-      credentials: {
-        key: aiSearch.listAdminKeys().primaryKey
-      }
-      metadata: {
-        type:'azure_ai_search'
-        ApiType: 'Azure'
-        ResourceId: aiSearch.id
-        ApiVersion:'2024-05-01-preview'
-        DeploymentApiVersion:'2023-11-01'
-      }
-    }
-  }
-  dependsOn: [
-    aiServicesDeployments,aiSearch
-  ]
 }
 
-resource aiHubProject 'Microsoft.MachineLearningServices/workspaces@2024-01-01-preview' = {
-  name: aiProjectName
-  location: location
-  kind: 'Project'
-  identity: {
-    type: 'SystemAssigned'
-  }
+resource project_connection_azureai_search 'Microsoft.CognitiveServices/accounts/projects/connections@2025-04-01-preview' = {
+  name: 'myVectorStoreProjectConnectionName'
+  parent: aiProject
   properties: {
-    friendlyName: aiProjectFriendlyName
-    hubResourceId: aiHub.id
+    category: 'CognitiveSearch'
+    target: 'https://${aiSearchName}.search.windows.net'
+    authType: 'AAD'
+    //useWorkspaceManagedIdentity: false
+    isSharedToAll: true
+    metadata: {
+      ApiType: 'Azure'
+      ResourceId: aiSearch.id
+      location: aiSearch.location
+    }
+  }
+}
+
+resource project_connection_azure_storage 'Microsoft.CognitiveServices/accounts/projects/connections@2025-04-01-preview' = {
+  name: 'myStorageProjectConnectionName'
+  parent: aiProject
+  properties: {
+    category: 'AzureBlob'
+    target: storage.properties.primaryEndpoints.blob
+    authType: 'AAD'
+    metadata: {
+      ApiType: 'Azure'
+      ResourceId: storage.id
+      location: storage.location
+      containerName: 'ai-container'
+      accountName: storage.name
+    }
   }
 }
 
@@ -575,7 +644,7 @@ resource azureAIProjectConnectionStringEntry 'Microsoft.KeyVault/vaults/secrets@
   parent: keyVault
   name: 'AZURE-AI-PROJECT-CONN-STRING'
   properties: {
-    value: '${split(aiHubProject.properties.discoveryUrl, '/')[2]};${subscription().subscriptionId};${resourceGroup().name};${aiHubProject.name}'
+    value: '${aiProjectName};${subscription().subscriptionId};${resourceGroup().name};${aiProject.name}'
   }
 }
 
@@ -696,7 +765,7 @@ output aiSearchName string = aiSearchName
 output aiSearchId string = aiSearch.id
 output aiSearchTarget string = 'https://${aiSearch.name}.search.windows.net'
 output aiSearchService string = aiSearch.name
-output aiProjectName string = aiHubProject.name
+output aiProjectName string = aiProject.name
 
 output applicationInsightsId string = applicationInsights.id
 output logAnalyticsWorkspaceResourceName string = logAnalytics.name
