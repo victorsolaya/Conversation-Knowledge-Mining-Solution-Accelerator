@@ -1,6 +1,9 @@
 metadata description = 'Creates an Azure App Service plan.'
 param solutionName string
 
+@description('Solution Location')
+param solutionLocation string
+
 @description('Name of App Service plan')
 param HostingPlanName string = '${ solutionName }-app-service-plan'
 
@@ -12,7 +15,7 @@ param HostingPlanSku string = 'B2'
 
 resource HostingPlan 'Microsoft.Web/serverfarms@2020-06-01' = {
   name: HostingPlanName
-  location: resourceGroup().location
+  location: solutionLocation
   sku: {
     name: HostingPlanSku
   }
