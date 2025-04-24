@@ -14,18 +14,18 @@ embedding_model="$6"
 embedding_deployment_capacity="$7"
 managedIdentityClientId="$8"
 
-# # Check if Azure CLI is installed
-# if ! command -v az &> /dev/null
-# then
-#     echo "Azure CLI not found. Installing Azure CLI..."
-#     # Install Azure CLI for Debian-based systems
-#     curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
-#     if ! command -v az &> /dev/null
-#     then
-#         echo "Azure CLI installation failed. Please install it manually and rerun the script."
-#         exit 1
-#     fi
-# fi
+# Check if Azure CLI is installed
+if ! command -v az &> /dev/null
+then
+    echo "Azure CLI not found. Installing Azure CLI..."
+    # Install Azure CLI for Debian-based systems
+    curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+    if ! command -v az &> /dev/null
+    then
+        echo "Azure CLI installation failed. Please install it manually and rerun the script."
+        exit 1
+    fi
+fi
 
 # Authenticate with Azure
 if az account show &> /dev/null; then
