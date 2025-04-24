@@ -70,10 +70,8 @@ var solutionLocation = empty(AZURE_LOCATION) ? resourceGroup().location : AZURE_
 
 var uniqueId = toLower(uniqueString(subscription().id, environmentName, solutionLocation))
 var solutionPrefix = 'km${padLeft(take(uniqueId, 12), 12, '0')}'
-// var resourceGroupLocation = resourceGroup().location
 // var resourceGroupName = resourceGroup().name
 
-// var solutionLocation = resourceGroupLocation
 var baseUrl = 'https://raw.githubusercontent.com/microsoft/Conversation-Knowledge-Mining-Solution-Accelerator/main/'
 
 
