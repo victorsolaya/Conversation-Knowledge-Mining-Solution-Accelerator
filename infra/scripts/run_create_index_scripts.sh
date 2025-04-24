@@ -61,7 +61,7 @@ if [ -d "infra/scripts/scriptenv" ]; then
     echo "Virtual environment already exists. Skipping creation."
 else
     echo "Creating virtual environment"
-    python3 -m venv infra/scripts/scriptenv
+    python -m venv infra/scripts/scriptenv
 fi
 
 # handling virtual environment activation for different OS
