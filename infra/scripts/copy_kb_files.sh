@@ -3,9 +3,8 @@
 # Variables
 storageAccount="$1"
 fileSystem="$2"
-# baseUrl="$3"
-managedIdentityClientId="$4"
-keyVaultName="$5"  # ✅ NEW ARG REQUIRED
+managedIdentityClientId="$3"
+keyVaultName="$4"
 
 zipFileName1="call_transcripts.zip"
 extractedFolder1="call_transcripts"
@@ -26,12 +25,22 @@ if az account show &> /dev/null; then
 else
     if [ -n "$managedIdentityClientId" ]; then
         echo "Authenticating with Managed Identity..."
-        az login --identity --client-id ${managedIdentityClientId}
+        if ! az login --identity --client-id "$managedIdentityClientId" &> /dev/null; then
+            echo "Failed to authenticate with Managed Identity. Falling back to Azure CLI login."
+            az login
+            if [ $? -ne 0 ]; then
+                echo "Azure CLI login failed. Please authenticate manually and rerun the script."
+                exit 1
+            fi
+        fi
     else
-        echo "Authenticating with Azure CLI..."
+        echo "No Managed Identity Client ID provided. Attempting Azure CLI login..."
         az login
+        if [ $? -ne 0 ]; then
+            echo "Azure CLI login failed. Please authenticate manually and rerun the script."
+            exit 1
+        fi
     fi
-    echo "Not authenticated with Azure. Attempting to authenticate..."
 fi
 
 echo "Getting signed in user id"
@@ -40,31 +49,20 @@ signed_user_id=$(az ad signed-in-user show --query id -o tsv)
 echo "Getting storage account resource id"
 storage_account_resource_id=$(az storage account show --name $storageAccount --query id --output tsv)
 
-# ✅ Assign Storage Blob Data Contributor role (if not already assigned)
+#check if user has the Storage Blob Data Contributor role, add it if not
 echo "Checking if user has the Storage Blob Data Contributor role"
-storage_role_assignment=$(az role assignment list --assignee $signed_user_id --role "Storage Blob Data Contributor" --scope $storage_account_resource_id --query "[].roleDefinitionId" -o tsv)
-
-if [ -z "$storage_role_assignment" ]; then
-    echo "Assigning Storage Blob Data Contributor role..."
-    az role assignment create --assignee $signed_user_id --role "Storage Blob Data Contributor" --scope $storage_account_resource_id --output none
-    echo "Role assignment for Blob Storage completed."
+role_assignment=$(MSYS_NO_PATHCONV=1 az role assignment list --assignee $signed_user_id --role "Storage Blob Data Contributor" --scope $storage_account_resource_id --query "[].roleDefinitionId" -o tsv)
+if [ -z "$role_assignment" ]; then
+    echo "User does not have the Storage Blob Data Contributor role. Assigning the role."
+    MSYS_NO_PATHCONV=1 az role assignment create --assignee $signed_user_id --role "Storage Blob Data Contributor" --scope $storage_account_resource_id --output none
+    if [ $? -eq 0 ]; then
+        echo "Role assignment completed successfully."
+    else
+        echo "Error: Role assignment failed."
+        exit 1
+    fi
 else
-    echo "User already has Storage Blob Data Contributor role."
-fi
-
-# ✅ Assign Key Vault Secrets User role (NEW BLOCK)
-echo "Getting Key Vault resource ID"
-key_vault_resource_id=$(az keyvault show --name $keyVaultName --query id --output tsv)
-
-echo "Checking if user has Key Vault Secrets User role"
-kv_role_assignment=$(az role assignment list --assignee $signed_user_id --role "Key Vault Secrets User" --scope $key_vault_resource_id --query "[].roleDefinitionId" -o tsv)
-
-if [ -z "$kv_role_assignment" ]; then
-    echo "Assigning Key Vault Secrets User role..."
-    az role assignment create --assignee $signed_user_id --role "Key Vault Secrets User" --scope $key_vault_resource_id --output none
-    echo "Role assignment for Key Vault completed."
-else
-    echo "User already has Key Vault Secrets User role."
+    echo "User already has the Storage Blob Data Contributor role."
 fi
 
 # Upload files to Azure Storage

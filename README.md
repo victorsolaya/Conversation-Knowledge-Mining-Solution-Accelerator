@@ -136,6 +136,7 @@ If you're not using one of the above options for opening the project, then you'l
     * [Docker Desktop](https://www.docker.com/products/docker-desktop/)
     * [Git](https://git-scm.com/downloads)
     * [Powershell](https://learn.microsoft.com/en-us/powershell/scripting/install/installing-powershell-on-windows?view=powershell-7.5)<br/>Required for Windows users only. Follow the steps [here](./docs/PowershellSetup.md) to add it to the Windows PATH.
+    * [ODBC Driver 18 for SQL Server](https://learn.microsoft.com/sql/connect/odbc/download-odbc-driver-for-sql-server)
 
 2. Download the project code:
 
@@ -189,10 +190,17 @@ To change the azd parameters from the default values, follow the steps [here](./
 
 3. Provide an `azd` environment name (like "ckmapp")
 4. Select a subscription from your Azure account, and select a location which has quota for all the resources. 
-    * This deployment will take *7-10 minutes* to provision the resources in your account and set up the solution with sample data. 
+    * This deployment will take *7-10 minutes* to provision the resources in your account. 
     * If you get an error or timeout with deployment, changing the location can help, as there may be availability constraints for the resources.
-
-5. Once the deployment has completed successfully, open the [Azure Portal](https://portal.azure.com/), go to the deployed resource group, find the App Service and get the app URL from `Default domain`.
+5. Once the infrastructure deployment completes successfully, you can proceed with deploying the AI model by running the bash command displayed in the terminal. The command will look similar to the following: 
+    ```shell 
+    bash ./infra/scripts/deploy_ai_model.sh <Resource-Group-Name> <Solution-Name> <OpenAI-Model-Deployment-Type> <OpenAI-Deployment-Model> <OpenAI-Deployment-Model-Capacity> <OpenAI-Embedding-Model> <OpenAI-Embedding-Model-Capacity> <Managed-Identity-Client-ID>
+    ```
+6. After the AI model deployment finishes, if you wish to load the sample data, you can then run the corresponding sample data processing command, which will also be shown in the terminal: 
+    ```shell 
+    bash ./infra/scripts/process_sample_data.sh <Storage-Account-Name> <Storage-Container-Name> <Managed-Identity-Client-ID> <Key-Vault-Name> <SQLDB-Server> <SQLDB-Database> <Resource-Group-Name> <API-App-Managed-Identity-Client-ID> <API-App-Managed-Identity-Name>
+    ```
+7. Once the deployment has completed successfully, open the [Azure Portal](https://portal.azure.com/), go to the deployed resource group, find the App Service and get the app URL from `Default domain`.
 
 6. You can now delete the resources by running `azd down`, if you are done trying out the application. 
 <!-- 6. You can now proceed to run the [development server](#development-server) to test the app locally, or if you are done trying out the app, you can delete the resources by running `azd down`. -->

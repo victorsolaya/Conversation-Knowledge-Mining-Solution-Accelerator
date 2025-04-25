@@ -71,8 +71,6 @@ var resourceGroupLocation = resourceGroup().location
 // var resourceGroupName = resourceGroup().name
 
 var solutionLocation = resourceGroupLocation
-var baseUrl = 'https://raw.githubusercontent.com/microsoft/Conversation-Knowledge-Mining-Solution-Accelerator/main/'
-
 
 // ========== Managed Identity ========== //
 module managedIdentityModule 'deploy_managed_identity.bicep' = {
@@ -244,4 +242,43 @@ module frontend_docker 'deploy_frontend_docker.bicep'= {
   scope: resourceGroup(resourceGroup().name)
 }
 
+output SOLUTION_NAME string = solutionPrefix
+output RESOURCE_GROUP_NAME string = resourceGroup().name
+output RESOURCE_GROUP_LOCATION string = resourceGroupLocation
+output ENVIRONMENT_NAME string = environmentName
+output AZURE_CONTENT_UNDERSTANDING_LOCATION string = contentUnderstandingLocation
+output AZURE_SECONDARY_LOCATION string = secondaryLocation
+output APPINSIGHTS_INSTRUMENTATIONKEY string = ''
+output AZURE_AI_PROJECT_CONN_STRING string = ''
+output AZURE_AI_SEARCH_API_KEY string = ''
+output AZURE_AI_SEARCH_ENDPOINT string = aifoundry.outputs.aiSearchTarget
+output AZURE_AI_SEARCH_INDEX string = 'call_transcripts_index'
+output AZURE_COSMOSDB_ACCOUNT string = cosmosDBModule.outputs.cosmosAccountName
+output AZURE_COSMOSDB_CONVERSATIONS_CONTAINER string = 'conversations'
+output AZURE_COSMOSDB_DATABASE string = 'db_conversation_history'
+output AZURE_COSMOSDB_ENABLE_FEEDBACK string = 'True'
+output AZURE_OPEN_AI_DEPLOYMENT_MODEL string = gptModelName
+output AZURE_OPEN_AI_DEPLOYMENT_MODEL_CAPACITY int = gptDeploymentCapacity
+output AZURE_OPEN_AI_ENDPOINT string = aifoundry.outputs.aiServicesTarget
+output AZURE_OPENAI_API_KEY string = ''
+output AZURE_OPEN_AI_MODEL_DEPLOYMENT_TYPE string = deploymentType
+output AZURE_OPENAI_EMBEDDING_MODEL string = embeddingModel
+output AZURE_OPENAI_EMBEDDING_MODEL_CAPACITY int = embeddingDeploymentCapacity
+output AZURE_OPENAI_API_VERSION string = azureOpenAIApiVersion
+output AZURE_OPENAI_RESOURCE string = aifoundry.outputs.aiServicesName
+output OPENAI_API_VERSION string = azureOpenAIApiVersion
+output SQLDB_DATABASE string = sqlDBModule.outputs.sqlDbName
+output SQLDB_SERVER string = sqlDBModule.outputs.sqlServerName
+output SQLDB_USER_MID string = managedIdentityModule.outputs.managedIdentityBackendAppOutput.clientId
+output SQLDB_USERNAME string = sqlDBModule.outputs.sqlDbUser
+output USE_AI_PROJECT_CLIENT string = 'False'
+output USE_CHAT_HISTORY_ENABLED string = 'True'
+
+output MANAGED_IDENTITY_CLIENT_ID string = managedIdentityModule.outputs.managedIdentityOutput.clientId
+output STORAGE_ACCOUNT_NAME string = storageAccount.outputs.storageName
+output STORAGE_CONTAINER_NAME string = storageAccount.outputs.storageContainer
+output KEY_VAULT_NAME string = kvault.outputs.keyvaultName
+output API_APP_MANAGED_IDENTITY_CLIENT_ID string = managedIdentityModule.outputs.managedIdentityBackendAppOutput.clientId
+output API_APP_MANAGED_IDENTITY_NAME string = managedIdentityModule.outputs.managedIdentityBackendAppOutput.name
+output API_APP_URL string = backend_docker.outputs.appUrl
 output WEB_APP_URL string = frontend_docker.outputs.appUrl

@@ -43,7 +43,7 @@ client = AzureContentUnderstandingClient(
 
 
 ANALYZER_ID = "ckm-audio"
-ANALYZER_TEMPLATE_FILE = 'ckm-analyzer_config_audio.json'
+ANALYZER_TEMPLATE_FILE = './infra/data/ckm-analyzer_config_audio.json'
 
 
 # Create analyzer
