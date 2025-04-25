@@ -72,9 +72,6 @@ var uniqueId = toLower(uniqueString(subscription().id, environmentName, solution
 var solutionPrefix = 'km${padLeft(take(uniqueId, 12), 12, '0')}'
 // var resourceGroupName = resourceGroup().name
 
-var baseUrl = 'https://raw.githubusercontent.com/microsoft/Conversation-Knowledge-Mining-Solution-Accelerator/main/'
-
-
 // ========== Managed Identity ========== //
 module managedIdentityModule 'deploy_managed_identity.bicep' = {
   name: 'deploy_managed_identity'
@@ -250,7 +247,7 @@ module frontend_docker 'deploy_frontend_docker.bicep'= {
 
 output SOLUTION_NAME string = solutionPrefix
 output RESOURCE_GROUP_NAME string = resourceGroup().name
-output RESOURCE_GROUP_LOCATION string = resourceGroupLocation
+output RESOURCE_GROUP_LOCATION string = solutionLocation
 output ENVIRONMENT_NAME string = environmentName
 output AZURE_CONTENT_UNDERSTANDING_LOCATION string = contentUnderstandingLocation
 output AZURE_SECONDARY_LOCATION string = secondaryLocation

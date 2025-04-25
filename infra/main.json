@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.34.44.8038",
-      "templateHash": "6290848882876778384"
+      "templateHash": "6194079026370260064"
     }
   },
   "parameters": {
@@ -103,8 +103,7 @@
     "azureOpenAIApiVersion": "2024-02-15-preview",
     "solutionLocation": "[if(empty(parameters('AZURE_LOCATION')), resourceGroup().location, parameters('AZURE_LOCATION'))]",
     "uniqueId": "[toLower(uniqueString(subscription().id, parameters('environmentName'), variables('solutionLocation')))]",
-    "solutionPrefix": "[format('km{0}', padLeft(take(variables('uniqueId'), 12), 12, '0'))]",
-    "baseUrl": "https://raw.githubusercontent.com/microsoft/Conversation-Knowledge-Mining-Solution-Accelerator/main/"
+    "solutionPrefix": "[format('km{0}', padLeft(take(variables('uniqueId'), 12), 12, '0'))]"
   },
   "resources": [
     {
@@ -2363,7 +2362,7 @@
     },
     "RESOURCE_GROUP_LOCATION": {
       "type": "string",
-      "value": "[variables('resourceGroupLocation')]"
+      "value": "[variables('solutionLocation')]"
     },
     "ENVIRONMENT_NAME": {
       "type": "string",
