@@ -44,8 +44,7 @@ client = AzureContentUnderstandingClient(
 
 
 ANALYZER_ID = "ckm-json"
-ANALYZER_TEMPLATE_FILE = 'ckm-analyzer_config_text.json'
-
+ANALYZER_TEMPLATE_FILE = './infra/data/ckm-analyzer_config_text.json'
 
 # Create analyzer
 response = client.begin_create_analyzer(ANALYZER_ID, analyzer_template_path=ANALYZER_TEMPLATE_FILE)

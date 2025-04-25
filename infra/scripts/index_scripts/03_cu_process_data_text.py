@@ -350,7 +350,7 @@ if docs != []:
 
 ##########################################################
 # load sample data to search index
-sample_import_file = 'sample_search_index_data.json'
+sample_import_file = './infra/data/sample_search_index_data.json'
 
 with open(sample_import_file, 'r') as file:
     documents = json.load(file)
@@ -359,7 +359,7 @@ search_client.upload_documents(documents=batch)
 # print(f'Successfully uploaded sample index data')   
 
 # load sample data to database
-sample_processed_data_file = 'sample_processed_data.json'
+sample_processed_data_file = './infra/data/sample_processed_data.json'
 import_table = 'processed_data'
 with open(sample_processed_data_file, "r") as f:
     data = json.load(f)
@@ -387,7 +387,7 @@ conn.commit()
 
 
 # load key phrases sample data to database
-sample_processed_data_file = 'sample_processed_data_key_phrases.json'
+sample_processed_data_file = './infra/data/sample_processed_data_key_phrases.json'
 import_table = 'processed_data_key_phrases'
 with open(sample_processed_data_file, "r") as f:
     data = json.load(f)
