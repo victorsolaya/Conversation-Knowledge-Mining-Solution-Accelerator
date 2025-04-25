@@ -65,12 +65,12 @@ param embeddingDeploymentCapacity int = 80
 
 param imageTag string = 'latest_migrated'
 
-var uniqueId = toLower(uniqueString(subscription().id, environmentName, resourceGroup().location))
-var solutionPrefix = 'km${padLeft(take(uniqueId, 12), 12, '0')}'
-var resourceGroupLocation = resourceGroup().location
-// var resourceGroupName = resourceGroup().name
+param AZURE_LOCATION string=''
+var solutionLocation = empty(AZURE_LOCATION) ? resourceGroup().location : AZURE_LOCATION
 
-var solutionLocation = resourceGroupLocation
+var uniqueId = toLower(uniqueString(subscription().id, environmentName, solutionLocation))
+var solutionPrefix = 'km${padLeft(take(uniqueId, 12), 12, '0')}'
+// var resourceGroupName = resourceGroup().name
 
 // ========== Managed Identity ========== //
 module managedIdentityModule 'deploy_managed_identity.bicep' = {
@@ -87,7 +87,7 @@ module kvault 'deploy_keyvault.bicep' = {
   name: 'deploy_keyvault'
   params: {
     solutionName: solutionPrefix
-    solutionLocation: resourceGroupLocation
+    solutionLocation: solutionLocation
     managedIdentityObjectId:managedIdentityModule.outputs.managedIdentityOutput.objectId
   }
   scope: resourceGroup(resourceGroup().name)
@@ -98,7 +98,7 @@ module aifoundry 'deploy_ai_foundry.bicep' = {
   name: 'deploy_ai_foundry'
   params: {
     solutionName: solutionPrefix
-    solutionLocation: resourceGroupLocation
+    solutionLocation: solutionLocation
     keyVaultName: kvault.outputs.keyvaultName
     cuLocation: contentUnderstandingLocation
     deploymentType: deploymentType
@@ -188,12 +188,14 @@ module hostingplan 'deploy_app_service_plan.bicep' = {
   name: 'deploy_app_service_plan'
   params: {
     solutionName: solutionPrefix
+    solutionLocation: solutionLocation
   }
 }
 
 module backend_docker 'deploy_backend_docker.bicep'= {
   name: 'deploy_backend_docker'
   params: {
+    solutionLocation: solutionLocation
     imageTag: imageTag
     appServicePlanId: hostingplan.outputs.name
     applicationInsightsId: aifoundry.outputs.applicationInsightsId
@@ -231,6 +233,7 @@ module backend_docker 'deploy_backend_docker.bicep'= {
 module frontend_docker 'deploy_frontend_docker.bicep'= {
   name: 'deploy_frontend_docker'
   params: {
+    solutionLocation:solutionLocation
     imageTag: imageTag
     appServicePlanId: hostingplan.outputs.name
     applicationInsightsId: aifoundry.outputs.applicationInsightsId
@@ -244,7 +247,7 @@ module frontend_docker 'deploy_frontend_docker.bicep'= {
 
 output SOLUTION_NAME string = solutionPrefix
 output RESOURCE_GROUP_NAME string = resourceGroup().name
-output RESOURCE_GROUP_LOCATION string = resourceGroupLocation
+output RESOURCE_GROUP_LOCATION string = solutionLocation
 output ENVIRONMENT_NAME string = environmentName
 output AZURE_CONTENT_UNDERSTANDING_LOCATION string = contentUnderstandingLocation
 output AZURE_SECONDARY_LOCATION string = secondaryLocation

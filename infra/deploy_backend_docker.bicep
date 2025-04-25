@@ -1,6 +1,10 @@
 param imageTag string
 param applicationInsightsId string
 param solutionName string
+
+@description('Solution Location')
+param solutionLocation string
+
 @secure()
 param appSettings object = {}
 param appServicePlanId string
@@ -84,6 +88,7 @@ module appService 'deploy_app_service.bicep' = {
   name: '${name}-app-module'
   params: {
     solutionName: name
+    solutionLocation:solutionLocation
     appServicePlanId: appServicePlanId
     appImageName: imageName
     userassignedIdentityId:userassignedIdentityId

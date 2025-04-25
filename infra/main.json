@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.34.44.8038",
-      "templateHash": "16954169516642030194"
+      "templateHash": "6194079026370260064"
     }
   },
   "parameters": {
@@ -93,14 +93,17 @@
     "imageTag": {
       "type": "string",
       "defaultValue": "latest_migrated"
+    },
+    "AZURE_LOCATION": {
+      "type": "string",
+      "defaultValue": ""
     }
   },
   "variables": {
     "azureOpenAIApiVersion": "2024-02-15-preview",
-    "uniqueId": "[toLower(uniqueString(subscription().id, parameters('environmentName'), resourceGroup().location))]",
-    "solutionPrefix": "[format('km{0}', padLeft(take(variables('uniqueId'), 12), 12, '0'))]",
-    "resourceGroupLocation": "[resourceGroup().location]",
-    "solutionLocation": "[variables('resourceGroupLocation')]"
+    "solutionLocation": "[if(empty(parameters('AZURE_LOCATION')), resourceGroup().location, parameters('AZURE_LOCATION'))]",
+    "uniqueId": "[toLower(uniqueString(subscription().id, parameters('environmentName'), variables('solutionLocation')))]",
+    "solutionPrefix": "[format('km{0}', padLeft(take(variables('uniqueId'), 12), 12, '0'))]"
   },
   "resources": [
     {
@@ -227,7 +230,7 @@
             "value": "[variables('solutionPrefix')]"
           },
           "solutionLocation": {
-            "value": "[variables('resourceGroupLocation')]"
+            "value": "[variables('solutionLocation')]"
           },
           "managedIdentityObjectId": {
             "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_managed_identity'), '2022-09-01').outputs.managedIdentityOutput.value.objectId]"
@@ -349,7 +352,7 @@
             "value": "[variables('solutionPrefix')]"
           },
           "solutionLocation": {
-            "value": "[variables('resourceGroupLocation')]"
+            "value": "[variables('solutionLocation')]"
           },
           "keyVaultName": {
             "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_keyvault'), '2022-09-01').outputs.keyvaultName.value]"
@@ -1595,6 +1598,9 @@
         "parameters": {
           "solutionName": {
             "value": "[variables('solutionPrefix')]"
+          },
+          "solutionLocation": {
+            "value": "[variables('solutionLocation')]"
           }
         },
         "template": {
@@ -1604,13 +1610,19 @@
             "_generator": {
               "name": "bicep",
               "version": "0.34.44.8038",
-              "templateHash": "5000589525239764864"
+              "templateHash": "9333076050504873128"
             },
             "description": "Creates an Azure App Service plan."
           },
           "parameters": {
             "solutionName": {
               "type": "string"
+            },
+            "solutionLocation": {
+              "type": "string",
+              "metadata": {
+                "description": "Solution Location"
+              }
             },
             "HostingPlanName": {
               "type": "string",
@@ -1647,7 +1659,7 @@
               "type": "Microsoft.Web/serverfarms",
               "apiVersion": "2020-06-01",
               "name": "[parameters('HostingPlanName')]",
-              "location": "[resourceGroup().location]",
+              "location": "[parameters('solutionLocation')]",
               "sku": {
                 "name": "[parameters('HostingPlanSku')]"
               },
@@ -1681,6 +1693,9 @@
         },
         "mode": "Incremental",
         "parameters": {
+          "solutionLocation": {
+            "value": "[variables('solutionLocation')]"
+          },
           "imageTag": {
             "value": "[parameters('imageTag')]"
           },
@@ -1753,7 +1768,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.34.44.8038",
-              "templateHash": "14001159014642291962"
+              "templateHash": "14415535620383822032"
             }
           },
           "parameters": {
@@ -1765,6 +1780,12 @@
             },
             "solutionName": {
               "type": "string"
+            },
+            "solutionLocation": {
+              "type": "string",
+              "metadata": {
+                "description": "Solution Location"
+              }
             },
             "appSettings": {
               "type": "secureObject",
@@ -1834,6 +1855,9 @@
                   "solutionName": {
                     "value": "[variables('name')]"
                   },
+                  "solutionLocation": {
+                    "value": "[parameters('solutionLocation')]"
+                  },
                   "appServicePlanId": {
                     "value": "[parameters('appServicePlanId')]"
                   },
@@ -1854,7 +1878,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.34.44.8038",
-                      "templateHash": "356166454386735487"
+                      "templateHash": "13414794767040680839"
                     }
                   },
                   "parameters": {
@@ -1862,6 +1886,12 @@
                       "type": "string",
                       "metadata": {
                         "description": "Solution Name"
+                      }
+                    },
+                    "solutionLocation": {
+                      "type": "string",
+                      "metadata": {
+                        "description": "Solution Location"
                       }
                     },
                     "appSettings": {
@@ -1906,7 +1936,7 @@
                       "type": "Microsoft.Web/sites",
                       "apiVersion": "2020-06-01",
                       "name": "[parameters('solutionName')]",
-                      "location": "[resourceGroup().location]",
+                      "location": "[parameters('solutionLocation')]",
                       "identity": "[if(equals(parameters('userassignedIdentityId'), ''), createObject('type', 'SystemAssigned'), createObject('type', 'SystemAssigned, UserAssigned', 'userAssignedIdentities', createObject(format('{0}', parameters('userassignedIdentityId')), createObject())))]",
                       "properties": {
                         "serverFarmId": "[parameters('appServicePlanId')]",
@@ -2044,6 +2074,9 @@
         },
         "mode": "Incremental",
         "parameters": {
+          "solutionLocation": {
+            "value": "[variables('solutionLocation')]"
+          },
           "imageTag": {
             "value": "[parameters('imageTag')]"
           },
@@ -2069,7 +2102,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.34.44.8038",
-              "templateHash": "13062487122244574247"
+              "templateHash": "5253697335871068015"
             }
           },
           "parameters": {
@@ -2081,6 +2114,12 @@
             },
             "solutionName": {
               "type": "string"
+            },
+            "solutionLocation": {
+              "type": "string",
+              "metadata": {
+                "description": "Solution Location"
+              }
             },
             "appSettings": {
               "type": "secureObject",
@@ -2105,6 +2144,9 @@
                 },
                 "mode": "Incremental",
                 "parameters": {
+                  "solutionLocation": {
+                    "value": "[parameters('solutionLocation')]"
+                  },
                   "solutionName": {
                     "value": "[variables('name')]"
                   },
@@ -2125,7 +2167,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.34.44.8038",
-                      "templateHash": "356166454386735487"
+                      "templateHash": "13414794767040680839"
                     }
                   },
                   "parameters": {
@@ -2133,6 +2175,12 @@
                       "type": "string",
                       "metadata": {
                         "description": "Solution Name"
+                      }
+                    },
+                    "solutionLocation": {
+                      "type": "string",
+                      "metadata": {
+                        "description": "Solution Location"
                       }
                     },
                     "appSettings": {
@@ -2177,7 +2225,7 @@
                       "type": "Microsoft.Web/sites",
                       "apiVersion": "2020-06-01",
                       "name": "[parameters('solutionName')]",
-                      "location": "[resourceGroup().location]",
+                      "location": "[parameters('solutionLocation')]",
                       "identity": "[if(equals(parameters('userassignedIdentityId'), ''), createObject('type', 'SystemAssigned'), createObject('type', 'SystemAssigned, UserAssigned', 'userAssignedIdentities', createObject(format('{0}', parameters('userassignedIdentityId')), createObject())))]",
                       "properties": {
                         "serverFarmId": "[parameters('appServicePlanId')]",
@@ -2314,7 +2362,7 @@
     },
     "RESOURCE_GROUP_LOCATION": {
       "type": "string",
-      "value": "[variables('resourceGroupLocation')]"
+      "value": "[variables('solutionLocation')]"
     },
     "ENVIRONMENT_NAME": {
       "type": "string",

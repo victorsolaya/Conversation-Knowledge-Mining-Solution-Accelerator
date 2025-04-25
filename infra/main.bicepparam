@@ -1,5 +1,6 @@
 using './main.bicep'
 
+param AZURE_LOCATION = readEnvironmentVariable('AZURE_LOCATION', '')
 param environmentName = readEnvironmentVariable('AZURE_ENV_NAME', 'env_name')
 param contentUnderstandingLocation = readEnvironmentVariable('AZURE_CONTENT_UNDERSTANDING_LOCATION', 'swedencentral')
 param secondaryLocation = readEnvironmentVariable('AZURE_SECONDARY_LOCATION', 'eastus2')
