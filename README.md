@@ -59,8 +59,6 @@ Here are some example regions where the services are available: East US, East US
 
 ➡️ To ensure sufficient quota is available in your subscription, please follow **[Quota check instructions guide](./docs/quota_check.md)** before you deploy the solution.
 
-
-
 | [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/microsoft/Conversation-Knowledge-Mining-Solution-Accelerator) | [![Open in Dev Containers](https://img.shields.io/static/v1?style=for-the-badge&label=Dev%20Containers&message=Open&color=blue&logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/microsoft/Conversation-Knowledge-Mining-Solution-Accelerator) |
 |---|---|
         
@@ -96,14 +94,6 @@ Pick from the options below to see step-by-step instructions for: GitHub Codespa
 ### GitHub Codespaces
 
 You can run this solution using GitHub Codespaces. The button will open a web-based VS Code instance in your browser:
-
-Make sure the following are installed or available in your Codespace:
-
-- Azure CLI
-- ODBC Driver 18 for SQL Server
-- PowerShell (for compatibility with setup scripts)
-
----
 
 1. Open the solution accelerator (this may take several minutes):
 
@@ -200,34 +190,20 @@ To change the azd parameters from the default values, follow the steps [here](./
 
 3. Provide an `azd` environment name (like "ckmapp")
 4. Select a subscription from your Azure account, and select a location which has quota for all the resources. 
-    * This deployment will take *7-10 minutes* to provision the resources in your account and set up the solution with sample data. 
+    * This deployment will take *7-10 minutes* to provision the resources in your account. 
     * If you get an error or timeout with deployment, changing the location can help, as there may be availability constraints for the resources.
-
----
-
-### 🔁 Post-Deployment Instructions
-
-Once the resources are deployed, **complete setup by running these scripts** in the terminal:
-
-1. **Deploy AI Models:**
-
-    ```bash
-    bash ./infra/scripts/deploy_ai_models.sh <resource_group_name> <deployment_name> <solution_name> <gpt4o_model_name> <embedding_model_name>
+5. Once the deployment has completed successfully and you can deploy the AI model, run the bash command printed in the terminal. The bash command will look like the following: 
+    ```shell 
+    bash ./infra/scripts/deploy_ai_model.sh <Resource-Group-Name> <Solution-Name> <OpenAI-Model-Deployment-Type> <OpenAI-Deployment-Model> <OpenAI-Deployment-Model-Capacity> <OpenAI-Embedding-Model> <OpenAI-Embedding-Model-Capacity> <Managed-Identity-Client-ID>
     ```
-
-2. **Process Sample Data (Optional):**
-
-    ```bash
-    bash ./infra/scripts/process_sample_data.sh <storage_account_name> <storage_container_name> <managed_client_id> <key_vault_name> <sql_server_name> <sql_database_name> <resource_group_name> <backend_app_managed_client_id> <backend_managed_id_name>
+6. Once the AI model deployment has completed successfully and you would like to use the sample data, run the bash command printed in the terminal. The bash command will look like the following: 
+    ```shell 
+    bash ./infra/scripts/process_sample_data.sh <Storage-Account-Name> <Storage-Container-Name> <Managed-Identity-Client-ID> <Key-Vault-Name> <SQLDB-Server> <SQLDB-Database> <Resource-Group-Name> <API-App-Managed-Identity-Client-ID> <API-App-Managed-Identity-Name>
     ```
-
----
-
-5. Once the deployment and post-deployment steps are completed successfully, open the [Azure Portal](https://portal.azure.com/), go to the deployed resource group, find the App Service and get the app URL from `Default domain`.
+7. Once the deployment has completed successfully, open the [Azure Portal](https://portal.azure.com/), go to the deployed resource group, find the App Service and get the app URL from `Default domain`.
 
 6. You can now delete the resources by running `azd down`, if you are done trying out the application. 
 <!-- 6. You can now proceed to run the [development server](#development-server) to test the app locally, or if you are done trying out the app, you can delete the resources by running `azd down`. -->
-
 
 <h2>
 Additional Steps
