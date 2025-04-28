@@ -225,34 +225,6 @@ module backend_docker 'deploy_backend_docker.bicep'= {
   scope: resourceGroup(resourceGroup().name)
 }
 
-output WEB_APP_URL string = appserviceModule.outputs.webAppUrl
-output REACT_APP_LAYOUT_CONFIG string = appserviceModule.outputs.REACT_APP_LAYOUT_CONFIG
-
-output imageTag string = imageTag
-output applicationInsightsId string = aifoundry.outputs.applicationInsightsId
-// identity string =managedIdentityModule.outputs.managedIdentityOutput.id
-output solutionName string = solutionPrefix
-// solutionLocation string = solutionLocation
-output AZURE_OPENAI_ENDPOINT string = aifoundry.outputs.azureOpenAIEndpoint
-output AZURE_OPENAI_DEPLOYMENT_NAME string = gptModelName //'gpt-4o-mini'
-output AZURE_OPENAI_API_KEY string = aifoundry.outputs.azureOpenAIApiKey
-output AZURE_OPENAI_API_VERSION string = aifoundry.outputs.azureOpenAIApiVersion
-output AZURE_OPENAI_RESOURCE string =aifoundry.outputs.azureOpenAIResource
-output AZURE_OPENAI_PREVIEW_API_VERSION string = azureOpenAIApiVersion
-
-output CHART_DASHBOARD_URL string =azureFunctionURL.outputs.functionURLsOutput.charts_function_url
-output CHART_DASHBOARD_FILTERS_URL string =azureFunctionURL.outputs.functionURLsOutput.filters_function_url
-output USE_GRAPHRAG string ='False'
-output USE_CHAT_HISTORY_ENABLED string ='True'
-output GRAPHRAG_URL string =azureFunctionURL.outputs.functionURLsOutput.graphrag_function_url
-output RAG_URL string =azureFunctionURL.outputs.functionURLsOutput.rag_function_url
-output AZURE_COSMOSDB_ACCOUNT string = cosmosDBModule.outputs.cosmosAccountName
-output AZURE_COSMOSDB_ACCOUNT_KEY string = cosmosDBModule.outputs.cosmosAccountKey
-output AZURE_COSMOSDB_CONVERSATIONS_CONTAINER string = 'conversations'
-output AZURE_COSMOSDB_DATABASE string = 'db_conversaation_history'
-output AZURE_COSMOSDB_ENABLE_FEEDBACK string ='True'
-output DISPLAY_CHART_DEFAULT string = 'True'
-
 module frontend_docker 'deploy_frontend_docker.bicep'= {
   name: 'deploy_frontend_docker'
   params: {
@@ -268,3 +240,39 @@ module frontend_docker 'deploy_frontend_docker.bicep'= {
 }
 
 output WEB_APP_URL string = frontend_docker.outputs.appUrl
+
+// output WEB_APP_URL string = appserviceModule.outputs.webAppUrl
+output REACT_APP_LAYOUT_CONFIG string = backend_docker.outputs.REACT_APP_LAYOUT_CONFIG
+
+output imageTag string = imageTag
+// output applicationInsightsId string = aifoundry.outputs.applicationInsightsId
+// identity string =managedIdentityModule.outputs.managedIdentityOutput.id
+// output solutionName string = solutionPrefix
+// solutionLocation string = solutionLocation
+output APPINSIGHTS_INSTRUMENTATIONKEY string = frontend_docker.outputs.appInsightsInstrumentationKey
+output AZURE_OPENAI_ENDPOINT string = aifoundry.outputs.azureOpenAIEndpoint
+output AZURE_OPENAI_DEPLOYMENT_NAME string = gptModelName //'gpt-4o-mini'
+output AZURE_OPENAI_API_KEY string = aifoundry.outputs.azureOpenAIApiKey
+output AZURE_OPENAI_API_VERSION string = aifoundry.outputs.azureOpenAIApiVersion
+output AZURE_OPENAI_RESOURCE string =aifoundry.outputs.azureOpenAIResource
+output AZURE_OPENAI_PREVIEW_API_VERSION string = azureOpenAIApiVersion
+
+// output CHART_DASHBOARD_URL string =
+// output CHART_DASHBOARD_FILTERS_URL string =
+output USE_GRAPHRAG string ='False'
+output USE_CHAT_HISTORY_ENABLED string ='True'
+// output GRAPHRAG_URL string =azureFunctionURL.outputs.functionURLsOutput.graphrag_function_url
+// output RAG_URL string =azureFunctionURL.outputs.functionURLsOutput.rag_function_url
+output AZURE_COSMOSDB_ACCOUNT string = cosmosDBModule.outputs.cosmosAccountName
+output AZURE_COSMOSDB_ACCOUNT_KEY string = cosmosDBModule.outputs.cosmosAccountKey
+output AZURE_COSMOSDB_CONVERSATIONS_CONTAINER string = 'conversations'
+output AZURE_COSMOSDB_DATABASE string = 'db_conversaation_history'
+output AZURE_COSMOSDB_ENABLE_FEEDBACK string ='True'
+output DISPLAY_CHART_DEFAULT string = 'True'
+output AZURE_AI_PROJECT_CONN_STRING string = aifoundry.outputs.azureAIProjectConnectionStringEntry
+output USE_AI_PROJECT_CLIENT string = 'False'
+output SQLDB_DATABASE string = sqlDBModule.outputs.sqlDbName
+output SQLDB_SERVER string = sqlDBModule.outputs.sqlServerName
+output SQLDB_USERNAME string = sqlDBModule.outputs.sqlDbUser
+output SQLDB_USER_MID string = managedIdentityModule.outputs.managedIdentityBackendAppOutput.clientId
+output REACT_APP_API_BASE_URL string = backend_docker.outputs.appUrl

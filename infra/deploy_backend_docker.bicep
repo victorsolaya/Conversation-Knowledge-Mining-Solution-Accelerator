@@ -137,3 +137,4 @@ resource aiDeveloperAccessProj 'Microsoft.Authorization/roleAssignments@2022-04-
 }
 
 output appUrl string = appService.outputs.appUrl
+output REACT_APP_LAYOUT_CONFIG string = reactAppLayoutConfig

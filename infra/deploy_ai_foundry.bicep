@@ -697,7 +697,6 @@ output aiSearchId string = aiSearch.id
 output aiSearchTarget string = 'https://${aiSearch.name}.search.windows.net'
 output aiSearchService string = aiSearch.name
 output aiProjectName string = aiHubProject.name
-
 output applicationInsightsId string = applicationInsights.id
 output logAnalyticsWorkspaceResourceName string = logAnalytics.name
 output storageAccountName string = storageNameCleaned
@@ -708,5 +707,5 @@ output azureOpenAIEndpoint string = aiServices.properties.endpoint
 output azureOpenAIDeploymentModel string = gptModelName
 output azureOpenAIResource string = aiServicesName
 output azureOpenAIPreviewApiVersion string = azureOpenAIApiVersion
-
 output azureOpenAIKeyName string = azureOpenAIApiKeyEntry.name
+output azureAIProjectConnectionStringEntry string = '${split(aiHubProject.properties.discoveryUrl, '/')[2]};${subscription().subscriptionId};${resourceGroup().name};${aiHubProject.name}'

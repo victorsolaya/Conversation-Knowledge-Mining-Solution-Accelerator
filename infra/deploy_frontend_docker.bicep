@@ -24,3 +24,4 @@ module appService 'deploy_app_service.bicep' = {
 }
 
 output appUrl string = appService.outputs.appUrl
+output appInsightsInstrumentationKey string = reference(applicationInsightsId, '2015-05-01').InstrumentationKey

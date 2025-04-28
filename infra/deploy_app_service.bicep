@@ -66,5 +66,5 @@ resource configLogs 'Microsoft.Web/sites/config@2022-03-01' = {
 output identityPrincipalId string = appService.identity.principalId
 output appUrl string = 'https://${solutionName}.azurewebsites.net'
 
-output REACT_APP_LAYOUT_CONFIG string = REACT_APP_LAYOUT_CONFIG
+
 
