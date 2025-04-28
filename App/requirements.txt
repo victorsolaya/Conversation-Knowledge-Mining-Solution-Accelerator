@@ -6,7 +6,7 @@ gunicorn==23.0.0
 uvicorn==0.24.0
 numpy
 pandas
-python-dotenv==1.0.1
+python-dotenv==1.1.0
 requests
 matplotlib
 flask==3.1.0
