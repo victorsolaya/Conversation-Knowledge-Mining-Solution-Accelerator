@@ -1,7 +1,6 @@
 ﻿################################################################################
 # This .gitignore file was automatically created by Microsoft(R) Visual Studio.
 ################################################################################
-*.env
 *.venv
 *.vscode
 *.vs
@@ -9,3 +8,7 @@
 /LUISSchemaSerializationTool/LUISSchemaSerializationTool/bin
 /LUISSchemaSerializationTool/LUISSchemaSerializationTool/obj
 .fake
+.azure
+.idea
+scriptenv/
+__pycache__/
