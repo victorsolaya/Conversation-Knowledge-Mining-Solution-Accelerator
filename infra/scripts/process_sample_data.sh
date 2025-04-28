@@ -53,12 +53,8 @@ echo "run_create_index_scripts.sh completed successfully."
 # === Step 3: SQL User & Role Setup ===
 log "Setting up SQL users and roles..."
 
-pwsh -File ./infra/scripts/add_user_scripts/create-sql-user-and-role.ps1 \
-    -SqlServerName "$SQL_SERVER_NAME" \
-    -SqlDatabaseName "$SQL_DB_NAME" \
-    -ClientId "$MI_BACKEND_APP" \
-    -DisplayName "$DISPLAY_NAME" \
-    -ManagedIdentityClientId "$MI_BACKEND_APP" \
-    -DatabaseRole "db_datareader, db_datawriter" \
+bash infra/scripts/add_user_scripts/create_sql_user_and_role.sh "$SQL_SERVER_NAME" "$SQL_DB_NAME" "$MI_BACKEND_APP" "$DISPLAY_NAME" "$MI_BACKEND_APP" "db_datareader, db_datawriter"
 
 log "Sample data processing completed successfully!"
+
+echo "All scripts executed successfully."

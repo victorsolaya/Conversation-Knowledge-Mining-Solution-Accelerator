@@ -15,6 +15,13 @@ import pyodbc
 import struct
 import sys
 
+# Updated print statements for better context
+def print_step_time(step_name, start_time):
+    end_time = time.time()
+    duration = end_time - start_time
+    print(f"{step_name} completed. Duration: {duration:.2f} seconds.")
+
+
 key_vault_name=sys.argv[1]
 managed_identity_client_id = sys.argv[2]
 
@@ -31,7 +38,7 @@ def get_secrets_from_kv(kv_name, secret_name):
     secret_client =  SecretClient(vault_url=f"https://{key_vault_name}.vault.azure.net/", credential=credential)  
     return(secret_client.get_secret(secret_name).value)
 
-
+step_start_time= time.time()
 search_endpoint = get_secrets_from_kv(key_vault_name,"AZURE-SEARCH-ENDPOINT")
 search_key =  get_secrets_from_kv(key_vault_name,"AZURE-SEARCH-KEY")
 
@@ -39,7 +46,7 @@ openai_api_key  =  get_secrets_from_kv(key_vault_name,"AZURE-OPENAI-KEY")
 openai_api_base =  get_secrets_from_kv(key_vault_name,"AZURE-OPENAI-ENDPOINT")
 openai_api_version = get_secrets_from_kv(key_vault_name,"AZURE-OPENAI-PREVIEW-API-VERSION") 
 deployment =  get_secrets_from_kv(key_vault_name,"AZURE-OPEN-AI-DEPLOYMENT-MODEL")  #"gpt-4o-mini"
-
+print_step_time("Secrets successfully fetched from Azure Key Vault", step_start_time)
 
 # Function: Get Embeddings 
 def get_embeddings(text: str,openai_api_base,openai_api_version,openai_api_key):
@@ -113,17 +120,16 @@ service_client = DataLakeServiceClient(account_url, credential=credential,api_ve
 file_system_client = service_client.get_file_system_client(file_system_client_name)  
 directory_name = directory
 paths = file_system_client.get_paths(path=directory_name)
-print(paths)
 
 index_name = "call_transcripts_index"
 
 from azure.search.documents.indexes import SearchIndexClient
 
 search_credential = AzureKeyCredential(search_key)
-
 search_client = SearchClient(search_endpoint, index_name, search_credential)
 index_client = SearchIndexClient(endpoint=search_endpoint, credential=search_credential)
 
+step_start_time= time.time()
 driver = "{ODBC Driver 18 for SQL Server}"
 server =  get_secrets_from_kv(key_vault_name,"SQLDB-SERVER")
 database = get_secrets_from_kv(key_vault_name,"SQLDB-DATABASE")
@@ -143,10 +149,13 @@ connection_string = f"DRIVER={driver};SERVER={server};DATABASE={database};"
 conn = pyodbc.connect(
     connection_string, attrs_before={SQL_COPT_SS_ACCESS_TOKEN: token_struct}
 )
+print_step_time("Successfully connected to Azure SQL Database", step_start_time)
 
+step_start_time = time.time()
 # conn = pymssql.connect(server, username, password, database)
 cursor = conn.cursor()
-print("Connected to the database")
+
+step_start_time= time.time()
 cursor.execute('DROP TABLE IF EXISTS processed_data')
 conn.commit()
 
@@ -165,10 +174,12 @@ create_processed_data_sql = """CREATE TABLE processed_data (
             );"""
 cursor.execute(create_processed_data_sql)
 conn.commit()
+print_step_time("Table 'processed_data' successfully created in Azure SQL Database", step_start_time)
 
+
+step_start_time= time.time()
 cursor.execute('DROP TABLE IF EXISTS processed_data_key_phrases')
 conn.commit()
-
 
 create_processed_data_sql = """CREATE TABLE processed_data_key_phrases (
                     ConversationId varchar(255),
@@ -179,7 +190,7 @@ create_processed_data_sql = """CREATE TABLE processed_data_key_phrases (
                     );"""
 cursor.execute(create_processed_data_sql)
 conn.commit()
-
+print_step_time("Table 'processed_data_key_phrases' successfully created in Azure SQL Database", step_start_time)
 
 AZURE_AI_ENDPOINT = get_secrets_from_kv(key_vault_name,"AZURE-OPENAI-CU-ENDPOINT")
 AZURE_OPENAI_CU_KEY = get_secrets_from_kv(key_vault_name,"AZURE-OPENAI-CU-KEY")
@@ -228,6 +239,7 @@ counter = 0
 from datetime import datetime, timedelta
 
 for path in paths:
+    step_start_time= time.time()
     file_client = file_system_client.get_file_client(path.name)
     data_file = file_client.download_file()
     data = data_file.readall()
@@ -271,6 +283,7 @@ for path in paths:
         result = prepare_search_doc(content, document_id)
         docs.append(result)
         counter += 1
+        print_step_time(f"Processed and uploaded data for file path {path.name}", step_start_time)
     except:
         pass
 
@@ -350,15 +363,17 @@ if docs != []:
 
 ##########################################################
 # load sample data to search index
+step_start_time = time.time()
 sample_import_file = './infra/data/sample_search_index_data.json'
 
 with open(sample_import_file, 'r') as file:
     documents = json.load(file)
 batch = [{"@search.action": "upload", **doc} for doc in documents]
 search_client.upload_documents(documents=batch)
-# print(f'Successfully uploaded sample index data')   
+print_step_time("Sample data successfully uploaded to Azure Search index", step_start_time)
 
 # load sample data to database
+step_start_time= time.time()
 sample_processed_data_file = './infra/data/sample_processed_data.json'
 import_table = 'processed_data'
 with open(sample_processed_data_file, "r") as f:
@@ -374,6 +389,7 @@ sql = f"INSERT INTO {import_table} ({columns}) VALUES ({placeholders})"
 # Bulk insert using executemany()
 cursor.executemany(sql, data_list)
 conn.commit()
+print_step_time("Sample data successfully inserted into 'processed_data' table in Azure SQL Database", step_start_time)
 
 # for row in data:
 #     columns = ", ".join(row.keys()) 
@@ -387,6 +403,7 @@ conn.commit()
 
 
 # load key phrases sample data to database
+step_start_time = time.time()
 sample_processed_data_file = './infra/data/sample_processed_data_key_phrases.json'
 import_table = 'processed_data_key_phrases'
 with open(sample_processed_data_file, "r") as f:
@@ -401,7 +418,7 @@ sql = f"INSERT INTO {import_table} ({columns}) VALUES ({placeholders})"
 # Bulk insert using executemany()
 cursor.executemany(sql, data_list)
 conn.commit()
-
+print_step_time("Sample data successfully inserted into 'processed_data_key_phrases' table in Azure SQL Database", step_start_time)
 # for row in data:
 #     columns = ", ".join(row.keys()) 
 #     placeholders = ", ".join(["?"] * len(row))  
@@ -414,7 +431,7 @@ conn.commit()
 # print(f"Imported {len(data)} records into {import_table}.")
 
 ##########################################################
-
+step_start_time= time.time()
 sql_stmt = 'SELECT distinct topic FROM processed_data'
 cursor.execute(sql_stmt)
 
@@ -433,7 +450,7 @@ create_mined_topics_sql = """CREATE TABLE km_mined_topics (
 cursor.execute(create_mined_topics_sql)
 conn.commit()
 
-# print("Created mined topics table")
+print_step_time("Table 'km_mined_topics' successfully created in Azure SQL Database", step_start_time)
 
 topics_str = ', '.join(df['topic'].tolist())
 
@@ -528,7 +545,9 @@ def split_data_into_chunks(text, max_tokens=2000, encoding='gpt-4'):
 max_tokens = 3096
 
 # Split the string into chunks
+step_start_time= time.time()
 chunks = split_data_into_chunks(topics_str, max_tokens)
+print_step_time("Split data into chunks", step_start_time)
 
 def reduce_data_until_fits(topics_str, max_tokens, client):
     if len(topics_str) <= max_tokens:
@@ -551,8 +570,9 @@ def reduce_data_until_fits(topics_str, max_tokens, client):
 
 
 # res = reduce_data_until_fits(topics_str, max_tokens, client)
+step_start_time= time.time()
 res = call_gpt4(topics_str, client)
-
+print_step_time("GPT-4 topic modeling completed and topics extracted", step_start_time)
 topics_object = res #json.loads(res)
 reduced_data = []
 for object1 in topics_object['topics']:
@@ -618,6 +638,7 @@ for index, row in df_processed_data.iterrows():
 conn.commit()
 
 # update processed data to be used in RAG
+step_start_time= time.time()
 cursor.execute('DROP TABLE IF EXISTS km_processed_data')
 conn.commit()
 
@@ -635,7 +656,9 @@ create_processed_data_sql = """CREATE TABLE km_processed_data (
             );"""
 cursor.execute(create_processed_data_sql)
 conn.commit()
+print_step_time("Table 'km_processed_data' successfully created in Azure SQL Database", step_start_time)
 
+step_start_time= time.time()
 sql_stmt = '''select ConversationId, StartTime, EndTime, Content, summary, satisfied, sentiment, 
 key_phrases as keyphrases, complaint, mined_topic as topic from processed_data'''
 
@@ -661,7 +684,7 @@ cursor.executemany(insert_sql, data_list)
 # for idx, row in df.iterrows():
 #     cursor.execute(f"INSERT INTO km_processed_data (ConversationId, StartTime, EndTime, Content, summary, satisfied, sentiment, keyphrases, complaint, topic) VALUES (?,?,?,?,?,?,?,?,?,?)", (row['ConversationId'], row['StartTime'], row['EndTime'], row['Content'], row['summary'], row['satisfied'], row['sentiment'], row['keyphrases'], row['complaint'], row['topic']))
 conn.commit()
-
+print_step_time("Data successfully inserted into 'km_processed_data' table in Azure SQL Database", step_start_time)
 # update keyphrase table after the data update
 # cursor.execute('DROP TABLE IF EXISTS processed_data_key_phrases')
 # conn.commit()
@@ -677,7 +700,7 @@ conn.commit()
 # cursor.execute(create_processed_data_sql)
 # conn.commit()
 # print('created processed_data_key_phrases table')
-
+step_start_time= time.time()
 sql_stmt = '''select ConversationId, key_phrases, sentiment, mined_topic as topic, StartTime from processed_data'''
 cursor.execute(sql_stmt)
 rows = [tuple(row) for row in cursor.fetchall()]
@@ -694,7 +717,9 @@ for idx, row in df.iterrows():
         key_phrase = key_phrase.strip()
         cursor.execute(f"INSERT INTO processed_data_key_phrases (ConversationId, key_phrase, sentiment, topic, StartTime) VALUES (?,?,?,?,?)", (row['ConversationId'], key_phrase, row['sentiment'], row['topic'], row['StartTime']))
 conn.commit()
+print_step_time("Sample data successfully inserted into 'processed_data_key_phrases' table in Azure SQL Database", step_start_time)
 
+step_start_time= time.time()
 # to adjust the dates to current date
 # Get today's date
 today = datetime.today()
@@ -714,3 +739,4 @@ cursor.execute(f"UPDATE [dbo].[processed_data_key_phrases] SET StartTime = FORMA
 conn.commit()
 cursor.close()
 conn.close()
+print_step_time("Dates in database tables successfully adjusted to current date", step_start_time)

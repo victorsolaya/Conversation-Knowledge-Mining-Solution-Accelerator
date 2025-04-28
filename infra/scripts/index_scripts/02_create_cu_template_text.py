@@ -47,5 +47,8 @@ ANALYZER_ID = "ckm-json"
 ANALYZER_TEMPLATE_FILE = './infra/data/ckm-analyzer_config_text.json'
 
 # Create analyzer
+analyzer = client.get_analyzer_detail_by_id(ANALYZER_ID)
+if analyzer is not None:
+    client.delete_analyzer(ANALYZER_ID)
 response = client.begin_create_analyzer(ANALYZER_ID, analyzer_template_path=ANALYZER_TEMPLATE_FILE)
 result = client.poll_result(response)
