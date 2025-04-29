@@ -388,12 +388,9 @@ placeholders = ", ".join(["?"] * len(data[0]))  # Create placeholders for values
 
 sql = f"INSERT INTO {import_table} ({columns}) VALUES ({placeholders})"
 
-# Perform batch inserts
-for i in range(0, len(data_list), batch_size):
-    batch = data_list[i:i + batch_size]
-    cursor.executemany(sql, batch)
-    conn.commit()
-    print(f"Inserted batch {i // batch_size + 1} of {len(data_list) // batch_size + 1}")
+# Bulk insert using executemany()
+cursor.executemany(sql, data_list)
+conn.commit()
 
 print_step_time("Sample data successfully inserted into 'processed_data' table in Azure SQL Database", step_start_time)
 
@@ -424,12 +421,9 @@ placeholders = ", ".join(["?"] * len(data[0]))  # Create placeholders for values
 
 sql = f"INSERT INTO {import_table} ({columns}) VALUES ({placeholders})"
 
-# Perform batch inserts
-for i in range(0, len(data_list), batch_size):
-    batch = data_list[i:i + batch_size]
-    cursor.executemany(sql, batch)
-    conn.commit()
-    print(f"Inserted batch {i // batch_size + 1} of {len(data_list) // batch_size + 1}")
+# Bulk insert using executemany()
+cursor.executemany(sql, data_list)
+conn.commit()
 
 print_step_time("Sample data successfully inserted into 'processed_data_key_phrases' table in Azure SQL Database", step_start_time)
 # for row in data:
