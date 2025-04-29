@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.34.44.8038",
-      "templateHash": "6194079026370260064"
+      "templateHash": "1819836499882139244"
     }
   },
   "parameters": {
@@ -389,7 +389,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.34.44.8038",
-              "templateHash": "17486076883234388086"
+              "templateHash": "1832580029762573211"
             }
           },
           "parameters": {
@@ -982,6 +982,10 @@
               "type": "string",
               "value": "[variables('aiProjectName')]"
             },
+            "aiSearchKey": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.KeyVault/vaults/secrets', parameters('keyVaultName'), 'AZURE-SEARCH-KEY'), '2021-11-01-preview').value]"
+            },
             "applicationInsightsId": {
               "type": "string",
               "value": "[resourceId('Microsoft.Insights/components', variables('applicationInsightsName'))]"
@@ -997,6 +1001,14 @@
             "azureOpenAIKeyName": {
               "type": "string",
               "value": "AZURE-OPENAI-KEY"
+            },
+            "azureOpenAIKey": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.KeyVault/vaults/secrets', parameters('keyVaultName'), 'AZURE-OPENAI-KEY'), '2021-11-01-preview').value]"
+            },
+            "azureProjectConnString": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.KeyVault/vaults/secrets', parameters('keyVaultName'), 'AZURE-AI-PROJECT-CONN-STRING'), '2021-11-01-preview').value]"
             }
           }
         }
@@ -1768,7 +1780,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.34.44.8038",
-              "templateHash": "14415535620383822032"
+              "templateHash": "1606095624726891241"
             }
           },
           "parameters": {
@@ -2051,6 +2063,14 @@
             "appUrl": {
               "type": "string",
               "value": "[reference(resourceId('Microsoft.Resources/deployments', format('{0}-app-module', variables('name'))), '2022-09-01').outputs.appUrl.value]"
+            },
+            "reactAppLayoutConfig": {
+              "type": "string",
+              "value": "[variables('reactAppLayoutConfig')]"
+            },
+            "appInsightInstrumentationKey": {
+              "type": "string",
+              "value": "[reference(parameters('applicationInsightsId'), '2015-05-01').InstrumentationKey]"
             }
           }
         }
@@ -2378,15 +2398,15 @@
     },
     "APPINSIGHTS_INSTRUMENTATIONKEY": {
       "type": "string",
-      "value": ""
+      "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_backend_docker'), '2022-09-01').outputs.appInsightInstrumentationKey.value]"
     },
     "AZURE_AI_PROJECT_CONN_STRING": {
       "type": "string",
-      "value": ""
+      "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_ai_foundry'), '2022-09-01').outputs.azureProjectConnString.value]"
     },
     "AZURE_AI_SEARCH_API_KEY": {
       "type": "string",
-      "value": ""
+      "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_ai_foundry'), '2022-09-01').outputs.aiSearchKey.value]"
     },
     "AZURE_AI_SEARCH_ENDPOINT": {
       "type": "string",
@@ -2426,7 +2446,7 @@
     },
     "AZURE_OPENAI_API_KEY": {
       "type": "string",
-      "value": ""
+      "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_ai_foundry'), '2022-09-01').outputs.azureOpenAIKey.value]"
     },
     "AZURE_OPEN_AI_MODEL_DEPLOYMENT_TYPE": {
       "type": "string",
@@ -2451,6 +2471,10 @@
     "OPENAI_API_VERSION": {
       "type": "string",
       "value": "[variables('azureOpenAIApiVersion')]"
+    },
+    "REACT_APP_LAYOUT_CONFIG": {
+      "type": "string",
+      "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_backend_docker'), '2022-09-01').outputs.reactAppLayoutConfig.value]"
     },
     "SQLDB_DATABASE": {
       "type": "string",
