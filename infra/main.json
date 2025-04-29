@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.34.44.8038",
-      "templateHash": "10251291785467156580"
+      "version": "0.33.93.31351",
+      "templateHash": "5420819438241424994"
     }
   },
   "parameters": {
@@ -128,8 +128,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.34.44.8038",
-              "templateHash": "2941318787429287286"
+              "version": "0.33.93.31351",
+              "templateHash": "11920656242524003012"
             }
           },
           "parameters": {
@@ -240,8 +240,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.34.44.8038",
-              "templateHash": "5775352776365113688"
+              "version": "0.33.93.31351",
+              "templateHash": "13908043870536599124"
             }
           },
           "parameters": {
@@ -387,8 +387,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.34.44.8038",
-              "templateHash": "7008311746261758591"
+              "version": "0.33.93.31351",
+              "templateHash": "17380969324509584072"
             }
           },
           "parameters": {
@@ -1040,9 +1040,37 @@
               "type": "string",
               "value": "[variables('storageNameCleaned')]"
             },
+            "azureOpenAIApiKey": {
+              "type": "string",
+              "value": "[listKeys(resourceId('Microsoft.CognitiveServices/accounts', variables('aiServicesName')), '2024-04-01-preview').key1]"
+            },
+            "azureOpenAIApiVersion": {
+              "type": "string",
+              "value": "[parameters('azureOpenAIApiVersion')]"
+            },
+            "azureOpenAIEndpoint": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.CognitiveServices/accounts', variables('aiServicesName')), '2024-04-01-preview').endpoint]"
+            },
+            "azureOpenAIDeploymentModel": {
+              "type": "string",
+              "value": "[parameters('gptModelName')]"
+            },
+            "azureOpenAIResource": {
+              "type": "string",
+              "value": "[variables('aiServicesName')]"
+            },
+            "azureOpenAIPreviewApiVersion": {
+              "type": "string",
+              "value": "[parameters('azureOpenAIApiVersion')]"
+            },
             "azureOpenAIKeyName": {
               "type": "string",
               "value": "AZURE-OPENAI-KEY"
+            },
+            "azureAIProjectConnectionStringEntry": {
+              "type": "string",
+              "value": "[format('{0};{1};{2};{3}', split(reference(resourceId('Microsoft.MachineLearningServices/workspaces', variables('aiProjectName')), '2024-01-01-preview').discoveryUrl, '/')[2], subscription().subscriptionId, resourceGroup().name, variables('aiProjectName'))]"
             }
           }
         }
@@ -1082,8 +1110,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.34.44.8038",
-              "templateHash": "17679659647877785824"
+              "version": "0.33.93.31351",
+              "templateHash": "14620142974675285735"
             }
           },
           "parameters": {
@@ -1266,8 +1294,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.34.44.8038",
-              "templateHash": "573049773979289587"
+              "version": "0.33.93.31351",
+              "templateHash": "12758765861849969682"
             }
           },
           "parameters": {
@@ -1437,6 +1465,10 @@
             "cosmosContainerName": {
               "type": "string",
               "value": "[variables('collectionName')]"
+            },
+            "cosmosAccountKey": {
+              "type": "string",
+              "value": "[listKeys(resourceId('Microsoft.DocumentDB/databaseAccounts', variables('accountName')), '2022-08-15').primaryMasterKey]"
             }
           }
         }
@@ -1478,8 +1510,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.34.44.8038",
-              "templateHash": "12523803244328608887"
+              "version": "0.33.93.31351",
+              "templateHash": "16605082293199555822"
             }
           },
           "parameters": {
@@ -1694,8 +1726,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.34.44.8038",
-              "templateHash": "6489935757234589237"
+              "version": "0.33.93.31351",
+              "templateHash": "16243838204790550721"
             }
           },
           "parameters": {
@@ -1874,8 +1906,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.34.44.8038",
-              "templateHash": "5000589525239764864"
+              "version": "0.33.93.31351",
+              "templateHash": "3990461296238110870"
             },
             "description": "Creates an Azure App Service plan."
           },
@@ -2023,8 +2055,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.34.44.8038",
-              "templateHash": "14001159014642291962"
+              "version": "0.33.93.31351",
+              "templateHash": "4409089350471444690"
             }
           },
           "parameters": {
@@ -2124,8 +2156,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.34.44.8038",
-                      "templateHash": "356166454386735487"
+                      "version": "0.33.93.31351",
+                      "templateHash": "16308543969241672542"
                     }
                   },
                   "parameters": {
@@ -2240,8 +2272,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.34.44.8038",
-                              "templateHash": "14980344017942960012"
+                              "version": "0.33.93.31351",
+                              "templateHash": "5462989833378560251"
                             },
                             "description": "Updates app settings for an Azure App Service."
                           },
@@ -2292,6 +2324,10 @@
             "appUrl": {
               "type": "string",
               "value": "[reference(resourceId('Microsoft.Resources/deployments', format('{0}-app-module', variables('name'))), '2022-09-01').outputs.appUrl.value]"
+            },
+            "REACT_APP_LAYOUT_CONFIG": {
+              "type": "string",
+              "value": "[variables('reactAppLayoutConfig')]"
             }
           }
         }
@@ -2339,8 +2375,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.34.44.8038",
-              "templateHash": "13062487122244574247"
+              "version": "0.33.93.31351",
+              "templateHash": "3039320665387926557"
             }
           },
           "parameters": {
@@ -2395,8 +2431,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.34.44.8038",
-                      "templateHash": "356166454386735487"
+                      "version": "0.33.93.31351",
+                      "templateHash": "16308543969241672542"
                     }
                   },
                   "parameters": {
@@ -2511,8 +2547,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.34.44.8038",
-                              "templateHash": "14980344017942960012"
+                              "version": "0.33.93.31351",
+                              "templateHash": "5462989833378560251"
                             },
                             "description": "Updates app settings for an Azure App Service."
                           },
@@ -2563,6 +2599,10 @@
             "appUrl": {
               "type": "string",
               "value": "[reference(resourceId('Microsoft.Resources/deployments', format('{0}-app-module', variables('name'))), '2022-09-01').outputs.appUrl.value]"
+            },
+            "appInsightsInstrumentationKey": {
+              "type": "string",
+              "value": "[reference(parameters('applicationInsightsId'), '2015-05-01').InstrumentationKey]"
             }
           }
         }
@@ -2578,6 +2618,102 @@
     "WEB_APP_URL": {
       "type": "string",
       "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_frontend_docker'), '2022-09-01').outputs.appUrl.value]"
+    },
+    "REACT_APP_LAYOUT_CONFIG": {
+      "type": "string",
+      "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_backend_docker'), '2022-09-01').outputs.REACT_APP_LAYOUT_CONFIG.value]"
+    },
+    "imageTag": {
+      "type": "string",
+      "value": "[parameters('imageTag')]"
+    },
+    "APPINSIGHTS_INSTRUMENTATIONKEY": {
+      "type": "string",
+      "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_frontend_docker'), '2022-09-01').outputs.appInsightsInstrumentationKey.value]"
+    },
+    "AZURE_OPENAI_ENDPOINT": {
+      "type": "string",
+      "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_ai_foundry'), '2022-09-01').outputs.azureOpenAIEndpoint.value]"
+    },
+    "AZURE_OPENAI_DEPLOYMENT_NAME": {
+      "type": "string",
+      "value": "[parameters('gptModelName')]"
+    },
+    "AZURE_OPENAI_API_KEY": {
+      "type": "string",
+      "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_ai_foundry'), '2022-09-01').outputs.azureOpenAIApiKey.value]"
+    },
+    "AZURE_OPENAI_API_VERSION": {
+      "type": "string",
+      "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_ai_foundry'), '2022-09-01').outputs.azureOpenAIApiVersion.value]"
+    },
+    "AZURE_OPENAI_RESOURCE": {
+      "type": "string",
+      "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_ai_foundry'), '2022-09-01').outputs.azureOpenAIResource.value]"
+    },
+    "AZURE_OPENAI_PREVIEW_API_VERSION": {
+      "type": "string",
+      "value": "[variables('azureOpenAIApiVersion')]"
+    },
+    "USE_GRAPHRAG": {
+      "type": "string",
+      "value": "False"
+    },
+    "USE_CHAT_HISTORY_ENABLED": {
+      "type": "string",
+      "value": "True"
+    },
+    "AZURE_COSMOSDB_ACCOUNT": {
+      "type": "string",
+      "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_cosmos_db'), '2022-09-01').outputs.cosmosAccountName.value]"
+    },
+    "AZURE_COSMOSDB_ACCOUNT_KEY": {
+      "type": "string",
+      "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_cosmos_db'), '2022-09-01').outputs.cosmosAccountKey.value]"
+    },
+    "AZURE_COSMOSDB_CONVERSATIONS_CONTAINER": {
+      "type": "string",
+      "value": "conversations"
+    },
+    "AZURE_COSMOSDB_DATABASE": {
+      "type": "string",
+      "value": "db_conversaation_history"
+    },
+    "AZURE_COSMOSDB_ENABLE_FEEDBACK": {
+      "type": "string",
+      "value": "True"
+    },
+    "DISPLAY_CHART_DEFAULT": {
+      "type": "string",
+      "value": "True"
+    },
+    "AZURE_AI_PROJECT_CONN_STRING": {
+      "type": "string",
+      "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_ai_foundry'), '2022-09-01').outputs.azureAIProjectConnectionStringEntry.value]"
+    },
+    "USE_AI_PROJECT_CLIENT": {
+      "type": "string",
+      "value": "False"
+    },
+    "SQLDB_DATABASE": {
+      "type": "string",
+      "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_sql_db'), '2022-09-01').outputs.sqlDbName.value]"
+    },
+    "SQLDB_SERVER": {
+      "type": "string",
+      "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_sql_db'), '2022-09-01').outputs.sqlServerName.value]"
+    },
+    "SQLDB_USERNAME": {
+      "type": "string",
+      "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_sql_db'), '2022-09-01').outputs.sqlDbUser.value]"
+    },
+    "SQLDB_USER_MID": {
+      "type": "string",
+      "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_managed_identity'), '2022-09-01').outputs.managedIdentityBackendAppOutput.value.clientId]"
+    },
+    "REACT_APP_API_BASE_URL": {
+      "type": "string",
+      "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_backend_docker'), '2022-09-01').outputs.appUrl.value]"
     }
   }
 }
