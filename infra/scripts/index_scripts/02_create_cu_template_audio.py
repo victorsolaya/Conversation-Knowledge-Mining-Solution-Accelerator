@@ -52,7 +52,7 @@ try:
     if analyzer is not None:
         client.delete_analyzer(ANALYZER_ID)
 except Exception as e:
-    print(f"Analyzer with ID {ANALYZER_ID} does not exist or an error occurred: {e}")
+    print(f"Analyzer with ID {ANALYZER_ID} does not exist")
 
 response = client.begin_create_analyzer(ANALYZER_ID, analyzer_template_path=ANALYZER_TEMPLATE_FILE)
 result = client.poll_result(response)
