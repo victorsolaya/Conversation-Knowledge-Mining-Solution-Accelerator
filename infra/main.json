@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.34.44.8038",
-      "templateHash": "1819836499882139244"
+      "templateHash": "3812831526106755289"
     }
   },
   "parameters": {
@@ -360,23 +360,11 @@
           "cuLocation": {
             "value": "[parameters('contentUnderstandingLocation')]"
           },
-          "deploymentType": {
-            "value": "[parameters('deploymentType')]"
-          },
           "gptModelName": {
             "value": "[parameters('gptModelName')]"
           },
           "azureOpenAIApiVersion": {
             "value": "[variables('azureOpenAIApiVersion')]"
-          },
-          "gptDeploymentCapacity": {
-            "value": "[parameters('gptDeploymentCapacity')]"
-          },
-          "embeddingModel": {
-            "value": "[parameters('embeddingModel')]"
-          },
-          "embeddingDeploymentCapacity": {
-            "value": "[parameters('embeddingDeploymentCapacity')]"
           },
           "managedIdentityObjectId": {
             "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_managed_identity'), '2022-09-01').outputs.managedIdentityOutput.value.objectId]"
@@ -389,7 +377,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.34.44.8038",
-              "templateHash": "1832580029762573211"
+              "templateHash": "6628754822235192867"
             }
           },
           "parameters": {
@@ -405,23 +393,11 @@
             "cuLocation": {
               "type": "string"
             },
-            "deploymentType": {
-              "type": "string"
-            },
             "gptModelName": {
               "type": "string"
             },
             "azureOpenAIApiVersion": {
               "type": "string"
-            },
-            "gptDeploymentCapacity": {
-              "type": "int"
-            },
-            "embeddingModel": {
-              "type": "string"
-            },
-            "embeddingDeploymentCapacity": {
-              "type": "int"
             },
             "managedIdentityObjectId": {
               "type": "string"
@@ -984,7 +960,7 @@
             },
             "aiSearchKey": {
               "type": "string",
-              "value": "[reference(resourceId('Microsoft.KeyVault/vaults/secrets', parameters('keyVaultName'), 'AZURE-SEARCH-KEY'), '2021-11-01-preview').value]"
+              "value": "[listAdminKeys(resourceId('Microsoft.Search/searchServices', variables('aiSearchName')), '2023-11-01').primaryKey]"
             },
             "applicationInsightsId": {
               "type": "string",
@@ -1004,11 +980,11 @@
             },
             "azureOpenAIKey": {
               "type": "string",
-              "value": "[reference(resourceId('Microsoft.KeyVault/vaults/secrets', parameters('keyVaultName'), 'AZURE-OPENAI-KEY'), '2021-11-01-preview').value]"
+              "value": "[listKeys(resourceId('Microsoft.CognitiveServices/accounts', variables('aiServicesName')), '2024-04-01-preview').key1]"
             },
             "azureProjectConnString": {
               "type": "string",
-              "value": "[reference(resourceId('Microsoft.KeyVault/vaults/secrets', parameters('keyVaultName'), 'AZURE-AI-PROJECT-CONN-STRING'), '2021-11-01-preview').value]"
+              "value": "[format('{0};{1};{2};{3}', split(reference(resourceId('Microsoft.MachineLearningServices/workspaces', variables('aiProjectName')), '2024-01-01-preview').discoveryUrl, '/')[2], subscription().subscriptionId, resourceGroup().name, variables('aiProjectName'))]"
             }
           }
         }

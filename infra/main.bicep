@@ -101,12 +101,8 @@ module aifoundry 'deploy_ai_foundry.bicep' = {
     solutionLocation: solutionLocation
     keyVaultName: kvault.outputs.keyvaultName
     cuLocation: contentUnderstandingLocation
-    deploymentType: deploymentType
     gptModelName: gptModelName
     azureOpenAIApiVersion: azureOpenAIApiVersion
-    gptDeploymentCapacity: gptDeploymentCapacity
-    embeddingModel: embeddingModel
-    embeddingDeploymentCapacity: embeddingDeploymentCapacity
     managedIdentityObjectId:managedIdentityModule.outputs.managedIdentityOutput.objectId
   }
   scope: resourceGroup(resourceGroup().name)
