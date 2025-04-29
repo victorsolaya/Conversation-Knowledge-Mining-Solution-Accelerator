@@ -376,8 +376,6 @@ print_step_time("Sample data successfully uploaded to Azure Search index", step_
 step_start_time = time.time()
 sample_processed_data_file = './infra/data/sample_processed_data.json'
 import_table = 'processed_data'
-batch_size = 100  # Define batch size for inserts
-
 with open(sample_processed_data_file, "r") as f:
     data = json.load(f)
 
@@ -391,7 +389,6 @@ sql = f"INSERT INTO {import_table} ({columns}) VALUES ({placeholders})"
 # Bulk insert using executemany()
 cursor.executemany(sql, data_list)
 conn.commit()
-
 print_step_time("Sample data successfully inserted into 'processed_data' table in Azure SQL Database", step_start_time)
 
 # for row in data:
@@ -409,8 +406,6 @@ print_step_time("Sample data successfully inserted into 'processed_data' table i
 step_start_time = time.time()
 sample_processed_data_file = './infra/data/sample_processed_data_key_phrases.json'
 import_table = 'processed_data_key_phrases'
-batch_size = 100  # Define batch size for inserts
-
 with open(sample_processed_data_file, "r") as f:
     data = json.load(f)
 
@@ -424,8 +419,8 @@ sql = f"INSERT INTO {import_table} ({columns}) VALUES ({placeholders})"
 # Bulk insert using executemany()
 cursor.executemany(sql, data_list)
 conn.commit()
-
 print_step_time("Sample data successfully inserted into 'processed_data_key_phrases' table in Azure SQL Database", step_start_time)
+
 # for row in data:
 #     columns = ", ".join(row.keys()) 
 #     placeholders = ", ".join(["?"] * len(row))  
