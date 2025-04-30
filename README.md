@@ -194,9 +194,17 @@ To change the azd parameters from the default values, follow the steps [here](./
     * If you get an error or timeout with deployment, changing the location can help, as there may be availability constraints for the resources.
 5. Once the infrastructure deployment completes successfully, you can proceed with deploying the AI model by running the bash command displayed in the terminal. The command will look similar to the following: 
     ```shell 
+    bash ./infra/scripts/deploy_ai_model.sh
+    ```
+    if you don't have azd env then you need to pass parameters along with the command. Then the command will look like the following:
+    ```shell 
     bash ./infra/scripts/deploy_ai_model.sh <Resource-Group-Name> <Solution-Name> <OpenAI-Model-Deployment-Type> <OpenAI-Deployment-Model> <OpenAI-Deployment-Model-Capacity> <OpenAI-Embedding-Model> <OpenAI-Embedding-Model-Capacity> <Managed-Identity-Client-ID>
     ```
 6. After the AI model deployment finishes, if you wish to load the sample data, you can then run the corresponding sample data processing command, which will also be shown in the terminal: 
+    ```shell 
+    bash ./infra/scripts/process_sample_data.sh
+    ```
+    if you don't have azd env then you need to pass parameters along with the command. Then the command will look like the following:
     ```shell 
     bash ./infra/scripts/process_sample_data.sh <Storage-Account-Name> <Storage-Container-Name> <Managed-Identity-Client-ID> <Key-Vault-Name> <SQLDB-Server> <SQLDB-Database> <Resource-Group-Name> <API-App-Managed-Identity-Client-ID> <API-App-Managed-Identity-Name>
     ```
