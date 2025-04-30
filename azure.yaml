@@ -14,7 +14,7 @@ hooks:
       run: |
         Write-Host "Web app URL: "
         Write-Host "$env:WEB_APP_URL" -ForegroundColor Cyan
-        Write-Host "🚀 If you want to deploy the AI Model, run the following command in the Bash terminal:"
+        Write-Host "🚀 If you want to deploy the GPT and Embedding Models, run the following command in the Bash terminal:"
         Write-Host "bash ./infra/scripts/deploy_ai_model.sh -ForegroundColor Cyan
         Write-Host "✅ If you want to use the Sample Data, run the following command in the Bash terminal to process it:"
         Write-Host "bash ./infra/scripts/process_sample_data.sh -ForegroundColor Cyan
@@ -25,7 +25,7 @@ hooks:
       run: |
         echo "Web app URL: "
         echo $WEB_APP_URL
-        echo "🚀 If you want to deploy the AI Model, run the following command in the Bash terminal:"
+        echo "🚀 If you want to deploy the GPT and Embedding Models, run the following command in the Bash terminal:"
         echo "bash ./infra/scripts/deploy_ai_model.sh"
         echo "✅ If you want to use the Sample Data, run the following command in the Bash terminal to process it:"
         echo "bash ./infra/scripts/process_sample_data.sh"
