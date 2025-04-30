@@ -77,6 +77,9 @@ if "%errorlevel%" neq "0" (
     exit /B %errorlevel%
 )
 
+REM Wait for 10 seconds to ensure the backend starts properly
+timeout /t 10 /nobreak >nul
+
 echo Starting frontend in a new terminal...
 start cmd /k "cd App && npm start"
 if "%errorlevel%" neq "0" (
