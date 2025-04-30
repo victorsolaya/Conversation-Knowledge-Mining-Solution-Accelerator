@@ -273,11 +273,5 @@ output USE_AI_PROJECT_CLIENT string = 'False'
 output USE_CHAT_HISTORY_ENABLED string = 'True'
 output DISPLAY_CHART_DEFAULT string = 'False'
 
-output MANAGED_IDENTITY_CLIENT_ID string = managedIdentityModule.outputs.managedIdentityOutput.clientId
-output STORAGE_ACCOUNT_NAME string = storageAccount.outputs.storageName
-output STORAGE_CONTAINER_NAME string = storageAccount.outputs.storageContainer
-output KEY_VAULT_NAME string = kvault.outputs.keyvaultName
-output API_APP_MANAGED_IDENTITY_CLIENT_ID string = managedIdentityModule.outputs.managedIdentityBackendAppOutput.clientId
-output API_APP_MANAGED_IDENTITY_NAME string = managedIdentityModule.outputs.managedIdentityBackendAppOutput.name
 output API_APP_URL string = backend_docker.outputs.appUrl
 output WEB_APP_URL string = frontend_docker.outputs.appUrl
