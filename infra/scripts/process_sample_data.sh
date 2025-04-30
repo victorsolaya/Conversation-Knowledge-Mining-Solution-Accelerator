@@ -1,9 +1,5 @@
 #!/bin/bash
 
-set -e  # Exit on first error
-set -o pipefail
-set -u  # Treat unset variables as error
-
 # === Configuration Parameters ===
 storageAccountName="$1"
 containerName="$2"

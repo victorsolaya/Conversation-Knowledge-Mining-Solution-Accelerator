@@ -1,9 +1,5 @@
 #!/bin/bash
 
-set -e  # Exit on first error
-set -o pipefail
-set -u  # Treat unset variables as error
-
 # Parameters
 resource_group_name="$1"
 solution_name="$2"
