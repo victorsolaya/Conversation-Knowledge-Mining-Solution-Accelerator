@@ -247,6 +247,7 @@ output AZURE_CONTENT_UNDERSTANDING_LOCATION string = contentUnderstandingLocatio
 output AZURE_SECONDARY_LOCATION string = secondaryLocation
 output APPINSIGHTS_INSTRUMENTATIONKEY string = backend_docker.outputs.appInsightInstrumentationKey
 output AZURE_AI_PROJECT_CONN_STRING string = aifoundry.outputs.azureProjectConnString
+output AZURE_AI_PROJECT_NAME string = aifoundry.outputs.azureProjectName
 output AZURE_AI_SEARCH_API_KEY string = aifoundry.outputs.aiSearchKey
 output AZURE_AI_SEARCH_ENDPOINT string = aifoundry.outputs.aiSearchTarget
 output AZURE_AI_SEARCH_INDEX string = 'call_transcripts_index'
@@ -275,3 +276,4 @@ output DISPLAY_CHART_DEFAULT string = 'False'
 
 output API_APP_URL string = backend_docker.outputs.appUrl
 output WEB_APP_URL string = frontend_docker.outputs.appUrl
+

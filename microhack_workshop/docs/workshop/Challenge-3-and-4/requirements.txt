@@ -1,0 +1,8 @@
+# Azure Services
+azure-identity==1.19.0
+
+# Additional utilities
+semantic-kernel[azure]==1.28.0
+azure-ai-projects
+openai
+pyodbc

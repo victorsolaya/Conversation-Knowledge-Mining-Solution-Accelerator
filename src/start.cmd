@@ -52,6 +52,15 @@ if exist "%APP_ENV_FILE%" (
 
 echo Successfully updated REACT_APP_API_BASE_URL in %ENV_FILE%
 
+REM 1. Copy full .env to microhack_workshop/docs/workshop
+set MICROHACK_ENV_FILE=%ROOT_DIR%\microhack_workshop\docs\workshop\.env
+copy /Y "%ENV_FILE%" "%MICROHACK_ENV_FILE%"
+if errorlevel 1 (
+    echo Failed to copy .env to microhack_workshop/docs/workshop
+    exit /b 1
+)
+echo Copied .env to src/api
+
 echo Restoring backend Python packages...
 cd api
 call python -m pip install -r requirements.txt
