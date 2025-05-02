@@ -22,3 +22,7 @@ semantic-kernel[azure]==1.28.0
 openai==1.74.0
 pyodbc==5.2.0
 pandas==2.2.3
+
+# Development tools
+pytest==8.3.5
+pytest-cov==6.1.1
