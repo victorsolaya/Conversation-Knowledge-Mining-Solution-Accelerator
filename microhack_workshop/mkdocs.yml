@@ -152,9 +152,7 @@ nav:
       - Knowledge Mining API Notebook: workshop/Challenge-3-and-4/knowledge_mining_api.ipynb
   - Challenge 5:
       - Overview: workshop/Challenge-5/index.md
-      - Chapter Generation: workshop/Challenge-5/Chapter_Generation.md
       - Chapter Generation Notebook: workshop/Challenge-5/video_chapter_generation.ipynb
-      - Tag Generation: workshop/Challenge-5/Tag_Generation.md
       - Tag Generation Notebook: workshop/Challenge-5/video_tag_generation.ipynb
   - Challenge 6:
       - Overview: workshop/Challenge-6/index.md
