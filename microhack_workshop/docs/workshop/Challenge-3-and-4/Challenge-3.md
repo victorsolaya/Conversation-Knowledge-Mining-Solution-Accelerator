@@ -38,7 +38,7 @@ One of the easiest and most fun changes you can make to the app is updating the 
 
 5. Open a terminal or command prompt.
 
-6. Navigate to the project directory where start.cmd is located:`src/app ` and run `./start.cmd`
+6. Navigate to the project directory where start.cmd is located:`src/ ` and run `./start.cmd`
 
 5. Open a web browser and navigate to the local development server (http://127.0.0.1:5000).
 Verify that the new logo is displayed in the application.
