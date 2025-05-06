@@ -1,9 +1,8 @@
 # Azure Services
 azure-identity==1.19.0
-azure-ai-evaluation
+
 # Additional utilities
-semantic-kernel[azure]==1.29.0
+semantic-kernel[azure]==1.28.0
 azure-ai-projects
 openai
 pyodbc
-ipykernel==6.29.5

@@ -91,7 +91,11 @@ Feel free to enhance the agent prompt with RAI-friendly language.
 - Access to the Azure API endpoint.
 
 Follow the steps below to set up your virtual environment and run the notebook. 
-1. Navigate to the `workshop` folder in the terminal in your local repository and run the following commands 
+1. Navigate to the `Challenge-3-and-4` folder in your local repository. 
+2. Open the `.env.sample` to update the variables with the details of your solution. Remeber to save the file after filling in the details.  
+    - Rename the file to `.env` and save it.
+
+3. In the terminal run the following commands 
 
 * Create a virtual environment
 ```shell
@@ -105,8 +109,6 @@ python -m venv .venv
 ```shell
 pip install -r requirements.txt
 ```
-3. Open the `.env.sample` to update the variables with the details of your solution. Remeber to save the file after filling in the details.  
-    - Rename the file to `.env` and save it.
 4. Follow the steps in [Challenge-4](./Challenge-4.md) to run the notebook. 
 <!-- 
 ## 🧪 Sample Run
