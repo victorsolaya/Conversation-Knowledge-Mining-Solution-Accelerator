@@ -4,7 +4,8 @@ param gptModelName string
 param gptDeploymentCapacity int
 param embeddingModel string
 param embeddingDeploymentCapacity int
-var aiServicesName = '${solutionName}-aiservices'
+var abbrs = loadJsonContent('./abbreviations.json')
+var aiServicesName = '${abbrs.ai.aiServices}${solutionName}'
 var aiModelDeployments = [
   {
     name: gptModelName

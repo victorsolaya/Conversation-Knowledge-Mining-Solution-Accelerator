@@ -10,8 +10,8 @@ param appSettings object = {}
 param appServicePlanId string
 
 var imageName = 'DOCKER|kmcontainerreg.azurecr.io/km-app:${imageTag}'
-var name = '${solutionName}-app'
-
+//var name = '${solutionName}-app'
+param name string
 module appService 'deploy_app_service.bicep' = {
   name: '${name}-app-module'
   params: {
