@@ -7,8 +7,10 @@ param keyVaultName string
 param managedIdentityObjectId string
 param managedIdentityName string
 
-var serverName = '${ solutionName }-sql-server'
-var sqlDBName = '${ solutionName }-sql-db'
+// var serverName = '${ solutionName }-sql-server'
+// var sqlDBName = '${ solutionName }-sql-db'
+param serverName string
+param sqlDBName string
 var location = solutionLocation
 var administratorLogin = 'sqladmin'
 var administratorLoginPassword = 'TestPassword_1234'

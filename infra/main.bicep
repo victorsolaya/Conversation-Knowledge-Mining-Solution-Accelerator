@@ -1,6 +1,6 @@
 // ========== main.bicep ========== //
 targetScope = 'resourceGroup'
-
+var abbrs = loadJsonContent('./abbreviations.json')
 @minLength(3)
 @maxLength(20)
 @description('A unique prefix for all resources in this deployment. This should be 3-20 characters long:')
@@ -76,6 +76,7 @@ var solutionPrefix = 'km${padLeft(take(uniqueId, 12), 12, '0')}'
 module managedIdentityModule 'deploy_managed_identity.bicep' = {
   name: 'deploy_managed_identity'
   params: {
+    miName:'${abbrs.security.managedIdentity}${solutionPrefix}'
     solutionName: solutionPrefix
     solutionLocation: solutionLocation
   }
@@ -86,6 +87,7 @@ module managedIdentityModule 'deploy_managed_identity.bicep' = {
 module kvault 'deploy_keyvault.bicep' = {
   name: 'deploy_keyvault'
   params: {
+    keyvaultName: '${abbrs.security.keyVault}${solutionPrefix}'
     solutionName: solutionPrefix
     solutionLocation: solutionLocation
     managedIdentityObjectId:managedIdentityModule.outputs.managedIdentityOutput.objectId
@@ -116,6 +118,7 @@ module aifoundry 'deploy_ai_foundry.bicep' = {
 module storageAccount 'deploy_storage_account.bicep' = {
   name: 'deploy_storage_account'
   params: {
+    saName: '${abbrs.storage.storageAccount}${solutionPrefix}'
     solutionName: solutionPrefix
     solutionLocation: solutionLocation
     keyVaultName: kvault.outputs.keyvaultName
@@ -128,6 +131,7 @@ module storageAccount 'deploy_storage_account.bicep' = {
 module cosmosDBModule 'deploy_cosmos_db.bicep' = {
   name: 'deploy_cosmos_db'
   params: {
+    accountName: '${abbrs.databases.cosmosDBDatabase}${solutionPrefix}'
     solutionName: solutionPrefix
     solutionLocation: secondaryLocation
     keyVaultName: kvault.outputs.keyvaultName
@@ -139,6 +143,8 @@ module cosmosDBModule 'deploy_cosmos_db.bicep' = {
 module sqlDBModule 'deploy_sql_db.bicep' = {
   name: 'deploy_sql_db'
   params: {
+    serverName: '${abbrs.databases.sqlDatabaseServer}${solutionPrefix}'
+    sqlDBName: '${abbrs.databases.sqlDatabase}${solutionPrefix}'
     solutionName: solutionPrefix
     solutionLocation: secondaryLocation
     keyVaultName: kvault.outputs.keyvaultName
@@ -189,12 +195,14 @@ module hostingplan 'deploy_app_service_plan.bicep' = {
   params: {
     solutionName: solutionPrefix
     solutionLocation: solutionLocation
+    HostingPlanName: '${abbrs.compute.appServicePlan}${solutionPrefix}'
   }
 }
 
 module backend_docker 'deploy_backend_docker.bicep'= {
   name: 'deploy_backend_docker'
   params: {
+    name: 'api-${solutionPrefix}'
     solutionLocation: solutionLocation
     imageTag: imageTag
     appServicePlanId: hostingplan.outputs.name
@@ -233,6 +241,7 @@ module backend_docker 'deploy_backend_docker.bicep'= {
 module frontend_docker 'deploy_frontend_docker.bicep'= {
   name: 'deploy_frontend_docker'
   params: {
+    name: '${abbrs.compute.webApp}${solutionPrefix}'
     solutionLocation:solutionLocation
     imageTag: imageTag
     appServicePlanId: hostingplan.outputs.name

@@ -10,25 +10,45 @@ param gptDeploymentCapacity int
 param embeddingModel string
 param embeddingDeploymentCapacity int
 param managedIdentityObjectId string
+var abbrs = loadJsonContent('./abbreviations.json')
+// var storageName = '${solutionName}hubstorage'
+// var storageSkuName = 'Standard_LRS'
+// var aiServicesName = '${solutionName}-aiservices'
+// var aiServicesName_cu = '${solutionName}-aiservices-cu'
+// var location_cu = cuLocation
+// // var aiServicesName_m = '${solutionName}-aiservices_m'
+// // var location_m = solutionLocation
+// var workspaceName = '${solutionName}-workspace'
+// var applicationInsightsName = '${solutionName}-appinsights'
+// var containerRegistryName = '${solutionName}acr'
+// var keyvaultName = '${solutionName}-kv'
+// var location = solutionLocation //'eastus2'
+// var aiHubName = '${solutionName}-aihub'
+// var aiHubFriendlyName = aiHubName
+// var aiHubDescription = 'AI Hub for KM template'
+// var aiProjectName = '${solutionName}-aiproject'
+// var aiProjectFriendlyName = aiProjectName
+// var aiSearchName = '${solutionName}-search'
 
+// var containerRegistryNameCleaned = replace(containerRegistryName, '-', '')
 var storageName = '${solutionName}hubstorage'
 var storageSkuName = 'Standard_LRS'
-var aiServicesName = '${solutionName}-aiservices'
-var aiServicesName_cu = '${solutionName}-aiservices-cu'
+var aiServicesName = '${abbrs.ai.aiServices}${solutionName}'
+var aiServicesName_cu = '${abbrs.ai.aiServices}${solutionName}-cu'
 var location_cu = cuLocation
 // var aiServicesName_m = '${solutionName}-aiservices_m'
 // var location_m = solutionLocation
-var workspaceName = '${solutionName}-workspace'
-var applicationInsightsName = '${solutionName}-appinsights'
-var containerRegistryName = '${solutionName}acr'
-var keyvaultName = '${solutionName}-kv'
+var workspaceName = '${abbrs.managementGovernance.logAnalyticsWorkspace}${solutionName}'
+var applicationInsightsName = '${abbrs.managementGovernance.applicationInsights}${solutionName}'
+var containerRegistryName = '${abbrs.containers.containerRegistry}${solutionName}'
+var keyvaultName = '${abbrs.security.keyVault}${solutionName}'
 var location = solutionLocation //'eastus2'
-var aiHubName = '${solutionName}-aihub'
+var aiHubName = '${abbrs.ai.aiHub}${solutionName}'
 var aiHubFriendlyName = aiHubName
 var aiHubDescription = 'AI Hub for KM template'
-var aiProjectName = '${solutionName}-aiproject'
+var aiProjectName = '${abbrs.ai.aiHubProject}${solutionName}'
 var aiProjectFriendlyName = aiProjectName
-var aiSearchName = '${solutionName}-search'
+var aiSearchName = '${abbrs.ai.aiSearch}${solutionName}'
 
 var containerRegistryNameCleaned = replace(containerRegistryName, '-', '')
 
@@ -163,7 +183,7 @@ resource aiServices 'Microsoft.CognitiveServices/accounts@2024-04-01-preview' = 
   properties: {
     customSubDomainName: aiServicesName
     apiProperties: {
-      statisticsEnabled: false
+      //statisticsEnabled: false
     }
   }
 }
@@ -192,7 +212,7 @@ resource aiServices_CU 'Microsoft.CognitiveServices/accounts@2024-04-01-preview'
   properties: {
     customSubDomainName: aiServicesName_cu
     apiProperties: {
-      statisticsEnabled: false
+     // statisticsEnabled: false
     }
   }
 }
