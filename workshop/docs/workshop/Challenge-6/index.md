@@ -16,7 +16,7 @@ This notebook demonstrates how to evaluate content safety using Azure AI's evalu
 
 
 If you already set up a virtual environment in **Challenge 3-4**, skip to step 3 below. Otherwise, please follow the steps below to set up your virtual environment and run the notebook. 
-1. Navigate to the `workshop` folder in the terminal in your local repository and run the following commands 
+1. Navigate to the `workshop/docs/workshop` folder in the terminal in your local repository and run the following commands 
 2. In the terminal run the following commands 
 
 * Create a virtual environment
