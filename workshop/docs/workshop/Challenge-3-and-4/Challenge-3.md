@@ -5,40 +5,43 @@ One of the easiest and most fun changes you can make to the app is updating the 
 ---
 
 ## **Step 1: Prepare Your New Logo**
-1. Create or find the logo you want to use.
+1. Create or use a new logo (e.g contosoImg logo) in `src/assets/`.
 2. Save the logo as an image file (e.g., `logo.png`).
 3. Ensure the image has a reasonable size (e.g., 100x100 pixels) for better display.
+4. Place the logo file in the following folder:
+    `src/assets/`
 
 ---
 
-## **Step 2: Add the Logo to the Project**
-1. Navigate to the `src/components/Svg` folder in your project directory.
-2. Replace the existing logo file or add your new logo file to this folder.
-   - Example: Save your new logo as `NewLogo.svg` or `newLogo.png`.
+
+## Step 2: Update the Logo Component
+
+1. Open the `App.tsx` file located at:  
+   `src/App/src/App.tsx`
+
+2. Import your logo image at the top of the file. It should look like this:
+
+   ```tsx
+   import AppLogo from "./assets/contosoimg/ContosoImg.png";
+
+3. Locate the current logo in the JSX (around line 311).
+
+4. Comment out the old logo line and replace it with:
+      <img src={AppLogo} alt="Logo" style={{ width: '30px' }} />
 
 ---
 
-## **Step 3: Update the Logo Component**
-1. Open the `App.tsx` component file which is located in `src/App/src/App.tsx`:
-   - import your logo and include the correct file path. it will look like this : 
-      `import { AppLogo } from "./components/Svg/Svg";`
 
-2. Locate the current logo implementation. It might look like this:
+## Step 3: Run the App
 
-```tsx
-<div className="header-left-section">
-          <AppLogo />
-          <Subtitle2>
-            Woodgrove <Body2 style={{ gap: "10px" }}>| Call Analysis</Body2>
-          </Subtitle2>
-        </div>
-```
+1. Open a terminal or command prompt.
 
-4. Save your files
+2. Navigate to the project directory where start.cmd is located:
+   `cd src/`
 
-5. Open a terminal or command prompt.
+3. Run the following command: 
+   `./start.cmd`
 
-6. Navigate to the project directory where start.cmd is located:`src/ ` and run `./start.cmd`
+4. Two terminal windows will open — one for the backend and one for the frontend.
+Once the app starts, you should see your new logo in action!
 
-5. Open a web browser and navigate to the local development server (http://127.0.0.1:5000).
-Verify that the new logo is displayed in the application.
