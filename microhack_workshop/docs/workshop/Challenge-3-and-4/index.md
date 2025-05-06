@@ -99,7 +99,7 @@ Follow the steps below to set up your virtual environment and run the notebook.
 
 * Create a virtual environment
 ```shell
-python -m venv venv
+python -m venv .venv
 ```
 * Activate the virtual environment
 ```shell
