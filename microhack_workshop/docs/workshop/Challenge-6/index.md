@@ -14,7 +14,7 @@ This notebook demonstrates how to evaluate content safety using Azure AI's evalu
 - Python environment with required libraries installed (`azure-ai-evaluation`, `pandas`, etc.).
 - Access to the Azure API endpoint.
 
-If you did already set up a virtual environment in **Challenge 3-4**, skip to step 4 below. Otherwise, please follow the steps below to set up your virtual environment and run the notebook. 
+If you already set up a virtual environment in **Challenge 3-4**, skip to step 4 below. Otherwise, please follow the steps below to set up your virtual environment and run the notebook. 
 1. Navigate to the `workshop` folder in the terminal in your local repository and run the following commands 
 2. Open the `.env.sample` to update the variables with the details of your solution. Remeber to save the file after filling in the details.  
     - Rename the file to `.env` and save it.
@@ -23,7 +23,7 @@ If you did already set up a virtual environment in **Challenge 3-4**, skip to st
 
 * Create a virtual environment
 ```shell
-python -m venv venv
+python -m venv .venv
 ```
 * Activate the virtual environment
 ```shell
