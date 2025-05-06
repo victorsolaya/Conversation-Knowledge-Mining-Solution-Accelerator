@@ -167,7 +167,7 @@ To maintain strong security practices, it is recommended that GitHub repositorie
 
 Additional security considerations include:
 
-- Enabling [Microsoft Defender for Cloud](https://learn.microsoft.com/en-us/azure/security-center/defender-for-cloud) to monitor and secure Azure resources.
+- Enabling [Microsoft Defender for Cloud](https://learn.microsoft.com/en-us/azure/defender-for-cloud) to monitor and secure Azure resources.
 - Using [Virtual Networks](https://learn.microsoft.com/en-us/azure/container-apps/networking?tabs=workload-profiles-env%2Cazure-cli) or [firewall rules](https://learn.microsoft.com/en-us/azure/container-apps/waf-app-gateway) to protect Azure Container Apps from unauthorized access.
 
 <br/>
