@@ -174,8 +174,6 @@ Additional security considerations include:
 
 ### Cross references
 Check out similar solution accelerators
- 
-{🟨TODO: Identify related accelerators - fill in the name and a one sentence description. The name should have non-breaking spaces in them to make sure the layout doesn't break.}
 
 | Solution Accelerator | Description |
 |---|---|
