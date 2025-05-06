@@ -53,13 +53,13 @@ set APP_ENV_FILE=%ROOT_DIR%\src\App\.env
 echo Updated src/App/.env with APP_API_BASE_URL
 
 REM Copy .env to workshop
-set MICROHACK_ENV_FILE=%ROOT_DIR%\microhack_workshop\docs\workshop\.env
+set MICROHACK_ENV_FILE=%ROOT_DIR%\workshop\docs\workshop\.env
 copy /Y "%ENV_FILE%" "%MICROHACK_ENV_FILE%"
 if errorlevel 1 (
-    echo Failed to copy .env to microhack_workshop/docs/workshop
+    echo Failed to copy .env to workshop/docs/workshop
     exit /b 1
 )
-echo Copied .env to microhack_workshop/docs/workshop
+echo Copied .env to workshop/docs/workshop
 
 REM Authenticate with Azure
 echo Checking Azure login status...
