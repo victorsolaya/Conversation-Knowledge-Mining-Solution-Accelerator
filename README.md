@@ -10,7 +10,7 @@ Analysts working with large volumes of conversational data can use this solution
 
 <div align="center">
   
-[**SOLUTION OVERVIEW**](#solution-overview)  \| [**QUICK DEPLOY**](#quick-deploy)  \| [**BUSINESS USE CASE**](#business-use-case)  \| [**SUPPORTING DOCUMENTATION**](#supporting-documentation)
+[**SOLUTION OVERVIEW**](#solution-overview)  \| [**QUICK DEPLOY**](#quick-deploy)  \| [**BUSINESS SCENARIO**](#business-use-case)  \| [**SUPPORTING DOCUMENTATION**](#supporting-documentation)
 
 </div>
 <br/>
