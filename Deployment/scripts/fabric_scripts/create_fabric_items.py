@@ -39,7 +39,7 @@ if create_workspace == True:
   }
   ws_res = requests.post(ws_url, headers=fabric_headers, json=ws_data)
   ws_details = ws_res.json()
-  # print(ws_details['id'])
+  print(ws_details['id'])
   workspaceId = ws_details['id']
 
 fabric_base_url = f"https://api.fabric.microsoft.com/v1/workspaces/{workspaceId}/"
