@@ -28,6 +28,7 @@ jobs:
       # Build the MkDocs site
       - name: Build the site
         run: |
+          cd workshop
           mkdocs build
           touch site/.nojekyll  # Disable Jekyll
 
