@@ -1,6 +1,6 @@
 # Workshop Challenge: Changing the Logo in the App
 
-One of the easiest and most fun changes you can make to the app is updating the logo! Follow these step-by-step instructions to replace the current logo with your own.
+One of the easiest and most fun changes you can make to the app is updating the logo! Follow these step-by-step instructions to replace the current logo with your own or use the provided **ContosoImg** logo.
 
 ---
 
