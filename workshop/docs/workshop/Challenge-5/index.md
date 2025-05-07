@@ -25,9 +25,9 @@ Content Understanding is an innovative solution designed to analyze and interpre
    ```
 1. Fill required information into .env from the resources that you alredy have created, remember that your model is ***gpt-4o-mini***, you should have something like this:
    ```shell
-   AZURE_AI_SERVICE_ENDPOINT="https://<azure-ai-service>-aiservices-cu.cognitiveservices.azure.com"
+   AZURE_AI_SERVICE_ENDPOINT="https://kmyfeztrgpktwf-aiservices-cu.cognitiveservices.azure.com"
    AZURE_AI_SERVICE_API_VERSION=2024-12-01-preview
-   AZURE_OPENAI_ENDPOINT="https://<azure-ai-service>-aiservices.openai.azure.com"
+   AZURE_OPENAI_ENDPOINT="https://kmyfeztrgpktwf-aiservices.openai.azure.com"
    AZURE_OPENAI_API_VERSION=2024-08-01-preview
    AZURE_OPENAI_CHAT_DEPLOYMENT_NAME=gpt-4o-mini
    AUTHENTICATION_URL="https://cognitiveservices.azure.com/.default"

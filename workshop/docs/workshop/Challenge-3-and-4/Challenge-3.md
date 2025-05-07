@@ -5,11 +5,11 @@ One of the easiest and most fun changes you can make to the app is updating the 
 ---
 
 ## **Step 1: Prepare Your New Logo**
-1. Create or use a new logo (e.g contosoImg logo) in `src/assets/`.
+1. Create or use a new logo (e.g contosoImg logo) in `src/app/src/assets/`.
 2. Save the logo as an image file (e.g., `logo.png`).
 3. Ensure the image has a reasonable size (e.g., 100x100 pixels) for better display.
 4. Place the logo file in the following folder:
-    `src/assets/`
+    `src/app/src/assets/`
 
 ---
 
@@ -19,17 +19,33 @@ One of the easiest and most fun changes you can make to the app is updating the 
 1. Open the `App.tsx` file located at:  
    `src/App/src/App.tsx`
 
-2. Import your logo image at the top of the file. It should look like this:
+
+2. Comment out the original import on **line 24**:
+
+   ```tsx
+   // import { AppLogo } from "./components/Svg/Svg";
+   ```
+
+3. Add a new import statement for your logo image:
 
    ```tsx
    import AppLogo from "./assets/contosoimg/ContosoImg.png";
+   ```
 
-3. Locate the current logo in the JSX (around line 311).
+4. Locate the current logo implementation (around line 309):
+    
+    ```tsx
+   <AppLogo />
+   ```
 
-4. Comment out the old logo line and replace it with:
-      <img src={AppLogo} alt="Logo" style={{ width: '30px' }} />
 
----
+5. Comment out the existing logo component and replace it with the image tag:
+
+   ```tsx
+   // <AppLogo />
+   <img src={AppLogo} alt="Logo" style={{ width: '30px' }} />
+   ```
+
 
 
 ## Step 3: Run the App
