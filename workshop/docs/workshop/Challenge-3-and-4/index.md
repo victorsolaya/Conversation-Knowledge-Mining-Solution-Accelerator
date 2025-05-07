@@ -87,26 +87,17 @@ Feel free to enhance the agent prompt with RAI-friendly language.
 ### Prerequisites
 - Azure AI project credentials.
 - [Python 3.9+](https://www.python.org/downloads/)
+- [Microsoft ODBC Driver 17](https://learn.microsoft.com/en-us/sql/connect/odbc/download-odbc-driver-for-sql-server?view=sql-server-ver16#version-17)
 - Python environment with required libraries installed (`azure-ai-evaluation`, `pandas`, etc.).
 - Access to the Azure API endpoint.
 
-Follow the steps below to set up your virtual environment and run the notebook. 
-1. Navigate to the `workshop/docs/workshop` folder in the terminal in your local repository and run the following commands.
-
-* Create a virtual environment
-```shell
-python -m venv .venv
-```
-* Activate the virtual environment
-```shell
-.venv\Scripts\activate
-```
+If did not create a virtual environment during the deployment, please follow the steps [here](../Challenge-1/Deployment.md) 
+1. Navigate to the `workshop/docs/workshop` folder in the terminal in your local repository and run the following command.
 * Install the requirements
 ```shell
 pip install -r requirements.txt
 ```
-2. Open the `.env.sample` to update the variables with the details of your solution. Remeber to save the file after filling in the details.  
-    - Rename the file to `.env` and save it.
+2. Open the `.env` in the `workshop/docs/workshop` folder to validate the variables were updated with the details of your solution. 
 3. Follow the steps in [Challenge-4](./Challenge-4.md) to run the notebook. 
 <!-- 
 ## 🧪 Sample Run

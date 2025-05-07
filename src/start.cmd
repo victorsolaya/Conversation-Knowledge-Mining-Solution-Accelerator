@@ -30,10 +30,12 @@ if not exist "%ENV_FILE%" (
 
 REM Parse required variables from .env
 for /f "tokens=1,* delims==" %%A in ('type "%ENV_FILE%"') do (
-    if "%%A"=="AZURE_RESOURCE_GROUP" set AZURE_RESOURCE_GROUP=%%B
-    if "%%A"=="AZURE_COSMOSDB_ACCOUNT" set AZURE_COSMOSDB_ACCOUNT=%%B
-    if "%%A"=="SQLDB_SERVER" set SQLDB_SERVER=%%B
-    if "%%A"=="SQLDB_USERNAME" set SQLDB_USERNAME=%%B
+    if "%%A"=="AZURE_RESOURCE_GROUP" set AZURE_RESOURCE_GROUP=%%~B
+    if "%%A"=="AZURE_COSMOSDB_ACCOUNT" set AZURE_COSMOSDB_ACCOUNT=%%~B
+    if "%%A"=="SQLDB_SERVER" (
+        set SQLDB_SERVER=%%~B
+        for /f "tokens=1 delims=." %%C in ("%%~B") do set SQLDB_SERVER_NAME=%%C
+    )
 )
 
 REM Copy .env to src/api
@@ -63,17 +65,17 @@ echo Copied .env to workshop/docs/workshop
 
 REM Authenticate with Azure
 echo Checking Azure login status...
-az account show >nul 2>&1
+call az account show --query id --output tsv >nul 2>&1
 if %ERRORLEVEL%==0 (
-    echo ✅ Already authenticated with Azure.
+    echo Already authenticated with Azure.
 ) else (
-    echo ⚠️ Not authenticated. Attempting Azure login...
-    az login
-    if %ERRORLEVEL% neq 0 (
-        echo ❌ Azure login failed. Exiting.
-        exit /b 1
-    )
-    echo ✅ Azure login successful.
+    echo Not authenticated. Attempting Azure login...
+
+    call az login --use-device-code --output none
+
+    call az account show --query "[name, id]" --output tsv
+
+    echo Logged in successfully.
 )
 
 
@@ -81,36 +83,34 @@ REM Get signed-in user ID
 FOR /F "delims=" %%i IN ('az ad signed-in-user show --query id -o tsv') DO set "signed_user_id=%%i"
 
 REM Check if user has Cosmos DB role
-FOR /F "delims=" %%i IN ('az cosmosdb sql role assignment list --resource-group "%AZURE_RESOURCE_GROUP%" --account-name "%AZURE_COSMOSDB_ACCOUNT%" --query "[?roleDefinitionId.ends_with(@, '00000000-0000-0000-0000-000000000002') && principalId == '%signed_user_id%']" -o tsv') DO set "roleExists=%%i"
-
+FOR /F "delims=" %%i IN ('az cosmosdb sql role assignment list --resource-group %AZURE_RESOURCE_GROUP% --account-name %AZURE_COSMOSDB_ACCOUNT% --query "[?roleDefinitionId.ends_with(@, '00000000-0000-0000-0000-000000000002') && principalId == '%signed_user_id%']" -o tsv') DO set "roleExists=%%i"
 if defined roleExists (
     echo User already has the Cosmos DB Built-in Data Contributor role.
 ) else (
     echo Assigning Cosmos DB Built-in Data Contributor role...
     set MSYS_NO_PATHCONV=1
-    az cosmosdb sql role assignment create ^
-        --resource-group "%AZURE_RESOURCE_GROUP%" ^
-        --account-name "%AZURE_COSMOSDB_ACCOUNT%" ^
+    call az cosmosdb sql role assignment create ^
+        --resource-group %AZURE_RESOURCE_GROUP% ^
+        --account-name %AZURE_COSMOSDB_ACCOUNT% ^
         --role-definition-id 00000000-0000-0000-0000-000000000002 ^
-        --principal-id "%signed_user_id%" ^
+        --principal-id %signed_user_id% ^
         --scope "/" ^
         --output none
 )
+echo Cosmos DB Built-in Data Contributor role assigned successfully.
 
 REM Assign Azure SQL Server AAD admin
-FOR /F "delims=" %%i IN ('az ad signed-in-user show --query id --output tsv') DO set "objectId=%%i"
-az sql server ad-admin create ^
-  --resource-group "%AZURE_RESOURCE_GROUP%" ^
-  --server "%SQLDB_SERVER%" ^
-  --display-name "%SQLDB_USERNAME%" ^
-  --object-id "%objectId%"
+FOR /F "delims=" %%i IN ('az account show --query user.name --output tsv') DO set "SQLADMIN_USERNAME=%%i"
+echo Assigning Azure SQL Server AAD admin role to %SQLADMIN_USERNAME%...
+call az sql server ad-admin create ^
+    --display-name %SQLADMIN_USERNAME% ^
+    --object-id "%signed_user_id%" ^
+    --resource-group %AZURE_RESOURCE_GROUP% ^
+    --server %SQLDB_SERVER_NAME%
+    --output tsv >nul 2>&1
+echo Azure SQL Server AAD admin role assigned successfully.
 
-if %ERRORLEVEL%==0 (
-    echo ✅ Set %SQLDB_USERNAME% as Azure SQL Server AAD admin.
-) else (
-    echo ❌ Failed to set %SQLDB_USERNAME% as Azure SQL Server AAD admin.
-)
-
+echo Proceeding to restore backend Python packages...
 REM Restore backend Python packages
 cd %ROOT_DIR%\src\api
 call python -m pip install -r requirements.txt

@@ -15,24 +15,15 @@ This notebook demonstrates how to evaluate content safety using Azure AI's evalu
 - Access to the Azure API endpoint.
 
 
-If you already set up a virtual environment in **Challenge 3-4**, skip to step 3 below. Otherwise, please follow the steps below to set up your virtual environment and run the notebook. 
+If you did not create a virtual environment during the deployment, please follow the steps [here](../Challenge-1/Deployment.md)  
 1. Navigate to the `workshop/docs/workshop` folder in the terminal in your local repository and run the following commands 
-2. In the terminal run the following commands 
+2. In the terminal run the following command 
 
-* Create a virtual environment
-```shell
-python -m venv .venv
-```
-* Activate the virtual environment
-```shell
-.venv\Scripts\activate
-```
 * Install the requirements
 ```shell
 pip install -r requirements.txt
 ```
-3. Open the `.env.sample` to update the variables with the details of your solution. Remeber to save the file after filling in the details.  
-    - Rename the file to `.env` and save it.
+3. Open the `.env` in the `workshop/docs/workshop` folder to validate the variables were updated with the details of your solution. 
 4. Open the [Content_safety_evaluation notebook](./Content_safety_evaluation.ipynb) 
 5. Run the first cell to create a folder for the output file of the evaluations.
 6. Run cells 2-4 to initialize your Azure AI Project, the call streaming function and callback function. 
