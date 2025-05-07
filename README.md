@@ -95,7 +95,7 @@ _Note: This is not meant to outline all costs as selected SKUs, scaled use, cust
 
 | Product | Description | Tier / Expected Usage Notes | Cost |
 |---|---|---|---|
-| [Azure AI Studio (Foundry)](https://learn.microsoft.com/en-us/azure/ai-studio/overview) | Used to orchestrate and build AI workflows that combine Azure AI services. | Free Tier | [Pricing](https://azure.microsoft.com/pricing/details/ai-studio/) |
+| [Azure AI Foundry](https://learn.microsoft.com/en-us/azure/ai-foundry) | Used to orchestrate and build AI workflows that combine Azure AI services. | Free Tier | [Pricing](https://azure.microsoft.com/pricing/details/ai-studio/) |
 | [Azure AI Search](https://learn.microsoft.com/en-us/azure/search/search-what-is-azure-search) | Powers vector-based semantic search for retrieving indexed conversation data. | Standard S1; costs scale with document count and replica/partition settings. | [Pricing](https://azure.microsoft.com/pricing/details/search/) |
 | [Azure Storage Account](https://learn.microsoft.com/en-us/azure/storage/common/storage-account-overview) | Stores transcripts, intermediate outputs, and application assets. | Standard LRS; usage-based cost by storage/operations. | [Pricing](https://azure.microsoft.com/pricing/details/storage/blobs/) |
 | [Azure Key Vault](https://learn.microsoft.com/en-us/azure/key-vault/general/overview) | Secures secrets, credentials, and keys used across the application. | Standard Tier; cost per operation (e.g., secret retrieval). | [Pricing](https://azure.microsoft.com/pricing/details/key-vault/) |
@@ -135,16 +135,16 @@ This solution addresses those challenges by enabling natural language interactio
 <details>
   <summary>Click to learn more about what value this solution provides</summary>
 
-  - **Better decision-making** <br/>  
+  - **Better decision-making** 
 Summarized, contextualized data helps organizations make informed strategic decisions that drive operational improvements at scale.
 
-- **Time saved** <br/>  
+- **Time saved**
 Automated insight extraction and scalable data exploration reduce manual analysis efforts, leading to improved efficiency and cost savings.
 
-- **Interactive data insights** <br/>  
+- **Interactive data insights**
 Employees can engage directly with conversational data using natural language, enabling quicker understanding and faster resolution of issues.
 
-- **Actionable insights** <br/>  
+- **Actionable insights** 
 Clear, contextual insights empower employees to take meaningful action based on data-driven evidence.
 
      
@@ -176,8 +176,8 @@ Check out similar solution accelerators
 
 | Solution Accelerator | Description |
 |---|---|
-| [Document&nbsp;knowledge&nbsp;mining](https://github.com/microsoft/Document-Knowledge-Mining-Solution-Accelerator) | Provides REST API access to OpenAI's powerful language models including o3-mini, o1, o1-mini, GPT-4o, GPT-4o mini |
-| [Content&nbsp;Processing](https://github.com/microsoft/document-generation-solution-accelerator) | Extracts data from multi-modal content, maps it to schemas with confidence scoring and user validation, and enables accurate processing of documents like contracts, claims, and invoices. |
+| [Document&nbsp;knowledge&nbsp;mining](https://github.com/microsoft/Document-Knowledge-Mining-Solution-Accelerator) | 	Identify relevant documents, summarize unstructured information, and generate document templates. |
+| [Content&nbsp;processing](https://github.com/microsoft/document-generation-solution-accelerator) | Extracts data from multi-modal content, maps it to schemas with confidence scoring and user validation, and enables accurate processing of documents like contracts, claims, and invoices. |
 
 
 <br/>

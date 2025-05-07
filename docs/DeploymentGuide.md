@@ -6,7 +6,7 @@ To deploy this solution, ensure you have access to an [Azure subscription](https
 
 Check the [Azure Products by Region](https://azure.microsoft.com/en-us/explore/global-infrastructure/products-by-region/?products=all&regions=all) page and select a **region** where the following services are available:
 
-- [Azure AI Studio (Foundry)](https://learn.microsoft.com/en-us/azure/ai-studio/overview)
+- [Azure AI Foundry](https://learn.microsoft.com/en-us/azure/ai-foundry)
 - [Azure AI Content Understanding Service](https://learn.microsoft.com/en-us/azure/ai-services/content-understanding/)
 - [Azure OpenAI Service](https://learn.microsoft.com/en-us/azure/ai-services/openai/)
 - [GPT Model Capacity](https://learn.microsoft.com/en-us/azure/ai-services/openai/concepts/models)
