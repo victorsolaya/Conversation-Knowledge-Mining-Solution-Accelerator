@@ -5,11 +5,11 @@ One of the easiest and most fun changes you can make to the app is updating the 
 ---
 
 ## **Step 1: Prepare Your New Logo**
-1. Create or use a new logo (e.g contosoImg logo) in `src/app/src/assets/`.
+1. Create or use a new logo (e.g contosoImg logo) in `src/app/src/Assets/`.
 2. Save the logo as an image file (e.g., `logo.png`).
 3. Ensure the image has a reasonable size (e.g., 100x100 pixels) for better display.
 4. Place the logo file in the following folder:
-    `src/app/src/assets/`
+    `src/app/src/Assets/`
 
 ---
 
@@ -29,7 +29,7 @@ One of the easiest and most fun changes you can make to the app is updating the 
 3. Add a new import statement for your logo image:
 
    ```tsx
-   import AppLogo from "./assets/contosoimg/ContosoImg.png";
+   import AppLogo from "./Assets/contosoimg/ContosoImg.png";
    ```
 
 4. Locate the current logo implementation (around line 309):
