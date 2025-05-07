@@ -158,9 +158,9 @@ resource aiServices 'Microsoft.CognitiveServices/accounts@2024-04-01-preview' = 
   kind: 'AIServices'
   properties: {
     customSubDomainName: aiServicesName
-    apiProperties: {
-      statisticsEnabled: false
-    }
+    // apiProperties: {
+    //   // statisticsEnabled: false
+    // }
   }
 }
 
@@ -187,9 +187,9 @@ resource aiServices_CU 'Microsoft.CognitiveServices/accounts@2024-04-01-preview'
   kind: 'AIServices'
   properties: {
     customSubDomainName: aiServicesName_cu
-    apiProperties: {
-      statisticsEnabled: false
-    }
+    // apiProperties: {
+    //   statisticsEnabled: false
+    // }
   }
 }
 
