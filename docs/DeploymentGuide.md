@@ -11,7 +11,6 @@ Check the [Azure Products by Region](https://azure.microsoft.com/en-us/explore/g
 - [Azure OpenAI Service](https://learn.microsoft.com/en-us/azure/ai-services/openai/)
 - [GPT Model Capacity](https://learn.microsoft.com/en-us/azure/ai-services/openai/concepts/models)
 - [Azure AI Search](https://learn.microsoft.com/en-us/azure/search/search-what-is-azure-search)
-- [Azure Blob Storage](https://learn.microsoft.com/en-us/azure/storage/blobs/)
 - [Azure SQL Database](https://learn.microsoft.com/en-us/azure/azure-sql/database/sql-database-paas-overview)
 - [Azure Cosmos DB](https://learn.microsoft.com/en-us/azure/cosmos-db/introduction)
 - [Azure Container Apps](https://learn.microsoft.com/en-us/azure/container-apps/)
@@ -123,10 +122,11 @@ When you start the deployment, most parameters will have **default values**, but
 <details>
   <summary><b>[Optional] Quota Recommendations</b></summary>
 
-By default, the **GPT model capacity** in deployment is set to **30k tokens**.  
-> **We recommend increasing the capacity to 100k tokens for optimal performance.**
+By default, the **Gpt-4o-mini model capacity** in deployment is set to **30k tokens**, so we recommend updating the following:
 
-To adjust quota settings, follow these [steps](./AzureGPTQuotaSettings.md).
+> **For Global Standard | GPT-4o-mini - increase the capacity to at least 150k tokens post-deployment for optimal performance.**
+
+Depending on your subscription quota and capacity, you can [adjust quota settings](AzureGPTQuotaSettings.md) to better meet your specific needs. You can also [adjust the deployment parameters](CustomizingAzdParameters.md) for additional optimization.
 
 **⚠️ Warning:** Insufficient quota can cause deployment errors. Please ensure you have the recommended capacity or request additional capacity before deploying this solution.
 
