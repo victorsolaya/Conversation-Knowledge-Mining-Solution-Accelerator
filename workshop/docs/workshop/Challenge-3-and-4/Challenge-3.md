@@ -4,7 +4,7 @@ One of the easiest and most fun changes you can make to the app is updating the 
 
 ---
 
-## **Step 1: Prepare Your New Logo**
+### Step 1: Prepare Your New Logo**
 1. Create or use a new logo (e.g contosoImg logo) in `src/app/src/Assets/`.
 2. Save the logo as an image file (e.g., `logo.png`).
 3. Ensure the image has a reasonable size (e.g., 100x100 pixels) for better display.
@@ -14,11 +14,12 @@ One of the easiest and most fun changes you can make to the app is updating the 
 ---
 
 
-## Step 2: Update the Logo Component
+### Step 2: Update the Logo Component
 
 1. Open the `App.tsx` file located at:  
-   `src/App/src/App.tsx`
-
+   ```
+   src/App/src/App.tsx
+   ```
 
 2. Comment out the original import on **line 24**:
 
@@ -34,7 +35,7 @@ One of the easiest and most fun changes you can make to the app is updating the 
 
 4. Locate the current logo implementation (around line 309):
     
-    ```tsx
+    ``` tsx
    <AppLogo />
    ```
 
@@ -48,7 +49,7 @@ One of the easiest and most fun changes you can make to the app is updating the 
 
 
 
-## Step 3: Run the App
+### Step 3: Run the App
 
 1. Open a terminal or command prompt.
 
