@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.34.44.8038",
-      "templateHash": "3812831526106755289"
+      "templateHash": "5155068866362861363"
     }
   },
   "parameters": {
@@ -377,7 +377,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.34.44.8038",
-              "templateHash": "6628754822235192867"
+              "templateHash": "1822692018195131791"
             }
           },
           "parameters": {
@@ -543,10 +543,7 @@
               },
               "kind": "AIServices",
               "properties": {
-                "customSubDomainName": "[variables('aiServicesName')]",
-                "apiProperties": {
-                  "statisticsEnabled": false
-                }
+                "customSubDomainName": "[variables('aiServicesName')]"
               }
             },
             {
@@ -559,10 +556,7 @@
               },
               "kind": "AIServices",
               "properties": {
-                "customSubDomainName": "[variables('aiServicesName_cu')]",
-                "apiProperties": {
-                  "statisticsEnabled": false
-                }
+                "customSubDomainName": "[variables('aiServicesName_cu')]"
               }
             },
             {
