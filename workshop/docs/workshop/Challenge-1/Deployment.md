@@ -17,7 +17,7 @@ Check the [Azure Products by Region](https://azure.microsoft.com/en-us/explore/g
 - GPT Model Capacity
 - [Azure Semantic Search](../support-docs/AzureSemanticSearchRegion.md)  
 
-Here are some example regions where the services are available: East US, East US2, Australia East, UK South, France Central.
+Here are some example regions where the services are available: East US2
 
 ### ⚠️ Important: Check Azure OpenAI Quota Availability  
 
