@@ -24,7 +24,7 @@ Here are some example regions where the services are available: East US, East US
 ➡️ To ensure sufficient quota is available in your subscription, please follow **[Quota check instructions guide](../support-docs/quota_check.md)** before you deploy the solution.
 
 
-### [Optional] Quota Recommendations  
+### Quota Recommendations  
 By default, the **GPT model capacity** in deployment is set to **30k tokens**.  
 > **We recommend increasing the capacity to 120k tokens for optimal performance.** 
 
