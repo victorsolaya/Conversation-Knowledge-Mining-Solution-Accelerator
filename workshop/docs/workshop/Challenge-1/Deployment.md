@@ -17,14 +17,14 @@ Check the [Azure Products by Region](https://azure.microsoft.com/en-us/explore/g
 - GPT Model Capacity
 - [Azure Semantic Search](../support-docs/AzureSemanticSearchRegion.md)  
 
-Here are some example regions where the services are available: East US, East US2, Australia East, UK South, France Central.
+Here are some example regions where the services are available: East US2
 
 ### ⚠️ Important: Check Azure OpenAI Quota Availability  
 
 ➡️ To ensure sufficient quota is available in your subscription, please follow **[Quota check instructions guide](../support-docs/quota_check.md)** before you deploy the solution.
 
 
-### [Optional] Quota Recommendations  
+### Quota Recommendations  
 By default, the **GPT model capacity** in deployment is set to **30k tokens**.  
 > **We recommend increasing the capacity to 120k tokens for optimal performance.** 
 
