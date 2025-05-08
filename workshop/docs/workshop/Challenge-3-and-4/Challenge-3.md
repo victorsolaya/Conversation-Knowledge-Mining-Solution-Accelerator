@@ -51,14 +51,29 @@ One of the easiest and most fun changes you can make to the app is updating the 
 
 ### Step 3: Run the App
 
-1. Open a terminal or command prompt.
+1. Go to the [Azure Portal](https://portal.azure.com).
+2. In the **search bar**, type the name of the **Resource Group** you created during **Challenge 1**.
+3. Within the resource group, look for the **API App Service**.  
+   It will have a name similar to:  kms2lspvbjwagg-api
+4. In the App Service, navigate to **Settings > Environment variables**.
+   ![Azure Portal Settings > Configuration](../img/portal-app-api-env.png)
+5. Locate the following environment variables:
+   - `AZURE_AI_SEARCH_API_KEY`
+   - `AZURE_OPENAI_API_KEY`
+6. Copy their values and paste them into your local `.env` file.
+7. Open a terminal or command prompt.
+8. Navigate to the project directory where `start.cmd` is located:
 
-2. Navigate to the project directory where start.cmd is located:
-   `cd src/`
+   ```bash
+      cd src/
+   ```
+9. Start the application:
+   
+   ```bash
+    ./start.cmd
+   ```
+10. Two terminal windows will open — one for the backend and one for the frontend.
 
-3. Run the following command: 
-   `./start.cmd`
+Once the app starts, you should see your new logo and working backend in action!
 
-4. Two terminal windows will open — one for the backend and one for the frontend.
-Once the app starts, you should see your new logo in action!
 
