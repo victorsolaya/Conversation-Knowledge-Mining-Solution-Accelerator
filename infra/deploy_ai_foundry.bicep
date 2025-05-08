@@ -191,9 +191,6 @@ resource aiServices 'Microsoft.CognitiveServices/accounts@2025-04-01-preview' = 
       virtualNetworkRules: []
       ipRules: []
     }
-    apiProperties: {
-      statisticsEnabled: false
-    }
     publicNetworkAccess: 'Enabled'
     disableLocalAuth: false //needs to be false to access keys 
   }
@@ -231,16 +228,13 @@ resource aiServices_CU 'Microsoft.CognitiveServices/accounts@2025-04-01-preview'
       virtualNetworkRules: []
       ipRules: []
     }
-    apiProperties: {
-      statisticsEnabled: false
-    }
     publicNetworkAccess: 'Enabled'
     disableLocalAuth: false //needs to be false to access keys 
   }
 }
 
 @batchSize(1)
-resource aiServicesDeployments 'Microsoft.CognitiveServices/accounts/deployments@2024-10-01' = [for aiModeldeployment in aiModelDeployments: {
+resource aiServicesDeployments 'Microsoft.CognitiveServices/accounts/deployments@2025-04-01-preview' = [for aiModeldeployment in aiModelDeployments: {
   parent: aiServices //aiServices_m
   name: aiModeldeployment.name
   properties: {
@@ -380,6 +374,15 @@ resource storageroleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-
   }
 }
 
+resource storageroleAiServiceAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(resourceGroup().id, aiServices.id, blobDataContributor.id)
+  properties: {
+    principalId: aiServices.identity.principalId
+    roleDefinitionId: blobDataContributor.id
+    principalType: 'ServicePrincipal' 
+  }
+}
+
 resource cognitiveServicesUserRoleDefinition 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = {
   scope: aiServices_CU
   name: 'a97b65f3-24c7-4388-baec-2e87135dc908'
@@ -389,6 +392,15 @@ resource cognitiveServicesUserAccessProj 'Microsoft.Authorization/roleAssignment
   name: guid(resourceGroup().id, managedIdentityObjectId, cognitiveServicesUserRoleDefinition.id)
   properties: {
     principalId: managedIdentityObjectId
+    roleDefinitionId: cognitiveServicesUserRoleDefinition.id
+    principalType: 'ServicePrincipal' 
+  }
+}
+
+resource cognitiveServicesUserAiServiceAccessProj 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(resourceGroup().id, aiServices.id, cognitiveServicesUserRoleDefinition.id)
+  properties: {
+    principalId: aiServices.identity.principalId
     roleDefinitionId: cognitiveServicesUserRoleDefinition.id
     principalType: 'ServicePrincipal' 
   }
@@ -408,6 +420,14 @@ resource aiDeveloperAccessProj 'Microsoft.Authorization/roleAssignments@2022-04-
   }
 }
 
+resource aiDeveloperAiServiceAccessProj 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(resourceGroup().id, aiServices.id, aiDeveloperRoleDefinition.id)
+  properties: {
+    principalId: aiServices.identity.principalId
+    roleDefinitionId: aiDeveloperRoleDefinition.id
+    principalType: 'ServicePrincipal' 
+  }
+}
 // resource aiHub 'Microsoft.MachineLearningServices/workspaces@2023-08-01-preview' = {
 //   name: aiHubName
 //   location: location
