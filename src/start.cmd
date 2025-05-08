@@ -54,14 +54,59 @@ set APP_ENV_FILE=%ROOT_DIR%\src\App\.env
 ) > "%APP_ENV_FILE%"
 echo Updated src/App/.env with APP_API_BASE_URL
 
-REM Copy .env to workshop
-set MICROHACK_ENV_FILE=%ROOT_DIR%\workshop\docs\workshop\.env
-copy /Y "%ENV_FILE%" "%MICROHACK_ENV_FILE%"
-if errorlevel 1 (
-    echo Failed to copy .env to workshop/docs/workshop
+@REM REM Copy .env to workshop
+@REM set MICROHACK_ENV_FILE=%ROOT_DIR%\workshop\docs\workshop\.env
+@REM copy /Y "%ENV_FILE%" "%MICROHACK_ENV_FILE%"
+@REM if errorlevel 1 (
+@REM     echo Failed to copy .env to workshop/docs/workshop
+@REM     exit /b 1
+@REM )
+@REM echo Copied .env to workshop/docs/workshop
+
+REM Define paths
+set "SOURCE_ENV_FILE=%ENV_FILE%"
+set "TARGET_ENV_FILE=%ROOT_DIR%\workshop\docs\workshop\.env"
+set "TEMP_MERGED_FILE=%TEMP%\merged_env.tmp"
+
+REM Ensure the source env file exists
+if not exist "%SOURCE_ENV_FILE%" (
+    echo Source .env file not found at %SOURCE_ENV_FILE%
     exit /b 1
 )
-echo Copied .env to workshop/docs/workshop
+
+REM Create temporary merged file
+copy /Y "%TARGET_ENV_FILE%" "%TEMP_MERGED_FILE%" >nul 2>&1
+
+REM Read lines from SOURCE_ENV_FILE
+for /f "usebackq tokens=* delims=" %%A in ("%SOURCE_ENV_FILE%") do (
+    set "line=%%A"
+
+    REM Skip empty lines or comments
+    if not "!line!"=="" if not "!line:~0,1!"=="#" (
+
+        REM Extract variable name (text before '=')
+        for /f "tokens=1 delims==" %%B in ("!line!") do (
+            set "var=%%B"
+
+            REM Check if variable already exists in TARGET_ENV_FILE
+            findstr /b /i "%%B=" "%TARGET_ENV_FILE%" >nul
+            if errorlevel 1 (
+                echo !line!>>"%TEMP_MERGED_FILE%"
+            ) else (
+                echo Skipping existing variable: %%B
+            )
+        )
+    )
+)
+
+REM Move merged file back to .env
+move /Y "%TEMP_MERGED_FILE%" "%TARGET_ENV_FILE%" >nul
+if errorlevel 1 (
+    echo Failed to update .env file
+    exit /b 1
+)
+
+echo Successfully merged .env variables.
 
 REM Authenticate with Azure
 echo Checking Azure login status...

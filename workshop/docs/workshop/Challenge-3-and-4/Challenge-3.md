@@ -47,33 +47,37 @@ One of the easiest and most fun changes you can make to the app is updating the 
    <img src={AppLogo} alt="Logo" style={{ width: '30px' }} />
    ```
 
-
+---
 
 ### Step 3: Run the App
 
 1. Go to the [Azure Portal](https://portal.azure.com).
 2. In the **search bar**, type the name of the **Resource Group** you created during **Challenge 1**.
-3. Within the resource group, look for the **API App Service**.  
-   It will have a name similar to:  kms2lspvbjwagg-api
+3. Within the resource group, look for the **API App Service** ending in -api.  
 4. In the App Service, navigate to **Settings > Environment variables**.
    ![Azure Portal Settings > Configuration](../img/portal-app-api-env.png)
 5. Locate the following environment variables:
    - `AZURE_AI_SEARCH_API_KEY`
    - `AZURE_OPENAI_API_KEY`
-6. Copy their values and paste them into your local `.env` file.
-7. Open a terminal or command prompt.
-8. Navigate to the project directory where `start.cmd` is located:
+6. Copy their values and paste them into your local `\workshop\docs\workshop\.env.sample` file:
+   `AZURE_AI_SEARCH_API_KEY=your-key-from-portal`
+   `AZURE_OPENAI_API_KEY=your-other-key-from-portal`
+7. Rename the .env.sample file to .env
+8. Open a terminal or command prompt.
+9. Navigate to the project directory where `start.cmd` is located:
 
    ```bash
       cd src/
    ```
-9. Start the application:
+10. Make sure your Python virtual environment is activated, as done in the Challenge 1 deployment steps.
+
+11. Start the application:
    
    ```bash
     ./start.cmd
    ```
-10. Two terminal windows will open — one for the backend and one for the frontend.
+12. Two terminal windows will open — one for the backend and one for the frontend.
 
-Once the app starts, you should see your new logo and working backend in action!
+Once the app starts, you should see your new logo!
 
 
