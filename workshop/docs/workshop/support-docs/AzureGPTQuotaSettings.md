@@ -15,8 +15,7 @@
   - Select the desired model (e.g., **GPT-4**, **GPT-4o**, **GPT-4o Mini**, or **text-embedding-ada-002**).
   - Choose the **region** where your deployment is hosted.
 - You can:
-  - **Request more quota**, or
-  - **Delete unused deployments** to free up capacity.
+  **Request more quota**, or **Delete unused deployments** to free up capacity.
 
 ---
 
