@@ -216,12 +216,13 @@ module backend_docker 'deploy_backend_docker.bicep' = {
       SQLDB_USERNAME: sqlDBModule.outputs.sqlDbUser
       SQLDB_USER_MID: managedIdentityModule.outputs.managedIdentityBackendAppOutput.clientId
 
-      OPENAI_API_VERSION: azureOpenAIApiVersion
-      AZURE_AI_SEARCH_ENDPOINT: aifoundry.outputs.aiSearchTarget
-      AZURE_AI_SEARCH_INDEX: 'call_transcripts_index'
-      USE_AI_PROJECT_CLIENT: 'False'
-      DISPLAY_CHART_DEFAULT: 'False'
-    }
+        OPENAI_API_VERSION: azureOpenAIApiVersion
+        AZURE_AI_SEARCH_ENDPOINT: aifoundry.outputs.aiSearchTarget
+        AZURE_AI_SEARCH_INDEX: 'call_transcripts_index'
+        USE_AI_PROJECT_CLIENT:'False'
+        DISPLAY_CHART_DEFAULT:'False'
+        APPLICATIONINSIGHTS_CONNECTION_STRING: aifoundry.outputs.applicationInsightsConnectionString
+      }
   }
   scope: resourceGroup(resourceGroup().name)
 }
