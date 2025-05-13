@@ -323,7 +323,7 @@ async def execute_sql_query(sql_query):
         return result
     except Exception as e:
         logging.error("Error executing SQL query: %s", e)
-        raise
+        return None
     finally:
         if cursor:
             cursor.close()

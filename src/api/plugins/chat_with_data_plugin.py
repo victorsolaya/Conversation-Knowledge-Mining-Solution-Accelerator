@@ -79,7 +79,8 @@ class ChatWithDataPlugin:
                 2. Table: processed_data_key_phrases
                 Columns: ConversationId,key_phrase,sentiment
                 Use ConversationId as the primary key as the primary key in tables for queries but not for any other operations.
-                Only return the generated sql query. do not return anything else.'''
+                **Ensure** the query is syntactically correct and adheres to T-SQL standards.
+                Only return the generated SQL query. Do not return anything else.'''
 
         try:
             if self.use_ai_project_client:
@@ -92,7 +93,7 @@ class ChatWithDataPlugin:
                 completion = client.complete(
                     model=self.azure_openai_deployment_model,
                     messages=[
-                        {"role": "system", "content": "You are an assistant that helps generate valid T-SQL query"},
+                        {"role": "system", "content": "You are an assistant that helps generate valid T-SQL queries."},
                         {"role": "user", "content": sql_prompt},
                     ],
                     temperature=0,
