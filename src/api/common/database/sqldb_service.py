@@ -92,6 +92,7 @@ async def adjust_processed_data_dates():
             cursor.close()
         conn.close()
 
+
 async def fetch_filters_data():
     """
     Fetches filter data from the database and organizes it into a nested JSON structure.
@@ -141,6 +142,7 @@ async def fetch_filters_data():
         if cursor:
             cursor.close()
         conn.close()
+
 
 async def fetch_chart_data(chart_filters: ChartFilters = ''):
     """
@@ -301,7 +303,7 @@ async def fetch_chart_data(chart_filters: ChartFilters = ''):
         final_result = result1 + result2 + result3
 
         return final_result
-    
+
     finally:
         if cursor:
             cursor.close()

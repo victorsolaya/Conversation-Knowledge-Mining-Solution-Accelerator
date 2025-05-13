@@ -149,7 +149,7 @@ class ChatService:
             complete_response = str(e)
             logger.error("Error in stream_openai_text: %s", e)
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Error streaming OpenAI text")
-        
+
         finally:
             # Provide a fallback response when no data is received from OpenAI.
             if complete_response == "":
@@ -161,7 +161,6 @@ class ChatService:
                     except Exception as e:
                         logger.warning("Failed to delete thread %s: %s", thread_id, e)
                 yield "I cannot answer this question from the data available. Please rephrase or add more details."
-
 
     async def stream_chat_request(self, request_body, conversation_id, query):
         """

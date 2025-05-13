@@ -117,7 +117,6 @@ class ChatWithDataPlugin:
                 sql_query = completion.choices[0].message.content
                 sql_query = sql_query.replace("```sql", '').replace("```", '')
 
-
             answer = await execute_sql_query(sql_query)
             answer = answer[:20000] if len(answer) > 20000 else answer
 
