@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.35.1.17967",
-      "templateHash": "3301085686951299148"
+      "templateHash": "5734154682992266777"
     }
   },
   "parameters": {
@@ -1921,7 +1921,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.35.1.17967",
-              "templateHash": "1163395866406278525"
+              "templateHash": "7743831040975959842"
             }
           },
           "parameters": {
@@ -1960,6 +1960,7 @@
                 "publicNetworkAccess": "Enabled",
                 "version": "12.0",
                 "restrictOutboundNetworkAccess": "Disabled",
+                "minimalTlsVersion": "1.2",
                 "administrators": {
                   "login": "[parameters('managedIdentityName')]",
                   "sid": "[parameters('managedIdentityObjectId')]",
@@ -2021,7 +2022,7 @@
               "apiVersion": "2021-11-01-preview",
               "name": "[format('{0}/{1}', parameters('keyVaultName'), 'SQLDB-SERVER')]",
               "properties": {
-                "value": "[format('{0}.database.windows.net', parameters('serverName'))]"
+                "value": "[format('{0}{1}', parameters('serverName'), environment().suffixes.sqlServerHostname)]"
               }
             },
             {
@@ -2465,7 +2466,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.35.1.17967",
-              "templateHash": "15134953360318988744"
+              "templateHash": "9270015503157482424"
             }
           },
           "parameters": {
@@ -2747,6 +2748,14 @@
             "appUrl": {
               "type": "string",
               "value": "[reference(resourceId('Microsoft.Resources/deployments', format('{0}-app-module', parameters('name'))), '2022-09-01').outputs.appUrl.value]"
+            },
+            "reactAppLayoutConfig": {
+              "type": "string",
+              "value": "[variables('reactAppLayoutConfig')]"
+            },
+            "appInsightInstrumentationKey": {
+              "type": "string",
+              "value": "[reference(parameters('applicationInsightsId'), '2015-05-01').InstrumentationKey]"
             }
           }
         }

@@ -8,10 +8,7 @@ param environmentName string
 
 @minLength(1)
 @description('Location for the Content Understanding service deployment:')
-@allowed(['swedencentral' 
-'australiaeast'
-])
-
+@allowed(['swedencentral', 'australiaeast'])
 @metadata({
   azd: {
     type: 'location'
@@ -57,7 +54,6 @@ param gptDeploymentCapacity int = 30
   'text-embedding-ada-002'
 ])
 param embeddingModel string = 'text-embedding-ada-002'
-
 
 @minValue(10)
 @description('Capacity of the Embedding Model deployment')
@@ -110,7 +106,7 @@ module aifoundry 'deploy_ai_foundry.bicep' = {
     gptDeploymentCapacity: gptDeploymentCapacity
     embeddingModel: embeddingModel
     embeddingDeploymentCapacity: embeddingDeploymentCapacity
-    managedIdentityObjectId:managedIdentityModule.outputs.managedIdentityOutput.objectId
+    managedIdentityObjectId: managedIdentityModule.outputs.managedIdentityOutput.objectId
   }
   scope: resourceGroup(resourceGroup().name)
 }
@@ -122,7 +118,7 @@ module storageAccount 'deploy_storage_account.bicep' = {
     saName: '${abbrs.storage.storageAccount}${solutionPrefix}'
     solutionLocation: solutionLocation
     keyVaultName: kvault.outputs.keyvaultName
-    managedIdentityObjectId:managedIdentityModule.outputs.managedIdentityOutput.objectId
+    managedIdentityObjectId: managedIdentityModule.outputs.managedIdentityOutput.objectId
   }
   scope: resourceGroup(resourceGroup().name)
 }
@@ -192,7 +188,7 @@ module hostingplan 'deploy_app_service_plan.bicep' = {
   }
 }
 
-module backend_docker 'deploy_backend_docker.bicep'= {
+module backend_docker 'deploy_backend_docker.bicep' = {
   name: 'deploy_backend_docker'
   params: {
     name: 'api-${solutionPrefix}'
@@ -205,32 +201,32 @@ module backend_docker 'deploy_backend_docker.bicep'= {
     azureSearchAdminKey:keyVault.getSecret('AZURE-SEARCH-KEY')
     userassignedIdentityId: managedIdentityModule.outputs.managedIdentityBackendAppOutput.id
     aiProjectName: aifoundry.outputs.aiProjectName
-    appSettings:{
-        AZURE_OPEN_AI_DEPLOYMENT_MODEL:gptModelName
-        AZURE_OPEN_AI_ENDPOINT:aifoundry.outputs.aiServicesTarget
-        AZURE_OPENAI_API_VERSION: azureOpenAIApiVersion
-        AZURE_OPENAI_RESOURCE:aifoundry.outputs.aiServicesName
-        USE_CHAT_HISTORY_ENABLED:'True'
-        AZURE_COSMOSDB_ACCOUNT: cosmosDBModule.outputs.cosmosAccountName
-        AZURE_COSMOSDB_CONVERSATIONS_CONTAINER: cosmosDBModule.outputs.cosmosContainerName
-        AZURE_COSMOSDB_DATABASE: cosmosDBModule.outputs.cosmosDatabaseName
-        AZURE_COSMOSDB_ENABLE_FEEDBACK:'True'
-        SQLDB_DATABASE:sqlDBModule.outputs.sqlDbName
-        SQLDB_SERVER: sqlDBModule.outputs.sqlServerName
-        SQLDB_USERNAME: sqlDBModule.outputs.sqlDbUser
-        SQLDB_USER_MID: managedIdentityModule.outputs.managedIdentityBackendAppOutput.clientId
+    appSettings: {
+      AZURE_OPEN_AI_DEPLOYMENT_MODEL: gptModelName
+      AZURE_OPEN_AI_ENDPOINT: aifoundry.outputs.aiServicesTarget
+      AZURE_OPENAI_API_VERSION: azureOpenAIApiVersion
+      AZURE_OPENAI_RESOURCE: aifoundry.outputs.aiServicesName
+      USE_CHAT_HISTORY_ENABLED: 'True'
+      AZURE_COSMOSDB_ACCOUNT: cosmosDBModule.outputs.cosmosAccountName
+      AZURE_COSMOSDB_CONVERSATIONS_CONTAINER: cosmosDBModule.outputs.cosmosContainerName
+      AZURE_COSMOSDB_DATABASE: cosmosDBModule.outputs.cosmosDatabaseName
+      AZURE_COSMOSDB_ENABLE_FEEDBACK: 'True'
+      SQLDB_DATABASE: sqlDBModule.outputs.sqlDbName
+      SQLDB_SERVER: sqlDBModule.outputs.sqlServerName
+      SQLDB_USERNAME: sqlDBModule.outputs.sqlDbUser
+      SQLDB_USER_MID: managedIdentityModule.outputs.managedIdentityBackendAppOutput.clientId
 
-        OPENAI_API_VERSION: azureOpenAIApiVersion
-        AZURE_AI_SEARCH_ENDPOINT: aifoundry.outputs.aiSearchTarget
-        AZURE_AI_SEARCH_INDEX: 'call_transcripts_index'
-        USE_AI_PROJECT_CLIENT:'False'
-        DISPLAY_CHART_DEFAULT:'False'
-      }
+      OPENAI_API_VERSION: azureOpenAIApiVersion
+      AZURE_AI_SEARCH_ENDPOINT: aifoundry.outputs.aiSearchTarget
+      AZURE_AI_SEARCH_INDEX: 'call_transcripts_index'
+      USE_AI_PROJECT_CLIENT: 'False'
+      DISPLAY_CHART_DEFAULT: 'False'
+    }
   }
   scope: resourceGroup(resourceGroup().name)
 }
 
-module frontend_docker 'deploy_frontend_docker.bicep'= {
+module frontend_docker 'deploy_frontend_docker.bicep' = {
   name: 'deploy_frontend_docker'
   params: {
     name: '${abbrs.compute.webApp}${solutionPrefix}'
