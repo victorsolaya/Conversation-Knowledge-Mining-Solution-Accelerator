@@ -4,8 +4,8 @@
 param solutionName string
 param solutionLocation string
 param keyVaultName string
-
-var accountName = '${ solutionName }-cosmos'
+param accountName string 
+// var accountName = '${ solutionName }-cosmos'
 var databaseName = 'db_conversation_history'
 var collectionName = 'conversations'
 

@@ -18,8 +18,8 @@ param userassignedIdentityId string
 param aiProjectName string
 
 var imageName = 'DOCKER|kmcontainerreg.azurecr.io/km-api:${imageTag}'
-var name = '${solutionName}-api'
-
+//var name = '${solutionName}-api'
+param name string 
 var reactAppLayoutConfig ='''{
   "appConfig": {
     "THREE_COLUMN": {
