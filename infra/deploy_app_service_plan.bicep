@@ -1,5 +1,4 @@
 metadata description = 'Creates an Azure App Service plan.'
-param solutionName string
 
 @description('Solution Location')
 param solutionLocation string

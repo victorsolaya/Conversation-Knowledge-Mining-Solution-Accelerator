@@ -1,6 +1,5 @@
 param imageTag string
 param applicationInsightsId string
-param solutionName string
 
 @description('Solution Location')
 param solutionLocation string

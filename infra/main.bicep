@@ -72,6 +72,8 @@ var uniqueId = toLower(uniqueString(subscription().id, environmentName, solution
 var solutionPrefix = 'km${padLeft(take(uniqueId, 12), 12, '0')}'
 // var resourceGroupName = resourceGroup().name
 
+var baseUrl = 'https://raw.githubusercontent.com/microsoft/Conversation-Knowledge-Mining-Solution-Accelerator/main/'
+
 // ========== Managed Identity ========== //
 module managedIdentityModule 'deploy_managed_identity.bicep' = {
   name: 'deploy_managed_identity'
@@ -88,7 +90,6 @@ module kvault 'deploy_keyvault.bicep' = {
   name: 'deploy_keyvault'
   params: {
     keyvaultName: '${abbrs.security.keyVault}${solutionPrefix}'
-    solutionName: solutionPrefix
     solutionLocation: solutionLocation
     managedIdentityObjectId:managedIdentityModule.outputs.managedIdentityOutput.objectId
   }
@@ -119,7 +120,6 @@ module storageAccount 'deploy_storage_account.bicep' = {
   name: 'deploy_storage_account'
   params: {
     saName: '${abbrs.storage.storageAccount}${solutionPrefix}'
-    solutionName: solutionPrefix
     solutionLocation: solutionLocation
     keyVaultName: kvault.outputs.keyvaultName
     managedIdentityObjectId:managedIdentityModule.outputs.managedIdentityOutput.objectId
@@ -132,7 +132,6 @@ module cosmosDBModule 'deploy_cosmos_db.bicep' = {
   name: 'deploy_cosmos_db'
   params: {
     accountName: '${abbrs.databases.cosmosDBDatabase}${solutionPrefix}'
-    solutionName: solutionPrefix
     solutionLocation: secondaryLocation
     keyVaultName: kvault.outputs.keyvaultName
   }
@@ -145,7 +144,6 @@ module sqlDBModule 'deploy_sql_db.bicep' = {
   params: {
     serverName: '${abbrs.databases.sqlDatabaseServer}${solutionPrefix}'
     sqlDBName: '${abbrs.databases.sqlDatabase}${solutionPrefix}'
-    solutionName: solutionPrefix
     solutionLocation: secondaryLocation
     keyVaultName: kvault.outputs.keyvaultName
     managedIdentityName: managedIdentityModule.outputs.managedIdentityOutput.name
@@ -161,39 +159,34 @@ resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' existing = {
 }
 
 //========== Deployment script to upload sample data ========== //
-// module uploadFiles 'deploy_post_deployment_scripts.bicep' = {
-//   name : 'deploy_post_deployment_scripts'
-//   params:{
-//     solutionName: solutionPrefix
-//     solutionLocation: secondaryLocation
-//     baseUrl: baseUrl
-//     storageAccountName: storageAccount.outputs.storageName
-//     containerName: storageAccount.outputs.storageContainer
-//     managedIdentityObjectId:managedIdentityModule.outputs.managedIdentityOutput.id
-//     managedIdentityClientId:managedIdentityModule.outputs.managedIdentityOutput.clientId
-//     keyVaultName:aifoundry.outputs.keyvaultName
-//     logAnalyticsWorkspaceResourceName: aifoundry.outputs.logAnalyticsWorkspaceResourceName
-//     sqlServerName: sqlDBModule.outputs.sqlServerName
-//     sqlDbName: sqlDBModule.outputs.sqlDbName
-//     sqlUsers: [
-//       {
-//         principalId: managedIdentityModule.outputs.managedIdentityChartsOutput.clientId  // Replace with actual Principal ID
-//         principalName: managedIdentityModule.outputs.managedIdentityChartsOutput.name    // Replace with actual user email or name
-//         databaseRoles: ['db_datareader', 'db_datawriter']
-//       }
-//       {
-//         principalId: managedIdentityModule.outputs.managedIdentityRagOutput.clientId  // Replace with actual Principal ID
-//         principalName: managedIdentityModule.outputs.managedIdentityRagOutput.name    // Replace with actual user email or name
-//         databaseRoles: ['db_datareader']
-//       }
-//     ]
-//   }
-// }
+module uploadFiles 'deploy_post_deployment_scripts.bicep' = {
+  name : 'deploy_post_deployment_scripts'
+  params:{
+    solutionLocation: secondaryLocation
+    baseUrl: baseUrl
+    storageAccountName: storageAccount.outputs.storageName
+    containerName: storageAccount.outputs.storageContainer
+    containerAppName: '${abbrs.containers.containerApp}${solutionPrefix}'
+    environmentName: '${abbrs.containers.containerAppsEnvironment}${solutionPrefix}'
+    managedIdentityObjectId:managedIdentityModule.outputs.managedIdentityOutput.id
+    managedIdentityClientId:managedIdentityModule.outputs.managedIdentityOutput.clientId
+    keyVaultName:aifoundry.outputs.keyvaultName
+    logAnalyticsWorkspaceResourceName: aifoundry.outputs.logAnalyticsWorkspaceResourceName
+    sqlServerName: sqlDBModule.outputs.sqlServerName
+    sqlDbName: sqlDBModule.outputs.sqlDbName
+    sqlUsers: [
+      {
+        principalId: managedIdentityModule.outputs.managedIdentityBackendAppOutput.clientId
+        principalName: managedIdentityModule.outputs.managedIdentityBackendAppOutput.name
+        databaseRoles: ['db_datareader', 'db_datawriter']
+      }
+    ]
+  }
+}
 
 module hostingplan 'deploy_app_service_plan.bicep' = {
   name: 'deploy_app_service_plan'
   params: {
-    solutionName: solutionPrefix
     solutionLocation: solutionLocation
     HostingPlanName: '${abbrs.compute.appServicePlan}${solutionPrefix}'
   }
@@ -210,7 +203,6 @@ module backend_docker 'deploy_backend_docker.bicep'= {
     azureOpenAIKey:keyVault.getSecret('AZURE-OPENAI-KEY')
     azureAiProjectConnString:keyVault.getSecret('AZURE-AI-PROJECT-CONN-STRING')
     azureSearchAdminKey:keyVault.getSecret('AZURE-SEARCH-KEY')
-    solutionName: solutionPrefix
     userassignedIdentityId: managedIdentityModule.outputs.managedIdentityBackendAppOutput.id
     aiProjectName: aifoundry.outputs.aiProjectName
     appSettings:{
@@ -246,7 +238,6 @@ module frontend_docker 'deploy_frontend_docker.bicep'= {
     imageTag: imageTag
     appServicePlanId: hostingplan.outputs.name
     applicationInsightsId: aifoundry.outputs.applicationInsightsId
-    solutionName: solutionPrefix
     appSettings:{
       APP_API_BASE_URL:backend_docker.outputs.appUrl
     }

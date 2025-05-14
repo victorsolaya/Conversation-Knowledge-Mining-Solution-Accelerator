@@ -1,11 +1,6 @@
 // ========== Storage Account ========== //
 targetScope = 'resourceGroup'
 
-@minLength(3)
-@maxLength(15)
-@description('Solution Name')
-param solutionName string
-
 @description('Solution Location')
 param solutionLocation string
 

@@ -2,120 +2,52 @@
 echo "started the script"
 
 # Variables
-keyvaultName="$1"
-managedIdentityClientId="$2"
-serverName="$3"
-resourceGroup="$4"
+baseUrl="$1"
+keyvaultName="$2"
+managedIdentityClientId="$3"
+requirementFile="requirements.txt"
+requirementFileUrl=${baseUrl}"infra/scripts/index_scripts/requirements.txt"
 
 echo "Script Started"
 
-# Authenticate with Azure
-if az account show &> /dev/null; then
-    echo "Already authenticated with Azure."
-else
-    if [ -n "$managedIdentityClientId" ]; then
-        echo "Authenticating with Managed Identity..."
-        if ! az login --identity --client-id "$managedIdentityClientId" &> /dev/null; then
-            echo "Failed to authenticate with Managed Identity. Falling back to Azure CLI login."
-            az login
-            if [ $? -ne 0 ]; then
-                echo "Azure CLI login failed. Please authenticate manually and rerun the script."
-                exit 1
-            fi
-        fi
-    else
-        echo "No Managed Identity Client ID provided. Attempting Azure CLI login..."
-        az login
-        if [ $? -ne 0 ]; then
-            echo "Azure CLI login failed. Please authenticate manually and rerun the script."
-            exit 1
-        fi
-    fi
-fi
+# Download the create_index and create table python files
+curl --output "01_create_search_index.py" ${baseUrl}"infra/scripts/index_scripts/01_create_search_index.py"
+curl --output "02_create_cu_template_text.py" ${baseUrl}"infra/scripts/index_scripts/02_create_cu_template_text.py"
+curl --output "02_create_cu_template_audio.py" ${baseUrl}"infra/scripts/index_scripts/02_create_cu_template_audio.py"
+curl --output "03_cu_process_data_text.py" ${baseUrl}"infra/scripts/index_scripts/03_cu_process_data_text.py"
+curl --output "content_understanding_client.py" ${baseUrl}"infra/scripts/index_scripts/content_understanding_client.py"
+curl --output "ckm-analyzer_config_text.json" ${baseUrl}"infra/data/ckm-analyzer_config_text.json"
+curl --output "ckm-analyzer_config_audio.json" ${baseUrl}"infra/data/ckm-analyzer_config_audio.json"
 
-echo "Getting signed in user id"
-signed_user_id=$(az ad signed-in-user show --query id --output tsv)
+curl --output "sample_processed_data.json" ${baseUrl}"infra/data/sample_processed_data.json"
+curl --output "sample_processed_data_key_phrases.json" ${baseUrl}"infra/data/sample_processed_data_key_phrases.json"
+curl --output "sample_search_index_data.json" ${baseUrl}"infra/data/sample_search_index_data.json"
 
-echo "Getting key vault resource id"
-key_vault_resource_id=$(az keyvault show --name $keyvaultName --query id --output tsv)
+# RUN apt-get update
+# RUN apt-get install python3 python3-dev g++ unixodbc-dev unixodbc libpq-dev
+# apk add python3 python3-dev g++ unixodbc-dev unixodbc libpq-dev
+ 
+# # RUN apt-get install python3 python3-dev g++ unixodbc-dev unixodbc libpq-dev
+# pip install pyodbc
 
-echo "Checking if user has the Key Vault Administrator role"
-role_assignment=$(MSYS_NO_PATHCONV=1 az role assignment list --assignee $signed_user_id --role "Key Vault Administrator" --scope $key_vault_resource_id --query "[].roleDefinitionId" -o tsv)
-if [ -z "$role_assignment" ]; then
-    echo "User does not have the Key Vault Administrator role. Assigning the role."
-    MSYS_NO_PATHCONV=1 az role assignment create --assignee $signed_user_id --role "Key Vault Administrator" --scope $key_vault_resource_id --output none
-    if [ $? -eq 0 ]; then
-        echo "Key Vault Administrator role assigned successfully."
-    else
-        echo "Failed to assign Key Vault Administrator role."
-        exit 1
-    fi
-else
-    echo "User already has the Key Vault Administrator role."
-fi
+# Download the requirement file
+curl --output "$requirementFile" "$requirementFileUrl"
 
+echo "Download completed"
 
-# create virtual environment
-# Check if the virtual environment already exists
-if [ -d "infra/scripts/scriptenv" ]; then
-    echo "Virtual environment already exists. Skipping creation."
-else
-    echo "Creating virtual environment"
-    python -m venv infra/scripts/scriptenv
-fi
+#Replace key vault name 
+sed -i "s/kv_to-be-replaced/${keyvaultName}/g" "01_create_search_index.py"
+sed -i "s/mici_to-be-replaced/${managedIdentityClientId}/g" "01_create_search_index.py"
+sed -i "s/kv_to-be-replaced/${keyvaultName}/g" "02_create_cu_template_text.py"
+sed -i "s/mici_to-be-replaced/${managedIdentityClientId}/g" "02_create_cu_template_text.py"
+sed -i "s/kv_to-be-replaced/${keyvaultName}/g" "02_create_cu_template_audio.py"
+sed -i "s/mici_to-be-replaced/${managedIdentityClientId}/g" "02_create_cu_template_audio.py"
+sed -i "s/kv_to-be-replaced/${keyvaultName}/g" "03_cu_process_data_text.py"
+sed -i "s/mici_to-be-replaced/${managedIdentityClientId}/g" "03_cu_process_data_text.py"
 
-# handling virtual environment activation for different OS
-activate_env_output=$(source infra/scripts/scriptenv/bin/activate 2>&1)
-if [ -n "$activate_env_output" ]; then
-    source infra/scripts/scriptenv/Scripts/activate
-fi
+pip install -r requirements.txt
 
-# Install the requirements
-echo "Installing requirements"
-pip install --quiet -r infra/scripts/index_scripts/requirements.txt
-echo "Requirements installed"
-
-echo "Running the python scripts"
-echo "Creating the search index"
-python infra/scripts/index_scripts/01_create_search_index.py "$keyvaultName" "$managedIdentityClientId"
-if [ $? -ne 0 ]; then
-    echo "Error: 01_create_search_index.py failed."
-    exit 1
-fi
-
-echo "Processing the data"
-python infra/scripts/index_scripts/02_create_cu_template_text.py "$keyvaultName" "$managedIdentityClientId"
-if [ $? -ne 0 ]; then
-    echo "Error: 02_create_cu_template_text.py failed."
-    exit 1
-fi
-
-echo "Processing the data"
-python infra/scripts/index_scripts/02_create_cu_template_audio.py "$keyvaultName" "$managedIdentityClientId"
-if [ $? -ne 0 ]; then
-    echo "Error: 02_create_cu_template_audio.py failed."
-    exit 1
-fi
-
-echo "Processing the data"
-
-user=$(az account show --query user.name --output tsv)
-
-# Get the signed-in user's object ID
-objectId=$(az ad signed-in-user show --query id --output tsv)
-
-az sql server ad-admin create \
-  --resource-group "$resourceGroup" \
-  --server "$serverName" \
-  --display-name "$user" \
-  --object-id "$objectId"
-  
-echo "✅ Set $user as Azure SQL Server AAD admin."
-
-python infra/scripts/index_scripts/03_cu_process_data_text.py "$keyvaultName" "$managedIdentityClientId"
-if [ $? -ne 0 ]; then
-    echo "Error: 03_cu_process_data_text.py failed."
-    exit 1
-fi
-
-echo "Scripts completed"
+python 01_create_search_index.py
+python 02_create_cu_template_text.py
+python 02_create_cu_template_audio.py
+python 03_cu_process_data_text.py
