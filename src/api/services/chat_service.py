@@ -160,7 +160,7 @@ class ChatService:
                         await thread.delete()
                     except Exception as e:
                         logger.warning("Failed to delete thread %s: %s", thread_id, e)
-                yield "I cannot answer this question from the data available. Please rephrase or add more details."
+                yield "I cannot answer this question with the current data. Please rephrase or add more details."
 
     async def stream_chat_request(self, request_body, conversation_id, query):
         """
