@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 async def fetch_chart_data():
     try:
         chart_service = ChartService()
-        response = chart_service.fetch_chart_data()
+        response = await chart_service.fetch_chart_data()
         return JSONResponse(content=response)
     except Exception as e:
         logger.exception("Error in fetch_chart_data: %s", str(e))
@@ -41,7 +41,7 @@ async def fetch_chart_data_with_filters(chart_filters: ChartFilters):
 async def fetch_filter_data():
     try:
         chart_service = ChartService()
-        response = chart_service.fetch_filter_data()
+        response = await chart_service.fetch_filter_data()
         return JSONResponse(content=response)
     except Exception as e:
         logger.exception("Error in fetch_filter_data: %s", str(e))
