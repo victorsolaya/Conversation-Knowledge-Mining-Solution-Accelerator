@@ -1,6 +1,6 @@
 // ========== main.bicep ========== //
 targetScope = 'resourceGroup'
-
+var abbrs = loadJsonContent('./abbreviations.json')
 @minLength(3)
 @maxLength(20)
 @description('A unique prefix for all resources in this deployment. This should be 3-20 characters long:')
@@ -61,18 +61,20 @@ param embeddingDeploymentCapacity int = 80
 
 param imageTag string = 'latest_migrated'
 
-var uniqueId = toLower(uniqueString(subscription().id, environmentName, resourceGroup().location))
+param AZURE_LOCATION string=''
+var solutionLocation = empty(AZURE_LOCATION) ? resourceGroup().location : AZURE_LOCATION
+
+var uniqueId = toLower(uniqueString(subscription().id, environmentName, solutionLocation))
 var solutionPrefix = 'km${padLeft(take(uniqueId, 12), 12, '0')}'
-var resourceGroupLocation = resourceGroup().location
 // var resourceGroupName = resourceGroup().name
 
-var solutionLocation = resourceGroupLocation
 var baseUrl = 'https://raw.githubusercontent.com/microsoft/Conversation-Knowledge-Mining-Solution-Accelerator/main/'
 
 // ========== Managed Identity ========== //
 module managedIdentityModule 'deploy_managed_identity.bicep' = {
   name: 'deploy_managed_identity'
   params: {
+    miName:'${abbrs.security.managedIdentity}${solutionPrefix}'
     solutionName: solutionPrefix
     solutionLocation: solutionLocation
   }
@@ -83,9 +85,9 @@ module managedIdentityModule 'deploy_managed_identity.bicep' = {
 module kvault 'deploy_keyvault.bicep' = {
   name: 'deploy_keyvault'
   params: {
-    solutionName: solutionPrefix
-    solutionLocation: resourceGroupLocation
-    managedIdentityObjectId: managedIdentityModule.outputs.managedIdentityOutput.objectId
+    keyvaultName: '${abbrs.security.keyVault}${solutionPrefix}'
+    solutionLocation: solutionLocation
+    managedIdentityObjectId:managedIdentityModule.outputs.managedIdentityOutput.objectId
   }
   scope: resourceGroup(resourceGroup().name)
 }
@@ -95,7 +97,7 @@ module aifoundry 'deploy_ai_foundry.bicep' = {
   name: 'deploy_ai_foundry'
   params: {
     solutionName: solutionPrefix
-    solutionLocation: resourceGroupLocation
+    solutionLocation: solutionLocation
     keyVaultName: kvault.outputs.keyvaultName
     cuLocation: contentUnderstandingLocation
     deploymentType: deploymentType
@@ -113,7 +115,7 @@ module aifoundry 'deploy_ai_foundry.bicep' = {
 module storageAccount 'deploy_storage_account.bicep' = {
   name: 'deploy_storage_account'
   params: {
-    solutionName: solutionPrefix
+    saName: '${abbrs.storage.storageAccount}${solutionPrefix}'
     solutionLocation: solutionLocation
     keyVaultName: kvault.outputs.keyvaultName
     managedIdentityObjectId: managedIdentityModule.outputs.managedIdentityOutput.objectId
@@ -125,7 +127,7 @@ module storageAccount 'deploy_storage_account.bicep' = {
 module cosmosDBModule 'deploy_cosmos_db.bicep' = {
   name: 'deploy_cosmos_db'
   params: {
-    solutionName: solutionPrefix
+    accountName: '${abbrs.databases.cosmosDBDatabase}${solutionPrefix}'
     solutionLocation: secondaryLocation
     keyVaultName: kvault.outputs.keyvaultName
   }
@@ -136,7 +138,8 @@ module cosmosDBModule 'deploy_cosmos_db.bicep' = {
 module sqlDBModule 'deploy_sql_db.bicep' = {
   name: 'deploy_sql_db'
   params: {
-    solutionName: solutionPrefix
+    serverName: '${abbrs.databases.sqlDatabaseServer}${solutionPrefix}'
+    sqlDBName: '${abbrs.databases.sqlDatabase}${solutionPrefix}'
     solutionLocation: secondaryLocation
     keyVaultName: kvault.outputs.keyvaultName
     managedIdentityName: managedIdentityModule.outputs.managedIdentityOutput.name
@@ -153,23 +156,24 @@ resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' existing = {
 
 //========== Deployment script to upload sample data ========== //
 module uploadFiles 'deploy_post_deployment_scripts.bicep' = {
-  name: 'deploy_post_deployment_scripts'
-  params: {
-    solutionName: solutionPrefix
+  name : 'deploy_post_deployment_scripts'
+  params:{
     solutionLocation: secondaryLocation
     baseUrl: baseUrl
     storageAccountName: storageAccount.outputs.storageName
     containerName: storageAccount.outputs.storageContainer
-    managedIdentityObjectId: managedIdentityModule.outputs.managedIdentityOutput.id
-    managedIdentityClientId: managedIdentityModule.outputs.managedIdentityOutput.clientId
-    keyVaultName: aifoundry.outputs.keyvaultName
+    containerAppName: '${abbrs.containers.containerApp}${solutionPrefix}'
+    environmentName: '${abbrs.containers.containerAppsEnvironment}${solutionPrefix}'
+    managedIdentityObjectId:managedIdentityModule.outputs.managedIdentityOutput.id
+    managedIdentityClientId:managedIdentityModule.outputs.managedIdentityOutput.clientId
+    keyVaultName:aifoundry.outputs.keyvaultName
     logAnalyticsWorkspaceResourceName: aifoundry.outputs.logAnalyticsWorkspaceResourceName
     sqlServerName: sqlDBModule.outputs.sqlServerName
     sqlDbName: sqlDBModule.outputs.sqlDbName
     sqlUsers: [
       {
-        principalId: managedIdentityModule.outputs.managedIdentityBackendAppOutput.clientId // Replace with actual Principal ID
-        principalName: managedIdentityModule.outputs.managedIdentityBackendAppOutput.name // Replace with actual user email or name
+        principalId: managedIdentityModule.outputs.managedIdentityBackendAppOutput.clientId
+        principalName: managedIdentityModule.outputs.managedIdentityBackendAppOutput.name
         databaseRoles: ['db_datareader', 'db_datawriter']
       }
     ]
@@ -179,20 +183,22 @@ module uploadFiles 'deploy_post_deployment_scripts.bicep' = {
 module hostingplan 'deploy_app_service_plan.bicep' = {
   name: 'deploy_app_service_plan'
   params: {
-    solutionName: solutionPrefix
+    solutionLocation: solutionLocation
+    HostingPlanName: '${abbrs.compute.appServicePlan}${solutionPrefix}'
   }
 }
 
 module backend_docker 'deploy_backend_docker.bicep' = {
   name: 'deploy_backend_docker'
   params: {
+    name: 'api-${solutionPrefix}'
+    solutionLocation: solutionLocation
     imageTag: imageTag
     appServicePlanId: hostingplan.outputs.name
     applicationInsightsId: aifoundry.outputs.applicationInsightsId
-    azureOpenAIKey: keyVault.getSecret('AZURE-OPENAI-KEY')
-    azureAiProjectConnString: keyVault.getSecret('AZURE-AI-PROJECT-CONN-STRING')
-    azureSearchAdminKey: keyVault.getSecret('AZURE-SEARCH-KEY')
-    solutionName: solutionPrefix
+    azureOpenAIKey:keyVault.getSecret('AZURE-OPENAI-KEY')
+    azureAiProjectConnString:keyVault.getSecret('AZURE-AI-PROJECT-CONN-STRING')
+    azureSearchAdminKey:keyVault.getSecret('AZURE-SEARCH-KEY')
     userassignedIdentityId: managedIdentityModule.outputs.managedIdentityBackendAppOutput.id
     aiProjectName: aifoundry.outputs.aiProjectName
     appSettings: {
@@ -223,12 +229,13 @@ module backend_docker 'deploy_backend_docker.bicep' = {
 module frontend_docker 'deploy_frontend_docker.bicep' = {
   name: 'deploy_frontend_docker'
   params: {
+    name: '${abbrs.compute.webApp}${solutionPrefix}'
+    solutionLocation:solutionLocation
     imageTag: imageTag
     appServicePlanId: hostingplan.outputs.name
     applicationInsightsId: aifoundry.outputs.applicationInsightsId
-    solutionName: solutionPrefix
-    appSettings: {
-      APP_API_BASE_URL: backend_docker.outputs.appUrl
+    appSettings:{
+      APP_API_BASE_URL:backend_docker.outputs.appUrl
     }
   }
   scope: resourceGroup(resourceGroup().name)

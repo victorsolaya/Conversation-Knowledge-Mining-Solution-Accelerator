@@ -1,6 +1,9 @@
 param imageTag string
 param applicationInsightsId string
-param solutionName string
+
+@description('Solution Location')
+param solutionLocation string
+
 @secure()
 param appSettings object = {}
 param appServicePlanId string
@@ -14,8 +17,8 @@ param userassignedIdentityId string
 param aiProjectName string
 
 var imageName = 'DOCKER|kmcontainerreg.azurecr.io/km-api:${imageTag}'
-var name = '${solutionName}-api'
-
+//var name = '${solutionName}-api'
+param name string 
 var reactAppLayoutConfig ='''{
   "appConfig": {
     "THREE_COLUMN": {
@@ -84,6 +87,7 @@ module appService 'deploy_app_service.bicep' = {
   name: '${name}-app-module'
   params: {
     solutionName: name
+    solutionLocation:solutionLocation
     appServicePlanId: appServicePlanId
     appImageName: imageName
     userassignedIdentityId:userassignedIdentityId
