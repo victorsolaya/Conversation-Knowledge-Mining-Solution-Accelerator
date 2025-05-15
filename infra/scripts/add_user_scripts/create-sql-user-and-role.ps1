@@ -7,7 +7,7 @@
 .DESCRIPTION
     During an application deployment, the managed identity (and potentially the developer identity)
     must be added to the SQL database as a user and assigned to one or more roles. This script
-    accomplishes this task using Azure AD authentication.
+    accomplishes this task using the owner-managed identity for authentication.
 
 .PARAMETER SqlServerName
     The name of the Azure SQL Server resource.
@@ -21,51 +21,43 @@
 .PARAMETER DisplayName
     The Object (Principal) display name of the identity to be added.
 
-.PARAMETER UseManagedIdentity
-    Switch to indicate whether to use a Managed Identity for authentication (useful for automation).
-    If not provided, it will use your currently logged-in Azure AD account.
+.PARAMETER ManagedIdentityClientId
+    The Client ID of the managed identity that will authenticate to the SQL database.
 
 .PARAMETER DatabaseRole
-    A comma-separated list of database roles that should be assigned to the user (e.g., db_datareader, db_datawriter, db_owner).
+    The database role that should be assigned to the user (e.g., db_datareader, db_datawriter, db_owner).
 #>
 
-param (
+Param(
     [string] $SqlServerName,
     [string] $SqlDatabaseName,
     [string] $ClientId,
     [string] $DisplayName,
-    [switch] $UseManagedIdentity,
+    [string] $ManagedIdentityClientId,
     [string] $DatabaseRole
 )
 
 function Resolve-Module($moduleName) {
-    if (-not (Get-Module -ListAvailable -Name $moduleName)) {
-        Install-Module -Name $moduleName -Scope CurrentUser -Force -AllowClobber
+    # If module is imported; say that and do nothing
+    if (Get-Module | Where-Object { $_.Name -eq $moduleName }) {
+        Write-Debug "Module $moduleName is already imported"
+    } elseif (Get-Module -ListAvailable | Where-Object { $_.Name -eq $moduleName }) {
+        Import-Module $moduleName
+    } elseif (Find-Module -Name $moduleName | Where-Object { $_.Name -eq $moduleName }) {
+        Install-Module $moduleName -Force -Scope CurrentUser
+        Import-Module $moduleName
+    } else {
+        Write-Error "Module $moduleName not found"
+        [Environment]::exit(1)
     }
-    Import-Module -Name $moduleName -Force
 }
 
-### Load Required Modules
-Resolve-Module -moduleName Az.Accounts
+###
+### MAIN SCRIPT
+###
 Resolve-Module -moduleName Az.Resources
 Resolve-Module -moduleName SqlServer
 
-### Authenticate and Get Access Token
-if ($UseManagedIdentity) {
-    Write-Host "[INFO] Logging in using Managed Identity..."
-    Connect-AzAccount -Identity
-} else {
-    Write-Host "[INFO] Logging in using current user identity..."
-    Connect-AzAccount -UseDeviceAuthentication
-}
-
-# Split the roles by comma and remove any extra spaces
-$roles = $DatabaseRole -split "," | ForEach-Object { $_.Trim() }
-
-foreach ($role in $roles) {
-    Write-Output "Assigning Role: $role"
-    
-### Generate SQL Script
 $sql = @"
 DECLARE @username nvarchar(max) = N'$($DisplayName)';
 DECLARE @clientId uniqueidentifier = '$($ClientId)';
@@ -75,17 +67,11 @@ IF NOT EXISTS (SELECT * FROM sys.database_principals WHERE name = @username)
 BEGIN
     EXEC(@cmd)
 END
-EXEC sp_addrolemember '$role', @username;
+EXEC sp_addrolemember '$($DatabaseRole)', @username;
 "@
 
-Write-Output "`nSQL to be executed:`n$($sql)`n"
+Write-Output "`nSQL:`n$($sql)`n`n"
 
-# Get the Azure SQL token for authentication
+Connect-AzAccount -Identity -AccountId $ManagedIdentityClientId
 $token = (Get-AzAccessToken -ResourceUrl https://database.windows.net/).Token
-
-### Execute the SQL Command
-Write-Host "[INFO] Executing SQL against $SqlDatabaseName..."
-Invoke-Sqlcmd -ServerInstance "$SqlServerName.database.windows.net" -Database $SqlDatabaseName -AccessToken $token -Query $sql -ErrorAction Stop
-}
-
-Write-Host "[SUCCESS] User and role assignment completed."
+Invoke-SqlCmd -ServerInstance "$SqlServerName" -Database $SqlDatabaseName -AccessToken $token -Query $sql -ErrorAction 'Stop'

@@ -50,6 +50,27 @@ var aiProjectName = '${abbrs.ai.aiHubProject}${solutionName}'
 var aiProjectFriendlyName = aiProjectName
 var aiSearchName = '${abbrs.ai.aiSearch}${solutionName}'
 
+var aiModelDeployments = [
+  {
+    name: gptModelName
+    model: gptModelName
+    sku: {
+      name: deploymentType
+      capacity: gptDeploymentCapacity
+    }
+    raiPolicyName: 'Microsoft.Default'
+  }
+  {
+    name: embeddingModel
+    model: embeddingModel
+    sku: {
+      name: 'Standard'
+      capacity: embeddingDeploymentCapacity
+    }
+    raiPolicyName: 'Microsoft.Default'
+  }
+]
+
 var containerRegistryNameCleaned = replace(containerRegistryName, '-', '')
 
 resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' existing = {
@@ -182,9 +203,6 @@ resource aiServices 'Microsoft.CognitiveServices/accounts@2024-04-01-preview' = 
   kind: 'AIServices'
   properties: {
     customSubDomainName: aiServicesName
-    apiProperties: {
-      //statisticsEnabled: false
-    }
   }
 }
 
@@ -211,11 +229,25 @@ resource aiServices_CU 'Microsoft.CognitiveServices/accounts@2024-04-01-preview'
   kind: 'AIServices'
   properties: {
     customSubDomainName: aiServicesName_cu
-    apiProperties: {
-     // statisticsEnabled: false
-    }
   }
 }
+
+@batchSize(1)
+resource aiServicesDeployments 'Microsoft.CognitiveServices/accounts/deployments@2023-05-01' = [for aiModeldeployment in aiModelDeployments: {
+  parent: aiServices //aiServices_m
+  name: aiModeldeployment.name
+  properties: {
+    model: {
+      format: 'OpenAI'
+      name: aiModeldeployment.model
+    }
+    raiPolicyName: aiModeldeployment.raiPolicyName
+  }
+  sku:{
+    name: aiModeldeployment.sku.name
+    capacity: aiModeldeployment.sku.capacity
+  }
+}]
 
 resource aiSearch 'Microsoft.Search/searchServices@2023-11-01' = {
     name: aiSearchName
@@ -404,7 +436,7 @@ resource aiHub 'Microsoft.MachineLearningServices/workspaces@2023-08-01-preview'
       }
     }
     dependsOn: [
-      aiSearch
+      aiServicesDeployments,aiSearch
     ]
   }
   
@@ -428,7 +460,7 @@ resource aiHub 'Microsoft.MachineLearningServices/workspaces@2023-08-01-preview'
     }
   }
   dependsOn: [
-    aiSearch
+    aiServicesDeployments,aiSearch
   ]
 }
 
@@ -686,3 +718,6 @@ output logAnalyticsWorkspaceResourceName string = logAnalytics.name
 output storageAccountName string = storageNameCleaned
 
 output azureOpenAIKeyName string = azureOpenAIApiKeyEntry.name
+
+output azureProjectConnString string = '${split(aiHubProject.properties.discoveryUrl, '/')[2]};${subscription().subscriptionId};${resourceGroup().name};${aiHubProject.name}'
+output azureProjectName string = aiHubProject.name

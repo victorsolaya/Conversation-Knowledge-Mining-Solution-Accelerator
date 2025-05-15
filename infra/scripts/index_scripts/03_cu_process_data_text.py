@@ -13,10 +13,9 @@ import time
 import base64
 import pyodbc
 import struct
-import sys
 
-key_vault_name=sys.argv[1]
-managed_identity_client_id = sys.argv[2]
+key_vault_name = 'kv_to-be-replaced'
+managed_identity_client_id = 'mici_to-be-replaced'
 
 file_system_client_name = "data"
 directory = 'call_transcripts'
@@ -124,7 +123,7 @@ search_credential = AzureKeyCredential(search_key)
 search_client = SearchClient(search_endpoint, index_name, search_credential)
 index_client = SearchIndexClient(endpoint=search_endpoint, credential=search_credential)
 
-driver = "{ODBC Driver 18 for SQL Server}"
+driver = "{ODBC Driver 17 for SQL Server}"
 server =  get_secrets_from_kv(key_vault_name,"SQLDB-SERVER")
 database = get_secrets_from_kv(key_vault_name,"SQLDB-DATABASE")
 
@@ -350,7 +349,7 @@ if docs != []:
 
 ##########################################################
 # load sample data to search index
-sample_import_file = './infra/data/sample_search_index_data.json'
+sample_import_file = 'sample_search_index_data.json'
 
 with open(sample_import_file, 'r') as file:
     documents = json.load(file)
@@ -359,7 +358,7 @@ search_client.upload_documents(documents=batch)
 # print(f'Successfully uploaded sample index data')   
 
 # load sample data to database
-sample_processed_data_file = './infra/data/sample_processed_data.json'
+sample_processed_data_file = 'sample_processed_data.json'
 import_table = 'processed_data'
 with open(sample_processed_data_file, "r") as f:
     data = json.load(f)
@@ -387,7 +386,7 @@ conn.commit()
 
 
 # load key phrases sample data to database
-sample_processed_data_file = './infra/data/sample_processed_data_key_phrases.json'
+sample_processed_data_file = 'sample_processed_data_key_phrases.json'
 import_table = 'processed_data_key_phrases'
 with open(sample_processed_data_file, "r") as f:
     data = json.load(f)
@@ -457,7 +456,7 @@ def call_gpt4(topics_str1, client):
         If the input data is insufficient for reliable topic modeling, indicate that more data is needed rather than making assumptions. 
         Ensure that the topics and labels are accurate, relevant, and easy to understand.
 
-        Return the topics and their labels in JSON format.Always add 'topics' node and 'label', 'description' attriubtes in json.
+        Return the topics and their labels in JSON format.Always add 'topics' node and 'label', 'description' attributes in json.
         Do not return anything else.
         """
     # Phi-3 model client
@@ -575,7 +574,7 @@ mined_topics =  ", ".join(mined_topics_list)
 def get_mined_topic_mapping(input_text, list_of_topics):
     prompt = f'''You are a data analysis assistant to help find the closest topic for a given text {input_text} 
                 from a list of topics - {list_of_topics}.
-                ALLWAYS only return a topic from list - {list_of_topics}. Do not add any other text.'''
+                ALWAYS only return a topic from list - {list_of_topics}. Do not add any other text.'''
 
     # Phi-3 model client
     # response = client.complete(

@@ -1,6 +1,5 @@
 param imageTag string
 param applicationInsightsId string
-param solutionName string
 
 @description('Solution Location')
 param solutionLocation string
@@ -142,3 +141,5 @@ resource aiDeveloperAccessProj 'Microsoft.Authorization/roleAssignments@2022-04-
 }
 
 output appUrl string = appService.outputs.appUrl
+output reactAppLayoutConfig string = reactAppLayoutConfig
+output appInsightInstrumentationKey string = reference(applicationInsightsId, '2015-05-01').InstrumentationKey

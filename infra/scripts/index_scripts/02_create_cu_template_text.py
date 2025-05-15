@@ -7,8 +7,8 @@ import sys
 from pathlib import Path
 from azure.identity import DefaultAzureCredential, get_bearer_token_provider
 
-key_vault_name=sys.argv[1]
-managed_identity_client_id = sys.argv[2]
+key_vault_name = 'kv_to-be-replaced'
+managed_identity_client_id = 'mici_to-be-replaced'
 
 def get_secrets_from_kv(kv_name, secret_name):
 
@@ -44,7 +44,8 @@ client = AzureContentUnderstandingClient(
 
 
 ANALYZER_ID = "ckm-json"
-ANALYZER_TEMPLATE_FILE = './infra/data/ckm-analyzer_config_text.json'
+ANALYZER_TEMPLATE_FILE = 'ckm-analyzer_config_text.json'
+
 
 # Create analyzer
 response = client.begin_create_analyzer(ANALYZER_ID, analyzer_template_path=ANALYZER_TEMPLATE_FILE)
