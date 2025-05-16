@@ -7,7 +7,7 @@ import sys
 import os
 
 # Add the project root to the path so we can import the module under test
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../..")))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../api")))
 
 from src.api.helpers.chat_helper import process_rag_response, complete_chat_request
 
