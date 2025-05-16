@@ -79,8 +79,7 @@ class ChatWithDataPlugin:
                 2. Table: processed_data_key_phrases
                 Columns: ConversationId,key_phrase,sentiment
                 Use ConversationId as the primary key as the primary key in tables for queries but not for any other operations.
-                **Ensure** the query is syntactically correct and adheres to T-SQL standards.
-                Only return the generated SQL query. Do not return anything else.'''
+                **Always** return a valid T-SQL query with correct syntax. Only return the generated SQL query. Do not return anything else.'''
 
         try:
             if self.use_ai_project_client:
