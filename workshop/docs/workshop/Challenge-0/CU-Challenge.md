@@ -3,18 +3,19 @@
 ## Step 1: Create a Content Understanding Project
 
 - Navigate to the [AI Foundry homepage](https://ai.azure.com) and select Try Content Understanding.
+> **Note**: You will need to create a project in one of the following regions: westus, swedencentral, or australiaeast
 
   ![AI Foundry Homepage](../img/ai-services-landing-page.png)   
 
 - Select + Create to create a new Content Understand project.
 
-  ![CU Landing Page](../img/cu-create-project.png)
+  ![CU Landing Page](../img/cu-landing-page.png)
 
 - Provide a name for your project (i.e. call_analyzer), select create a new hub, keep the default Azure AI service connection and select Next
   ![create project](../img/create_project.png)
 - Keep the default storage account, select next and select Create project. 
 
-- Select Browse file to upload the [sample audio file](../data/convo_2c703f97-6657-4a15-b8b2-db6b96630b2d_2024-12-06%2006_00_00.wav).
+- Select Browse file to upload the sample audio file included in this [workshop](../data/convo_2c703f97-6657-4a15-b8b2-db6b96630b2d_2024-12-06%2006_00_00.wav).
 
   ![CU upload document](../img/cu-upload-document.png)
 

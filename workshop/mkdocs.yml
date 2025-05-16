@@ -137,10 +137,10 @@ nav:
       - Solution Overview: workshop/Challenge-1/Solution_Overview.md
       - Deployment: workshop/Challenge-1/index.md
       # - App Authentication: workshop/Challenge-1/App_Authentication.md
-      - Explore Data: workshop/Challenge-1/data-explore.md
-      - Frontend: workshop/Challenge-1/Frontend.md
-      - Backend: workshop/Challenge-1/Backend.md
-      - API: workshop/Challenge-1/Api.md
+      - Explore Data: workshop/Challenge-1/Code_Walkthrough/01_Data_Explore.md
+      - Frontend: workshop/Challenge-1/Code_Walkthrough/02_Frontend.md
+      - Backend: workshop/Challenge-1/Code_Walkthrough/03_Backend.md
+      - API: workshop/Challenge-1/Code_Walkthrough/04_Api.md
   - Challenge 2:
       - Explore Dashboard using Natural Language queries: workshop/Challenge-2/index.md
       # - Step 1: workshop/challenge-3/step-1.md

@@ -59,19 +59,22 @@ This function lets users ask questions that are better answered using full-text 
 
 ---
 
-<!-- ## Challenge 5: Create an AI Agent
+### Prerequisites
+- Azure AI project credentials.
+- [Python 3.9+](https://www.python.org/downloads/)
+- [Microsoft ODBC Driver 17](https://learn.microsoft.com/en-us/sql/connect/odbc/download-odbc-driver-for-sql-server?view=sql-server-ver16#version-17)
+- Python environment with required libraries installed (`azure-ai-evaluation`, `pandas`, etc.).
+- Access to the Azure API endpoint.
+- Completed [Challenge 3](./Challenge-3.md) 
 
-Once your plugin is ready, you’ll create an **Azure AI Agent** that uses it.
-
-### The Agent Includes:
-- A **system prompt** that defines the assistant’s behavior  
-  (e.g. "You're a helpful assistant. Only respond to relevant questions.")
-- The three **plugin functions** from above
-- Basic logic to route questions to the right function (greeting, SQL, or search)
-
-You’ll test the agent by giving it natural questions and seeing how it responds using your actual data!
-
---- -->
+If did not create a virtual environment during Challenge 3, please follow the steps [here](../Challenge-3-and-4/Challenge-3.md) 
+1. Navigate to the `workshop/docs/workshop` folder in the terminal in your local repository and run the following command.
+* Install the requirements
+```shell
+pip install -r requirements.txt
+```
+2. Open the `.env` in the `workshop/docs/workshop` folder to validate the variables were updated with the details of your solution. 
+3. Follow the steps in [Challenge-4](./Challenge-4.md) to run the notebook. 
 
 ## Bonus: Responsible AI (RAI) Principles
 
@@ -82,34 +85,6 @@ Take a moment to review how the system prompt reflects **RAI principles**:
 - How it maintains transparency and trust
 
 Feel free to enhance the agent prompt with RAI-friendly language.
-
----
-### Prerequisites
-- Azure AI project credentials.
-- [Python 3.9+](https://www.python.org/downloads/)
-- [Microsoft ODBC Driver 17](https://learn.microsoft.com/en-us/sql/connect/odbc/download-odbc-driver-for-sql-server?view=sql-server-ver16#version-17)
-- Python environment with required libraries installed (`azure-ai-evaluation`, `pandas`, etc.).
-- Access to the Azure API endpoint.
-
-If did not create a virtual environment during the deployment, please follow the steps [here](../Challenge-1/Deployment.md) 
-1. Navigate to the `workshop/docs/workshop` folder in the terminal in your local repository and run the following command.
-* Install the requirements
-```shell
-pip install -r requirements.txt
-```
-2. Open the `.env` in the `workshop/docs/workshop` folder to validate the variables were updated with the details of your solution. 
-3. Follow the steps in [Challenge-4](./Challenge-4.md) to run the notebook. 
-<!-- 
-## 🧪 Sample Run
-
-You’ll find example queries in the notebook. Try things like:
-- `"What’s the average wait time for support calls?"`
-- `"Summarize what the customer said about the new pricing."`
-- `"Hello!"`
-
-Observe which plugin each query triggers — and how it responds.
-
---- -->
 
 ## Recap
 

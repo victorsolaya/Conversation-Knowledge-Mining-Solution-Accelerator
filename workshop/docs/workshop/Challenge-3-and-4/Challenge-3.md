@@ -4,8 +4,8 @@ One of the easiest and most fun changes you can make to the app is updating the 
 
 ---
 
-### Step 1: Prepare Your New Logo**
-1. Create or use a new logo (e.g contosoImg logo) in `src/app/src/Assets/`.
+### Step 1: Prepare Your New Logo
+1. Create or use a new logo (e.g [Contoso Img logo](../../../../src/App/src/Assets/ContosoImg.png)) in `src/app/src/Assets/`.
 2. Save the logo as an image file (e.g., `logo.png`).
 3. Ensure the image has a reasonable size (e.g., 100x100 pixels) for better display.
 4. Place the logo file in the following folder:
@@ -21,7 +21,7 @@ One of the easiest and most fun changes you can make to the app is updating the 
    src/App/src/App.tsx
    ```
 
-2. Comment out the original import on **line 24**:
+2. Comment out the original import on **line 29**:
 
    ```tsx
    // import { AppLogo } from "./components/Svg/Svg";
@@ -69,8 +69,12 @@ One of the easiest and most fun changes you can make to the app is updating the 
    ```bash
       cd src/
    ```
-10. Make sure your Python virtual environment is activated, as done in the Challenge 1 deployment steps.
-
+10. Make sure your Python virtual environment is activated, as done in the [Challenge 1 deployment](../Challenge-1/Deployment.md) steps.
+      * This script will perform the following: 
+         * Take the environment variables from the deployment and populate the rest of the varibales in the .env file to run the app locally. 
+         * Copy the .env file from the src folder to the workshop folder for the next challenges. 
+         * Assign the needed roles for the Azure SQL database and Azure Cosmos DB
+         * Run the app locally
 11. Start the application:
    
    ```bash
@@ -79,5 +83,7 @@ One of the easiest and most fun changes you can make to the app is updating the 
 12. Two terminal windows will open — one for the backend and one for the frontend.
 
 Once the app starts, you should see your new logo!
+
+
 
 

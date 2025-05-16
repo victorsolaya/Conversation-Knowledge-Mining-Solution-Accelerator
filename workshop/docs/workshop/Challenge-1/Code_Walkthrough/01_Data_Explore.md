@@ -7,20 +7,20 @@ To access and explore the ingested data:
 2. Locate the Resource Group where the solution is deployed
 
 3. Click on the Storage Account associated with the solution
-      ![image](../img/storage-blob.png)
+      ![image](../../img/storage-blob.png)
 
 4. Navigate to Containers section
-      ![image](../img/storage-container.png)
+      ![image](../../img/storage-container.png)
 
 5. Open the container named data
 
 You’ll see two folders:
 
 - audiodata → Contains uploaded call recordings
-      ![image](../img/audio-folder.png)
+      ![image](../../img/audio-folder.png)
 
 call_transcripts → Stores the transcript text used for AI processing
-      ![image](../img/call_transcripts.png)
+      ![image](../../img/call_transcripts.png)
 <!-- The Sample dataset used for this solution contains customer interactions categorized into various topics. Each entry includes:
 
 - **ConversationId**: Unique identifier for each conversation.
