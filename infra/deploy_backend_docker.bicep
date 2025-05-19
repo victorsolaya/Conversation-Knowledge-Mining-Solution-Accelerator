@@ -8,13 +8,10 @@ param solutionLocation string
 param appSettings object = {}
 param appServicePlanId string
 @secure()
- param azureOpenAIKey string
- @secure()
- param azureAiProjectConnString string
- @secure()
- param azureSearchAdminKey string
+param azureAiProjectConnString string
 param userassignedIdentityId string
 param aiProjectName string
+param keyVaultName string
 
 var imageName = 'DOCKER|kmcontainerreg.azurecr.io/km-api:${imageTag}'
 //var name = '${solutionName}-api'
@@ -93,9 +90,7 @@ module appService 'deploy_app_service.bicep' = {
     userassignedIdentityId:userassignedIdentityId
     appSettings: union(
       appSettings,
-      {
-        AZURE_OPENAI_API_KEY: azureOpenAIKey
-        AZURE_AI_SEARCH_API_KEY: azureSearchAdminKey
+      {        
         AZURE_AI_PROJECT_CONN_STRING:azureAiProjectConnString
         APPINSIGHTS_INSTRUMENTATIONKEY: reference(applicationInsightsId, '2015-05-01').InstrumentationKey
         REACT_APP_LAYOUT_CONFIG: reactAppLayoutConfig
@@ -136,6 +131,23 @@ resource aiDeveloperAccessProj 'Microsoft.Authorization/roleAssignments@2022-04-
   scope: aiHubProject
   properties: {
     roleDefinitionId: aiDeveloper.id
+    principalId: appService.outputs.identityPrincipalId
+  }
+}
+
+resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' existing = {
+  name: keyVaultName
+}
+
+resource keyVaultSecretsUser 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = {
+  name: '4633458b-17de-408a-b874-0445c86b69e6'
+}
+
+resource keyVaultSecretsUserAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(appService.name, keyVault.name, keyVaultSecretsUser.id)
+  scope: keyVault
+  properties: {
+    roleDefinitionId: keyVaultSecretsUser.id
     principalId: appService.outputs.identityPrincipalId
   }
 }
