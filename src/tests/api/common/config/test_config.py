@@ -62,4 +62,3 @@ def test_config_initialization(mock_env_vars):
         assert config.azure_cosmosdb_account == "cosmos_account"
         assert config.azure_cosmosdb_conversations_container == "convo_container"
         assert config.azure_cosmosdb_enable_feedback is True
-
