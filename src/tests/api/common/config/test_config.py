@@ -1,7 +1,7 @@
 import os
 import pytest
 from unittest.mock import patch
-from src.api.common.config.config import Config
+from api.common.config.config import Config
 
 
 @pytest.fixture

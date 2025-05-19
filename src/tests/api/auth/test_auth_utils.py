@@ -1,13 +1,9 @@
-import sys
-import os
 import unittest
 from unittest.mock import patch, MagicMock
 import base64
 import json
 
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../../..','api')))
-
-from src.api.auth import auth_utils,sample_user 
+from auth import auth_utils,sample_user 
 
 
 class TestAuthUtils(unittest.TestCase):
