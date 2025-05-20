@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.28.1.47646",
-      "templateHash": "8858477527853866674"
+      "version": "0.35.1.17967",
+      "templateHash": "1390001546304709900"
     }
   },
   "parameters": {
@@ -51,8 +51,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.28.1.47646",
-              "templateHash": "14133192615685065374"
+              "version": "0.35.1.17967",
+              "templateHash": "17551413534917296497"
             }
           },
           "parameters": {
@@ -139,8 +139,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.28.1.47646",
-              "templateHash": "8537007800307151650"
+              "version": "0.35.1.17967",
+              "templateHash": "3388940903592466240"
             }
           },
           "parameters": {
@@ -222,8 +222,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.28.1.47646",
-              "templateHash": "16531009550718652696"
+              "version": "0.35.1.17967",
+              "templateHash": "1188693663509502073"
             }
           },
           "parameters": {
@@ -266,7 +266,7 @@
             {
               "type": "Microsoft.CognitiveServices/accounts/deployments",
               "apiVersion": "2023-05-01",
-              "name": "[format('{0}/{1}', parameters('accounts_ckm_openai_name'), 'gpt-4')]",
+              "name": "[format('{0}/{1}', parameters('accounts_ckm_openai_name'), 'gpt-4o')]",
               "sku": {
                 "name": "Standard",
                 "capacity": 15
@@ -274,8 +274,8 @@
               "properties": {
                 "model": {
                   "format": "OpenAI",
-                  "name": "gpt-4",
-                  "version": "0125-Preview"
+                  "name": "gpt-4o",
+                  "version": "2024-11-20"
                 },
                 "versionUpgradeOption": "OnceNewDefaultVersionAvailable",
                 "raiPolicyName": "Microsoft.Default"
@@ -356,8 +356,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.28.1.47646",
-              "templateHash": "12149961923112846409"
+              "version": "0.35.1.17967",
+              "templateHash": "16812337926945222694"
             }
           },
           "parameters": {

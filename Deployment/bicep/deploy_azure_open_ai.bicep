@@ -4,7 +4,7 @@
 param solutionName string
 param solutionLocation string
 
-param accounts_ckm_openai_name string = '${ solutionName }-openai'
+param accounts_ckm_openai_name string = '${solutionName }-openai'
 
 resource accounts_ckm_openai_name_resource 'Microsoft.CognitiveServices/accounts@2023-05-01' = {
   name: accounts_ckm_openai_name
@@ -26,7 +26,7 @@ resource accounts_ckm_openai_name_resource 'Microsoft.CognitiveServices/accounts
 
 resource accounts_ckm_openai_name_gpt_4 'Microsoft.CognitiveServices/accounts/deployments@2023-05-01' = {
   parent: accounts_ckm_openai_name_resource
-  name: 'gpt-4'
+  name: 'gpt-4o'
   sku: {
     name: 'Standard'
     capacity: 15
@@ -34,8 +34,8 @@ resource accounts_ckm_openai_name_gpt_4 'Microsoft.CognitiveServices/accounts/de
   properties: {
     model: {
       format: 'OpenAI'
-      name: 'gpt-4'
-      version: '0125-Preview'
+      name: 'gpt-4o'
+      version: '2024-11-20'
     }
     versionUpgradeOption: 'OnceNewDefaultVersionAvailable'
     raiPolicyName: 'Microsoft.Default'
@@ -46,8 +46,8 @@ resource accounts_ckm_openai_name_gpt_4 'Microsoft.CognitiveServices/accounts/de
 var openaiKey = accounts_ckm_openai_name_resource.listKeys().key1
 
 output openAIOutput object = {
-openAPIKey : openaiKey
-openAPIVersion:accounts_ckm_openai_name_resource.apiVersion
-openAPIEndpoint: accounts_ckm_openai_name_resource.properties.endpoint
-openAIAccountName:accounts_ckm_openai_name
+  openAPIKey: openaiKey
+  openAPIVersion: accounts_ckm_openai_name_resource.apiVersion
+  openAPIEndpoint: accounts_ckm_openai_name_resource.properties.endpoint
+  openAIAccountName: accounts_ckm_openai_name
 }
