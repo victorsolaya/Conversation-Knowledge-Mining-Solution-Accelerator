@@ -154,7 +154,6 @@ async def get_layout_config():
                 span.record_exception(e)
                 span.set_status(Status(StatusCode.ERROR, str(e)))
             return JSONResponse(content={"error": "Invalid layout configuration format."}, status_code=400)
-        
     track_event_if_configured("LayoutConfigNotFound", {})
     return JSONResponse(content={"error": "Layout config not found in environment variables"}, status_code=400)
 

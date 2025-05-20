@@ -429,7 +429,8 @@ async def clear_messages(request: Request):
             })
             raise HTTPException(
                 status_code=404,
-                detail="Failed to clear messages or conversation not found")      
+                detail="Failed to clear messages or conversation not found")
+        
         track_event_if_configured("MessagesCleared", {
             "user_id": user_id,
             "conversation_id": conversation_id
