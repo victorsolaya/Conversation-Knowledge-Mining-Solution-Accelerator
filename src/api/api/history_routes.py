@@ -88,7 +88,6 @@ async def update_conversation(request: Request):
 
         if not update_response:
             raise HTTPException(status_code=500, detail="Failed to update conversation")
-        
         track_event_if_configured("ConversationUpdated", {
             "user_id": user_id,
             "conversation_id": conversation_id,
@@ -249,7 +248,6 @@ async def list_conversations(
                 content={
                     "error": f"No conversations for {user_id} were found"},
                 status_code=404)
-        
         track_event_if_configured("ConversationsListed", {
             "user_id": user_id,
             "offset": offset,
@@ -296,7 +294,6 @@ async def get_conversation_messages(request: Request):
                 status_code=404,
                 detail=f"Conversation {conversation_id} was not found. It either does not exist or the user does not have access to it."
             )
-        
         track_event_if_configured("ConversationRead", {
             "user_id": user_id,
             "conversation_id": conversation_id,
@@ -382,7 +379,7 @@ async def delete_all_conversations(request: Request):
         # Delete all conversations
         for conversation in conversations:
             await history_service.delete_conversation(user_id, conversation["id"])
-        
+
         track_event_if_configured("AllConversationsDeleted", {
             "user_id": user_id,
             "deleted_count": len(conversations)
@@ -432,8 +429,7 @@ async def clear_messages(request: Request):
             })
             raise HTTPException(
                 status_code=404,
-                detail="Failed to clear messages or conversation not found")
-        
+                detail="Failed to clear messages or conversation not found")      
         track_event_if_configured("MessagesCleared", {
             "user_id": user_id,
             "conversation_id": conversation_id
@@ -465,7 +461,6 @@ async def ensure_cosmos():
                 content={
                     "error": err or "Unknown error occurred"},
                 status_code=422)
-        
         track_event_if_configured("CosmosDBEnsureSuccess", {
             "status": "CosmosDB is configured and working"
         })
