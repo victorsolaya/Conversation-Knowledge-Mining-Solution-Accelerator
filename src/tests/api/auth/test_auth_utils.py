@@ -8,7 +8,7 @@ from auth import auth_utils,sample_user
 
 class TestAuthUtils(unittest.TestCase):
 
-    @patch("src.api.auth.sample_user")
+    @patch("auth.sample_user")
     def test_get_authenticated_user_details_dev_mode(self, mock_sample_user):
         mock_sample_user.sample_user = {
             "x-ms-client-principal-id": "123",

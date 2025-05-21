@@ -9,12 +9,12 @@ import os
 # Add the project root to the path so we can import the module under test
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../api")))
 
-from src.api.helpers.chat_helper import process_rag_response, complete_chat_request
+from helpers.chat_helper import process_rag_response, complete_chat_request
 
 
 class TestChatHelper:
-    @patch("src.api.helpers.chat_helper.Config")
-    @patch("src.api.helpers.chat_helper.openai.AzureOpenAI")
+    @patch("helpers.chat_helper.Config")
+    @patch("helpers.chat_helper.openai.AzureOpenAI")
     def test_process_rag_response_success(self, mock_azure_openai, mock_config):
         # Mock the Azure OpenAI client and its response
         mock_client = MagicMock()
@@ -48,8 +48,8 @@ class TestChatHelper:
         assert call_args["messages"][0]["role"] == "system"
         assert call_args["messages"][1]["role"] == "user"
 
-    @patch("src.api.helpers.chat_helper.Config")
-    @patch("src.api.helpers.chat_helper.openai.AzureOpenAI")
+    @patch("helpers.chat_helper.Config")
+    @patch("helpers.chat_helper.openai.AzureOpenAI")
     def test_process_rag_response_with_code_blocks(self, mock_azure_openai, mock_config):
         # Mock the Azure OpenAI client and its response
         mock_client = MagicMock()
@@ -74,8 +74,8 @@ class TestChatHelper:
         expected = {"type": "line", "data": {"labels": ["X", "Y"], "datasets": [{"data": [5, 10]}]}}
         assert result == expected
 
-    @patch("src.api.helpers.chat_helper.Config")
-    @patch("src.api.helpers.chat_helper.openai.AzureOpenAI")
+    @patch("helpers.chat_helper.Config")
+    @patch("helpers.chat_helper.openai.AzureOpenAI")
     def test_process_rag_response_error(self, mock_azure_openai, mock_config):
         # Mock the Azure OpenAI client
         mock_client = MagicMock()
@@ -96,8 +96,8 @@ class TestChatHelper:
         assert "error" in result
         assert result["error"] == "Chart could not be generated from this data. Please ask a different question."
 
-    @patch("src.api.helpers.chat_helper.Config")
-    @patch("src.api.helpers.chat_helper.openai.AzureOpenAI")
+    @patch("helpers.chat_helper.Config")
+    @patch("helpers.chat_helper.openai.AzureOpenAI")
     def test_process_rag_response_invalid_json(self, mock_azure_openai, mock_config):
         # Mock the Azure OpenAI client
         mock_client = MagicMock()
@@ -122,9 +122,9 @@ class TestChatHelper:
         assert result["error"] == "Chart could not be generated from this data. Please ask a different question."
 
     @pytest.mark.asyncio
-    @patch("src.api.helpers.chat_helper.process_rag_response")
-    @patch("src.api.helpers.chat_helper.time.time")
-    @patch("src.api.helpers.chat_helper.uuid.uuid4")
+    @patch("helpers.chat_helper.process_rag_response")
+    @patch("helpers.chat_helper.time.time")
+    @patch("helpers.chat_helper.uuid.uuid4")
     async def test_complete_chat_request_success(self, mock_uuid4, mock_time, mock_process_rag):
         # Setup mocks
         mock_uuid4.return_value = "test-uuid"
@@ -159,7 +159,7 @@ class TestChatHelper:
         assert result["error"] == "A previous RAG response is required to generate a chart."
 
     @pytest.mark.asyncio
-    @patch("src.api.helpers.chat_helper.process_rag_response")
+    @patch("helpers.chat_helper.process_rag_response")
     async def test_complete_chat_request_process_error(self, mock_process_rag):
         # Mock process_rag_response to return an error
         mock_process_rag.return_value = {"error": "Some processing error"}
@@ -174,7 +174,7 @@ class TestChatHelper:
         assert result["error_desc"] == "{'error': 'Some processing error'}"
 
     @pytest.mark.asyncio
-    @patch("src.api.helpers.chat_helper.process_rag_response")
+    @patch("helpers.chat_helper.process_rag_response")
     async def test_complete_chat_request_empty_result(self, mock_process_rag):
         # Mock process_rag_response to return None
         mock_process_rag.return_value = None
