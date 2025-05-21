@@ -46,7 +46,7 @@ logging.getLogger("azure.monitor.opentelemetry.exporter.export._base").setLevel(
 async def fetch_chart_data():
     try:
         chart_service = ChartService()
-        response = chart_service.fetch_chart_data()
+        response = await chart_service.fetch_chart_data()
         track_event_if_configured(
             "FetchChartDataSuccess",
             {"status": "success", "source": "/fetchChartData"}
@@ -85,7 +85,7 @@ async def fetch_chart_data_with_filters(chart_filters: ChartFilters):
 async def fetch_filter_data():
     try:
         chart_service = ChartService()
-        response = chart_service.fetch_filter_data()
+        response = await chart_service.fetch_filter_data()
         track_event_if_configured(
             "FetchFilterDataSuccess",
             {"status": "success", "source": "/fetchFilterData"}
