@@ -1,10 +1,11 @@
 """
 FastAPI application entry point for the Conversation Knowledge Mining Solution Accelerator.
 
-This module sets up the FastAPI app, configures middleware, loads environment variables, 
-registers API routers, and manages application lifespan events such as agent initialization 
+This module sets up the FastAPI app, configures middleware, loads environment variables,
+registers API routers, and manages application lifespan events such as agent initialization
 and cleanup.
 """
+
 
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
@@ -20,6 +21,7 @@ from api.history_routes import router as history_router
 
 load_dotenv()
 
+
 @asynccontextmanager
 async def lifespan(fastapi_app: FastAPI):
     """
@@ -29,7 +31,7 @@ async def lifespan(fastapi_app: FastAPI):
     On shutdown, deletes the agent instance and performs any necessary cleanup.
     """
     config = Config()
-    fastapi_app.state.agent = await AgentFactory.get_instance(config = config)
+    fastapi_app.state.agent = await AgentFactory.get_instance(config=config)
     yield
     await AgentFactory.delete_instance()
     fastapi_app.state.agent = None

@@ -11,6 +11,7 @@ from semantic_kernel.agents import AzureAIAgent
 from plugins.chat_with_data_plugin import ChatWithDataPlugin
 from azure.identity.aio import DefaultAzureCredential
 
+
 class AgentFactory:
     """
     Singleton factory for creating and managing an AzureAIAgent instance.
@@ -54,7 +55,7 @@ class AgentFactory:
                 )
                 cls._instance = agent
         return cls._instance
-    
+
     @classmethod
     async def delete_instance(cls):
         """
