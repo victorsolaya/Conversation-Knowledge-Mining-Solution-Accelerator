@@ -222,6 +222,7 @@ module backend_docker 'deploy_backend_docker.bicep' = {
       AZURE_AI_SEARCH_INDEX: 'call_transcripts_index'
       USE_AI_PROJECT_CLIENT: 'False'
       DISPLAY_CHART_DEFAULT: 'False'
+      APPLICATIONINSIGHTS_CONNECTION_STRING: aifoundry.outputs.applicationInsightsConnectionString
     }
   }
   scope: resourceGroup(resourceGroup().name)
@@ -279,3 +280,4 @@ output DISPLAY_CHART_DEFAULT string = 'False'
 
 output API_APP_URL string = backend_docker.outputs.appUrl
 output WEB_APP_URL string = frontend_docker.outputs.appUrl
+output APPLICATIONINSIGHTS_CONNECTION_STRING string = aifoundry.outputs.applicationInsightsConnectionString
