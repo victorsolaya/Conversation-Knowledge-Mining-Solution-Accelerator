@@ -23,22 +23,21 @@ load_dotenv()
 @asynccontextmanager
 async def lifespan(fastapi_app: FastAPI):
     """
-    Manages the application lifespan events.
+    Manages the application lifespan events for the FastAPI app.
 
-    On startup, initializes the agent and attaches it to the app state.
-    On shutdown, performs any necessary cleanup (e.g., closing DB connections).
+    On startup, initializes the Azure AI agent using the configuration and attaches it to the app state.
+    On shutdown, deletes the agent instance and performs any necessary cleanup.
     """
     config = Config()
     fastapi_app.state.agent = await AgentFactory.get_instance(config = config)
     yield
+    await AgentFactory.delete_instance()
+    fastapi_app.state.agent = None
 
 
 def build_app() -> FastAPI:
     """
     Creates and configures the FastAPI application instance.
-
-    Returns:
-        FastAPI: The configured FastAPI app.
     """
     fastapi_app = FastAPI(
         title="Conversation Knowledge Mining Solution Accelerator",

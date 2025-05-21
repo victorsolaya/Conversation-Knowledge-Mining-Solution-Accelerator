@@ -1,8 +1,9 @@
 """
-This module provides a singleton factory for managing the lifecycle of the AzureAIAgent instance.
+Factory module for creating and managing a singleton AzureAIAgent instance.
 
-It includes methods to create, retrieve, and delete the agent instance used in the application,
-ensuring thread-safe access and initialization.
+This module provides asynchronous methods to get or delete the singleton agent,
+ensuring only one instance exists at a time. The agent is configured for Azure AI
+and supports plugin integration.
 """
 
 import asyncio
@@ -12,10 +13,7 @@ from azure.identity.aio import DefaultAzureCredential
 
 class AgentFactory:
     """
-    Singleton factory for managing the lifecycle of the AzureAIAgent instance.
-
-    Provides methods to create, retrieve, and delete the agent instance used in the application.
-    Ensures thread-safe access and initialization.
+    Singleton factory for creating and managing an AzureAIAgent instance.
     """
     _instance = None
     _lock = asyncio.Lock()
@@ -23,8 +21,7 @@ class AgentFactory:
     @classmethod
     async def get_instance(cls, config):
         """
-        Returns a singleton instance of the AzureAIAgent.
-        If the instance does not exist, it creates one using the provided config.
+        Get or create the singleton AzureAIAgent instance.
         """
         async with cls._lock:
             if cls._instance is None:
@@ -57,3 +54,13 @@ class AgentFactory:
                 )
                 cls._instance = agent
         return cls._instance
+    
+    @classmethod
+    async def delete_instance(cls):
+        """
+        Delete the singleton AzureAIAgent instance if it exists.
+        """
+        async with cls._lock:
+            if cls._instance is not None:
+                await cls._instance.client.agents.delete_agent(cls._instance.id)
+                cls._instance = None
