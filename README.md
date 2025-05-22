@@ -15,14 +15,14 @@ Analysts working with large volumes of conversational data can use this solution
 </div>
 <br/>
 
-<h2><img src="./docs/images/ReadMe/solution-overview.png" width="48" />
+<h2><img src="./docs/Images/ReadMe/solution-overview.png" width="48" />
 Solution overview
 </h2>
 
 Leverages Azure AI Content Understanding, Azure AI Search, Azure OpenAI Service, Semantic Kernel, Azure SQL Database, and Cosmos DB to process large volumes of conversational data. Audio and text inputs are analyzed through event-driven pipelines to extract and vectorize key information, orchestrate intelligent responses, and power an interactive web front-end for exploring insights using natural language.
 
 ### Solution architecture
-|![image](./docs/images/ReadMe/solution-architecture.png)|
+|![image](./docs/Images/ReadMe/solution-architecture.png)|
 |---|
 
 ### Additional resources
@@ -55,7 +55,7 @@ Summarized conversations, topic generation, and key phrase extraction support fa
 
 
 <br /><br />
-<h2><img src="./docs/images/ReadMe/quick-deploy.png" width="48" />
+<h2><img src="./docs/Images/ReadMe/quick-deploy.png" width="48" />
 Quick deploy
 </h2>
 
@@ -114,12 +114,12 @@ _Note: This is not meant to outline all costs as selected SKUs, scaled use, cust
 either by deleting the resource group in the Portal or running `azd down`.
 
 <br /><br />
-<h2><img src="./docs/images/ReadMe/business-scenario.png" width="48" />
+<h2><img src="./docs/Images/ReadMe/business-scenario.png" width="48" />
 Business scenario
 </h2>
 
 
-|![image](./docs/images/ReadMe/ui.png)|
+|![image](./docs/Images/ReadMe/ui.png)|
 |---|
 
 <br/>
@@ -152,7 +152,7 @@ Clear, contextual insights empower employees to take meaningful action based on 
 
 <br /><br />
 
-<h2><img src="./docs/images/ReadMe/supporting-documentation.png" width="48" />
+<h2><img src="./docs/Images/ReadMe/supporting-documentation.png" width="48" />
 Supporting documentation
 </h2>
 
