@@ -13,9 +13,10 @@ This notebook demonstrates how to evaluate content safety using Azure AI's evalu
 - [Python 3.9+](https://www.python.org/downloads/)
 - Python environment with required libraries installed (`azure-ai-evaluation`, `pandas`, etc.).
 - Access to the Azure API endpoint.
+- Completed [Challenge 3](../Challenge-3-and-4/Challenge-3.md)
 
 
-If you did not create a virtual environment during the deployment, please follow the steps [here](../Challenge-1/Deployment.md)  
+If you did not create a virtual environment during the Challenge 3, please follow the steps [here](../Challenge-3-and-4/Challenge-3.md)
 1. Navigate to the `workshop/docs/workshop` folder in the terminal in your local repository and run the following commands 
 2. In the terminal run the following command 
 
