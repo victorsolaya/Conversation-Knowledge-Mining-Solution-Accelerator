@@ -18,7 +18,7 @@ key_vault_name = 'kv_to-be-replaced'
 managed_identity_client_id = 'mici_to-be-replaced'
 
 file_system_client_name = "data"
-# directory = 'call_transcripts'
+directory = 'call_transcripts'
 audio_directory = 'new_audiodata'
 
 def get_secrets_from_kv(kv_name, secret_name):
