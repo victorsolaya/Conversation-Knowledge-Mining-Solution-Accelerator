@@ -124,10 +124,82 @@ search_credential = AzureKeyCredential(search_key)
 
 search_client = SearchClient(search_endpoint, index_name, search_credential)
 
-# delete all the documents in the index
-search_client.delete_documents(search_client.search("*"))
+# # delete all the documents in the index
+# search_client.delete_documents(search_client.search("*"))
 
 index_client = SearchIndexClient(endpoint=search_endpoint, credential=search_credential)
+
+# Delete the search index
+search_client.delete_index(index_name)
+
+# Create the search index
+def create_search_index():
+    from azure.core.credentials import AzureKeyCredential 
+    search_credential = AzureKeyCredential(search_key)
+
+    from azure.search.documents.indexes import SearchIndexClient
+    from azure.search.documents.indexes.models import (
+        SimpleField,
+        SearchFieldDataType,
+        SearchableField,
+        SearchField,
+        VectorSearch,
+        HnswAlgorithmConfiguration,
+        VectorSearchProfile,
+        SemanticConfiguration,
+        SemanticPrioritizedFields,
+        SemanticField,
+        SemanticSearch,
+        SearchIndex
+    )
+
+    # Create a search index 
+    index_client = SearchIndexClient(endpoint=search_endpoint, credential=search_credential)
+
+    fields = [
+        SimpleField(name="id", type=SearchFieldDataType.String, key=True),
+        SimpleField(name="chunk_id", type=SearchFieldDataType.String),
+        SearchField(name="content", type=SearchFieldDataType.String),
+        SimpleField(name="sourceurl", type=SearchFieldDataType.String),
+        SearchField(name="contentVector", type=SearchFieldDataType.Collection(SearchFieldDataType.Single), \
+        vector_search_dimensions=1536,vector_search_profile_name="myHnswProfile"
+        )
+    ]
+
+    # Configure the vector search configuration 
+    vector_search = VectorSearch(
+        algorithms=[
+            HnswAlgorithmConfiguration(
+                name="myHnsw"
+            )
+        ],
+        profiles=[
+            VectorSearchProfile(
+                name="myHnswProfile",
+                algorithm_configuration_name="myHnsw",
+            )
+        ]
+    )
+
+    semantic_config = SemanticConfiguration(
+        name="my-semantic-config",
+        prioritized_fields=SemanticPrioritizedFields(
+            keywords_fields=[SemanticField(field_name="chunk_id")],
+            content_fields=[SemanticField(field_name="content")]
+        )
+    )
+
+    # Create the semantic settings with the configuration
+    semantic_search = SemanticSearch(configurations=[semantic_config])
+
+    # Create the search index with the semantic settings
+    index = SearchIndex(name=index_name, fields=fields,
+                        vector_search=vector_search, semantic_search=semantic_search)
+    result = index_client.create_or_update_index(index)
+    print(f' {result.name} created')
+
+create_search_index()
+
 
 driver = "{ODBC Driver 18 for SQL Server}"
 server =  get_secrets_from_kv(key_vault_name,"SQLDB-SERVER")
