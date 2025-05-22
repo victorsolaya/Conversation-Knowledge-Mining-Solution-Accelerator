@@ -13,7 +13,6 @@ One of the easiest and most fun changes you can make to the app is updating the 
 
 ---
 
-
 ### Step 2: Update the Logo Component
 
 1. Open the `App.tsx` file located at:  
