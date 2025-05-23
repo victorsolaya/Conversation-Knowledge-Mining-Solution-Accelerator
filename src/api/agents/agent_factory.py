@@ -32,7 +32,7 @@ class AgentFactory:
                     conn_str=config.azure_ai_project_conn_string
                 )
 
-                agent_name = "agent"
+                agent_name = "ConversationKnowledgeAgent"
                 agent_instructions = '''You are a helpful assistant.
                 Always return the citations as is in final response.
                 Always return citation markers in the answer as [doc1], [doc2], etc.
