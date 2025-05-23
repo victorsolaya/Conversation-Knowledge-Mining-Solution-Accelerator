@@ -130,7 +130,8 @@ search_client = SearchClient(search_endpoint, index_name, search_credential)
 index_client = SearchIndexClient(endpoint=search_endpoint, credential=search_credential)
 
 # Delete the search index
-search_client.delete_index(index_name)
+search_index_client = SearchIndexClient(search_endpoint, search_credential)
+search_index_client.delete_index(index_name)
 
 # Create the search index
 def create_search_index():
