@@ -711,7 +711,6 @@ for idx, row in df.iterrows():
     key_phrases = row['key_phrases'].split(',')
     for key_phrase in key_phrases:
         key_phrase = key_phrase.strip()
-print("Inserted data into processed_data_key_phrases table")
         cursor.execute(f"INSERT INTO processed_data_key_phrases (ConversationId, key_phrase, sentiment, topic, StartTime) VALUES (?,?,?,?,?)", (row['ConversationId'], key_phrase, row['sentiment'], row['topic'], row['StartTime']))
 conn.commit()
 print("Inserted data into processed_data_key_phrases table")
