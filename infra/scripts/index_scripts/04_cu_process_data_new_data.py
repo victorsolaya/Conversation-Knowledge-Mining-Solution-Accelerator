@@ -202,7 +202,7 @@ def create_search_index():
 create_search_index()
 
 
-driver = "{ODBC Driver 18 for SQL Server}"
+driver = "{ODBC Driver 17 for SQL Server}"
 server =  get_secrets_from_kv(key_vault_name,"SQLDB-SERVER")
 database = get_secrets_from_kv(key_vault_name,"SQLDB-DATABASE")
 
