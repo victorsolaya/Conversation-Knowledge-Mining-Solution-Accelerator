@@ -369,6 +369,7 @@ ANALYZER_ID = "ckm-audio"
 directory_name = audio_directory
 paths = file_system_client.get_paths(path=directory_name)
 
+conversationIds = []
 docs = []
 counter = 0
 # process and upload audio files to search index
