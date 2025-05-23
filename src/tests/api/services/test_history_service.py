@@ -1,30 +1,6 @@
 import pytest
 from unittest.mock import AsyncMock, MagicMock, patch
-import sys
-import types
 from fastapi import HTTPException, status
-
-# ---- Mock required modules ----
-mock_config = types.ModuleType("common.config.config")
-mock_config.Config = MagicMock()
-sys.modules["common.config.config"] = mock_config
-
-mock_cosmosdb = types.ModuleType("common.database.cosmosdb_service")
-mock_cosmosdb.CosmosConversationClient = MagicMock()
-sys.modules["common.database.cosmosdb_service"] = mock_cosmosdb
-
-mock_azure_identity = types.ModuleType("azure.identity.aio")
-mock_azure_identity.DefaultAzureCredential = MagicMock()
-mock_azure_identity.get_bearer_token_provider = MagicMock()
-sys.modules["azure.identity.aio"] = mock_azure_identity
-
-mock_openai = types.ModuleType("openai")
-mock_openai.AsyncAzureOpenAI = MagicMock()
-sys.modules["openai"] = mock_openai
-
-mock_chat_helper = types.ModuleType("helpers.chat_helper")
-mock_chat_helper.complete_chat_request = AsyncMock()
-sys.modules["helpers.chat_helper"] = mock_chat_helper
 
 # ---- Import service under test ----
 from services.history_service import HistoryService
@@ -48,9 +24,15 @@ def mock_config_instance():
 
 @pytest.fixture
 def history_service(mock_config_instance):
+    # Create a patch for Config in the specific module where HistoryService looks it up
     with patch("services.history_service.Config", return_value=mock_config_instance):
-        service = HistoryService()
-        return service
+        # Create patches for other dependencies used by HistoryService
+        with patch("services.history_service.CosmosConversationClient"):
+            with patch("services.history_service.AsyncAzureOpenAI"):
+                with patch("services.history_service.get_bearer_token_provider"):
+                    with patch("services.history_service.complete_chat_request"):
+                        service = HistoryService()
+                        return service
 
 
 @pytest.fixture

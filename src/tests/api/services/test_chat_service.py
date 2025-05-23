@@ -1,5 +1,4 @@
 import sys
-import types
 import pytest
 import json
 import time
@@ -11,47 +10,18 @@ from fastapi import HTTPException, status
 from fastapi.responses import StreamingResponse
 from semantic_kernel.exceptions.agent_exceptions import AgentException
 
-# ---- Mock required modules ----
-mock_config = types.ModuleType("common.config.config")
-mock_config.Config = MagicMock()
-sys.modules["common.config.config"] = mock_config
-
-mock_openai = types.ModuleType("openai")
-mock_openai.AzureOpenAI = MagicMock()
-mock_openai.AsyncAzureOpenAI = MagicMock()
-sys.modules["openai"] = mock_openai
-
-mock_azure_identity = types.ModuleType("azure.identity.aio")
-mock_azure_identity.DefaultAzureCredential = MagicMock()
-sys.modules["azure.identity.aio"] = mock_azure_identity
-
-mock_sk_agents = types.ModuleType("semantic_kernel.agents")
-mock_sk_agents.AzureAIAgent = MagicMock()
-mock_sk_agents.AzureAIAgentThread = MagicMock()
-sys.modules["semantic_kernel.agents"] = mock_sk_agents
-
-mock_azure_ai_projects = types.ModuleType("azure.ai.projects.models")
-mock_azure_ai_projects.TruncationObject = MagicMock()
-sys.modules["azure.ai.projects.models"] = mock_azure_ai_projects
-
-mock_sk_exceptions = types.ModuleType("semantic_kernel.exceptions.agent_exceptions")
-mock_sk_exceptions.AgentException = Exception
-sys.modules["semantic_kernel.exceptions.agent_exceptions"] = mock_sk_exceptions
-
-mock_utils = types.ModuleType("helpers.utils")
-mock_utils.format_stream_response = MagicMock()
-sys.modules["helpers.utils"] = mock_utils
-
-mock_chat_plugin = types.ModuleType("plugins.chat_with_data_plugin")
-mock_chat_plugin.ChatWithDataPlugin = MagicMock()
-sys.modules["plugins.chat_with_data_plugin"] = mock_chat_plugin
-
-mock_ttlcache = types.ModuleType("cachetools")
-mock_ttlcache.TTLCache = MagicMock()
-sys.modules["cachetools"] = mock_ttlcache
-
-# ---- Import service under test ----
-from services.chat_service import ChatService
+# Import service under test with patching applied before import
+with patch("common.config.config.Config", MagicMock()), \
+     patch("openai.AzureOpenAI", MagicMock()), \
+     patch("openai.AsyncAzureOpenAI", MagicMock()), \
+     patch("azure.identity.aio.DefaultAzureCredential", MagicMock()), \
+     patch("semantic_kernel.agents.AzureAIAgent", MagicMock()), \
+     patch("semantic_kernel.agents.AzureAIAgentThread", MagicMock()), \
+     patch("azure.ai.projects.models.TruncationObject", MagicMock()), \
+     patch("helpers.utils.format_stream_response", MagicMock()), \
+     patch("plugins.chat_with_data_plugin.ChatWithDataPlugin", MagicMock()), \
+     patch("cachetools.TTLCache", MagicMock()):
+    from services.chat_service import ChatService
 
 @pytest.fixture
 def chat_service():
@@ -382,24 +352,15 @@ class TestChatService:
             assert res_chunk == expected_chunk_output
 
         mock_stream_openai_text.assert_called_once_with(conversation_id, query)
-
         mock_format_stream_response.assert_called()
         mock_json_dumps.assert_called()
-
+        
     @patch.object(ChatService, "stream_openai_text")
     @pytest.mark.asyncio
     async def test_stream_chat_request_agent_exception_rate_limit(self, mock_stream_openai_text, chat_service):
-        """Test agent exception handling in stream_chat_request"""
-        # Setup
-        class MockAgentException(Exception):
-            pass
-        
-        # Create a global reference for the test
-        global AgentException
-        original_agent_exception = sys.modules["semantic_kernel.exceptions.agent_exceptions"].AgentException
-        sys.modules["semantic_kernel.exceptions.agent_exceptions"].AgentException = MockAgentException
-        
-        mock_stream_openai_text.side_effect = MockAgentException("Rate limit is exceeded. Try again in 60 seconds")
+        """Test agent exception handling in stream_chat_request"""        
+        # Setup - configure the mock to raise an AgentException with our error message
+        mock_stream_openai_text.side_effect = AgentException("Rate limit is exceeded. Try again in 60 seconds")
         
         request_body = {"history_metadata": {}}
         conversation_id = "conv-123"
@@ -414,13 +375,32 @@ class TestChatService:
         # Assert
         assert len(result) == 1
         assert "Rate limit is exceeded" in result[0]
+        assert "Try again in 60 seconds" in result[0]
         
-        # Restore original
-        sys.modules["semantic_kernel.exceptions.agent_exceptions"].AgentException = original_agent_exception
-
     @patch.object(ChatService, "stream_openai_text")
     @pytest.mark.asyncio
     async def test_stream_chat_request_agent_exception_generic(self, mock_stream_openai_text, chat_service):
+        """Test generic exception handling in stream_chat_request"""
+        # Setup
+        mock_stream_openai_text.side_effect = AgentException("Generic error")
+        
+        request_body = {"history_metadata": {}}
+        conversation_id = "conv-123"
+        query = "Test query"
+        
+        # Test
+        async_gen_obj = await chat_service.stream_chat_request(request_body, conversation_id, query)
+        
+        # Execute the generator and collect results
+        result = [chunk async for chunk in async_gen_obj]
+
+        # Assert
+        assert len(result) == 1
+        assert "An error occurred. Please try again later." in result[0]
+
+    @patch.object(ChatService, "stream_openai_text")
+    @pytest.mark.asyncio
+    async def test_stream_chat_request_generic_exception(self, mock_stream_openai_text, chat_service):
         """Test generic exception handling in stream_chat_request"""
         # Setup
         mock_stream_openai_text.side_effect = Exception("Generic error")
@@ -437,7 +417,7 @@ class TestChatService:
 
         # Assert
         assert len(result) == 1
-        assert "An error occurred. Please try again later." in result[0]
+        assert "An error occurred while processing the request." in result[0]
 
     @patch.object(ChatService, "process_rag_response")
     @pytest.mark.asyncio
