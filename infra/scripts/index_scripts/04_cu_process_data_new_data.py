@@ -15,7 +15,6 @@ import pyodbc
 import struct
 
 key_vault_name = 'kv_to-be-replaced'
-managed_identity_client_id = 'mici_to-be-replaced'
 
 file_system_client_name = "data"
 directory = 'call_transcripts'
@@ -24,7 +23,6 @@ audio_directory = 'new_audiodata'
 def get_secrets_from_kv(kv_name, secret_name):
     # Set the name of the Azure Key Vault  
     key_vault_name = kv_name 
-    # credential = DefaultAzureCredential(managed_identity_client_id=managed_identity_client_id)
     credential = DefaultAzureCredential()
 
     # Create a secret client object using the credential and Key Vault name  
@@ -107,7 +105,6 @@ account_name =  get_secrets_from_kv(key_vault_name, "ADLS-ACCOUNT-NAME")
 
 account_url = f"https://{account_name}.dfs.core.windows.net"
 
-# credential = DefaultAzureCredential(managed_identity_client_id=managed_identity_client_id)
 credential = DefaultAzureCredential()
 service_client = DataLakeServiceClient(account_url, credential=credential,api_version='2023-01-03') 
 
@@ -206,7 +203,6 @@ driver = "{ODBC Driver 17 for SQL Server}"
 server =  get_secrets_from_kv(key_vault_name,"SQLDB-SERVER")
 database = get_secrets_from_kv(key_vault_name,"SQLDB-DATABASE")
 
-# credential = DefaultAzureCredential(managed_identity_client_id=managed_identity_client_id)
 credential = DefaultAzureCredential()
 
 token_bytes = credential.get_token(
@@ -264,7 +260,6 @@ AZURE_AI_ENDPOINT = get_secrets_from_kv(key_vault_name,"AZURE-OPENAI-CU-ENDPOINT
 AZURE_OPENAI_CU_KEY = get_secrets_from_kv(key_vault_name,"AZURE-OPENAI-CU-KEY")
 AZURE_AI_API_VERSION = "2024-12-01-preview" 
 
-# credential = DefaultAzureCredential(managed_identity_client_id=managed_identity_client_id)
 credential = DefaultAzureCredential()
 token_provider = get_bearer_token_provider(credential, "https://cognitiveservices.azure.com/.default")
 
