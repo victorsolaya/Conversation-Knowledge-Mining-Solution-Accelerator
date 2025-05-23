@@ -156,6 +156,7 @@ const Dashboard: React.FC = () => {
   }, [state.config.appConfig]);
 
   const onHandlePanelStates = (panelName: string) => {
+    dispatch({  type: actionConstants.UPDATE_CITATION,payload: { activeCitation: null, showCitation: false }})
     setLayoutWidthUpdated((prevFlag) => !prevFlag);
     const newState = {
       ...panelShowStates,
