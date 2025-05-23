@@ -2,7 +2,7 @@ import pytest
 import json
 from unittest.mock import patch, AsyncMock, MagicMock
 
-import src.api.helpers.utils as utils
+import helpers.utils as utils
 
 
 @pytest.mark.asyncio
@@ -41,7 +41,7 @@ def test_parse_multi_columns_comma():
     assert utils.parse_multi_columns("a,b,c") == ["a", "b", "c"]
 
 
-@patch("src.api.helpers.utils.requests.get")
+@patch("helpers.utils.requests.get")
 def test_fetchUserGroups_success(mock_get):
     mock_response = {
         "value": [{"id": "123"}],
@@ -53,7 +53,7 @@ def test_fetchUserGroups_success(mock_get):
     assert result == [{"id": "123"}]
 
 
-@patch("src.api.helpers.utils.requests.get")
+@patch("helpers.utils.requests.get")
 def test_fetchUserGroups_with_nextLink(mock_get):
     mock_response_1 = {
         "value": [{"id": "123"}],
@@ -79,22 +79,22 @@ def test_fetchUserGroups_with_nextLink(mock_get):
     assert {"id": "123"} in result and {"id": "456"} in result
 
 
-@patch("src.api.helpers.utils.requests.get", side_effect=Exception("Request error"))
+@patch("helpers.utils.requests.get", side_effect=Exception("Request error"))
 def test_fetchUserGroups_exception(mock_get):
     result = utils.fetchUserGroups("fake_token")
     assert result == []
 
 
-@patch("src.api.helpers.utils.fetchUserGroups")
-@patch("src.api.helpers.utils.AZURE_SEARCH_PERMITTED_GROUPS_COLUMN", "group_column")
+@patch("helpers.utils.fetchUserGroups")
+@patch("helpers.utils.AZURE_SEARCH_PERMITTED_GROUPS_COLUMN", "group_column")
 def test_generateFilterString(mock_fetch):
     mock_fetch.return_value = [{"id": "1"}, {"id": "2"}]
     result = utils.generateFilterString("token")
     assert "group_column/any(g:search.in(g, '1, 2'))" in result
 
 
-@patch("src.api.helpers.utils.fetchUserGroups", return_value=[])
-@patch("src.api.helpers.utils.AZURE_SEARCH_PERMITTED_GROUPS_COLUMN", "group_column")
+@patch("helpers.utils.fetchUserGroups", return_value=[])
+@patch("helpers.utils.AZURE_SEARCH_PERMITTED_GROUPS_COLUMN", "group_column")
 def test_generateFilterString_empty_groups(mock_fetch):
     result = utils.generateFilterString("token")
     assert "group_column/any(g:search.in(g, ''))" in result
