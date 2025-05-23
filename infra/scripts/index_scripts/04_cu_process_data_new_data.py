@@ -8,7 +8,7 @@ import pandas as pd
 
 import re
 
-from datetime import datetime
+from datetime import datetime, timedelta
 import time
 import base64
 import pyodbc
@@ -278,29 +278,29 @@ client = AzureContentUnderstandingClient(
 
 # ANALYZER_ID = "ckm-json"
 
-# def prepare_search_doc(content, document_id): 
-#     chunks = chunk_data(content)
-#     chunk_num = 0
-#     for chunk in chunks:
-#         chunk_num += 1
-#         chunk_id = document_id + '_' + str(chunk_num).zfill(2)
+def prepare_search_doc(content, document_id): 
+    chunks = chunk_data(content)
+    chunk_num = 0
+    for chunk in chunks:
+        chunk_num += 1
+        chunk_id = document_id + '_' + str(chunk_num).zfill(2)
         
-#         try:
-#             v_contentVector = get_embeddings(str(chunk),openai_api_base,openai_api_version,openai_api_key)
-#         except:
-#             time.sleep(30)
-#             try: 
-#                 v_contentVector = get_embeddings(str(chunk),openai_api_base,openai_api_version,openai_api_key)
-#             except: 
-#                 v_contentVector = []
-#         result = {
-#                 "id": chunk_id,
-#                 "chunk_id": chunk_id,
-#                 "content": chunk,
-#                 "sourceurl": path.name.split('/')[-1],
-#                 "contentVector": v_contentVector
-#             }
-#     return result
+        try:
+            v_contentVector = get_embeddings(str(chunk),openai_api_base,openai_api_version,openai_api_key)
+        except:
+            time.sleep(30)
+            try: 
+                v_contentVector = get_embeddings(str(chunk),openai_api_base,openai_api_version,openai_api_key)
+            except: 
+                v_contentVector = []
+        result = {
+                "id": chunk_id,
+                "chunk_id": chunk_id,
+                "content": chunk,
+                "sourceurl": path.name.split('/')[-1],
+                "contentVector": v_contentVector
+            }
+    return result
         
 # conversationIds = []
 # docs = []
@@ -394,6 +394,7 @@ for path in paths:
         duration = int(result['result']['contents'][0]['fields']['Duration']['valueString'])
         end_timestamp = str(start_timestamp + timedelta(seconds=duration))
         end_timestamp = end_timestamp.split(".")[0]
+        start_timestamp = str(start_timestamp).split(".")[0]
 
         summary = result['result']['contents'][0]['fields']['summary']['valueString']
         satisfied = result['result']['contents'][0]['fields']['satisfied']['valueString']
