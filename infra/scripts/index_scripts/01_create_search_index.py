@@ -1,9 +1,8 @@
 from azure.keyvault.secrets import SecretClient  
 from azure.identity import DefaultAzureCredential
-import sys
 
-key_vault_name=sys.argv[1]
-managed_identity_client_id = sys.argv[2]
+key_vault_name = 'kv_to-be-replaced'
+managed_identity_client_id = 'mici_to-be-replaced'
 index_name = "call_transcripts_index"
 
 def get_secrets_from_kv(kv_name, secret_name):
