@@ -32,7 +32,7 @@ def mock_pyodbc_connection():
 
 @pytest.fixture
 def mock_token():
-    with patch("azure.identity.DefaultAzureCredential") as mock_cred:
+    with patch("common.database.sqldb_service.DefaultAzureCredential") as mock_cred:
         mock_instance = MagicMock()
         mock_instance.get_token.return_value.token = "dummy_token"
         mock_cred.return_value = mock_instance
