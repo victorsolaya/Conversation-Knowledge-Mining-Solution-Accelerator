@@ -27,6 +27,7 @@ HOST_INSTRUCTIONS = "Answer questions about call center operations"
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
 class ExpCache(TTLCache):
     """
     Extended TTLCache that associates an agent and deletes Azure AI agent threads when items expire or are evicted (LRU).
@@ -64,7 +65,9 @@ class ChatService:
     Service for handling chat interactions, including streaming responses,
     processing RAG responses, and generating chart data for visualization.
     """
+
     thread_cache = None
+
     def __init__(self, request : Request):
         config = Config()
         self.azure_openai_endpoint = config.azure_openai_endpoint

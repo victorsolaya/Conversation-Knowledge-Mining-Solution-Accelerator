@@ -12,6 +12,7 @@ from plugins.chat_with_data_plugin import ChatWithDataPlugin
 from azure.identity.aio import DefaultAzureCredential
 from services.chat_service import ChatService
 
+
 class AgentFactory:
     """
     Singleton factory for creating and managing an AzureAIAgent instance.
