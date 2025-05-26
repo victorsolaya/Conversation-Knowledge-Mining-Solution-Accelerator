@@ -203,6 +203,49 @@ class TestChatService:
     @patch("services.chat_service.DefaultAzureCredential")
     @patch("services.chat_service.AzureAIAgent")
     @pytest.mark.asyncio
+    async def test_stream_openai_text_fallback(self, mock_agent_class, mock_credential, chat_service):
+        """Test fallback response in stream_openai_text"""
+        # Create a async context manager mock for DefaultAzureCredential
+        mock_creds_context = AsyncMock()
+        mock_creds = AsyncMock()
+        mock_creds_context.__aenter__.return_value = mock_creds
+        mock_creds_context.__aexit__.return_value = None
+        mock_credential.return_value = mock_creds_context
+
+        # Setup mock agent
+        mock_agent = MagicMock()
+        mock_client = AsyncMock()
+        mock_agent_definition = MagicMock()
+
+        # Configure mocks for AzureAIAgent client context manager
+        client_context = AsyncMock()
+        client_context.__aenter__.return_value = mock_client
+        client_context.__aexit__.return_value = None
+        mock_agent_class.create_client.return_value = client_context
+
+        mock_client.agents.create_agent = AsyncMock(return_value=mock_agent_definition)
+        mock_agent_class.return_value = mock_agent
+
+        # Setup mock response from invoke_stream
+        async def mock_invoke_stream(*args, **kwargs):
+            yield MagicMock(content="")
+
+        mock_agent.invoke_stream = mock_invoke_stream
+
+        # Test
+        responses = []
+        complete_response = ""
+        async for response in chat_service.stream_openai_text("conv-123", "Test query"):
+            complete_response += response
+            responses.append(response)
+
+        # Assert
+        assert complete_response == "I cannot answer this question with the current data. Please rephrase or add more details."
+        mock_client.agents.create_agent.assert_awaited_once()
+
+    @patch("services.chat_service.DefaultAzureCredential")
+    @patch("services.chat_service.AzureAIAgent")
+    @pytest.mark.asyncio
     async def test_stream_openai_text_rate_limit_error(self, mock_agent_class, mock_credential, chat_service):
         """Test rate limit error handling in stream_openai_text"""
         # Create a async context manager mock for DefaultAzureCredential
