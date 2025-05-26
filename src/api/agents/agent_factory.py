@@ -7,10 +7,10 @@ and supports plugin integration.
 """
 
 import asyncio
-from semantic_kernel.agents import AzureAIAgent
+from semantic_kernel.agents import AzureAIAgent, AzureAIAgentThread
 from plugins.chat_with_data_plugin import ChatWithDataPlugin
 from azure.identity.aio import DefaultAzureCredential
-
+from services.chat_service import ChatService
 
 class AgentFactory:
     """
@@ -60,8 +60,17 @@ class AgentFactory:
     async def delete_instance(cls):
         """
         Delete the singleton AzureAIAgent instance if it exists.
+        Also deletes all threads in ChatService.thread_cache.
         """
         async with cls._lock:
             if cls._instance is not None:
+                thread_cache = getattr(ChatService, "thread_cache", None)
+                if thread_cache is not None:
+                    for conversation_id, thread_id in list(thread_cache.items()):
+                        try:
+                            thread = AzureAIAgentThread(client=cls._instance.client, thread_id=thread_id)
+                            await thread.delete()
+                        except Exception as e:
+                            print(f"Failed to delete thread {thread_id} for conversation {conversation_id}: {e}", flush=True)
                 await cls._instance.client.agents.delete_agent(cls._instance.id)
                 cls._instance = None

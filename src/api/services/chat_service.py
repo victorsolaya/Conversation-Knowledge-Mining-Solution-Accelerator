@@ -59,15 +59,12 @@ class ExpCache(TTLCache):
         return key, thread_id
 
 
-# Global thread cache, agent will be set later
-thread_cache = None
-
-
 class ChatService:
     """
     Service for handling chat interactions, including streaming responses,
     processing RAG responses, and generating chart data for visualization.
     """
+    thread_cache = None
     def __init__(self, request : Request):
         config = Config()
         self.azure_openai_endpoint = config.azure_openai_endpoint
@@ -77,9 +74,8 @@ class ChatService:
         self.azure_ai_project_conn_string = config.azure_ai_project_conn_string
         self.agent = request.app.state.agent
 
-        global thread_cache
-        if thread_cache is None:
-            thread_cache = ExpCache(maxsize=1000, ttl=3600.0, agent=self.agent)
+        if ChatService.thread_cache is None:
+            ChatService.thread_cache = ExpCache(maxsize=1000, ttl=3600.0, agent=self.agent)
 
     def process_rag_response(self, rag_response, query):
         """
@@ -139,16 +135,16 @@ class ChatService:
                 query = "Please provide a query."
 
             thread_id = None
-            if thread_cache is not None:
-                thread_id = thread_cache.get(conversation_id, None)
+            if ChatService.thread_cache is not None:
+                thread_id = ChatService.thread_cache.get(conversation_id, None)
             if thread_id:
                 thread = AzureAIAgentThread(client=self.agent.client, thread_id=thread_id)
 
             truncation_strategy = TruncationObject(type="last_messages", last_messages=2)
 
             async for response in self.agent.invoke_stream(messages=query, thread=thread, truncation_strategy=truncation_strategy):
-                if thread_cache is not None:
-                    thread_cache[conversation_id] = response.thread.id
+                if ChatService.thread_cache is not None:
+                    ChatService.thread_cache[conversation_id] = response.thread.id
                 complete_response += str(response.content)
                 yield response.content
 
@@ -171,11 +167,11 @@ class ChatService:
             if complete_response == "":
                 logger.info("No response received from OpenAI.")
                 thread_id = None
-                if thread_cache is not None:
-                    thread_id = thread_cache.pop(conversation_id, None)
+                if ChatService.thread_cache is not None:
+                    thread_id = ChatService.thread_cache.pop(conversation_id, None)
                     if thread_id is not None:
                         corrupt_key = f"{conversation_id}_corrupt_{random.randint(1000, 9999)}"
-                        thread_cache[corrupt_key] = thread_id
+                        ChatService.thread_cache[corrupt_key] = thread_id
                 yield "I cannot answer this question with the current data. Please rephrase or add more details."
 
     async def stream_chat_request(self, request_body, conversation_id, query):
