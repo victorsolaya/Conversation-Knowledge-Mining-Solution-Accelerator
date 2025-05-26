@@ -39,7 +39,7 @@ def mock_token():
         yield mock_instance
 
 
-def test_adjust_processed_data_dates(mock_pyodbc_connection):
+def test_adjust_processed_data_dates(mock_pyodbc_connection, mock_token):
     mock_cursor = mock_pyodbc_connection.cursor().__enter__()
     mock_cursor.fetchone.return_value = [datetime.now()]
     adjust_processed_data_dates()
@@ -47,7 +47,7 @@ def test_adjust_processed_data_dates(mock_pyodbc_connection):
     assert mock_pyodbc_connection.commit.called
 
 
-def test_get_db_connection_fallback():
+def test_get_db_connection_fallback(mock_token):
     def connect_side_effect(*args, **kwargs):
         if "attrs_before" in kwargs:
             raise pyodbc.Error("Token auth failed")
@@ -59,7 +59,7 @@ def test_get_db_connection_fallback():
         assert mock_connect.call_count == 2
 
 
-def test_fetch_filters_data(mock_pyodbc_connection):
+def test_fetch_filters_data(mock_pyodbc_connection, mock_token):
     mock_cursor = mock_pyodbc_connection.cursor().__enter__()
     mock_cursor.fetchall.return_value = [
         ("Topic", "Billing", "Billing"),
@@ -85,7 +85,7 @@ def test_fetch_filters_data(mock_pyodbc_connection):
 
 
 @pytest.mark.asyncio
-async def test_fetch_chart_data(mock_pyodbc_connection):
+async def test_fetch_chart_data(mock_pyodbc_connection, mock_token):
     mock_cursor = mock_pyodbc_connection.cursor().__enter__()
     mock_cursor.fetchall.side_effect = [
         [("TOTAL_CALLS", "Total Calls", "card", "Total Calls", 100, "")],
@@ -121,7 +121,7 @@ async def test_fetch_chart_data(mock_pyodbc_connection):
 
 
 @pytest.mark.asyncio
-async def test_fetch_chart_data_empty_filters(mock_pyodbc_connection):
+async def test_fetch_chart_data_empty_filters(mock_pyodbc_connection, mock_token):
     mock_cursor = mock_pyodbc_connection.cursor().__enter__()
     mock_cursor.fetchall.side_effect = [
         [("TOTAL_CALLS", "Total Calls", "card", "Total Calls", 100, "")],
@@ -148,7 +148,7 @@ async def test_fetch_chart_data_empty_filters(mock_pyodbc_connection):
 
 
 @pytest.mark.asyncio
-async def test_fetch_chart_data_topic_only(mock_pyodbc_connection):
+async def test_fetch_chart_data_topic_only(mock_pyodbc_connection, mock_token):
     mock_cursor = mock_pyodbc_connection.cursor().__enter__()
     mock_cursor.fetchall.side_effect = [
         [("TOTAL_CALLS", "Total Calls", "card", "Total Calls", 100, "")],
@@ -179,7 +179,7 @@ async def test_fetch_chart_data_topic_only(mock_pyodbc_connection):
     assert len(result) == 3
 
 
-def test_execute_sql_query(mock_pyodbc_connection):
+def test_execute_sql_query(mock_pyodbc_connection, mock_token):
     mock_cursor = mock_pyodbc_connection.cursor().__enter__()
     mock_cursor.execute.return_value = None
     mock_cursor.fetchall.return_value = [(1,), (2,), (3,)]
