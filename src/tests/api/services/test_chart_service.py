@@ -1,26 +1,37 @@
-import sys
-import types
 import pytest
 from unittest.mock import AsyncMock, MagicMock, patch
 from fastapi import HTTPException
 
-# ---- Mock common.database.sqldb_service ----
-mock_sqldb_service = types.ModuleType("common.database.sqldb_service")
-mock_sqldb_service.adjust_processed_data_dates = MagicMock()
-mock_sqldb_service.fetch_filters_data = MagicMock()
-mock_sqldb_service.fetch_chart_data = AsyncMock()
-sys.modules["common.database.sqldb_service"] = mock_sqldb_service
 
-# ---- Mock api.models.input_models ----
-mock_input_models = types.ModuleType("api.models.input_models")
-mock_input_models.ChartFilters = MagicMock()
-sys.modules["api.models.input_models"] = mock_input_models
+@patch("common.database.sqldb_service.adjust_processed_data_dates", new_callable=MagicMock)
+@patch("common.database.sqldb_service.fetch_filters_data", new_callable=MagicMock)
+@patch("common.database.sqldb_service.fetch_chart_data", new_callable=AsyncMock)
+@patch("api.models.input_models.ChartFilters", new_callable=MagicMock)
+@pytest.fixture
+def patched_imports(_, __, ___, ____):
+    """
+    Apply patches to dependencies before importing ChartService.
+    Returns patched ChartService
+    """
+    # Import the service under test only after patching dependencies
+    with patch("services.chart_service.adjust_processed_data_dates"), \
+         patch("services.chart_service.fetch_filters_data"), \
+         patch("services.chart_service.fetch_chart_data"):
+        from services.chart_service import ChartService
+        return ChartService
 
 # ---- Import service under test ----
-from services.chart_service import ChartService #type:ignore
+with patch("common.database.sqldb_service.adjust_processed_data_dates", MagicMock()), \
+     patch("common.database.sqldb_service.fetch_filters_data", MagicMock()), \
+     patch("common.database.sqldb_service.fetch_chart_data", AsyncMock()), \
+     patch("api.models.input_models.ChartFilters", MagicMock()):
+    from services.chart_service import ChartService
 
 @pytest.fixture
 def chart_service():
+    """
+    Returns a clean instance of the ChartService for each test.
+    """
     return ChartService()
 
 
