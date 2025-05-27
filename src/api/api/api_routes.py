@@ -114,7 +114,7 @@ async def conversation(request: Request):
             term in query.lower()
             for term in ["chart", "graph", "visualize", "plot"]
         )
-        chat_service = ChatService()
+        chat_service = ChatService(request=request)
         if not is_chart_query:
             result = await chat_service.stream_chat_request(request_json, conversation_id, query)
             track_event_if_configured(
