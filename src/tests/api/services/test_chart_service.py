@@ -35,21 +35,24 @@ def chart_service():
     return ChartService()
 
 
-@patch("services.chart_service.adjust_processed_data_dates")
-@patch("services.chart_service.fetch_filters_data")
-def test_fetch_filter_data_success(mock_fetch_filters_data, mock_adjust_dates, chart_service):
+@patch("services.chart_service.adjust_processed_data_dates", new_callable=AsyncMock)
+@patch("services.chart_service.fetch_filters_data", new_callable=AsyncMock)
+@pytest.mark.asyncio
+async def test_fetch_filter_data_success(mock_fetch_filters_data, mock_adjust_dates, chart_service):
     mock_adjust_dates.return_value = None
     mock_fetch_filters_data.return_value = {"data": "filter_data"}
 
-    result = chart_service.fetch_filter_data()
+    result = await chart_service.fetch_filter_data()
     assert result == {"data": "filter_data"}
 
 
-@patch("services.chart_service.adjust_processed_data_dates", side_effect=Exception("Failed"))
-@patch("services.chart_service.fetch_filters_data")
-def test_fetch_filter_data_failure(mock_fetch_filters_data, mock_adjust_dates, chart_service):
+
+@patch("services.chart_service.adjust_processed_data_dates", new_callable=AsyncMock, side_effect=Exception("Failed"))
+@patch("services.chart_service.fetch_filters_data", new_callable=AsyncMock)
+@pytest.mark.asyncio
+async def test_fetch_filter_data_failure(mock_fetch_filters_data, mock_adjust_dates, chart_service):
     with pytest.raises(HTTPException) as exc_info:
-        chart_service.fetch_filter_data()
+        await chart_service.fetch_filter_data()
     assert exc_info.value.status_code == 500
 
 
