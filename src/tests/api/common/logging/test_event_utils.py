@@ -1,47 +1,27 @@
-import sys
-import types
-import os
-import pytest
 import logging
 from unittest.mock import patch, MagicMock
+import pytest
+
+from common.logging.event_utils import track_event_if_configured  
+
+@pytest.fixture
+def event_data():
+    return {"user": "test_user", "action": "test_action"}
 
 
-fake_track_event = MagicMock()
-azure_mock = types.ModuleType("azure")
-monitor_mock = types.ModuleType("monitor")
-events_mock = types.ModuleType("events")
-extension_mock = types.ModuleType("extension")
-extension_mock.track_event = fake_track_event
-events_mock.extension = extension_mock
-monitor_mock.events = events_mock
-azure_mock.monitor = monitor_mock
+def test_track_event_with_instrumentation_key(monkeypatch, event_data):
+    monkeypatch.setenv("APPLICATIONINSIGHTS_CONNECTION_STRING", "some-key")
 
-sys.modules["azure"] = azure_mock
-sys.modules["azure.monitor"] = monitor_mock
-sys.modules["azure.monitor.events"] = events_mock
-sys.modules["azure.monitor.events.extension"] = extension_mock
+    with patch("common.logging.event_utils.track_event") as mock_track_event:
+        track_event_if_configured("TestEvent", event_data)
+        mock_track_event.assert_called_once_with("TestEvent", event_data)
 
 
-from common.logging.event_utils import track_event_if_configured
+def test_track_event_without_instrumentation_key(monkeypatch, event_data, caplog):
+    monkeypatch.delenv("APPLICATIONINSIGHTS_CONNECTION_STRING", raising=False)
 
-
-@patch.dict(os.environ, {"APPLICATIONINSIGHTS_CONNECTION_STRING": "InstrumentationKey=some-key"})
-def test_track_event_called_when_configured():
-    event_name = "TestEvent"
-    event_data = {"key": "value"}
-
-    fake_track_event.reset_mock()
-    track_event_if_configured(event_name, event_data)
-    fake_track_event.assert_called_once_with(event_name, event_data)
-
-
-@patch("common.logging.event_utils.logging")
-@patch.dict(os.environ, {}, clear=True)
-def test_track_event_skipped_when_not_configured(mock_logging):
-    event_name = "SkippedEvent"
-    event_data = {"key": "value"}
-
-    track_event_if_configured(event_name, event_data)
-    mock_logging.warning.assert_called_once_with(
-        f"Skipping track_event for {event_name} as Application Insights is not configured"
-    )
+    with patch("common.logging.event_utils.track_event") as mock_track_event:
+        with caplog.at_level(logging.WARNING):
+            track_event_if_configured("TestEvent", event_data)
+            mock_track_event.assert_not_called()
+            assert "Skipping track_event for TestEvent as Application Insights is not configured" in caplog.text
