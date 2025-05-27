@@ -16,10 +16,36 @@ def mock_db_conn():
         yield mock_conn, mock_cursor
 
 
+@pytest.fixture
+def token_fixture():
+    """Fixture to mock DefaultAzureCredential with async context support."""
+    with patch("common.database.sqldb_service.DefaultAzureCredential") as mock_cred:
+        mock_cred_instance = MagicMock()
+
+        async def mock_get_token(*args, **kwargs):
+            token_mock = MagicMock()
+            token_mock.token = "dummy_token"
+            return token_mock
+
+        mock_cred_instance.get_token.side_effect = mock_get_token
+
+        async def aenter(*args, **kwargs):
+            return mock_cred_instance
+
+        async def aexit(*args, **kwargs):
+            pass
+
+        mock_cred_instance.__aenter__.side_effect = aenter
+        mock_cred_instance.__aexit__.side_effect = aexit
+        mock_cred.return_value = mock_cred_instance
+
+        yield mock_cred_instance
+
+
 class TestSqlDbService:
 
     @pytest.mark.asyncio
-    async def test_get_db_connection_success(self, mock_db_conn):
+    async def test_get_db_connection_success(self, mock_db_conn, token_fixture):
         conn = await sqldb_service.get_db_connection()
         assert conn is not None
 
@@ -52,7 +78,7 @@ class TestSqlDbService:
             assert conn is fallback_conn
 
     @pytest.mark.asyncio
-    async def test_adjust_processed_data_dates(self, mock_db_conn):
+    async def test_adjust_processed_data_dates(self, mock_db_conn, token_fixture):
         mock_conn, mock_cursor = mock_db_conn
         old_date = datetime.today().replace(year=datetime.today().year - 1)
         mock_cursor.fetchone.return_value = [old_date]
@@ -62,7 +88,7 @@ class TestSqlDbService:
         assert mock_conn.commit.called
 
     @pytest.mark.asyncio
-    async def test_fetch_filters_data(self, mock_db_conn):
+    async def test_fetch_filters_data(self, mock_db_conn, token_fixture):
         _, mock_cursor = mock_db_conn
         mock_cursor.fetchall.return_value = [
             ("Topic", "Billing", "Billing"),
@@ -77,7 +103,7 @@ class TestSqlDbService:
         assert {item["filter_name"] for item in result} == {"Topic", "Sentiment", "Satisfaction", "DateRange"}
 
     @pytest.mark.asyncio
-    async def test_fetch_chart_data_with_filters(self, mock_db_conn):
+    async def test_fetch_chart_data_with_filters(self, mock_db_conn, token_fixture):
         _, mock_cursor = mock_db_conn
         mock_cursor.fetchall.side_effect = [
             [("TOTAL_CALLS", "Total Calls", "card", "Total Calls", 100, "")],
@@ -111,7 +137,7 @@ class TestSqlDbService:
         assert len(result) == 3
 
     @pytest.mark.asyncio
-    async def test_fetch_chart_data_with_invalid_model(self, mock_db_conn):
+    async def test_fetch_chart_data_with_invalid_model(self, mock_db_conn, token_fixture):
         _, mock_cursor = mock_db_conn
         mock_cursor.fetchall.side_effect = [
             [("TOTAL_CALLS", "Total Calls", "card", "Total Calls", 100, "")],
@@ -141,7 +167,7 @@ class TestSqlDbService:
     @pytest.mark.parametrize("date_range_value", [
         "Last 14 days", "Last 90 days", "Year to Date"
     ])
-    async def test_fetch_chart_data_with_various_date_ranges(self, mock_db_conn, date_range_value):
+    async def test_fetch_chart_data_with_various_date_ranges(self, mock_db_conn, token_fixture, date_range_value):
         _, mock_cursor = mock_db_conn
         mock_cursor.fetchall.side_effect = [
             [("TOTAL_CALLS", "Total Calls", "card", "Total Calls", 100, "")],
@@ -168,7 +194,7 @@ class TestSqlDbService:
         assert len(result) == 3
 
     @pytest.mark.asyncio
-    async def test_execute_sql_query(self, mock_db_conn):
+    async def test_execute_sql_query(self, mock_db_conn, token_fixture):
         _, mock_cursor = mock_db_conn
         mock_cursor.fetchall.return_value = [(1,), (2,), (3,)]
 
@@ -176,7 +202,7 @@ class TestSqlDbService:
         assert result == "(1,)(2,)(3,)"
 
     @pytest.mark.asyncio
-    async def test_execute_sql_query_exception(self, mock_db_conn):
+    async def test_execute_sql_query_exception(self, mock_db_conn, token_fixture):
         _, mock_cursor = mock_db_conn
         mock_cursor.execute.side_effect = Exception("Invalid SQL")
 
