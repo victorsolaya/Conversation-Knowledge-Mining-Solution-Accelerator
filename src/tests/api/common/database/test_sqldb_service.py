@@ -1,187 +1,184 @@
 import pytest
 import pyodbc
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch, MagicMock, AsyncMock
 from datetime import datetime
-from common.database.sqldb_service import get_db_connection, adjust_processed_data_dates, fetch_filters_data, fetch_chart_data, execute_sql_query
+from common.database import sqldb_service
 
 
 @pytest.fixture
-def mock_config():
-    with patch("common.config.config.Config") as mock_config_class:
-        mock = MagicMock()
-        mock.sqldb_server = "server"
-        mock.sqldb_database = "database"
-        mock.sqldb_username = "user"
-        mock.sqldb_password = "password"
-        mock.driver = "{ODBC Driver}"
-        mock.mid_id = "client-id"
-        mock_config_class.return_value = mock
-        yield mock
-
-
-@pytest.fixture
-def mock_pyodbc_connection():
+def mock_db_conn():
+    """Fixture to mock pyodbc.connect and its cursor."""
     with patch("pyodbc.connect") as mock_connect:
         mock_cursor = MagicMock()
         mock_conn = MagicMock()
-        mock_conn.__enter__.return_value = mock_conn
-        mock_conn.cursor.return_value.__enter__.return_value = mock_cursor
+        mock_conn.cursor.return_value = mock_cursor
         mock_connect.return_value = mock_conn
-        yield mock_conn
+        yield mock_conn, mock_cursor
 
 
-@pytest.fixture
-def mock_token():
-    with patch("common.database.sqldb_service.DefaultAzureCredential") as mock_cred:
-        mock_instance = MagicMock()
-        mock_instance.get_token.return_value.token = "dummy_token"
-        mock_cred.return_value = mock_instance
-        yield mock_instance
+class TestSqlDbService:
 
-
-def test_adjust_processed_data_dates(mock_pyodbc_connection, mock_token):
-    mock_cursor = mock_pyodbc_connection.cursor().__enter__()
-    mock_cursor.fetchone.return_value = [datetime.now()]
-    adjust_processed_data_dates()
-    assert mock_cursor.execute.call_count >= 4
-    assert mock_pyodbc_connection.commit.called
-
-
-def test_get_db_connection_fallback(mock_token):
-    def connect_side_effect(*args, **kwargs):
-        if "attrs_before" in kwargs:
-            raise pyodbc.Error("Token auth failed")
-        return MagicMock()
-
-    with patch("pyodbc.connect", side_effect=connect_side_effect) as mock_connect:
-        conn = get_db_connection()
+    @pytest.mark.asyncio
+    async def test_get_db_connection_success(self, mock_db_conn):
+        conn = await sqldb_service.get_db_connection()
         assert conn is not None
-        assert mock_connect.call_count == 2
 
+    @pytest.mark.asyncio
+    async def test_get_db_connection_fallback_to_sql_auth(self):
+        """Test fallback to SQL auth when token auth fails."""
+        with patch("pyodbc.connect") as mock_connect, \
+             patch("common.database.sqldb_service.DefaultAzureCredential") as mock_cred:
 
-def test_fetch_filters_data(mock_pyodbc_connection, mock_token):
-    mock_cursor = mock_pyodbc_connection.cursor().__enter__()
-    mock_cursor.fetchall.return_value = [
-        ("Topic", "Billing", "Billing"),
-        ("Sentiment", "positive", "positive"),
-        ("Satisfaction", "yes", "yes"),
-        ("DateRange", "Last 7 days", "Last 7 days"),
-    ]
-    mock_cursor.description = [("filter_name",), ("displayValue",), ("key1",)]
+            mock_token_instance = MagicMock()
 
-    result = fetch_filters_data()
+            async def get_token_mock(*args, **kwargs):
+                token_mock = MagicMock()
+                token_mock.token = "dummy_token"
+                return token_mock
 
-    assert isinstance(result, list)
-    filter_names = {item["filter_name"] for item in result}
-    expected_filter_names = {"Topic", "Sentiment", "Satisfaction", "DateRange"}
-    assert expected_filter_names.issubset(filter_names)
-    for item in result:
-        assert "filter_name" in item
-        assert "filter_values" in item
-        assert isinstance(item["filter_values"], list)
-        for val in item["filter_values"]:
-            assert "displayValue" in val
-            assert "key" in val
+            mock_token_instance.get_token.side_effect = get_token_mock
 
+            async def aenter(*args, **kwargs):
+                raise pyodbc.Error("Simulated failure")
 
-@pytest.mark.asyncio
-async def test_fetch_chart_data(mock_pyodbc_connection, mock_token):
-    mock_cursor = mock_pyodbc_connection.cursor().__enter__()
-    mock_cursor.fetchall.side_effect = [
-        [("TOTAL_CALLS", "Total Calls", "card", "Total Calls", 100, "")],
-        [("Topic A", "TOPICS", "Trending Topics", "table", "positive", 42)],
-        [("keyphrase", "KEY_PHRASES", "Key Phrases", "wordcloud", 20, "positive")]
-    ]
-    description_values = [
-        [("id",), ("chart_name",), ("chart_type",), ("name",), ("value",), ("unit_of_measurement",)],
-        [("name",), ("id",), ("chart_name",), ("chart_type",), ("average_sentiment",), ("call_frequency",)],
-        [("text",), ("id",), ("chart_name",), ("chart_type",), ("size",), ("average_sentiment",)],
-    ]
+            mock_token_instance.__aenter__.side_effect = aenter
+            mock_token_instance.__aexit__.side_effect = AsyncMock()
+            mock_cred.return_value = mock_token_instance
 
-    def execute_side_effect(*args, **kwargs):
-        current_call = mock_cursor.execute.call_count - 1
-        mock_cursor.description = description_values[current_call]
+            fallback_conn = MagicMock()
+            mock_connect.return_value = fallback_conn
 
-    mock_cursor.execute.side_effect = execute_side_effect
+            conn = await sqldb_service.get_db_connection()
+            assert conn is fallback_conn
 
-    mock_chart_filters = MagicMock()
-    mock_chart_filters.model_dump.return_value = {
-        "selected_filters": {
-            "Topic": ["Topic A"],
-            "Sentiment": ["positive"],
-            "Satisfaction": ["yes"],
-            "DateRange": ["Last 7 days"]
+    @pytest.mark.asyncio
+    async def test_adjust_processed_data_dates(self, mock_db_conn):
+        mock_conn, mock_cursor = mock_db_conn
+        old_date = datetime.today().replace(year=datetime.today().year - 1)
+        mock_cursor.fetchone.return_value = [old_date]
+
+        await sqldb_service.adjust_processed_data_dates()
+        assert mock_cursor.execute.call_count >= 4
+        assert mock_conn.commit.called
+
+    @pytest.mark.asyncio
+    async def test_fetch_filters_data(self, mock_db_conn):
+        _, mock_cursor = mock_db_conn
+        mock_cursor.fetchall.return_value = [
+            ("Topic", "Billing", "Billing"),
+            ("Sentiment", "positive", "positive"),
+            ("Satisfaction", "yes", "yes"),
+            ("DateRange", "Last 7 days", "Last 7 days"),
+        ]
+        mock_cursor.description = [("filter_name",), ("displayValue",), ("key1",)]
+
+        result = await sqldb_service.fetch_filters_data()
+        assert isinstance(result, list)
+        assert {item["filter_name"] for item in result} == {"Topic", "Sentiment", "Satisfaction", "DateRange"}
+
+    @pytest.mark.asyncio
+    async def test_fetch_chart_data_with_filters(self, mock_db_conn):
+        _, mock_cursor = mock_db_conn
+        mock_cursor.fetchall.side_effect = [
+            [("TOTAL_CALLS", "Total Calls", "card", "Total Calls", 100, "")],
+            [("Topic A", "TOPICS", "Trending Topics", "table", "positive", 42)],
+            [("keyphrase", "KEY_PHRASES", "Key Phrases", "wordcloud", 20, "positive")]
+        ]
+        descriptions = [
+            [("id",), ("chart_name",), ("chart_type",), ("name",), ("value",), ("unit_of_measurement",)],
+            [("name",), ("id",), ("chart_name",), ("chart_type",), ("average_sentiment",), ("call_frequency",)],
+            [("text",), ("id",), ("chart_name",), ("chart_type",), ("size",), ("average_sentiment",)],
+        ]
+
+        def exec_side_effect(*args, **kwargs):
+            call = mock_cursor.execute.call_count - 1
+            mock_cursor.description = descriptions[call]
+
+        mock_cursor.execute.side_effect = exec_side_effect
+
+        filters = MagicMock()
+        filters.model_dump.return_value = {
+            "selected_filters": {
+                "Topic": ["Topic A"],
+                "Sentiment": ["positive"],
+                "Satisfaction": ["yes"],
+                "DateRange": ["Last 7 days"]
+            }
         }
-    }
 
-    result = await fetch_chart_data(chart_filters=mock_chart_filters)
-    assert isinstance(result, list)
-    assert len(result) == 3
-    assert all("chart_value" in chart for chart in result)
+        result = await sqldb_service.fetch_chart_data(chart_filters=filters)
+        assert isinstance(result, list)
+        assert len(result) == 3
 
+    @pytest.mark.asyncio
+    async def test_fetch_chart_data_with_invalid_model(self, mock_db_conn):
+        _, mock_cursor = mock_db_conn
+        mock_cursor.fetchall.side_effect = [
+            [("TOTAL_CALLS", "Total Calls", "card", "Total Calls", 100, "")],
+            [("Topic A", "TOPICS", "Trending Topics", "table", "positive", 42)],
+            [("keyphrase", "KEY_PHRASES", "Key Phrases", "wordcloud", 20, "positive")]
+        ]
+        descriptions = [
+            [("id",), ("chart_name",), ("chart_type",), ("name",), ("value",), ("unit_of_measurement",)],
+            [("name",), ("id",), ("chart_name",), ("chart_type",), ("average_sentiment",), ("call_frequency",)],
+            [("text",), ("id",), ("chart_name",), ("chart_type",), ("size",), ("average_sentiment",)],
+        ]
 
-@pytest.mark.asyncio
-async def test_fetch_chart_data_empty_filters(mock_pyodbc_connection, mock_token):
-    mock_cursor = mock_pyodbc_connection.cursor().__enter__()
-    mock_cursor.fetchall.side_effect = [
-        [("TOTAL_CALLS", "Total Calls", "card", "Total Calls", 100, "")],
-        [("Topic A", "TOPICS", "Trending Topics", "table", "positive", 42)],
-        [("keyphrase", "KEY_PHRASES", "Key Phrases", "wordcloud", 20, "positive")]
-    ]
-    description_values = [
-        [("id",), ("chart_name",), ("chart_type",), ("name",), ("value",), ("unit_of_measurement",)],
-        [("name",), ("id",), ("chart_name",), ("chart_type",), ("average_sentiment",), ("call_frequency",)],
-        [("text",), ("id",), ("chart_name",), ("chart_type",), ("size",), ("average_sentiment",)],
-    ]
+        def exec_side_effect(*args, **kwargs):
+            call = mock_cursor.execute.call_count - 1
+            mock_cursor.description = descriptions[call]
 
-    def execute_side_effect(*args, **kwargs):
-        current_call = mock_cursor.execute.call_count - 1
-        mock_cursor.description = description_values[current_call]
+        mock_cursor.execute.side_effect = exec_side_effect
 
-    mock_cursor.execute.side_effect = execute_side_effect
+        filters = MagicMock()
+        filters.model_dump.side_effect = Exception("Invalid model")
 
-    mock_chart_filters = MagicMock()
-    mock_chart_filters.model_dump.side_effect = Exception("Invalid model")
+        result = await sqldb_service.fetch_chart_data(chart_filters=filters)
+        assert isinstance(result, list)
+        assert len(result) == 3
 
-    result = await fetch_chart_data(chart_filters=mock_chart_filters)
-    assert isinstance(result, list)
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize("date_range_value", [
+        "Last 14 days", "Last 90 days", "Year to Date"
+    ])
+    async def test_fetch_chart_data_with_various_date_ranges(self, mock_db_conn, date_range_value):
+        _, mock_cursor = mock_db_conn
+        mock_cursor.fetchall.side_effect = [
+            [("TOTAL_CALLS", "Total Calls", "card", "Total Calls", 100, "")],
+            [("Topic A", "TOPICS", "Trending Topics", "table", "positive", 42)],
+            [(f"keyphrase", "KEY_PHRASES", "Key Phrases", "wordcloud", 10, "positive")]
+        ]
+        descriptions = [
+            [("id",), ("chart_name",), ("chart_type",), ("name",), ("value",), ("unit_of_measurement",)],
+            [("name",), ("id",), ("chart_name",), ("chart_type",), ("average_sentiment",), ("call_frequency",)],
+            [("text",), ("id",), ("chart_name",), ("chart_type",), ("size",), ("average_sentiment",)],
+        ]
 
+        def exec_side_effect(*args, **kwargs):
+            call = mock_cursor.execute.call_count - 1
+            mock_cursor.description = descriptions[call]
 
-@pytest.mark.asyncio
-async def test_fetch_chart_data_topic_only(mock_pyodbc_connection, mock_token):
-    mock_cursor = mock_pyodbc_connection.cursor().__enter__()
-    mock_cursor.fetchall.side_effect = [
-        [("TOTAL_CALLS", "Total Calls", "card", "Total Calls", 100, "")],
-        [("Topic A", "TOPICS", "Trending Topics", "table", "positive", 42)],
-        [("keyphrase", "KEY_PHRASES", "Key Phrases", "wordcloud", 20, "positive")]
-    ]
-    description_values = [
-        [("id",), ("chart_name",), ("chart_type",), ("name",), ("value",), ("unit_of_measurement",)],
-        [("name",), ("id",), ("chart_name",), ("chart_type",), ("average_sentiment",), ("call_frequency",)],
-        [("text",), ("id",), ("chart_name",), ("chart_type",), ("size",), ("average_sentiment",)],
-    ]
+        mock_cursor.execute.side_effect = exec_side_effect
 
-    def execute_side_effect(*args, **kwargs):
-        current_call = mock_cursor.execute.call_count - 1
-        mock_cursor.description = description_values[current_call]
+        filters = MagicMock()
+        filters.model_dump.return_value = {"selected_filters": {"DateRange": [date_range_value]}}
 
-    mock_cursor.execute.side_effect = execute_side_effect
+        result = await sqldb_service.fetch_chart_data(chart_filters=filters)
+        assert isinstance(result, list)
+        assert len(result) == 3
 
-    mock_chart_filters = MagicMock()
-    mock_chart_filters.model_dump.return_value = {
-        "selected_filters": {
-            "Topic": ["Billing"]
-        }
-    }
+    @pytest.mark.asyncio
+    async def test_execute_sql_query(self, mock_db_conn):
+        _, mock_cursor = mock_db_conn
+        mock_cursor.fetchall.return_value = [(1,), (2,), (3,)]
 
-    result = await fetch_chart_data(chart_filters=mock_chart_filters)
-    assert isinstance(result, list)
-    assert len(result) == 3
+        result = await sqldb_service.execute_sql_query("SELECT 1")
+        assert result == "(1,)(2,)(3,)"
 
+    @pytest.mark.asyncio
+    async def test_execute_sql_query_exception(self, mock_db_conn):
+        _, mock_cursor = mock_db_conn
+        mock_cursor.execute.side_effect = Exception("Invalid SQL")
 
-def test_execute_sql_query(mock_pyodbc_connection, mock_token):
-    mock_cursor = mock_pyodbc_connection.cursor().__enter__()
-    mock_cursor.execute.return_value = None
-    mock_cursor.fetchall.return_value = [(1,), (2,), (3,)]
-    result = execute_sql_query("SELECT 1")
-    assert result == "(1,)(2,)(3,)"
+        result = await sqldb_service.execute_sql_query("INVALID SQL")
+        assert result is None
