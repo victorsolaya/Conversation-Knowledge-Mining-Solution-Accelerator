@@ -44,7 +44,7 @@ name: Deploy MkDocs site to GitHub Pages
 on:
   push:
     branches:
-      - workshop-page
+      - main
 
 jobs:
   build-and-deploy:
