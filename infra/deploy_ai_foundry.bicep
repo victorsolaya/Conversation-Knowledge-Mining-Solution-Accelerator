@@ -10,6 +10,7 @@ param gptDeploymentCapacity int
 param embeddingModel string
 param embeddingDeploymentCapacity int
 param managedIdentityObjectId string
+param containerRegistryId string
 var abbrs = loadJsonContent('./abbreviations.json')
 // var storageName = '${solutionName}hubstorage'
 // var storageSkuName = 'Standard_LRS'
@@ -40,7 +41,6 @@ var location_cu = cuLocation
 // var location_m = solutionLocation
 var workspaceName = '${abbrs.managementGovernance.logAnalyticsWorkspace}${solutionName}'
 var applicationInsightsName = '${abbrs.managementGovernance.applicationInsights}${solutionName}'
-var containerRegistryName = '${abbrs.containers.containerRegistry}${solutionName}'
 var keyvaultName = '${abbrs.security.keyVault}${solutionName}'
 var location = solutionLocation //'eastus2'
 var aiHubName = '${abbrs.ai.aiHub}${solutionName}'
@@ -71,8 +71,6 @@ var aiModelDeployments = [
   }
 ]
 
-var containerRegistryNameCleaned = replace(containerRegistryName, '-', '')
-
 resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' existing = {
   name: keyVaultName
 }
@@ -98,37 +96,6 @@ resource applicationInsights 'Microsoft.Insights/components@2020-02-02' = {
     publicNetworkAccessForIngestion: 'Enabled'
     publicNetworkAccessForQuery: 'Disabled'
     WorkspaceResourceId: logAnalytics.id
-  }
-}
-
-resource containerRegistry 'Microsoft.ContainerRegistry/registries@2021-09-01' = {
-  name: containerRegistryNameCleaned
-  location: location
-  sku: {
-    name: 'Premium'
-  }
-  properties: {
-    adminUserEnabled: false
-    dataEndpointEnabled: false
-    networkRuleBypassOptions: 'AzureServices'
-    networkRuleSet: {
-      defaultAction: 'Deny'
-    }
-    policies: {
-      quarantinePolicy: {
-        status: 'disabled'
-      }
-      retentionPolicy: {
-        status: 'enabled'
-        days: 7
-      }
-      trustPolicy: {
-        status: 'disabled'
-        type: 'Notary'
-      }
-    }
-    publicNetworkAccess: 'Disabled'
-    zoneRedundancy: 'Disabled'
   }
 }
 
@@ -416,7 +383,7 @@ resource aiHub 'Microsoft.MachineLearningServices/workspaces@2023-08-01-preview'
     keyVault: keyVault.id
     storageAccount: storage.id
     applicationInsights: applicationInsights.id
-    containerRegistry: containerRegistry.id
+    containerRegistry: containerRegistryId
   }
   kind: 'hub'
 

@@ -92,6 +92,15 @@ module kvault 'deploy_keyvault.bicep' = {
   scope: resourceGroup(resourceGroup().name)
 }
 
+// ========== Container Registry ========== //
+module containerRegistry 'deploy_container_registry.bicep' = {
+  name: 'deploy_container_registry'
+  params: {
+    solutionName: solutionPrefix
+    solutionLocation: solutionLocation
+  }
+}
+
 // ==========AI Foundry and related resources ========== //
 module aifoundry 'deploy_ai_foundry.bicep' = {
   name: 'deploy_ai_foundry'
@@ -107,6 +116,7 @@ module aifoundry 'deploy_ai_foundry.bicep' = {
     embeddingModel: embeddingModel
     embeddingDeploymentCapacity: embeddingDeploymentCapacity
     managedIdentityObjectId: managedIdentityModule.outputs.managedIdentityOutput.objectId
+    containerRegistryId: containerRegistry.outputs.createdAcrId
   }
   scope: resourceGroup(resourceGroup().name)
 }
@@ -277,6 +287,8 @@ output SQLDB_USERNAME string = sqlDBModule.outputs.sqlDbUser
 output USE_AI_PROJECT_CLIENT string = 'False'
 output USE_CHAT_HISTORY_ENABLED string = 'True'
 output DISPLAY_CHART_DEFAULT string = 'False'
+output ACR_NAME string = containerRegistry.outputs.createdAcrName
+output ACR_IMAGE_TAG string = imageTag
 
 output API_APP_URL string = backend_docker.outputs.appUrl
 output WEB_APP_URL string = frontend_docker.outputs.appUrl
