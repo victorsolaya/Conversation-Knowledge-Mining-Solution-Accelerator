@@ -60,6 +60,7 @@ param embeddingModel string = 'text-embedding-ada-002'
 param embeddingDeploymentCapacity int = 80
 
 param imageTag string = 'latest_migrated'
+var acrName = 'kmcontainerreg'
 
 param AZURE_LOCATION string=''
 var solutionLocation = empty(AZURE_LOCATION) ? resourceGroup().location : AZURE_LOCATION
@@ -69,6 +70,12 @@ var solutionPrefix = 'km${padLeft(take(uniqueId, 12), 12, '0')}'
 // var resourceGroupName = resourceGroup().name
 
 var baseUrl = 'https://raw.githubusercontent.com/microsoft/Conversation-Knowledge-Mining-Solution-Accelerator/main/'
+
+@description('Set this flag to true only if you are deplpoying from Local')
+param useLocalBuild string = 'false'
+
+// Convert input to lowercase
+var useLocalBuildLower = toLower(useLocalBuild)
 
 // ========== Managed Identity ========== //
 module managedIdentityModule 'deploy_managed_identity.bicep' = {
@@ -204,6 +211,7 @@ module backend_docker 'deploy_backend_docker.bicep' = {
     name: 'api-${solutionPrefix}'
     solutionLocation: solutionLocation
     imageTag: imageTag
+    acrName: useLocalBuildLower == 'true' ? containerRegistry.outputs.createdAcrName : acrName 
     appServicePlanId: hostingplan.outputs.name
     applicationInsightsId: aifoundry.outputs.applicationInsightsId
     azureAiProjectConnString: keyVault.getSecret('AZURE-AI-PROJECT-CONN-STRING')
@@ -244,6 +252,7 @@ module frontend_docker 'deploy_frontend_docker.bicep' = {
     name: '${abbrs.compute.webApp}${solutionPrefix}'
     solutionLocation:solutionLocation
     imageTag: imageTag
+    acrName: useLocalBuildLower == 'true' ? containerRegistry.outputs.createdAcrName : acrName
     appServicePlanId: hostingplan.outputs.name
     applicationInsightsId: aifoundry.outputs.applicationInsightsId
     appSettings:{

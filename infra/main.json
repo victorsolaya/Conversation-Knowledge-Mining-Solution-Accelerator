@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.35.1.17967",
-      "templateHash": "5528870360701887815"
+      "templateHash": "5847339526867342510"
     }
   },
   "parameters": {
@@ -97,6 +97,13 @@
     "AZURE_LOCATION": {
       "type": "string",
       "defaultValue": ""
+    },
+    "useLocalBuild": {
+      "type": "string",
+      "defaultValue": "false",
+      "metadata": {
+        "description": "Set this flag to true only if you are deplpoying from Local"
+      }
     }
   },
   "variables": {
@@ -329,10 +336,12 @@
     },
     "abbrs": "[variables('$fxv#0')]",
     "azureOpenAIApiVersion": "2024-02-15-preview",
+    "acrName": "kmcontainerreg",
     "solutionLocation": "[if(empty(parameters('AZURE_LOCATION')), resourceGroup().location, parameters('AZURE_LOCATION'))]",
     "uniqueId": "[toLower(uniqueString(subscription().id, parameters('environmentName'), variables('solutionLocation')))]",
     "solutionPrefix": "[format('km{0}', padLeft(take(variables('uniqueId'), 12), 12, '0'))]",
-    "baseUrl": "https://raw.githubusercontent.com/microsoft/Conversation-Knowledge-Mining-Solution-Accelerator/main/"
+    "baseUrl": "https://raw.githubusercontent.com/microsoft/Conversation-Knowledge-Mining-Solution-Accelerator/main/",
+    "useLocalBuildLower": "[toLower(parameters('useLocalBuild'))]"
   },
   "resources": [
     {
@@ -2690,6 +2699,7 @@
           "imageTag": {
             "value": "[parameters('imageTag')]"
           },
+          "acrName": "[if(equals(variables('useLocalBuildLower'), 'true'), createObject('value', reference(resourceId('Microsoft.Resources/deployments', 'deploy_container_registry'), '2022-09-01').outputs.createdAcrName.value), createObject('value', variables('acrName')))]",
           "appServicePlanId": {
             "value": "[reference(resourceId('Microsoft.Resources/deployments', 'deploy_app_service_plan'), '2022-09-01').outputs.name.value]"
           },
@@ -2746,11 +2756,14 @@
             "_generator": {
               "name": "bicep",
               "version": "0.35.1.17967",
-              "templateHash": "910344753923922220"
+              "templateHash": "17026486810356050441"
             }
           },
           "parameters": {
             "imageTag": {
+              "type": "string"
+            },
+            "acrName": {
               "type": "string"
             },
             "applicationInsightsId": {
@@ -2786,7 +2799,7 @@
             }
           },
           "variables": {
-            "imageName": "[format('DOCKER|kmcontainerreg.azurecr.io/km-api:{0}', parameters('imageTag'))]",
+            "imageName": "[format('DOCKER|{0}.azurecr.io/km-api:{1}', parameters('acrName'), parameters('imageTag'))]",
             "reactAppLayoutConfig": "{\r\n  \"appConfig\": {\r\n    \"THREE_COLUMN\": {\r\n      \"DASHBOARD\": 50,\r\n      \"CHAT\": 33,\r\n      \"CHATHISTORY\": 17\r\n    },\r\n    \"TWO_COLUMN\": {\r\n      \"DASHBOARD_CHAT\": {\r\n        \"DASHBOARD\": 65,\r\n        \"CHAT\": 35\r\n      },\r\n      \"CHAT_CHATHISTORY\": {\r\n        \"CHAT\": 80,\r\n        \"CHATHISTORY\": 20\r\n      }\r\n    }\r\n  },\r\n  \"charts\": [\r\n    {\r\n      \"id\": \"SATISFIED\",\r\n      \"name\": \"Satisfied\",\r\n      \"type\": \"card\",\r\n      \"layout\": { \"row\": 1, \"column\": 1, \"height\": 11 }\r\n    },\r\n    {\r\n      \"id\": \"TOTAL_CALLS\",\r\n      \"name\": \"Total Calls\",\r\n      \"type\": \"card\",\r\n      \"layout\": { \"row\": 1, \"column\": 2, \"span\": 1 }\r\n    },\r\n    {\r\n      \"id\": \"AVG_HANDLING_TIME\",\r\n      \"name\": \"Average Handling Time\",\r\n      \"type\": \"card\",\r\n      \"layout\": { \"row\": 1, \"column\": 3, \"span\": 1 }\r\n    },\r\n    {\r\n      \"id\": \"SENTIMENT\",\r\n      \"name\": \"Topics Overview\",\r\n      \"type\": \"donutchart\",\r\n      \"layout\": { \"row\": 2, \"column\": 1, \"width\": 40, \"height\": 44.5 }\r\n    },\r\n    {\r\n      \"id\": \"AVG_HANDLING_TIME_BY_TOPIC\",\r\n      \"name\": \"Average Handling Time By Topic\",\r\n      \"type\": \"bar\",\r\n      \"layout\": { \"row\": 2, \"column\": 2, \"row-span\": 2, \"width\": 60 }\r\n    },\r\n    {\r\n      \"id\": \"TOPICS\",\r\n      \"name\": \"Trending Topics\",\r\n      \"type\": \"table\",\r\n      \"layout\": { \"row\": 3, \"column\": 1, \"span\": 2 }\r\n    },\r\n    {\r\n      \"id\": \"KEY_PHRASES\",\r\n      \"name\": \"Key Phrases\",\r\n      \"type\": \"wordcloud\",\r\n      \"layout\": { \"row\": 3, \"column\": 2, \"height\": 44.5 }\r\n    }\r\n  ]\r\n}"
           },
           "resources": [
@@ -3052,6 +3065,7 @@
       },
       "dependsOn": [
         "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_ai_foundry')]",
+        "[resourceId('Microsoft.Resources/deployments', 'deploy_container_registry')]",
         "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_cosmos_db')]",
         "[resourceId('Microsoft.Resources/deployments', 'deploy_app_service_plan')]",
         "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_keyvault')]",
@@ -3079,6 +3093,7 @@
           "imageTag": {
             "value": "[parameters('imageTag')]"
           },
+          "acrName": "[if(equals(variables('useLocalBuildLower'), 'true'), createObject('value', reference(resourceId('Microsoft.Resources/deployments', 'deploy_container_registry'), '2022-09-01').outputs.createdAcrName.value), createObject('value', variables('acrName')))]",
           "appServicePlanId": {
             "value": "[reference(resourceId('Microsoft.Resources/deployments', 'deploy_app_service_plan'), '2022-09-01').outputs.name.value]"
           },
@@ -3098,11 +3113,14 @@
             "_generator": {
               "name": "bicep",
               "version": "0.35.1.17967",
-              "templateHash": "2922856494867767342"
+              "templateHash": "10166349405516929369"
             }
           },
           "parameters": {
             "imageTag": {
+              "type": "string"
+            },
+            "acrName": {
               "type": "string"
             },
             "applicationInsightsId": {
@@ -3126,7 +3144,7 @@
             }
           },
           "variables": {
-            "imageName": "[format('DOCKER|kmcontainerreg.azurecr.io/km-app:{0}', parameters('imageTag'))]"
+            "imageName": "[format('DOCKER|{0}.azurecr.io/km-app:{1}', parameters('acrName'), parameters('imageTag'))]"
           },
           "resources": [
             {
@@ -3342,6 +3360,7 @@
       "dependsOn": [
         "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_ai_foundry')]",
         "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_backend_docker')]",
+        "[resourceId('Microsoft.Resources/deployments', 'deploy_container_registry')]",
         "[resourceId('Microsoft.Resources/deployments', 'deploy_app_service_plan')]"
       ]
     }

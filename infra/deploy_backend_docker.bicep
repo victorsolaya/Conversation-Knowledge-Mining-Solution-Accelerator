@@ -1,4 +1,5 @@
 param imageTag string
+param acrName string
 param applicationInsightsId string
 
 @description('Solution Location')
@@ -13,7 +14,7 @@ param userassignedIdentityId string
 param aiProjectName string
 param keyVaultName string
 
-var imageName = 'DOCKER|kmcontainerreg.azurecr.io/km-api:${imageTag}'
+var imageName = 'DOCKER|${acrName}.azurecr.io/km-api:${imageTag}'
 //var name = '${solutionName}-api'
 param name string 
 var reactAppLayoutConfig ='''{
