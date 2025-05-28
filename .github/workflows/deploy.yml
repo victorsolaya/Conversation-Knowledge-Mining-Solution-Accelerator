@@ -67,9 +67,5 @@ jobs:
         working-directory: docs/workshop
         run: |
           mkdocs build
-          rm -rf ../../site-deploy-temp/
-          mkdir -p ../../site-deploy-temp/
-          cp -r site/* ../../site-deploy-temp/
-          rm -rf ../../*
-          mkdir ../../docs
-          cp -r ../../site-deploy-temp/* ../../docs/
+          rm -rf ../../docs/*
+          cp -r site/* ../../docs/
