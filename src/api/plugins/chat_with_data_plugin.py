@@ -109,7 +109,7 @@ class ChatWithDataPlugin:
                 completion = client.chat.completions.create(
                     model=self.azure_openai_deployment_model,
                     messages=[
-                        {"role": "system", "content": "You are a helpful assistant."},
+                        {"role": "system", "content": "You are an assistant that helps generate valid T-SQL queries."},
                         {"role": "user", "content": sql_prompt},
                     ],
                     temperature=0,
