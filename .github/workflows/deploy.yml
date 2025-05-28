@@ -47,7 +47,7 @@ on:
       - workshop-page
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
@@ -63,9 +63,17 @@ jobs:
         run: |
           pip install mkdocs-material mkdocs-jupyter
 
-      - name: Build and move site to /docs
+      - name: Build MkDocs site
         working-directory: docs/workshop
         run: |
           mkdocs build
           rm -rf ../../docs/*
           cp -r site/* ../../docs/
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: docs
+          # optionally set the branch to deploy to:
+          # publish_branch: gh-pages
