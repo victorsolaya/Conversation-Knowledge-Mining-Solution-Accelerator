@@ -67,13 +67,12 @@ jobs:
         working-directory: docs/workshop
         run: |
           mkdocs build
-          rm -rf ../../docs/*
-          cp -r site/* ../../docs/
+          touch site/.nojekyll  # Disable Jekyll processing
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: docs
+          publish_dir: docs/workshop/site
           # optionally set the branch to deploy to:
           # publish_branch: gh-pages
