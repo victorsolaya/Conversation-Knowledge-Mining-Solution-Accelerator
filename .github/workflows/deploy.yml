@@ -39,7 +39,7 @@
 #           github_token: ${{ secrets.GITHUB_TOKEN }}
 #           publish_dir: workshop/site
 
-name: Build and Deploy MkDocs Site into /docs
+name: Deploy MkDocs site to GitHub Pages
 
 on:
   push:
@@ -64,8 +64,12 @@ jobs:
           pip install mkdocs-material mkdocs-jupyter
 
       - name: Build and move site to /docs
+        working-directory: docs/workshop
         run: |
-          cd workshop
           mkdocs build
-          rm -rf ../docs/*
-          cp -r site/* ../docs/
+          rm -rf ../../site-deploy-temp/
+          mkdir -p ../../site-deploy-temp/
+          cp -r site/* ../../site-deploy-temp/
+          rm -rf ../../*
+          mkdir ../../docs
+          cp -r ../../site-deploy-temp/* ../../docs/
