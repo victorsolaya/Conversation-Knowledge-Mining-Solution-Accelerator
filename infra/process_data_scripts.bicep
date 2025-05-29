@@ -1,6 +1,4 @@
-var resourceGroupLocation = resourceGroup().location
-var solutionLocation = resourceGroupLocation
-
+param solutionLocation string
 param keyVaultName string
 param identity string
 
