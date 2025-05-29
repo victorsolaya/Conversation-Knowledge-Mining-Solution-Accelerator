@@ -214,4 +214,4 @@ These questions serve as a great starting point to explore insights from the dat
 
 ## Next Steps: 
 Now that you've completed your deployment, you can start using the solution. Try out these things to start getting familiar with the capabilities:
-* [Customize the solution](./DeploymentGuide.md) with your own data
+* [Customize the solution](./CustomizeData.md) with your own data
