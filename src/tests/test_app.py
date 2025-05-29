@@ -1,40 +1,63 @@
-import sys
-import types
 import pytest
-from fastapi.testclient import TestClient
-from unittest.mock import patch, MagicMock
+import pytest_asyncio
+from fastapi import FastAPI
+from httpx import AsyncClient, ASGITransport
+from unittest.mock import AsyncMock, patch
 
-# Mock problematic imports before importing app
-sys.modules["api.api_routes"] = MagicMock()
-sys.modules["api.history_routes"] = MagicMock()
+import app as app_module
 
-from app import app, create_app
 
-client = TestClient(app)
+@pytest.fixture
+def mock_agent():
+    return AsyncMock()
 
-def test_health_check():
-    response = client.get("/health")
+
+@pytest_asyncio.fixture
+async def test_app(mock_agent):
+    with patch("app.AgentFactory.get_instance", return_value=mock_agent), \
+         patch("app.AgentFactory.delete_instance", new_callable=AsyncMock):
+        app = app_module.build_app()
+        transport = ASGITransport(app=app)
+        async with AsyncClient(transport=transport, base_url="http://testserver") as ac:
+            yield app, ac
+
+
+@pytest.mark.asyncio
+async def test_health_check(test_app):
+    app, client = test_app
+    response = await client.get("/health")
     assert response.status_code == 200
     assert response.json() == {"status": "healthy"}
 
-def test_create_app_returns_fastapi_instance():
-    app_instance = create_app()
-    assert hasattr(app_instance, "openapi")
-    assert isinstance(app_instance, type(app))
 
-@patch("app.CORSMiddleware")
-@patch("app.FastAPI")
-def test_create_app_configuration(mock_fastapi, mock_cors):
-    mock_app = MagicMock()
-    mock_fastapi.return_value = mock_app
+@pytest.mark.asyncio
+async def test_lifespan_startup_and_shutdown(mock_agent):
+    with patch("app.AgentFactory.get_instance", return_value=mock_agent) as mock_get_instance, \
+         patch("app.AgentFactory.delete_instance", new_callable=AsyncMock) as mock_delete_instance:
 
-    from app import create_app
-    result = create_app()
+        app = app_module.build_app()
 
-    mock_fastapi.assert_called_once_with(
-        title="Conversation Knowledge Mining Solution Accelerator",
-        version="1.0.0"
-    )
-    mock_app.add_middleware.assert_called_once()
-    assert mock_app.include_router.call_count == 2
-    assert result == mock_app
+        # Manually trigger lifespan events
+        async with app_module.lifespan(app):
+            mock_get_instance.assert_called_once()
+            assert hasattr(app.state, "agent")
+            assert app.state.agent == mock_agent
+
+        mock_delete_instance.assert_awaited_once()
+        assert app.state.agent is None
+
+
+def test_build_app_sets_metadata():
+    app = app_module.build_app()
+    assert isinstance(app, FastAPI)
+    assert app.title == "Conversation Knowledge Mining Solution Accelerator"
+    assert app.version == "1.0.0"
+
+
+def test_routes_registered():
+    app = app_module.build_app()
+    route_paths = [route.path for route in app.routes]
+
+    assert "/health" in route_paths
+    assert any(route.path.startswith("/api") for route in app.routes)
+    assert any(route.path.startswith("/history") for route in app.routes)
