@@ -17,7 +17,7 @@ import struct
 key_vault_name = 'kv_to-be-replaced'
 
 file_system_client_name = "data"
-directory = 'custom_call_transcripts'
+directory = 'custom_transcripts'
 audio_directory = 'custom_audiodata'
 
 def get_secrets_from_kv(kv_name, secret_name):
