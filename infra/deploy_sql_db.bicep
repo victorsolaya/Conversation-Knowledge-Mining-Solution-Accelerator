@@ -1,14 +1,10 @@
-@minLength(3)
-@maxLength(15)
-@description('Solution Name')
-param solutionName string
 param solutionLocation string
 param keyVaultName string
 param managedIdentityObjectId string
 param managedIdentityName string
 
-var serverName = '${solutionName }-sql-server'
-var sqlDBName = '${solutionName }-sql-db'
+param serverName string
+param sqlDBName string
 var location = solutionLocation
 var administratorLogin = 'sqladmin'
 var administratorLoginPassword = 'TestPassword_1234'

@@ -491,7 +491,7 @@ const Chat: React.FC<ChatProps> = ({
                   if (parsed?.error && !hasError) {
                     hasError = true;
                     runningText = parsed?.error;
-                  } else if (isChartQuery(userMessage)) {
+                  } else if (isChartQuery(userMessage) && !hasError) {
                     runningText = runningText + textValue;
                   } else if (typeof parsed === "object" && !hasError) {
                     const responseContent  = parsed?.choices?.[0]?.messages?.[0]?.content;
