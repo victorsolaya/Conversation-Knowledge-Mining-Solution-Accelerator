@@ -10,7 +10,6 @@ import re
 
 from datetime import datetime, timedelta
 import time
-import base64
 import pyodbc
 import struct
 
@@ -120,9 +119,6 @@ from azure.search.documents.indexes import SearchIndexClient
 search_credential = AzureKeyCredential(search_key)
 
 search_client = SearchClient(search_endpoint, index_name, search_credential)
-
-# # delete all the documents in the index
-# search_client.delete_documents(search_client.search("*"))
 
 index_client = SearchIndexClient(endpoint=search_endpoint, credential=search_credential)
 
@@ -401,10 +397,6 @@ for path in paths:
         cursor.execute(f"INSERT INTO processed_data (ConversationId, EndTime, StartTime, Content, summary, satisfied, sentiment, topic, key_phrases, complaint) VALUES (?,?,?,?,?,?,?,?,?,?)", (conversation_id, end_timestamp, start_timestamp, content, summary, satisfied, sentiment, topic, key_phrases, complaint))    
         conn.commit()
     
-        # keyPhrases = key_phrases.split(',')
-        # for keyPhrase in keyPhrases:
-        #     cursor.execute(f"INSERT INTO processed_data_key_phrases (ConversationId, key_phrase, sentiment) VALUES (?,?,?)", (conversation_id, keyPhrase, sentiment))
-
         document_id = conversation_id
 
         result = prepare_search_doc(content, document_id)
@@ -471,16 +463,6 @@ def call_gpt4(topics_str1, client):
         Return the topics and their labels in JSON format.Always add 'topics' node and 'label', 'description' attributes in json.
         Do not return anything else.
         """
-    # Phi-3 model client
-    # response = client.complete(
-    #     messages=[
-    #         # SystemMessage(content=prompt),
-    #         UserMessage(content=topic_prompt),
-    #     ],
-    #     max_tokens = 1000,
-    #     temperature = 0,
-    #     top_p = 1
-    # )
 
     # GPT-4o model client
     response = client.chat.completions.create(
@@ -588,17 +570,6 @@ def get_mined_topic_mapping(input_text, list_of_topics):
                 from a list of topics - {list_of_topics}.
                 ALWAYS only return a topic from list - {list_of_topics}. Do not add any other text.'''
 
-    # Phi-3 model client
-    # response = client.complete(
-    #     messages=[
-    #         # SystemMessage(content=prompt),
-    #         UserMessage(content=prompt),
-    #     ],
-    #     max_tokens = 500,
-    #     temperature = 0,
-    #     top_p = 1
-    # )
-
     # GPT-4o model client
     response = client.chat.completions.create(
                 model=deployment,
@@ -669,27 +640,7 @@ print("Data count:", len(data_list))
 # Bulk insert using executemany()
 cursor.executemany(insert_sql, data_list)
 
-# column_names = [i[0] for i in cursor.description]
-# df = pd.DataFrame(rows, columns=column_names)
-# for idx, row in df.iterrows():
-#     cursor.execute(f"INSERT INTO km_processed_data (ConversationId, StartTime, EndTime, Content, summary, satisfied, sentiment, keyphrases, complaint, topic) VALUES (?,?,?,?,?,?,?,?,?,?)", (row['ConversationId'], row['StartTime'], row['EndTime'], row['Content'], row['summary'], row['satisfied'], row['sentiment'], row['keyphrases'], row['complaint'], row['topic']))
 conn.commit()
-
-# update keyphrase table after the data update
-# cursor.execute('DROP TABLE IF EXISTS processed_data_key_phrases')
-# conn.commit()
-# print("Dropped processed_data_key_phrases table")
-
-# create_processed_data_sql = """CREATE TABLE processed_data_key_phrases (
-#                 ConversationId varchar(255),
-#                 key_phrase varchar(500), 
-#                 sentiment varchar(255),
-#                 topic varchar(255), 
-#                 StartTime varchar(255),
-#             );"""
-# cursor.execute(create_processed_data_sql)
-# conn.commit()
-# print('created processed_data_key_phrases table')
 
 sql_stmt = '''select ConversationId, key_phrases, sentiment, mined_topic as topic, StartTime from processed_data'''
 cursor.execute(sql_stmt)
