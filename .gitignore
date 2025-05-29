@@ -12,3 +12,5 @@
 .azure
 .idea
 /myenv
+scriptenv/
+__pycache__/
