@@ -1,21 +1,3 @@
-# -----------------------------
-# Material Theme Configuration
-# ------------------------------
-# red, pink, purple, deep purple, indigo, 
-# blue, light blue, cyan, teal, green, light green, 
-# lime, yellow, amber, orange, deep orange, brown, 
-# grey, blue grey , black, white
-#    primary: pink # teal
-#    accent: indigo
-#
-# *** FONT ***
-# Guide: https://squidfunk.github.io/mkdocs-material/setup/changing-the-fonts/?h=fonts
-# Google Fonts Supported: https://fonts.google.com/
-#
-# *** BLOG ***
-# https://squidfunk.github.io/mkdocs-material/setup/setting-up-a-blog/
-# ---------------------------------
-
 # Project information .........................................
 site_name: "Knowledge Mining Microhack: Workshop Guide"
 site_url: https://blessing-sanusi.github.io/microhack-doc/
