@@ -53,6 +53,23 @@ async def test_update_conversation(mock_track, mock_update, mock_auth, client, h
     assert res.json()["data"]["title"] == "New Title"
 
 
+
+@pytest.mark.asyncio
+@patch("auth.auth_utils.get_authenticated_user_details")
+@patch("services.history_service.HistoryService.update_conversation", new_callable=AsyncMock)
+async def test_update_conversation_missing_id(mock_update, mock_auth, client, headers, mock_user):
+    mock_auth.return_value = mock_user
+    res = await client.post(
+        "/update",
+        json={},  # no conversation_id
+        headers={**headers, "Content-Type": "application/json"}
+    )
+    # Since the route handler swallows HTTPException and returns 500
+    assert res.status_code == 500
+    assert res.json()["error"] == "An internal error has occurred!"
+    mock_update.assert_not_awaited()
+
+
 @pytest.mark.asyncio
 @patch("auth.auth_utils.get_authenticated_user_details")
 @patch("services.history_service.HistoryService.update_message_feedback", new_callable=AsyncMock)
@@ -63,6 +80,38 @@ async def test_update_message_feedback(mock_track, mock_update, mock_auth, clien
 
     res = await client.post("/message_feedback", json={"message_id": "m1", "message_feedback": "positive"}, headers=headers)
     assert res.status_code == 200
+
+@pytest.mark.asyncio
+@patch("auth.auth_utils.get_authenticated_user_details")
+async def test_update_message_feedback_missing_message_id(mock_auth, client, headers, mock_user):
+    mock_auth.return_value = mock_user
+    res = await client.post("/message_feedback", json={"message_feedback": "positive"}, headers=headers)
+    assert res.status_code == 500
+    assert res.json()["error"] == "An internal error has occurred!"
+
+
+@pytest.mark.asyncio
+@patch("auth.auth_utils.get_authenticated_user_details")
+async def test_update_message_feedback_missing_feedback(mock_auth, client, headers, mock_user):
+    mock_auth.return_value = mock_user
+    res = await client.post("/message_feedback", json={"message_id": "m1"}, headers=headers)
+    assert res.status_code == 500
+    assert res.json()["error"] == "An internal error has occurred!"
+
+
+@pytest.mark.asyncio
+@patch("auth.auth_utils.get_authenticated_user_details")
+@patch("services.history_service.HistoryService.update_message_feedback", new_callable=AsyncMock)
+async def test_update_message_feedback_not_found(mock_update, mock_auth, client, headers, mock_user):
+    mock_auth.return_value = mock_user
+    mock_update.return_value = False
+    res = await client.post(
+        "/message_feedback", 
+        json={"message_id": "m1", "message_feedback": "positive"}, 
+        headers=headers
+    )
+    assert res.status_code == 500
+    assert res.json()["error"] == "An internal error has occurred!"
 
 
 @pytest.mark.asyncio
@@ -84,6 +133,21 @@ async def test_delete_conversation(mock_track, mock_delete, mock_auth, client, h
 
 @pytest.mark.asyncio
 @patch("auth.auth_utils.get_authenticated_user_details")
+@patch("services.history_service.HistoryService.delete_conversation", new_callable=AsyncMock)
+async def test_delete_conversation_not_found(mock_delete, mock_auth, client, headers, mock_user):
+    mock_auth.return_value = mock_user
+    mock_delete.return_value = False
+    res = await client.request(
+        "DELETE", "/delete",
+        content=json.dumps({"conversation_id": "c1"}),
+        headers={**headers, "Content-Type": "application/json"}
+    )
+    assert res.status_code == 500
+    assert res.json()["error"] == "An internal error has occurred!"
+
+
+@pytest.mark.asyncio
+@patch("auth.auth_utils.get_authenticated_user_details")
 @patch("services.history_service.HistoryService.get_conversations", new_callable=AsyncMock)
 @patch("common.logging.event_utils.track_event_if_configured")
 async def test_list_conversations(mock_track, mock_get, mock_auth, client, headers, mock_user):
@@ -93,6 +157,20 @@ async def test_list_conversations(mock_track, mock_get, mock_auth, client, heade
     res = await client.get("/list?offset=0&limit=10", headers=headers)
     assert res.status_code == 200
     assert isinstance(res.json(), list)
+
+
+@pytest.mark.asyncio
+@patch("auth.auth_utils.get_authenticated_user_details")
+@patch("services.history_service.HistoryService.get_conversations", new_callable=AsyncMock)
+@patch("common.logging.event_utils.track_event_if_configured")
+async def test_list_conversations_not_found(mock_track, mock_get, mock_auth, client, headers, mock_user):
+    mock_auth.return_value = mock_user
+    mock_get.return_value = None
+
+    res = await client.get("/list", headers=headers)
+    assert res.status_code == 404
+    assert "error" in res.json()
+
 
 
 @pytest.mark.asyncio
@@ -110,6 +188,20 @@ async def test_get_conversation_messages(mock_track, mock_get, mock_auth, client
 
 @pytest.mark.asyncio
 @patch("auth.auth_utils.get_authenticated_user_details")
+@patch("services.history_service.HistoryService.get_conversation_messages", new_callable=AsyncMock)
+@patch("common.logging.event_utils.track_event_if_configured")
+async def test_get_conversation_messages_not_found(mock_track, mock_get, mock_auth, client, headers, mock_user):
+    mock_auth.return_value = mock_user
+    mock_get.return_value = None
+
+    res = await client.post("/read", json={"conversation_id": "c1"}, headers=headers)
+    assert res.status_code == 500
+    assert res.json()["error"] == "An internal error has occurred!"
+
+
+
+@pytest.mark.asyncio
+@patch("auth.auth_utils.get_authenticated_user_details")
 @patch("services.history_service.HistoryService.rename_conversation", new_callable=AsyncMock)
 @patch("common.logging.event_utils.track_event_if_configured")
 async def test_rename_conversation(mock_track, mock_rename, mock_auth, client, headers, mock_user):
@@ -119,6 +211,25 @@ async def test_rename_conversation(mock_track, mock_rename, mock_auth, client, h
     res = await client.post("/rename", json={"conversation_id": "c1", "title": "new name"}, headers=headers)
     assert res.status_code == 200
     assert res.json()["title"] == "new name"
+
+
+@pytest.mark.asyncio
+@patch("auth.auth_utils.get_authenticated_user_details")
+async def test_rename_conversation_missing_conversation_id(mock_auth, client, headers, mock_user):
+    mock_auth.return_value = mock_user
+    res = await client.post("/rename", json={"title": "new name"}, headers=headers)
+    assert res.status_code == 500
+    assert res.json()["error"] == "An internal error has occurred!"
+
+
+@pytest.mark.asyncio
+@patch("auth.auth_utils.get_authenticated_user_details")
+async def test_rename_conversation_missing_title(mock_auth, client, headers, mock_user):
+    mock_auth.return_value = mock_user
+    res = await client.post("/rename", json={"conversation_id": "c1"}, headers=headers)
+    assert res.status_code == 500
+    assert res.json()["error"] == "An internal error has occurred!"
+
 
 
 @pytest.mark.asyncio
@@ -198,3 +309,10 @@ async def test_ensure_cosmos_unknown_error(mock_track, mock_ensure, client):
     res = await client.get("/history/ensure")
     assert res.status_code == 500
     assert res.json()["error"] == "CosmosDB is not configured or not working"
+
+
+@pytest.mark.asyncio
+@patch("auth.auth_utils.get_authenticated_user_details", side_effect=Exception("auth error"))
+async def test_add_conversation_exception(mock_auth, client, headers):
+    res = await client.post("/generate", json={"message": "hi"}, headers=headers)
+    assert res.status_code == 500
