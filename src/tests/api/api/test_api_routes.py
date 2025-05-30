@@ -76,6 +76,7 @@ def test_fetch_chart_data_with_filters_error(create_test_client):
         assert response.status_code == 500
         assert "error" in response.json()
 
+
 def test_fetch_chart_data_error_handling(create_test_client):
     with patch("api.api_routes.ChartService") as MockChartService:
         mock_instance = MockChartService.return_value

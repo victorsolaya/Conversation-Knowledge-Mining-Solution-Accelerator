@@ -189,6 +189,7 @@ async def test_ensure_cosmos_invalid_config(mock_track, mock_ensure, client):
     assert res.json()["error"] == "Invalid CosmosDB configuration"
 
 
+
 @pytest.mark.asyncio
 @patch("services.history_service.HistoryService.ensure_cosmos", new_callable=AsyncMock)
 @patch("common.logging.event_utils.track_event_if_configured")
