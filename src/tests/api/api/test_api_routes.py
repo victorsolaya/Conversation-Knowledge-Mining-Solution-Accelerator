@@ -58,6 +58,35 @@ def test_fetch_chart_data_with_filters_basic(create_test_client):
         assert response.status_code == 200
         assert response.json() == {"filtered": True}
 
+def test_fetch_chart_data_with_filters_error(create_test_client):
+    with patch("api.api_routes.ChartService") as MockChartService:
+        mock_instance = MockChartService.return_value
+        mock_instance.fetch_chart_data_with_filters = AsyncMock(side_effect=Exception("fail"))
+
+        client = create_test_client()
+        payload = {
+            "selected_filters": {
+                "Topic": ["Tech"],
+                "Sentiment": ["Positive"],
+                "DateRange": ["Last 30 Days"]
+            }
+        }
+        response = client.post("/fetchChartDataWithFilters", json=payload)
+
+        assert response.status_code == 500
+        assert "error" in response.json()
+
+def test_fetch_chart_data_error_handling(create_test_client):
+    with patch("api.api_routes.ChartService") as MockChartService:
+        mock_instance = MockChartService.return_value
+        mock_instance.fetch_chart_data = AsyncMock(side_effect=Exception("fail"))
+
+        client = create_test_client()
+        response = client.get("/fetchChartData")
+
+        assert response.status_code == 500
+        assert "error" in response.json()
+
 
 def test_chat_endpoint_basic(create_test_client):
     with patch("api.api_routes.ChatService") as MockChatService:
@@ -110,6 +139,48 @@ def test_get_chart_config_found(create_test_client, monkeypatch):
 
 
 def test_get_chart_config_missing(create_test_client, monkeypatch):
+    monkeypatch.delenv("DISPLAY_CHART_DEFAULT", raising=False)
+
+    client = create_test_client()
+    response = client.get("/display-chart-default")
+
+    assert response.status_code == 400
+    assert "error" in response.json()
+
+
+def test_fetch_filter_data_error_handling(create_test_client):
+    with patch("api.api_routes.ChartService") as MockChartService:
+        mock_instance = MockChartService.return_value
+        mock_instance.fetch_filter_data = AsyncMock(side_effect=Exception("fail"))
+
+        client = create_test_client()
+        response = client.get("/fetchFilterData")
+
+        assert response.status_code == 500
+        assert "error" in response.json()
+
+
+def test_layout_config_json_decode_error(create_test_client, monkeypatch):
+    monkeypatch.setenv("REACT_APP_LAYOUT_CONFIG", "not-a-json")
+
+    client = create_test_client()
+    response = client.get("/layout-config")
+
+    assert response.status_code == 400
+    assert "error" in response.json()
+
+
+def test_get_chart_config_success(create_test_client, monkeypatch):
+    monkeypatch.setenv("DISPLAY_CHART_DEFAULT", "false")
+
+    client = create_test_client()
+    response = client.get("/display-chart-default")
+
+    assert response.status_code == 200
+    assert response.json() == {"isChartDisplayDefault": "false"}
+
+
+def test_get_chart_config_env_missing(create_test_client, monkeypatch):
     monkeypatch.delenv("DISPLAY_CHART_DEFAULT", raising=False)
 
     client = create_test_client()

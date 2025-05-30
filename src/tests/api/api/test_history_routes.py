@@ -156,3 +156,44 @@ async def test_ensure_cosmos(mock_track, mock_ensure, client):
     res = await client.get("/history/ensure")
     assert res.status_code == 200
     assert res.json()["message"] == "CosmosDB is configured and working"
+
+
+
+@pytest.mark.asyncio
+@patch("services.history_service.HistoryService.ensure_cosmos", new_callable=AsyncMock)
+@patch("common.logging.event_utils.track_event_if_configured")
+async def test_ensure_cosmos_failure(mock_track, mock_ensure, client):
+    mock_ensure.return_value = (False, "connection failed")
+    res = await client.get("/history/ensure")
+    assert res.status_code == 422
+    assert "error" in res.json()
+
+
+@pytest.mark.asyncio
+@patch("services.history_service.HistoryService.ensure_cosmos", new_callable=AsyncMock)
+@patch("common.logging.event_utils.track_event_if_configured")
+async def test_ensure_cosmos_invalid_credentials(mock_track, mock_ensure, client):
+    mock_ensure.side_effect = Exception("Invalid credentials")
+    res = await client.get("/history/ensure")
+    assert res.status_code == 401
+    assert res.json()["error"] == "Invalid credentials"
+
+
+@pytest.mark.asyncio
+@patch("services.history_service.HistoryService.ensure_cosmos", new_callable=AsyncMock)
+@patch("common.logging.event_utils.track_event_if_configured")
+async def test_ensure_cosmos_invalid_config(mock_track, mock_ensure, client):
+    mock_ensure.side_effect = Exception("Invalid CosmosDB database name")
+    res = await client.get("/history/ensure")
+    assert res.status_code == 422
+    assert res.json()["error"] == "Invalid CosmosDB configuration"
+
+
+@pytest.mark.asyncio
+@patch("services.history_service.HistoryService.ensure_cosmos", new_callable=AsyncMock)
+@patch("common.logging.event_utils.track_event_if_configured")
+async def test_ensure_cosmos_unknown_error(mock_track, mock_ensure, client):
+    mock_ensure.side_effect = Exception("Something went wrong")
+    res = await client.get("/history/ensure")
+    assert res.status_code == 500
+    assert res.json()["error"] == "CosmosDB is not configured or not working"
