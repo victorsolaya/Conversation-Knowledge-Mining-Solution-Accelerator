@@ -15,19 +15,19 @@ Analysts working with large volumes of conversational data can use this solution
 </div>
 <br/>
 
-<h2><img src="./docs/images/readme/solution-overview.png" width="48" />
+<h2><img src="./documents/Images/ReadMe/solution-overview.png" width="48" />
 Solution overview
 </h2>
 
 Leverages Azure AI Content Understanding, Azure AI Search, Azure OpenAI Service, Semantic Kernel, Azure SQL Database, and Cosmos DB to process large volumes of conversational data. Audio and text inputs are analyzed through event-driven pipelines to extract and vectorize key information, orchestrate intelligent responses, and power an interactive web front-end for exploring insights using natural language.
 
 ### Solution architecture
-|![image](./docs/images/readme/solution-architecture.png)|
+|![image](./documents/Images/ReadMe/solution-architecture.png)|
 |---|
 
 ### Additional resources
 
-[Technical Architecture](./docs/TechnicalArchitecture.md)
+[Technical Architecture](./documents/TechnicalArchitecture.md)
 
 <br/>
 
@@ -55,14 +55,14 @@ Summarized conversations, topic generation, and key phrase extraction support fa
 
 
 <br /><br />
-<h2><img src="./docs/images/readme/quick-deploy.png" width="48" />
+<h2><img src="./documents/Images/ReadMe/quick-deploy.png" width="48" />
 Quick deploy
 </h2>
 
 ### How to install or deploy
 Follow the quick deploy steps on the deployment guide to deploy this solution to your own Azure subscription.
 
-[Click here to launch the deployment guide](./docs/DeploymentGuide.md)
+[Click here to launch the deployment guide](./documents/DeploymentGuide.md)
 <br/><br/>
 
 
@@ -114,12 +114,12 @@ _Note: This is not meant to outline all costs as selected SKUs, scaled use, cust
 either by deleting the resource group in the Portal or running `azd down`.
 
 <br /><br />
-<h2><img src="./docs/images/readme/business-scenario.png" width="48" />
+<h2><img src="./documents/Images/ReadMe/business-scenario.png" width="48" />
 Business scenario
 </h2>
 
 
-|![image](./docs/images/readme/ui.png)|
+|![image](./documents/Images/ReadMe/ui.png)|
 |---|
 
 <br/>
@@ -152,7 +152,7 @@ Clear, contextual insights empower employees to take meaningful action based on 
 
 <br /><br />
 
-<h2><img src="./docs/images/readme/supporting-documentation.png" width="48" />
+<h2><img src="./documents/Images/ReadMe/supporting-documentation.png" width="48" />
 Supporting documentation
 </h2>
 
