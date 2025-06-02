@@ -12,6 +12,7 @@ param azureAiProjectConnString string
 param userassignedIdentityId string
 param aiProjectName string
 param keyVaultName string
+param aiServicesName string
 
 var imageName = 'DOCKER|kmcontainerreg.azurecr.io/km-api:${imageTag}'
 //var name = '${solutionName}-api'
@@ -118,8 +119,8 @@ resource role 'Microsoft.DocumentDB/databaseAccounts/sqlRoleAssignments@2022-05-
   }
 }
 
-resource aiHubProject 'Microsoft.MachineLearningServices/workspaces@2024-01-01-preview' existing = {
-  name: aiProjectName
+resource aiProject 'Microsoft.CognitiveServices/accounts/projects@2025-04-01-preview' existing = {
+  name: '${aiServicesName}/${aiProjectName}'
 }
 
 resource aiDeveloper 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = {
@@ -127,8 +128,8 @@ resource aiDeveloper 'Microsoft.Authorization/roleDefinitions@2022-04-01' existi
 }
 
 resource aiDeveloperAccessProj 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-  name: guid(appService.name, aiHubProject.id, aiDeveloper.id)
-  scope: aiHubProject
+  name: guid(appService.name, aiProject.id, aiDeveloper.id)
+  scope: aiProject
   properties: {
     roleDefinitionId: aiDeveloper.id
     principalId: appService.outputs.identityPrincipalId

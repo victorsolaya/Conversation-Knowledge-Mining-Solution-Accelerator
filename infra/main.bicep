@@ -200,6 +200,7 @@ module backend_docker 'deploy_backend_docker.bicep' = {
     userassignedIdentityId: managedIdentityModule.outputs.managedIdentityBackendAppOutput.id
     aiProjectName: aifoundry.outputs.aiProjectName
     keyVaultName: kvault.outputs.keyvaultName
+    aiServicesName: aifoundry.outputs.aiServicesName
     appSettings: {
       AZURE_OPEN_AI_DEPLOYMENT_MODEL: gptModelName
       AZURE_OPEN_AI_ENDPOINT: aifoundry.outputs.aiServicesTarget
@@ -223,6 +224,7 @@ module backend_docker 'deploy_backend_docker.bicep' = {
       USE_AI_PROJECT_CLIENT: 'False'
       DISPLAY_CHART_DEFAULT: 'False'
       APPLICATIONINSIGHTS_CONNECTION_STRING: aifoundry.outputs.applicationInsightsConnectionString
+      DUMMY_TEST: 'True'
     }
   }
   scope: resourceGroup(resourceGroup().name)
@@ -251,7 +253,7 @@ output AZURE_CONTENT_UNDERSTANDING_LOCATION string = contentUnderstandingLocatio
 output AZURE_SECONDARY_LOCATION string = secondaryLocation
 output APPINSIGHTS_INSTRUMENTATIONKEY string = backend_docker.outputs.appInsightInstrumentationKey
 output AZURE_AI_PROJECT_CONN_STRING string = aifoundry.outputs.azureProjectConnString
-output AZURE_AI_PROJECT_NAME string = aifoundry.outputs.azureProjectName
+output AZURE_AI_PROJECT_NAME string = aifoundry.outputs.aiProjectName
 output AZURE_AI_SEARCH_API_KEY string = ''
 output AZURE_AI_SEARCH_ENDPOINT string = aifoundry.outputs.aiSearchTarget
 output AZURE_AI_SEARCH_INDEX string = 'call_transcripts_index'
