@@ -18,7 +18,7 @@ class TestAuthUtils(unittest.TestCase):
             "x-ms-client-principal": "encodedstring"
         }
 
-        request_headers = {}  # Missing auth header to simulate dev mode
+        request_headers = {}  
         result = auth_utils.get_authenticated_user_details(request_headers)
 
         self.assertEqual(result["user_principal_id"], "123")

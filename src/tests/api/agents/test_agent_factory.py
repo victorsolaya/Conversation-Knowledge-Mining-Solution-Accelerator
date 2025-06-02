@@ -116,4 +116,4 @@ async def test_delete_instance_handles_missing_thread_cache(
 async def test_delete_instance_does_nothing_if_none(mock_azure_agent):
     AgentFactory._instance = None
     await AgentFactory.delete_instance()
-    # No assertion needed — test passes if nothing throws
+    

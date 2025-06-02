@@ -4,7 +4,7 @@ from unittest.mock import AsyncMock, patch, Mock
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
-from api import api_routes # assuming your router is defined here
+from api import api_routes
 
 @pytest.fixture
 def create_test_client():

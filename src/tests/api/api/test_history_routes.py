@@ -61,10 +61,10 @@ async def test_update_conversation_missing_id(mock_update, mock_auth, client, he
     mock_auth.return_value = mock_user
     res = await client.post(
         "/update",
-        json={},  # no conversation_id
+        json={},  
         headers={**headers, "Content-Type": "application/json"}
     )
-    # Since the route handler swallows HTTPException and returns 500
+    
     assert res.status_code == 500
     assert res.json()["error"] == "An internal error has occurred!"
     mock_update.assert_not_awaited()
