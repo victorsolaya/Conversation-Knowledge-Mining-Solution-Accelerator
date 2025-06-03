@@ -7,7 +7,7 @@ If you'd like to customize the solution accelerator, here are some ways you migh
 2. Deploy with Microsoft Fabric by following the steps in [Fabric_deployment.md](./Fabric_deployment.md)
 
 
-3.  **Create Fabric workspace**
+3.  **Create or Use an Existing Microsoft Fabric Workspace**
 
     > ℹ️ **Note:** If you already have an existing Microsoft Fabric Workspace, you can skip workspace creation and **continue from Point 5 (Environment Creation)**.
     1.  Navigate to ([Fabric Workspace](https://app.fabric.microsoft.com/))
