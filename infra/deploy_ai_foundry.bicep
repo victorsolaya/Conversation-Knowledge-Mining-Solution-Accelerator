@@ -531,8 +531,7 @@ resource azureLocatioEntry 'Microsoft.KeyVault/vaults/secrets@2021-11-01-preview
 
 output keyvaultName string = keyvaultName
 output keyvaultId string = keyVault.id
-
-output aiServicesTarget string = aiServices.properties.endpoint //aiServices_m.properties.endpoint
+output aiServicesTarget string = aiServices.properties.endpoints['OpenAI Language Model Instance API'] //aiServices_m.properties.endpoint
 output aiServicesName string = aiServicesName //aiServicesName_m
 output aiServicesId string = aiServices.id //aiServices_m.id
 
@@ -548,5 +547,5 @@ output storageAccountName string = storageNameCleaned
 
 output azureOpenAIKeyName string = azureOpenAIApiKeyEntry.name
 
-output azureProjectConnString string = '${aiProjectName};${subscription().subscriptionId};${resourceGroup().name};${aiProject.name}'
+output projectEndpoint string = aiProject.properties.endpoints['AI Foundry API']
 output applicationInsightsConnectionString string = applicationInsights.properties.ConnectionString
