@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.36.1.42791",
-      "templateHash": "13316946518810732992"
+      "templateHash": "3001611551215986671"
     }
   },
   "parameters": {
@@ -2797,7 +2797,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.36.1.42791",
-              "templateHash": "3016771873556172389"
+              "templateHash": "8556329617743538291"
             }
           },
           "parameters": {
@@ -2887,6 +2887,7 @@
               ]
             },
             {
+              "condition": "[equals(parameters('useLocalBuild'), 'true')]",
               "type": "Microsoft.Authorization/roleAssignments",
               "apiVersion": "2022-04-01",
               "scope": "[format('Microsoft.ContainerRegistry/registries/{0}', parameters('acrName'))]",
@@ -3180,7 +3181,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.36.1.42791",
-              "templateHash": "2533491669662748886"
+              "templateHash": "14303739685044053977"
             }
           },
           "parameters": {
@@ -3218,6 +3219,7 @@
           },
           "resources": [
             {
+              "condition": "[equals(parameters('useLocalBuild'), 'true')]",
               "type": "Microsoft.Authorization/roleAssignments",
               "apiVersion": "2022-04-01",
               "scope": "[format('Microsoft.ContainerRegistry/registries/{0}', parameters('acrName'))]",
