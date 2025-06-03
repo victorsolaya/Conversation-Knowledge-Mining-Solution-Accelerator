@@ -9,12 +9,24 @@ metadata:
   template: conversation-knowledge-mining@1.0
 
 hooks:
+  preprovision:
+    windows:
+      run: |
+        $timestamp = Get-Date -Format "yyyyMMdd-HHmmss"; $logFile = "azd_preprovision_$timestamp.log"; ./infra/scripts/docker-build.ps1 $env:AZURE_SUBSCRIPTION_ID $env:AZURE_ENV_NAME $env:AZURE_LOCATION $env:AZURE_RESOURCE_GROUP $env:USE_LOCAL_BUILD *>&1 | Tee-Object -FilePath $logFile
+      shell: pwsh
+      continueOnError: false
+      interactive: true
+    posix:
+      run: |
+        timestamp=$(date +"%Y%m%d-%H%M%S"); logFile="azd_preprovision_$timestamp.log"; sed -i 's/\r$//' ./infra/scripts/docker-build.sh; ./infra/scripts/docker-build.sh "$AZURE_SUBSCRIPTION_ID" "$AZURE_ENV_NAME" "$AZURE_LOCATION" "$AZURE_RESOURCE_GROUP" "$USE_LOCAL_BUILD" 2>&1 | tee "$logFile"
+      shell: sh
+      continueOnError: false
+      interactive: true
   postprovision:
     windows:
       run: |
         Write-Host "Web app URL: "
         Write-Host "$env:WEB_APP_URL" -ForegroundColor Cyan
-        $timestamp = Get-Date -Format "yyyyMMdd-HHmmss"; $logFile = "azd_preprovision_$timestamp.log"; ./infra/scripts/docker-build.ps1 $env:AZURE_SUBSCRIPTION_ID $env:AZURE_ENV_NAME $env:AZURE_LOCATION $env:AZURE_RESOURCE_GROUP $env:USE_LOCAL_BUILD $env:ACR_NAME $env:ACR_IMAGE_TAG *>&1 | Tee-Object -FilePath $logFile
       shell: pwsh
       continueOnError: false
       interactive: true
@@ -22,7 +34,6 @@ hooks:
       run: |
         echo "Web app URL: "
         echo $WEB_APP_URL
-        timestamp=$(date +"%Y%m%d-%H%M%S"); logFile="azd_preprovision_$timestamp.log"; sed -i 's/\r$//' ./infra/scripts/docker-build.sh; ./infra/scripts/docker-build.sh "$AZURE_SUBSCRIPTION_ID" "$AZURE_ENV_NAME" "$AZURE_LOCATION" "$AZURE_RESOURCE_GROUP" "$USE_LOCAL_BUILD" "$ACR_NAME" "$ACR_IMAGE_TAG" 2>&1 | tee "$logFile"
       shell: sh
       continueOnError: false
       interactive: true

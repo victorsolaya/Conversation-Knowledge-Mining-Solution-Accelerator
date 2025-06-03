@@ -103,7 +103,7 @@ module kvault 'deploy_keyvault.bicep' = {
 module containerRegistry 'deploy_container_registry.bicep' = {
   name: 'deploy_container_registry'
   params: {
-    solutionName: solutionPrefix
+    environmentName: environmentName
     solutionLocation: solutionLocation
   }
 }
@@ -218,6 +218,7 @@ module backend_docker 'deploy_backend_docker.bicep' = {
     userassignedIdentityId: managedIdentityModule.outputs.managedIdentityBackendAppOutput.id
     aiProjectName: aifoundry.outputs.aiProjectName
     keyVaultName: kvault.outputs.keyvaultName
+    useLocalBuild: useLocalBuildLower
     appSettings: {
       AZURE_OPEN_AI_DEPLOYMENT_MODEL: gptModelName
       AZURE_OPEN_AI_ENDPOINT: aifoundry.outputs.aiServicesTarget
@@ -255,6 +256,7 @@ module frontend_docker 'deploy_frontend_docker.bicep' = {
     acrName: useLocalBuildLower == 'true' ? containerRegistry.outputs.createdAcrName : acrName
     appServicePlanId: hostingplan.outputs.name
     applicationInsightsId: aifoundry.outputs.applicationInsightsId
+    useLocalBuild: useLocalBuildLower
     appSettings:{
       APP_API_BASE_URL:backend_docker.outputs.appUrl
     }
