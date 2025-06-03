@@ -3,11 +3,13 @@
 ### How to customize 
 
 If you'd like to customize the solution accelerator, here are some ways you might do that:
-- Ingest your own [audio conversation files](./ConversationalDataFormat.md) by uploading them into the `cu_audio_files_all` lakehouse folder and run the data pipeline
-- Deploy with Microsoft Fabric by following the steps in [Fabric_deployment.md](./Fabric_deployment.md)
+1. Ingest your own [audio conversation files](./ConversationalDataFormat.md) by uploading them into the `cu_audio_files_all` lakehouse folder and run the data pipeline
+2. Deploy with Microsoft Fabric by following the steps in [Fabric_deployment.md](./Fabric_deployment.md)
 
 
 3.  **Create Fabric workspace**
+
+    > ℹ️ **Note:** If you already have an existing Microsoft Fabric Workspace, you can skip workspace creation and **continue from Point 5**.
     1.  Navigate to ([Fabric Workspace](https://app.fabric.microsoft.com/))
     2.  Click on Data Engineering experience
     3.  Click on Workspaces from left Navigation
@@ -38,7 +40,7 @@ If you'd like to customize the solution accelerator, here are some ways you migh
          4.   ```cd ./Conversation-Knowledge-Mining-Solution-Accelerator/Deployment/scripts/fabric_scripts```
          5.   ```sh ./run_fabric_items_scripts.sh keyvault_param workspaceid_param solutionprefix_param```
               1.   keyvault_param - the name of the keyvault that was created in Step 1
-              2.   workspaceid_param - the workspaceid created in Step 2
+              2.   workspaceid_param - Existing workspaceid or workspaceid created in Step 3
               3.   solutionprefix_param - prefix used to append to lakehouse upon creation
 5.  **Add App Authentication**
    
