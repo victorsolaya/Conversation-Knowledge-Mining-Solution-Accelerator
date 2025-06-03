@@ -320,13 +320,11 @@ resource aiProject 'Microsoft.CognitiveServices/accounts/projects@2025-04-01-pre
   parent: aiServices
   name: aiProjectName
   location: solutionLocation
+  kind: 'AIServices'
   identity: {
     type: 'SystemAssigned'
   }
-  properties: {
-    description: 'AI Project'
-    displayName: aiProjectName
-  }
+  properties: {}
 }
 
 resource project_connection_azureai_search 'Microsoft.CognitiveServices/accounts/projects/connections@2025-04-01-preview' = {
