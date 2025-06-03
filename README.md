@@ -76,7 +76,9 @@ Simple deploy
       
        -  Location - location of resources, by default it will use the resource group's location
            
-2.  **Create Fabric workspace**
+2.  **Create or Use an Existing Microsoft Fabric Workspace**
+
+    > ℹ️ Note: If you already have an existing Microsoft Fabric Workspace, you can **skip this step** and proceed to step 3. To retrieve an existing Workspace ID, check **Point v below**.
     1.  Navigate to ([Fabric Workspace](https://app.fabric.microsoft.com/))
     2.  Click on Workspaces from left Navigation
     3.  Click on + New Workspace
@@ -96,7 +98,7 @@ Simple deploy
          4.   ```cd ./Customer-Service-Conversational-Insights-with-Azure-OpenAI-Services/Deployment/scripts/fabric_scripts```
          5.   ```sh ./run_fabric_items_scripts.sh keyvault_param workspaceid_param solutionprefix_param```
               1.   keyvault_param - the name of the keyvault that was created in Step 1
-              2.   workspaceid_param - the workspaceid created in Step 2
+              2.   workspaceid_param - the Existing Workspaceid or workspaceid created in Step 2
               3.   solutionprefix_param - prefix used to append to lakehouse upon creation
     4.  Get Fabric Lakehouse connection details:
     5.   Once deployment is complete, navigate to Fabric Workspace
