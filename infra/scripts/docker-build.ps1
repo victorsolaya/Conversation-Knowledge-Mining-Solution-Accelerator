@@ -42,15 +42,6 @@ $ACR_ENDPOINT = $OUTPUTS.acrEndpoint.value
 Write-Host "Extracted ACR Name: $ACR_NAME"
 Write-Host "Extracted ACR Endpoint: $ACR_ENDPOINT"
 
-# Store outputs in a .env file
-Set-Content -Path .env -Value "ACR_NAME=$ACR_NAME`nACR_ENDPOINT=$ACR_ENDPOINT"
-
-# Set ACR details as environment variables in AZD
-azd env set ACR_NAME $ACR_NAME
-azd env set ACR_ENDPOINT $ACR_ENDPOINT
-
-Write-Host "Saved ACR details to AZD environment variables."
-
 # STEP 3: Login to Azure Container Registry
 Write-Host "Logging into Azure Container Registry: $ACR_NAME"
 az acr login -n $ACR_NAME
