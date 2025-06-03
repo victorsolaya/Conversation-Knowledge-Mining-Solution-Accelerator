@@ -16,7 +16,7 @@ Check the [Azure Products by Region](https://azure.microsoft.com/en-us/explore/g
 - [Azure Container Apps](https://learn.microsoft.com/en-us/azure/container-apps/)
 - [Azure Container Registry](https://learn.microsoft.com/en-us/azure/container-registry/)
 - [Embedding Deployment Capacity](https://learn.microsoft.com/en-us/azure/ai-services/openai/concepts/models#embedding-models)
-- [Azure Semantic Search](./docs/AzureSemanticSearchRegion.md)
+- [Azure Semantic Search](./AzureSemanticSearchRegion.md)
 
 Here are some example regions where the services are available: East US, East US2, Australia East, UK South, France Central.
 
