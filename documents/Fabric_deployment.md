@@ -9,7 +9,7 @@ If you'd like to customize the solution accelerator, here are some ways you migh
 
 3.  **Create Fabric workspace**
 
-    > ℹ️ **Note:** If you already have an existing Microsoft Fabric Workspace, you can skip workspace creation and **continue from Point 5**.
+    > ℹ️ **Note:** If you already have an existing Microsoft Fabric Workspace, you can skip workspace creation and **continue from Point 5 (Environment Creation)**.
     1.  Navigate to ([Fabric Workspace](https://app.fabric.microsoft.com/))
     2.  Click on Data Engineering experience
     3.  Click on Workspaces from left Navigation
