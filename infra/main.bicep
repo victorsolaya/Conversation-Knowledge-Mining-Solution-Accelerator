@@ -6,6 +6,9 @@ var abbrs = loadJsonContent('./abbreviations.json')
 @description('A unique prefix for all resources in this deployment. This should be 3-20 characters long:')
 param environmentName string
 
+@description('Optional: Existing Log Analytics Workspace Resource ID')
+param existingLogAnalyticsWorkspaceId string = ''
+
 @minLength(1)
 @description('Location for the Content Understanding service deployment:')
 @allowed(['swedencentral', 'australiaeast'])
@@ -28,18 +31,12 @@ param secondaryLocation string
 ])
 param deploymentType string = 'GlobalStandard'
 
-@minLength(1)
 @description('Name of the GPT model to deploy:')
-@allowed([
-  'gpt-4o-mini'
-  'gpt-4o'
-  'gpt-4'
-])
 param gptModelName string = 'gpt-4o-mini'
 
-// @minLength(1)
-// @description('Version of the GPT model to deploy:')
-// param gptModelVersion string = '2024-02-15-preview' //'2024-08-06'
+@description('Version of the GPT model to deploy:')
+param gptModelVersion string = '2024-07-18'
+
 var azureOpenAIApiVersion = '2024-02-15-preview'
 
 @minValue(10)
@@ -118,12 +115,15 @@ module aifoundry 'deploy_ai_foundry.bicep' = {
     cuLocation: contentUnderstandingLocation
     deploymentType: deploymentType
     gptModelName: gptModelName
+    gptModelVersion: gptModelVersion
     azureOpenAIApiVersion: azureOpenAIApiVersion
     gptDeploymentCapacity: gptDeploymentCapacity
     embeddingModel: embeddingModel
     embeddingDeploymentCapacity: embeddingDeploymentCapacity
     managedIdentityObjectId: managedIdentityModule.outputs.managedIdentityOutput.objectId
     containerRegistryId: containerRegistry.outputs.createdAcrId
+    existingLogAnalyticsWorkspaceId: existingLogAnalyticsWorkspaceId
+
   }
   scope: resourceGroup(resourceGroup().name)
 }
@@ -185,6 +185,7 @@ module uploadFiles 'deploy_post_deployment_scripts.bicep' = {
     managedIdentityClientId:managedIdentityModule.outputs.managedIdentityOutput.clientId
     keyVaultName:aifoundry.outputs.keyvaultName
     logAnalyticsWorkspaceResourceName: aifoundry.outputs.logAnalyticsWorkspaceResourceName
+    logAnalyticsWorkspaceResourceGroup: aifoundry.outputs.logAnalyticsWorkspaceResourceGroup
     sqlServerName: sqlDBModule.outputs.sqlServerName
     sqlDbName: sqlDBModule.outputs.sqlDbName
     sqlUsers: [
