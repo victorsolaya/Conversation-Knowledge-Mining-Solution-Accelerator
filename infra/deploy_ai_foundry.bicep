@@ -320,13 +320,11 @@ resource aiProject 'Microsoft.CognitiveServices/accounts/projects@2025-04-01-pre
   parent: aiServices
   name: aiProjectName
   location: solutionLocation
+  kind: 'AIServices'
   identity: {
     type: 'SystemAssigned'
   }
-  properties: {
-    description: 'AI Project'
-    displayName: aiProjectName
-  }
+  properties: {}
 }
 
 resource project_connection_azureai_search 'Microsoft.CognitiveServices/accounts/projects/connections@2025-04-01-preview' = {
@@ -533,8 +531,7 @@ resource azureLocatioEntry 'Microsoft.KeyVault/vaults/secrets@2021-11-01-preview
 
 output keyvaultName string = keyvaultName
 output keyvaultId string = keyVault.id
-
-output aiServicesTarget string = aiServices.properties.endpoint //aiServices_m.properties.endpoint
+output aiServicesTarget string = aiServices.properties.endpoints['OpenAI Language Model Instance API'] //aiServices_m.properties.endpoint
 output aiServicesName string = aiServicesName //aiServicesName_m
 output aiServicesId string = aiServices.id //aiServices_m.id
 
@@ -550,5 +547,5 @@ output storageAccountName string = storageNameCleaned
 
 output azureOpenAIKeyName string = azureOpenAIApiKeyEntry.name
 
-output azureProjectConnString string = '${aiProjectName};${subscription().subscriptionId};${resourceGroup().name};${aiProject.name}'
+output projectEndpoint string = aiProject.properties.endpoints['AI Foundry API']
 output applicationInsightsConnectionString string = applicationInsights.properties.ConnectionString
