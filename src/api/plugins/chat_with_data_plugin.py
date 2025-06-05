@@ -14,7 +14,6 @@ class ChatWithDataPlugin:
         config = Config()
         self.azure_openai_deployment_model = config.azure_openai_deployment_model
         self.azure_openai_endpoint = config.azure_openai_endpoint
-        self.azure_openai_api_key = config.azure_openai_api_key
         self.azure_openai_api_version = config.azure_openai_api_version
         self.azure_ai_search_endpoint = config.azure_ai_search_endpoint
         self.azure_ai_search_api_key = config.azure_ai_search_api_key

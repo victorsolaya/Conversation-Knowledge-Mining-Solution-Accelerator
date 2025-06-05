@@ -205,7 +205,6 @@ module backend_docker 'deploy_backend_docker.bicep' = {
       AZURE_OPEN_AI_ENDPOINT: aifoundry.outputs.aiServicesTarget
       AZURE_OPENAI_API_VERSION: azureOpenAIApiVersion
       AZURE_OPENAI_RESOURCE: aifoundry.outputs.aiServicesName
-      AZURE_OPENAI_API_KEY: '@Microsoft.KeyVault(SecretUri=${kvault.outputs.keyvaultUri}secrets/AZURE-OPENAI-KEY/)'
       AZURE_AI_AGENT_ENDPOINT: aifoundry.outputs.projectEndpoint
       AZURE_AI_AGENT_MODEL_DEPLOYMENT_NAME: gptModelName
       USE_CHAT_HISTORY_ENABLED: 'True'
@@ -265,7 +264,6 @@ output AZURE_COSMOSDB_ENABLE_FEEDBACK string = 'True'
 output AZURE_OPEN_AI_DEPLOYMENT_MODEL string = gptModelName
 output AZURE_OPEN_AI_DEPLOYMENT_MODEL_CAPACITY int = gptDeploymentCapacity
 output AZURE_OPEN_AI_ENDPOINT string = aifoundry.outputs.aiServicesTarget
-output AZURE_OPENAI_API_KEY string = ''
 output AZURE_OPEN_AI_MODEL_DEPLOYMENT_TYPE string = deploymentType
 output AZURE_OPENAI_EMBEDDING_MODEL string = embeddingModel
 output AZURE_OPENAI_EMBEDDING_MODEL_CAPACITY int = embeddingDeploymentCapacity
