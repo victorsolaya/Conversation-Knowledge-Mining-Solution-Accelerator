@@ -17,7 +17,7 @@ repo_root = os.getenv('GITHUB_WORKSPACE', os.getcwd())
 
 # Construct the absolute path to the JSON file
 #note: may have to remove 'KM_GENERIC' from below when running locally
-json_file_path = os.path.join(repo_root, 'KM_GENERIC', 'testdata', 'prompts.json')
+json_file_path = os.path.join(repo_root, 'testdata', 'prompts.json')
 
 with open(json_file_path, 'r') as file:
     data = json.load(file)
