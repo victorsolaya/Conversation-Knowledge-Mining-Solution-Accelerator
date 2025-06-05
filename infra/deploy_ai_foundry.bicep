@@ -413,7 +413,7 @@ resource azureOpenAIEndpointEntry 'Microsoft.KeyVault/vaults/secrets@2021-11-01-
   parent: keyVault
   name: 'AZURE-OPENAI-ENDPOINT'
   properties: {
-    value: aiServices.properties.endpoint //aiServices_m.properties.endpoint
+    value: aiServices.properties.endpoints['OpenAI Language Model Instance API'] //aiServices_m.properties.endpoint
   }
 }
 
@@ -429,7 +429,7 @@ resource azureOpenAICUEndpointEntry 'Microsoft.KeyVault/vaults/secrets@2021-11-0
   parent: keyVault
   name: 'AZURE-OPENAI-CU-ENDPOINT'
   properties: {
-    value: aiServices_CU.properties.endpoint
+    value: aiServices_CU.properties.endpoints['OpenAI Language Model Instance API']
   }
 }
 

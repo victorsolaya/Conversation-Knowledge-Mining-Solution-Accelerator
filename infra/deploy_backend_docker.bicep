@@ -7,8 +7,6 @@ param solutionLocation string
 @secure()
 param appSettings object = {}
 param appServicePlanId string
-@secure()
-param azureAiProjectConnString string
 param userassignedIdentityId string
 param aiProjectName string
 param keyVaultName string
@@ -91,8 +89,7 @@ module appService 'deploy_app_service.bicep' = {
     userassignedIdentityId:userassignedIdentityId
     appSettings: union(
       appSettings,
-      {        
-        AZURE_AI_PROJECT_CONN_STRING:azureAiProjectConnString
+      {
         APPINSIGHTS_INSTRUMENTATIONKEY: reference(applicationInsightsId, '2015-05-01').InstrumentationKey
         REACT_APP_LAYOUT_CONFIG: reactAppLayoutConfig
       }
@@ -119,8 +116,13 @@ resource role 'Microsoft.DocumentDB/databaseAccounts/sqlRoleAssignments@2022-05-
   }
 }
 
+resource aiServices 'Microsoft.CognitiveServices/accounts@2025-04-01-preview' existing = {
+  name: aiServicesName
+}
+
 resource aiProject 'Microsoft.CognitiveServices/accounts/projects@2025-04-01-preview' existing = {
-  name: '${aiServicesName}/${aiProjectName}'
+  parent: aiServices
+  name: aiProjectName
 }
 
 resource aiDeveloper 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = {
@@ -149,6 +151,28 @@ resource keyVaultSecretsUserAssignment 'Microsoft.Authorization/roleAssignments@
   scope: keyVault
   properties: {
     roleDefinitionId: keyVaultSecretsUser.id
+    principalId: appService.outputs.identityPrincipalId
+  }
+}
+
+resource aiUser 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = {
+  name: '53ca6127-db72-4b80-b1b0-d745d6d5456d'
+}
+
+resource aiUserAccessProj 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(appService.name, aiProject.id, aiUser.id)
+  scope: aiProject
+  properties: {
+    roleDefinitionId: aiUser.id
+    principalId: appService.outputs.identityPrincipalId
+  }
+}
+
+resource aiUserAccessFoundry 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(appService.name, aiServices.id, aiUser.id)
+  scope: aiServices
+  properties: {
+    roleDefinitionId: aiUser.id
     principalId: appService.outputs.identityPrincipalId
   }
 }

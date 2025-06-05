@@ -40,7 +40,7 @@ param gptModelName string = 'gpt-4o-mini'
 // @minLength(1)
 // @description('Version of the GPT model to deploy:')
 // param gptModelVersion string = '2024-02-15-preview' //'2024-08-06'
-var azureOpenAIApiVersion = '2024-02-15-preview'
+var azureOpenAIApiVersion = '2025-01-01-preview'
 
 @minValue(10)
 @description('Capacity of the GPT deployment:')
@@ -196,7 +196,6 @@ module backend_docker 'deploy_backend_docker.bicep' = {
     imageTag: imageTag
     appServicePlanId: hostingplan.outputs.name
     applicationInsightsId: aifoundry.outputs.applicationInsightsId
-    azureAiProjectConnString: keyVault.getSecret('AZURE-AI-PROJECT-CONN-STRING')
     userassignedIdentityId: managedIdentityModule.outputs.managedIdentityBackendAppOutput.id
     aiProjectName: aifoundry.outputs.aiProjectName
     keyVaultName: kvault.outputs.keyvaultName
@@ -207,6 +206,8 @@ module backend_docker 'deploy_backend_docker.bicep' = {
       AZURE_OPENAI_API_VERSION: azureOpenAIApiVersion
       AZURE_OPENAI_RESOURCE: aifoundry.outputs.aiServicesName
       AZURE_OPENAI_API_KEY: '@Microsoft.KeyVault(SecretUri=${kvault.outputs.keyvaultUri}secrets/AZURE-OPENAI-KEY/)'
+      AZURE_AI_AGENT_ENDPOINT: aifoundry.outputs.projectEndpoint
+      AZURE_AI_AGENT_MODEL_DEPLOYMENT_NAME: gptModelName
       USE_CHAT_HISTORY_ENABLED: 'True'
       AZURE_COSMOSDB_ACCOUNT: cosmosDBModule.outputs.cosmosAccountName
       AZURE_COSMOSDB_CONVERSATIONS_CONTAINER: cosmosDBModule.outputs.cosmosContainerName
@@ -279,6 +280,8 @@ output SQLDB_USERNAME string = sqlDBModule.outputs.sqlDbUser
 output USE_AI_PROJECT_CLIENT string = 'False'
 output USE_CHAT_HISTORY_ENABLED string = 'True'
 output DISPLAY_CHART_DEFAULT string = 'False'
+output AZURE_AI_AGENT_ENDPOINT string = aifoundry.outputs.projectEndpoint
+output AZURE_AI_AGENT_MODEL_DEPLOYMENT_NAME string = gptModelName
 
 output API_APP_URL string = backend_docker.outputs.appUrl
 output WEB_APP_URL string = frontend_docker.outputs.appUrl
