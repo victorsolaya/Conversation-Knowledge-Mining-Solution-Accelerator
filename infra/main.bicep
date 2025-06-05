@@ -169,6 +169,7 @@ module uploadFiles 'deploy_post_deployment_scripts.bicep' = {
     keyVaultName:aifoundry.outputs.keyvaultName
     logAnalyticsWorkspaceResourceName: aifoundry.outputs.logAnalyticsWorkspaceResourceName
     logAnalyticsWorkspaceResourceGroup: aifoundry.outputs.logAnalyticsWorkspaceResourceGroup
+    logAnalyticsWorkspaceSubscription: aifoundry.outputs.logAnalyticsWorkspaceSubscription
     sqlServerName: sqlDBModule.outputs.sqlServerName
     sqlDbName: sqlDBModule.outputs.sqlDbName
     sqlUsers: [
