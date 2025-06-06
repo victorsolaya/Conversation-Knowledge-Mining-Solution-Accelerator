@@ -23,7 +23,7 @@ class AgentFactory:
     _lock = asyncio.Lock()
 
     @classmethod
-    async def get_instance(cls, config):
+    async def get_instance(cls):
         """
         Get or create the singleton AzureAIAgent instance.
         """
