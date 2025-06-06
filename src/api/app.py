@@ -30,8 +30,7 @@ async def lifespan(fastapi_app: FastAPI):
     On startup, initializes the Azure AI agent using the configuration and attaches it to the app state.
     On shutdown, deletes the agent instance and performs any necessary cleanup.
     """
-    config = Config()
-    fastapi_app.state.agent = await AgentFactory.get_instance(config=config)
+    fastapi_app.state.agent = await AgentFactory.get_instance()
     yield
     await AgentFactory.delete_instance()
     fastapi_app.state.agent = None
