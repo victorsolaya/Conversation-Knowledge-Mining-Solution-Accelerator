@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.33.13.18514",
-      "templateHash": "5982985115581765540"
+      "templateHash": "7734955925509508696"
     }
   },
   "parameters": {
@@ -340,7 +340,6 @@
       }
     },
     "abbrs": "[variables('$fxv#0')]",
-    "azureOpenAIApiVersion": "2025-01-01-preview",
     "solutionLocation": "[if(empty(parameters('AZURE_LOCATION')), resourceGroup().location, parameters('AZURE_LOCATION'))]",
     "uniqueId": "[toLower(uniqueString(subscription().id, parameters('environmentName'), variables('solutionLocation')))]",
     "solutionPrefix": "[format('km{0}', padLeft(take(variables('uniqueId'), 12), 12, '0'))]",
@@ -630,7 +629,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.33.13.18514",
-              "templateHash": "7773907693287096825"
+              "templateHash": "4742436532015052486"
             }
           },
           "parameters": {
@@ -945,55 +944,6 @@
             "storageNameCleaned": "[replace(variables('storageName'), '-', '')]"
           },
           "resources": [
-            {
-              "type": "Microsoft.MachineLearningServices/workspaces/connections",
-              "apiVersion": "2024-07-01-preview",
-              "name": "[format('{0}/{1}', variables('aiHubName'), format('{0}-connection-AzureOpenAI', variables('aiHubName')))]",
-              "properties": {
-                "category": "AIServices",
-                "target": "[reference(resourceId('Microsoft.CognitiveServices/accounts', variables('aiServicesName')), '2024-04-01-preview').endpoint]",
-                "authType": "ApiKey",
-                "isSharedToAll": true,
-                "credentials": {
-                  "key": "[listKeys(resourceId('Microsoft.CognitiveServices/accounts', variables('aiServicesName')), '2024-04-01-preview').key1]"
-                },
-                "metadata": {
-                  "ApiType": "Azure",
-                  "ResourceId": "[resourceId('Microsoft.CognitiveServices/accounts', variables('aiServicesName'))]"
-                }
-              },
-              "dependsOn": [
-                "[resourceId('Microsoft.MachineLearningServices/workspaces', variables('aiHubName'))]",
-                "[resourceId('Microsoft.Search/searchServices', variables('aiSearchName'))]",
-                "[resourceId('Microsoft.CognitiveServices/accounts', variables('aiServicesName'))]",
-                "aiServicesDeployments"
-              ]
-            },
-            {
-              "type": "Microsoft.MachineLearningServices/workspaces/connections",
-              "apiVersion": "2024-07-01-preview",
-              "name": "[format('{0}/{1}', variables('aiHubName'), format('{0}-connection-AzureAISearch', variables('aiHubName')))]",
-              "properties": {
-                "category": "CognitiveSearch",
-                "target": "[format('https://{0}.search.windows.net', variables('aiSearchName'))]",
-                "authType": "ApiKey",
-                "isSharedToAll": true,
-                "credentials": {
-                  "key": "[listAdminKeys(resourceId('Microsoft.Search/searchServices', variables('aiSearchName')), '2023-11-01').primaryKey]"
-                },
-                "metadata": {
-                  "type": "azure_ai_search",
-                  "ApiType": "Azure",
-                  "ResourceId": "[resourceId('Microsoft.Search/searchServices', variables('aiSearchName'))]",
-                  "ApiVersion": "2024-05-01-preview",
-                  "DeploymentApiVersion": "2023-11-01"
-                }
-              },
-              "dependsOn": [
-                "[resourceId('Microsoft.MachineLearningServices/workspaces', variables('aiHubName'))]",
-                "[resourceId('Microsoft.Search/searchServices', variables('aiSearchName'))]"
-              ]
-            },
             {
               "condition": "[not(variables('useExisting'))]",
               "type": "Microsoft.OperationalInsights/workspaces",
@@ -2576,7 +2526,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.33.13.18514",
-              "templateHash": "17333201509677178209"
+              "templateHash": "1946234334588325007"
             }
           },
           "parameters": {
