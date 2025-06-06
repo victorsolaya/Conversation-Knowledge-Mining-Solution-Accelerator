@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.33.13.18514",
-      "templateHash": "7734955925509508696"
+      "version": "0.36.1.42791",
+      "templateHash": "2363441728169448979"
     }
   },
   "parameters": {
@@ -343,7 +343,7 @@
     "solutionLocation": "[if(empty(parameters('AZURE_LOCATION')), resourceGroup().location, parameters('AZURE_LOCATION'))]",
     "uniqueId": "[toLower(uniqueString(subscription().id, parameters('environmentName'), variables('solutionLocation')))]",
     "solutionPrefix": "[format('km{0}', padLeft(take(variables('uniqueId'), 12), 12, '0'))]",
-    "baseUrl": "https://raw.githubusercontent.com/microsoft/Conversation-Knowledge-Mining-Solution-Accelerator/psl-pk-aifoundryresource/"
+    "baseUrl": "https://raw.githubusercontent.com/microsoft/Conversation-Knowledge-Mining-Solution-Accelerator/main/"
   },
   "resources": [
     {
@@ -373,8 +373,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.33.13.18514",
-              "templateHash": "13405454458069136697"
+              "version": "0.36.1.42791",
+              "templateHash": "18216206668580483589"
             }
           },
           "parameters": {
@@ -484,8 +484,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.33.13.18514",
-              "templateHash": "7481082300960360409"
+              "version": "0.36.1.42791",
+              "templateHash": "12477407174917893830"
             }
           },
           "parameters": {
@@ -628,8 +628,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.33.13.18514",
-              "templateHash": "4742436532015052486"
+              "version": "0.36.1.42791",
+              "templateHash": "18372336587051722949"
             }
           },
           "parameters": {
@@ -1597,8 +1597,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.33.13.18514",
-              "templateHash": "8305540653469705727"
+              "version": "0.36.1.42791",
+              "templateHash": "9136593669378781254"
             }
           },
           "parameters": {
@@ -1772,8 +1772,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.33.13.18514",
-              "templateHash": "4542021716368056580"
+              "version": "0.36.1.42791",
+              "templateHash": "5892297466606960496"
             }
           },
           "parameters": {
@@ -1981,8 +1981,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.33.13.18514",
-              "templateHash": "8716359288071617325"
+              "version": "0.36.1.42791",
+              "templateHash": "6711624612177513232"
             }
           },
           "parameters": {
@@ -2203,8 +2203,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.33.13.18514",
-              "templateHash": "3423062937641681434"
+              "version": "0.36.1.42791",
+              "templateHash": "10426348648679250893"
             }
           },
           "parameters": {
@@ -2384,8 +2384,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.33.13.18514",
-              "templateHash": "15197613903128117177"
+              "version": "0.36.1.42791",
+              "templateHash": "1944207486692306021"
             },
             "description": "Creates an Azure App Service plan."
           },
@@ -2525,8 +2525,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.33.13.18514",
-              "templateHash": "1946234334588325007"
+              "version": "0.36.1.42791",
+              "templateHash": "8652244806087395710"
             }
           },
           "parameters": {
@@ -2670,8 +2670,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.33.13.18514",
-                      "templateHash": "6427032118076981195"
+                      "version": "0.36.1.42791",
+                      "templateHash": "13681420120720011117"
                     }
                   },
                   "parameters": {
@@ -2792,8 +2792,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.33.13.18514",
-                              "templateHash": "5717689215139362083"
+                              "version": "0.36.1.42791",
+                              "templateHash": "8872422051335608470"
                             },
                             "description": "Updates app settings for an Azure App Service."
                           },
@@ -2903,8 +2903,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.33.13.18514",
-              "templateHash": "7335908316033018824"
+              "version": "0.36.1.42791",
+              "templateHash": "9504691758974706160"
             }
           },
           "parameters": {
@@ -2967,8 +2967,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.33.13.18514",
-                      "templateHash": "6427032118076981195"
+                      "version": "0.36.1.42791",
+                      "templateHash": "13681420120720011117"
                     }
                   },
                   "parameters": {
@@ -3089,8 +3089,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.33.13.18514",
-                              "templateHash": "5717689215139362083"
+                              "version": "0.36.1.42791",
+                              "templateHash": "8872422051335608470"
                             },
                             "description": "Updates app settings for an Azure App Service."
                           },

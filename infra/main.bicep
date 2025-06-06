@@ -66,7 +66,7 @@ var uniqueId = toLower(uniqueString(subscription().id, environmentName, solution
 var solutionPrefix = 'km${padLeft(take(uniqueId, 12), 12, '0')}'
 // var resourceGroupName = resourceGroup().name
 
-var baseUrl = 'https://raw.githubusercontent.com/microsoft/Conversation-Knowledge-Mining-Solution-Accelerator/psl-pk-aifoundryresource/'
+var baseUrl = 'https://raw.githubusercontent.com/microsoft/Conversation-Knowledge-Mining-Solution-Accelerator/main/'
 
 // ========== Managed Identity ========== //
 module managedIdentityModule 'deploy_managed_identity.bicep' = {
