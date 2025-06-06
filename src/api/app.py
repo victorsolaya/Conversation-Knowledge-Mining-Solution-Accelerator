@@ -14,7 +14,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 import uvicorn
 
-from common.config.config import Config
 from agents.agent_factory import AgentFactory
 from api.api_routes import router as backend_router
 from api.history_routes import router as history_router
