@@ -15,6 +15,10 @@
         <link rel="canonical" href="https://microsoft.github.io/Conversation-Knowledge-Mining-Solution-Accelerator/workshop/Challenge-5/notebooks/video_chapter_generation/">
       
       
+        <link rel="prev" href="../../">
+      
+      
+        <link rel="next" href="../video_tag_generation/">
       
       
       <link rel="icon" href="../../../../assets/images/favicon.png">
@@ -349,10 +353,12 @@
   
   
   
+    
+  
   
     
     
-      <li class="md-tabs__item">
+      <li class="md-tabs__item md-tabs__item--active">
         <a href="../../" class="md-tabs__link">
           
   
@@ -683,7 +689,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../Challenge-1/index.md" class="md-nav__link">
+      <a href="../../../Challenge-1/Deployment/" class="md-nav__link">
         
   
   
@@ -1002,6 +1008,8 @@
       
   
   
+    
+  
   
   
     
@@ -1019,16 +1027,17 @@
     
     
       
+        
+        
+      
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
         
-          
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" checked>
         
           
           <div class="md-nav__link md-nav__container">
@@ -1045,13 +1054,13 @@
             </a>
             
               
-              <label class="md-nav__link " for="__nav_7" id="__nav_7_label" tabindex="0">
+              <label class="md-nav__link " for="__nav_7" id="__nav_7_label" tabindex="">
                 <span class="md-nav__icon md-icon"></span>
               </label>
             
           </div>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_7">
             <span class="md-nav__icon md-icon"></span>
             Challenge 5
@@ -1064,20 +1073,131 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../../video_chapter_generation.ipynb" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Video Chapters Generation
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
   <span class="md-ellipsis">
-    Chapter Generation Notebook
+    Video Chapters Generation
     
   </span>
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#pre-requisites" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pre-requisites
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#load-environment-variables" class="md-nav__link">
+    <span class="md-ellipsis">
+      Load environment variables
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#file-to-analyze" class="md-nav__link">
+    <span class="md-ellipsis">
+      File to Analyze
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#create-a-custom-analyzer-and-submit-the-video-to-generate-the-description" class="md-nav__link">
+    <span class="md-ellipsis">
+      Create a custom analyzer and submit the video to generate the description
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Create a custom analyzer and submit the video to generate the description">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#use-the-created-analyzer-to-extract-video-content" class="md-nav__link">
+    <span class="md-ellipsis">
+      Use the created analyzer to extract video content
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#aggregate-video-segments-to-generate-video-scenes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Aggregate video segments to generate video scenes
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#create-video-chapters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Create video chapters
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -1090,12 +1210,12 @@
   
   
     <li class="md-nav__item">
-      <a href="../../video_tag_generation.ipynb" class="md-nav__link">
+      <a href="../video_tag_generation/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
-    Tag Generation Notebook
+    Video Tag Generation
     
   </span>
   
@@ -1842,7 +1962,7 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
 <h2 id="pre-requisites">Pre-requisites<a class="anchor-link" href="#pre-requisites">¶</a></h2><ol>
-<li>Follow <a href="../README.md#configure-azure-ai-service-resource">README</a> to create essential resource that will be used in this sample.</li>
+<li>Follow <a href="../docs/create_azure_ai_service.md">README</a> to create essential resource that will be used in this sample.</li>
 <li>Install required packages</li>
 </ol>
 </div>
@@ -1984,7 +2104,7 @@ VIDEO_LOCATION = Path("../data/FlightSimulator.mp4")</div>
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="create-a-custom-analyzer-and-submit-the-video-to-generate-the-description">Create a custom analyzer and submit the video to generate the description<a class="anchor-link" href="#create-a-custom-analyzer-and-submit-the-video-to-generate-the-description">¶</a></h2><p>The custom analyzer schema is defined in <a href="../analyzer_templates/video_content_understanding.json">../analyzer_templates/video_content_understanding.json</a>. The main custom field is <code>segmentDescription</code> as we need to get the descriptions of video segments and feed them into chatGPT to generate the scenes and chapters. Adding transcripts will help to increase the accuracy of scenes/chapters segmentation results. To get transcripts, we will need to set the<code>returnDetails</code> parameter in the <code>config</code> field to <code>True</code>.</p>
+<h2 id="create-a-custom-analyzer-and-submit-the-video-to-generate-the-description">Create a custom analyzer and submit the video to generate the description<a class="anchor-link" href="#create-a-custom-analyzer-and-submit-the-video-to-generate-the-description">¶</a></h2><p>The custom analyzer schema is defined in <strong>../analyzer_templates/video_content_understanding.json</strong>. The main custom field is <code>segmentDescription</code> as we need to get the descriptions of video segments and feed them into chatGPT to generate the scenes and chapters. Adding transcripts will help to increase the accuracy of scenes/chapters segmentation results. To get transcripts, we will need to set the<code>returnDetails</code> parameter in the <code>config</code> field to <code>True</code>.</p>
 <p>In this example, we will use the utility class <code>AzureContentUnderstandingClient</code> to load the analyzer schema from the template file and submit it to Azure Content Understanding service. Then, we will analyze the video to get the segment descriptions and transcripts.</p>
 </div>
 </div>
@@ -2327,6 +2447,44 @@ print(chapter_result)</div>
       
         <footer class="md-footer">
   
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../../" class="md-footer__link md-footer__link--prev" aria-label="Previous: Overview">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Overview
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../video_tag_generation/" class="md-footer__link md-footer__link--next" aria-label="Next: Video Tag Generation">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Video Tag Generation
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
     
   
   <div class="md-footer-meta md-typeset">
