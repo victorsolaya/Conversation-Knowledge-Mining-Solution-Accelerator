@@ -16,11 +16,10 @@ if API_URL.endswith('/'):
 repo_root = os.getenv('GITHUB_WORKSPACE', os.getcwd())
 
 # Construct the absolute path to the JSON file
-#note: may have to remove 'KM_GENERIC' from below when running locally
-json_file_path = os.path.join(repo_root, 'KM_GENERIC', 'testdata', 'prompts.json')
+#note: may have to remove 'tests/e2e-test' from below when running locally
+json_file_path = os.path.join(repo_root, 'tests/e2e-test', 'testdata', 'prompts.json')
 
 with open(json_file_path, 'r') as file:
     data = json.load(file)
     questions = data['questions']
-
 
