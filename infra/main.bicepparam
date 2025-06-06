@@ -10,6 +10,6 @@ param gptModelVersion = readEnvironmentVariable('AZURE_ENV_MODEL_VERSION', '2024
 param azureOpenAIApiVersion = readEnvironmentVariable('AZURE_ENV_OPENAI_API_VERSION', '2024-02-15-preview')
 param gptDeploymentCapacity = int(readEnvironmentVariable('AZURE_OPEN_AI_DEPLOYMENT_MODEL_CAPACITY', '30'))
 param embeddingModel = readEnvironmentVariable('AZURE_OPENAI_EMBEDDING_MODEL', 'text-embedding-ada-002')
-param imageTag = readEnvironmentVariable('AZURE_ENV_IMAGETAG', 'latest_migrated')
+param imageTag = readEnvironmentVariable('AZURE_ENV_IMAGETAG', 'latest')
 param embeddingDeploymentCapacity = int(readEnvironmentVariable('AZURE_OPENAI_EMBEDDING_MODEL_CAPACITY', '80'))
 param existingLogAnalyticsWorkspaceId = readEnvironmentVariable('AZURE_ENV_LOG_ANALYTICS_WORKSPACE_ID', '')

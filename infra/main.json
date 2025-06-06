@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.35.1.17967",
-      "templateHash": "17280998536631599018"
+      "version": "0.33.13.18514",
+      "templateHash": "10443631554148202816"
     }
   },
   "parameters": {
@@ -15,6 +15,13 @@
       "maxLength": 20,
       "metadata": {
         "description": "A unique prefix for all resources in this deployment. This should be 3-20 characters long:"
+      }
+    },
+    "existingLogAnalyticsWorkspaceId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional: Existing Log Analytics Workspace Resource ID"
       }
     },
     "contentUnderstandingLocation": {
@@ -64,6 +71,10 @@
         "description": "Version of the GPT model to deploy:"
       }
     },
+    "azureOpenAIApiVersion": {
+      "type": "string",
+      "defaultValue": "2024-02-15-preview"
+    },
     "gptDeploymentCapacity": {
       "type": "int",
       "defaultValue": 30,
@@ -93,7 +104,7 @@
     },
     "imageTag": {
       "type": "string",
-      "defaultValue": "latest_migrated"
+      "defaultValue": "latest"
     },
     "AZURE_LOCATION": {
       "type": "string",
@@ -329,7 +340,6 @@
       }
     },
     "abbrs": "[variables('$fxv#0')]",
-    "azureOpenAIApiVersion": "2024-02-15-preview",
     "solutionLocation": "[if(empty(parameters('AZURE_LOCATION')), resourceGroup().location, parameters('AZURE_LOCATION'))]",
     "uniqueId": "[toLower(uniqueString(subscription().id, parameters('environmentName'), variables('solutionLocation')))]",
     "solutionPrefix": "[format('km{0}', padLeft(take(variables('uniqueId'), 12), 12, '0'))]",
@@ -363,8 +373,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.35.1.17967",
-              "templateHash": "15924844639466690279"
+              "version": "0.33.13.18514",
+              "templateHash": "13405454458069136697"
             }
           },
           "parameters": {
@@ -474,8 +484,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.35.1.17967",
-              "templateHash": "132889386494773794"
+              "version": "0.33.13.18514",
+              "templateHash": "7481082300960360409"
             }
           },
           "parameters": {
@@ -594,7 +604,7 @@
             "value": "[parameters('gptModelVersion')]"
           },
           "azureOpenAIApiVersion": {
-            "value": "[variables('azureOpenAIApiVersion')]"
+            "value": "[parameters('azureOpenAIApiVersion')]"
           },
           "gptDeploymentCapacity": {
             "value": "[parameters('gptDeploymentCapacity')]"
@@ -607,6 +617,9 @@
           },
           "managedIdentityObjectId": {
             "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_managed_identity'), '2022-09-01').outputs.managedIdentityOutput.value.objectId]"
+          },
+          "existingLogAnalyticsWorkspaceId": {
+            "value": "[parameters('existingLogAnalyticsWorkspaceId')]"
           }
         },
         "template": {
@@ -615,8 +628,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.35.1.17967",
-              "templateHash": "796973952642771216"
+              "version": "0.33.13.18514",
+              "templateHash": "7773907693287096825"
             }
           },
           "parameters": {
@@ -655,6 +668,10 @@
             },
             "managedIdentityObjectId": {
               "type": "string"
+            },
+            "existingLogAnalyticsWorkspaceId": {
+              "type": "string",
+              "defaultValue": ""
             }
           },
           "variables": {
@@ -924,6 +941,10 @@
               }
             ],
             "containerRegistryNameCleaned": "[replace(variables('containerRegistryName'), '-', '')]",
+            "useExisting": "[not(empty(parameters('existingLogAnalyticsWorkspaceId')))]",
+            "existingLawSubscription": "[if(variables('useExisting'), split(parameters('existingLogAnalyticsWorkspaceId'), '/')[2], '')]",
+            "existingLawResourceGroup": "[if(variables('useExisting'), split(parameters('existingLogAnalyticsWorkspaceId'), '/')[4], '')]",
+            "existingLawName": "[if(variables('useExisting'), split(parameters('existingLogAnalyticsWorkspaceId'), '/')[8], '')]",
             "storageNameCleaned": "[replace(variables('storageName'), '-', '')]"
           },
           "resources": [
@@ -977,6 +998,7 @@
               ]
             },
             {
+              "condition": "[not(variables('useExisting'))]",
               "type": "Microsoft.OperationalInsights/workspaces",
               "apiVersion": "2023-09-01",
               "name": "[variables('workspaceName')]",
@@ -999,7 +1021,7 @@
                 "Application_Type": "web",
                 "publicNetworkAccessForIngestion": "Enabled",
                 "publicNetworkAccessForQuery": "Disabled",
-                "WorkspaceResourceId": "[resourceId('Microsoft.OperationalInsights/workspaces', variables('workspaceName'))]"
+                "WorkspaceResourceId": "[if(variables('useExisting'), extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('existingLawSubscription'), variables('existingLawResourceGroup')), 'Microsoft.OperationalInsights/workspaces', variables('existingLawName')), resourceId('Microsoft.OperationalInsights/workspaces', variables('workspaceName')))]"
               },
               "dependsOn": [
                 "[resourceId('Microsoft.OperationalInsights/workspaces', variables('workspaceName'))]"
@@ -1488,7 +1510,15 @@
             },
             "logAnalyticsWorkspaceResourceName": {
               "type": "string",
-              "value": "[variables('workspaceName')]"
+              "value": "[if(variables('useExisting'), variables('existingLawName'), variables('workspaceName'))]"
+            },
+            "logAnalyticsWorkspaceResourceGroup": {
+              "type": "string",
+              "value": "[if(variables('useExisting'), variables('existingLawResourceGroup'), resourceGroup().name)]"
+            },
+            "logAnalyticsWorkspaceSubscription": {
+              "type": "string",
+              "value": "[if(variables('useExisting'), variables('existingLawSubscription'), subscription().subscriptionId)]"
             },
             "storageAccountName": {
               "type": "string",
@@ -1548,8 +1578,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.35.1.17967",
-              "templateHash": "7328474271837826332"
+              "version": "0.33.13.18514",
+              "templateHash": "8305540653469705727"
             }
           },
           "parameters": {
@@ -1723,8 +1753,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.35.1.17967",
-              "templateHash": "9897758941536937011"
+              "version": "0.33.13.18514",
+              "templateHash": "4542021716368056580"
             }
           },
           "parameters": {
@@ -1932,8 +1962,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.35.1.17967",
-              "templateHash": "7743831040975959842"
+              "version": "0.33.13.18514",
+              "templateHash": "8716359288071617325"
             }
           },
           "parameters": {
@@ -2123,6 +2153,12 @@
           "logAnalyticsWorkspaceResourceName": {
             "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_ai_foundry'), '2022-09-01').outputs.logAnalyticsWorkspaceResourceName.value]"
           },
+          "logAnalyticsWorkspaceResourceGroup": {
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_ai_foundry'), '2022-09-01').outputs.logAnalyticsWorkspaceResourceGroup.value]"
+          },
+          "logAnalyticsWorkspaceSubscription": {
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_ai_foundry'), '2022-09-01').outputs.logAnalyticsWorkspaceSubscription.value]"
+          },
           "sqlServerName": {
             "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_sql_db'), '2022-09-01').outputs.sqlServerName.value]"
           },
@@ -2148,8 +2184,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.35.1.17967",
-              "templateHash": "16703186269713434888"
+              "version": "0.33.13.18514",
+              "templateHash": "3423062937641681434"
             }
           },
           "parameters": {
@@ -2211,6 +2247,12 @@
             },
             "logAnalyticsWorkspaceResourceName": {
               "type": "string"
+            },
+            "logAnalyticsWorkspaceResourceGroup": {
+              "type": "string"
+            },
+            "logAnalyticsWorkspaceSubscription": {
+              "type": "string"
             }
           },
           "variables": {
@@ -2227,8 +2269,8 @@
                 "appLogsConfiguration": {
                   "destination": "log-analytics",
                   "logAnalyticsConfiguration": {
-                    "customerId": "[reference(resourceId('Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsWorkspaceResourceName')), '2020-10-01').customerId]",
-                    "sharedKey": "[listKeys(resourceId('Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsWorkspaceResourceName')), '2020-10-01').primarySharedKey]"
+                    "customerId": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('logAnalyticsWorkspaceSubscription'), parameters('logAnalyticsWorkspaceResourceGroup')), 'Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsWorkspaceResourceName')), '2020-10-01').customerId]",
+                    "sharedKey": "[listKeys(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('logAnalyticsWorkspaceSubscription'), parameters('logAnalyticsWorkspaceResourceGroup')), 'Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsWorkspaceResourceName')), '2020-10-01').primarySharedKey]"
                   }
                 }
               }
@@ -2323,8 +2365,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.35.1.17967",
-              "templateHash": "2688116991781593987"
+              "version": "0.33.13.18514",
+              "templateHash": "15197613903128117177"
             },
             "description": "Creates an Azure App Service plan."
           },
@@ -2439,7 +2481,7 @@
             "value": {
               "AZURE_OPEN_AI_DEPLOYMENT_MODEL": "[parameters('gptModelName')]",
               "AZURE_OPEN_AI_ENDPOINT": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_ai_foundry'), '2022-09-01').outputs.aiServicesTarget.value]",
-              "AZURE_OPENAI_API_VERSION": "[variables('azureOpenAIApiVersion')]",
+              "AZURE_OPENAI_API_VERSION": "[parameters('azureOpenAIApiVersion')]",
               "AZURE_OPENAI_RESOURCE": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_ai_foundry'), '2022-09-01').outputs.aiServicesName.value]",
               "AZURE_OPENAI_API_KEY": "[format('@Microsoft.KeyVault(SecretUri={0}secrets/AZURE-OPENAI-KEY/)', reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_keyvault'), '2022-09-01').outputs.keyvaultUri.value)]",
               "USE_CHAT_HISTORY_ENABLED": "True",
@@ -2451,7 +2493,7 @@
               "SQLDB_SERVER": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_sql_db'), '2022-09-01').outputs.sqlServerName.value]",
               "SQLDB_USERNAME": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_sql_db'), '2022-09-01').outputs.sqlDbUser.value]",
               "SQLDB_USER_MID": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_managed_identity'), '2022-09-01').outputs.managedIdentityBackendAppOutput.value.clientId]",
-              "OPENAI_API_VERSION": "[variables('azureOpenAIApiVersion')]",
+              "OPENAI_API_VERSION": "[parameters('azureOpenAIApiVersion')]",
               "AZURE_AI_SEARCH_ENDPOINT": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_ai_foundry'), '2022-09-01').outputs.aiSearchTarget.value]",
               "AZURE_AI_SEARCH_API_KEY": "[format('@Microsoft.KeyVault(SecretUri={0}secrets/AZURE-SEARCH-KEY/)', reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_keyvault'), '2022-09-01').outputs.keyvaultUri.value)]",
               "AZURE_AI_SEARCH_INDEX": "call_transcripts_index",
@@ -2467,8 +2509,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.35.1.17967",
-              "templateHash": "910344753923922220"
+              "version": "0.33.13.18514",
+              "templateHash": "17333201509677178209"
             }
           },
           "parameters": {
@@ -2586,8 +2628,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.35.1.17967",
-                      "templateHash": "9976286688708951387"
+                      "version": "0.33.13.18514",
+                      "templateHash": "6427032118076981195"
                     }
                   },
                   "parameters": {
@@ -2708,8 +2750,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.35.1.17967",
-                              "templateHash": "12543749504493145946"
+                              "version": "0.33.13.18514",
+                              "templateHash": "5717689215139362083"
                             },
                             "description": "Updates app settings for an Azure App Service."
                           },
@@ -2819,8 +2861,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.35.1.17967",
-              "templateHash": "2922856494867767342"
+              "version": "0.33.13.18514",
+              "templateHash": "7335908316033018824"
             }
           },
           "parameters": {
@@ -2883,8 +2925,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.35.1.17967",
-                      "templateHash": "9976286688708951387"
+                      "version": "0.33.13.18514",
+                      "templateHash": "6427032118076981195"
                     }
                   },
                   "parameters": {
@@ -3005,8 +3047,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.35.1.17967",
-                              "templateHash": "12543749504493145946"
+                              "version": "0.33.13.18514",
+                              "templateHash": "5717689215139362083"
                             },
                             "description": "Updates app settings for an Azure App Service."
                           },
@@ -3163,7 +3205,7 @@
     },
     "AZURE_OPENAI_API_VERSION": {
       "type": "string",
-      "value": "[variables('azureOpenAIApiVersion')]"
+      "value": "[parameters('azureOpenAIApiVersion')]"
     },
     "AZURE_OPENAI_RESOURCE": {
       "type": "string",
@@ -3171,7 +3213,7 @@
     },
     "OPENAI_API_VERSION": {
       "type": "string",
-      "value": "[variables('azureOpenAIApiVersion')]"
+      "value": "[parameters('azureOpenAIApiVersion')]"
     },
     "REACT_APP_LAYOUT_CONFIG": {
       "type": "string",
