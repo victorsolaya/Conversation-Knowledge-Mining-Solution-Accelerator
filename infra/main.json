@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.33.13.18514",
-      "templateHash": "10443631554148202816"
+      "templateHash": "5982985115581765540"
     }
   },
   "parameters": {
@@ -73,7 +73,7 @@
     },
     "azureOpenAIApiVersion": {
       "type": "string",
-      "defaultValue": "2024-02-15-preview"
+      "defaultValue": "2025-01-01-preview"
     },
     "gptDeploymentCapacity": {
       "type": "int",

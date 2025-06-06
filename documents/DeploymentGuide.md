@@ -114,7 +114,7 @@ When you start the deployment, most parameters will have **default values**, but
 | **Deployment Type**                         | Select from a drop-down list (allowed: `Standard`, `GlobalStandard`).                                     | GlobalStandard         |
 | **GPT Model**                               | Choose from **gpt-4, gpt-4o, gpt-4o-mini**.                                                               | gpt-4o-mini            |
 | **GPT Model Version**                       | The version of the selected GPT model.                                                                    | 2024-07-18             |
-| **OpenAI API Version**                      | The Azure OpenAI API version to use.                                                                      | 2024-02-15-preview     |
+| **OpenAI API Version**                      | The Azure OpenAI API version to use.                                                                      | 2025-01-01-preview     |
 | **GPT Model Deployment Capacity**           | Configure capacity for **GPT models** (in thousands).                                                     | 30k                    |
 | **Embedding Model**                         | Default: **text-embedding-ada-002**.                                                                      | text-embedding-ada-002 |
 | **Embedding Model Capacity**                | Set the capacity for **embedding models** (in thousands).                                                 | 80k                    |
