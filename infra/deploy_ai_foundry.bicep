@@ -409,7 +409,7 @@ resource azureOpenAIApiKeyEntry 'Microsoft.KeyVault/vaults/secrets@2021-11-01-pr
 
 resource azureOpenAIDeploymentModel 'Microsoft.KeyVault/vaults/secrets@2021-11-01-preview' = {
   parent: keyVault
-  name: 'AZURE-OPEN-AI-DEPLOYMENT-MODEL'
+  name: 'AZURE-OPENAI-DEPLOYMENT-MODEL'
   properties: {
     value: gptModelName
   }

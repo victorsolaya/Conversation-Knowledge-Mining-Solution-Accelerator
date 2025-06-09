@@ -31,7 +31,7 @@ def patched_imports(mock_format_stream, mock_openai, mock_agent_exception, mock_
          patch("services.chat_service.AzureAIAgentThread", mock_thread), \
          patch("services.chat_service.TruncationObject", mock_truncation), \
          patch("services.chat_service.AgentException", mock_agent_exception), \
-         patch("services.chat_service.openai.AzureOpenAI", mock_openai), \
+         patch("helpers.azure_openai_helper.openai.AzureOpenAI", mock_openai), \
          patch("services.chat_service.format_stream_response", mock_format_stream):
         from services.chat_service import ChatService, ExpCache
         return ChatService, ExpCache, {
@@ -173,7 +173,7 @@ class TestChatService:
         assert service.agent == mock_request.app.state.agent
         assert ChatService.thread_cache is not None
     
-    @patch('services.chat_service.openai.AzureOpenAI')
+    @patch('helpers.azure_openai_helper.openai.AzureOpenAI')
     def test_process_rag_response_success(self, mock_openai_class, chat_service):
         """Test successful RAG response processing."""
         # Setup mock OpenAI client
@@ -191,7 +191,7 @@ class TestChatService:
         assert result["data"]["labels"] == ["A", "B"]
         mock_client.chat.completions.create.assert_called_once()
     
-    @patch('services.chat_service.openai.AzureOpenAI')
+    @patch('helpers.azure_openai_helper.openai.AzureOpenAI')
     def test_process_rag_response_invalid_json(self, mock_openai_class, chat_service):
         """Test RAG response processing with invalid JSON."""
         # Setup mock OpenAI client
@@ -207,7 +207,7 @@ class TestChatService:
         assert "error" in result
         assert result["error"] == "Chart could not be generated from this data. Please ask a different question."
     
-    @patch('services.chat_service.openai.AzureOpenAI')
+    @patch('helpers.azure_openai_helper.openai.AzureOpenAI')
     def test_process_rag_response_exception(self, mock_openai_class, chat_service):
         """Test RAG response processing with exception."""
         # Setup mock to raise exception

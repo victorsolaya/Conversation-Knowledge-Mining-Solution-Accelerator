@@ -1,25 +1,31 @@
+"""Plugin for handling chat interactions with data sources using Azure OpenAI and Azure AI Search.
+
+This module provides functions for:
+- Responding to greetings and general questions.
+- Generating SQL queries and fetching results from a database.
+- Answering questions using call transcript data from Azure AI Search.
+"""
+
 from typing import Annotated
 
-import openai
 from semantic_kernel.functions.kernel_function_decorator import kernel_function
-from azure.identity import DefaultAzureCredential, get_bearer_token_provider
 from azure.ai.projects import AIProjectClient
+from azure.identity import DefaultAzureCredential
 
-from common.config.config import Config
 from common.database.sqldb_service import execute_sql_query
+from common.config.config import Config
+from helpers.azure_openai_helper import get_azure_openai_client
 
 
 class ChatWithDataPlugin:
     def __init__(self):
         config = Config()
         self.azure_openai_deployment_model = config.azure_openai_deployment_model
-        self.azure_openai_endpoint = config.azure_openai_endpoint
-        self.azure_openai_api_version = config.azure_openai_api_version
+        self.ai_project_endpoint = config.ai_project_endpoint
         self.azure_ai_search_endpoint = config.azure_ai_search_endpoint
         self.azure_ai_search_api_key = config.azure_ai_search_api_key
         self.azure_ai_search_index = config.azure_ai_search_index
         self.use_ai_project_client = config.use_ai_project_client
-        self.azure_ai_project_conn_string = config.azure_ai_project_conn_string
 
     @kernel_function(name="Greeting",
                      description="Respond to any greeting or general questions")
@@ -28,8 +34,8 @@ class ChatWithDataPlugin:
 
         try:
             if self.use_ai_project_client:
-                project = AIProjectClient.from_connection_string(
-                    conn_str=self.azure_ai_project_conn_string,
+                project = AIProjectClient(
+                    endpoint=self.ai_project_endpoint,
                     credential=DefaultAzureCredential()
                 )
                 client = project.inference.get_chat_completions_client()
@@ -44,14 +50,7 @@ class ChatWithDataPlugin:
                     temperature=0,
                 )
             else:
-                token_provider = get_bearer_token_provider(
-                    DefaultAzureCredential(), "https://cognitiveservices.azure.com/.default"
-                )
-                client = openai.AzureOpenAI(
-                    azure_endpoint=self.azure_openai_endpoint,
-                    azure_ad_token_provider=token_provider,
-                    api_version=self.azure_openai_api_version
-                )
+                client = get_azure_openai_client()
 
                 completion = client.chat.completions.create(
                     model=self.azure_openai_deployment_model,
@@ -85,8 +84,8 @@ class ChatWithDataPlugin:
 
         try:
             if self.use_ai_project_client:
-                project = AIProjectClient.from_connection_string(
-                    conn_str=self.azure_ai_project_conn_string,
+                project = AIProjectClient(
+                    endpoint=self.ai_project_endpoint,
                     credential=DefaultAzureCredential()
                 )
                 client = project.inference.get_chat_completions_client()
@@ -102,14 +101,7 @@ class ChatWithDataPlugin:
                 sql_query = completion.choices[0].message.content
                 sql_query = sql_query.replace("```sql", '').replace("```", '')
             else:
-                token_provider = get_bearer_token_provider(
-                    DefaultAzureCredential(), "https://cognitiveservices.azure.com/.default"
-                )
-                client = openai.AzureOpenAI(
-                    azure_endpoint=self.azure_openai_endpoint,
-                    azure_ad_token_provider=token_provider,
-                    api_version=self.azure_openai_api_version
-                )
+                client = get_azure_openai_client()
 
                 completion = client.chat.completions.create(
                     model=self.azure_openai_deployment_model,
@@ -135,14 +127,7 @@ class ChatWithDataPlugin:
             self,
             question: Annotated[str, "the question"]
     ):
-        token_provider = get_bearer_token_provider(
-            DefaultAzureCredential(), "https://cognitiveservices.azure.com/.default"
-        )
-        client = openai.AzureOpenAI(
-            azure_endpoint=self.azure_openai_endpoint,
-            azure_ad_token_provider=token_provider,
-            api_version=self.azure_openai_api_version
-        )
+        client = get_azure_openai_client()
 
         query = question
         system_message = '''You are an assistant who provides an analyst with helpful information about data.

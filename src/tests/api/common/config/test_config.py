@@ -11,9 +11,8 @@ def mock_env_vars():
         "SQLDB_SERVER": "test_server",
         "SQLDB_USERNAME": "test_user",
         "SQLDB_USER_MID": "test_mid",
-        "AZURE_OPEN_AI_ENDPOINT": "https://openai.test",
-        "AZURE_OPEN_AI_DEPLOYMENT_MODEL": "gpt-4",
-        "AZURE_OPENAI_API_KEY": "test_key",
+        "AZURE_OPENAI_ENDPOINT": "https://openai.test",
+        "AZURE_OPENAI_DEPLOYMENT_MODEL": "gpt-4",
         "AZURE_OPENAI_API_VERSION": "2023-03-15-preview",
         "AZURE_OPENAI_RESOURCE": "test_resource",
         "AZURE_AI_SEARCH_ENDPOINT": "https://search.test",
@@ -43,7 +42,6 @@ def test_config_initialization(mock_env_vars):
         # Azure OpenAI config
         assert config.azure_openai_endpoint == "https://openai.test"
         assert config.azure_openai_deployment_model == "gpt-4"
-        assert config.azure_openai_api_key == "test_key"
         assert config.azure_openai_api_version == "2023-03-15-preview"
         assert config.azure_openai_resource == "test_resource"
 
@@ -54,7 +52,6 @@ def test_config_initialization(mock_env_vars):
 
         # AI Project Client
         assert config.use_ai_project_client is True
-        assert config.azure_ai_project_conn_string == "Endpoint=sb://test/"
 
         # Chat history config
         assert config.use_chat_history_enabled is True
