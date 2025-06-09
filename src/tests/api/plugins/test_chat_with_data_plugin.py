@@ -155,11 +155,11 @@ class TestChatWithDataPlugin:
         mock_execute_sql.assert_called_once_with("SELECT * FROM km_processed_data")
 
     @pytest.mark.asyncio
-    @patch("helpers.azure_openai_helper.Config")
+    @patch("plugins.chat_with_data_plugin.Config")
     @patch("plugins.chat_with_data_plugin.execute_sql_query")
     @patch("plugins.chat_with_data_plugin.AIProjectClient")
     @patch("plugins.chat_with_data_plugin.DefaultAzureCredential")
-    async def test_get_SQL_Response_with_ai_project_client(self, mock_azure_credential, mock_ai_project_client, mock_execute_sql, chat_plugin):
+    async def test_get_SQL_Response_with_ai_project_client(self, mock_azure_credential, mock_ai_project_client, mock_execute_sql, mock_config, chat_plugin):
         # Setup AIProjectClient
         chat_plugin.use_ai_project_client = True
         
@@ -167,11 +167,12 @@ class TestChatWithDataPlugin:
         mock_config_instance = MagicMock()
         mock_config_instance.ai_project_endpoint = "https://test-openai.azure.com/"
         mock_config.return_value = mock_config_instance
-        mock_project = MagicMock()
-        mock_ai_project_client = MagicMock()
-        mock_ai_project_client.return_value = mock_project
+        mock_credential_instance = MagicMock()
+        mock_azure_credential.return_value = mock_credential_instance
+        mock_project_instance = MagicMock()
+        mock_ai_project_client.return_value = mock_project_instance
         mock_client = MagicMock()
-        mock_project.inference.get_chat_completions_client.return_value = mock_client
+        mock_project_instance.inference.get_chat_completions_client.return_value = mock_client
         mock_completion = MagicMock()
         mock_completion.choices = [MagicMock()]
         mock_completion.choices[0].message.content = "```sql\nSELECT * FROM km_processed_data\n```"
@@ -184,9 +185,9 @@ class TestChatWithDataPlugin:
         
         # Assertions
         assert result == "Query results data with AI Project Client"
-        mock_client.assert_called_once_with(
-            endpoint="https://test-openai.azure.com/",
-            credential=mock_azure_credential,
+        mock_ai_project_client.assert_called_once_with(
+            endpoint=chat_plugin.ai_project_endpoint,
+            credential=mock_credential_instance
         )
         mock_execute_sql.assert_called_once_with("\nSELECT * FROM km_processed_data\n")
 
