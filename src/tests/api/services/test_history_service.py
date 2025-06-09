@@ -28,7 +28,7 @@ def history_service(mock_config_instance):
         # Create patches for other dependencies used by HistoryService
         with patch("services.history_service.CosmosConversationClient"):
             with patch("services.history_service.AsyncAzureOpenAI"):
-                with patch("services.history_service.get_bearer_token_provider"):
+                with patch("helpers.azure_openai_helper.get_bearer_token_provider"):
                     with patch("services.history_service.complete_chat_request"):
                         service = HistoryService()
                         return service
@@ -105,7 +105,7 @@ class TestHistoryService:
 
     def test_init_openai_client_no_api_key(self, history_service):
         """Test OpenAI client initialization with no API key"""
-        with patch("services.history_service.get_bearer_token_provider", return_value="token_provider"):
+        with patch("helpers.azure_openai_helper.get_bearer_token_provider", return_value="token_provider"):
             with patch("services.history_service.AsyncAzureOpenAI", return_value="openai_client"):
                 client = history_service.init_openai_client()
                 assert client == "openai_client"
