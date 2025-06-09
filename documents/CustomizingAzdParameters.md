@@ -13,11 +13,11 @@ By default this template will use the environment name as the prefix to prevent 
 | `AZURE_ENV_NAME`                          | string  | `env_name`               | Sets the environment name prefix for all Azure resources.                  |
 | `AZURE_CONTENT_UNDERSTANDING_LOCATION`    | string  | `swedencentral`          | Specifies the region for content understanding resources.                  |
 | `AZURE_SECONDARY_LOCATION`                | string  | `eastus2`                | Specifies a secondary Azure region.                                        |
-| `AZURE_OPEN_AI_MODEL_DEPLOYMENT_TYPE`     | string  | `GlobalStandard`         | Defines the model deployment type (allowed: `Standard`, `GlobalStandard`). |
+| `AZURE_OPENAI_MODEL_DEPLOYMENT_TYPE`     | string  | `GlobalStandard`         | Defines the model deployment type (allowed: `Standard`, `GlobalStandard`). |
 | `AZURE_OPEN_AI_DEPLOYMENT_MODEL`          | string  | `gpt-4o-mini`            | Specifies the GPT model name (e.g., `gpt-4`, `gpt-4o-mini`).               |
 | `AZURE_ENV_MODEL_VERSION`                 | string  | `2024-07-18`             | Sets the Azure model version (allowed: `2024-08-06`, etc.).                |
 | `AZURE_OPENAI_API_VERSION`            | string  | `2025-01-01-preview`     | Specifies the API version for Azure OpenAI.                                |
-| `AZURE_OPEN_AI_DEPLOYMENT_MODEL_CAPACITY` | integer | `30`                     | Sets the GPT model capacity.                                               |
+| `AZURE_OPENAI_DEPLOYMENT_MODEL_CAPACITY` | integer | `30`                     | Sets the GPT model capacity.                                               |
 | `AZURE_OPENAI_EMBEDDING_MODEL`            | string  | `text-embedding-ada-002` | Sets the name of the embedding model to use.                               |
 | `AZURE_ENV_IMAGETAG`                      | string  | `latest`        | Sets the image tag (`latest`, `dev`, `hotfix`, etc.).   |
 | `AZURE_OPENAI_EMBEDDING_MODEL_CAPACITY`   | integer | `80`                     | Sets the capacity for the embedding model deployment.                      |
