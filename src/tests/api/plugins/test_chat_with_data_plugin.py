@@ -65,30 +65,39 @@ class TestChatWithDataPlugin:
         assert args["messages"][1]["content"] == "Hello"
 
     @pytest.mark.asyncio
+    @patch("plugins.chat_with_data_plugin.Config")
     @patch("plugins.chat_with_data_plugin.AIProjectClient")
     @patch("plugins.chat_with_data_plugin.DefaultAzureCredential")
-    async def test_greeting_with_ai_project_client(self, mock_azure_credential, mock_ai_project_client, chat_plugin):
+    async def test_greeting_with_ai_project_client(self, mock_azure_credential, mock_ai_project_client, mock_config, chat_plugin):
         # Setup AIProjectClient
         chat_plugin.use_ai_project_client = True
         
         # Setup mock
-        mock_project = MagicMock()
-        mock_ai_project_client.from_connection_string.return_value = mock_project
-        mock_client = MagicMock()
-        mock_project.inference.get_chat_completions_client.return_value = mock_client
+        mock_config_instance = MagicMock()
+        mock_config_instance.ai_project_endpoint = "https://test-openai.azure.com/"
+        mock_config.return_value = mock_config_instance
+        mock_credential_instance = MagicMock()
+        mock_azure_credential.return_value = mock_credential_instance
+        mock_project_instance = MagicMock()
+        mock_ai_project_client.return_value = mock_project_instance
+        mock_chat_client = MagicMock()
+        mock_project_instance.inference.get_chat_completions_client.return_value = mock_chat_client
         mock_completion = MagicMock()
         mock_completion.choices = [MagicMock()]
         mock_completion.choices[0].message.content = "Hello from AI Project Client"
-        mock_client.complete.return_value = mock_completion
+        mock_chat_client.complete.return_value = mock_completion
         
         # Call the method
         result = await chat_plugin.greeting("Hello")
         
         # Assertions
         assert result == "Hello from AI Project Client"
-        mock_ai_project_client.from_connection_string.assert_called_once()
-        mock_client.complete.assert_called_once()
-        args = mock_client.complete.call_args[1]
+        mock_ai_project_client.assert_called_once_with(
+            endpoint=chat_plugin.ai_project_endpoint,
+            credential=mock_credential_instance
+        )
+        mock_chat_client.complete.assert_called_once()
+        args = mock_chat_client.complete.call_args[1]
         assert args["model"] == "gpt-4"
         assert args["temperature"] == 0
         assert len(args["messages"]) == 2
