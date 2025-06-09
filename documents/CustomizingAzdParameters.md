@@ -26,7 +26,7 @@ azd env set AZURE_OPEN_AI_MODEL_DEPLOYMENT_TYPE GlobalStandard
 Set the Model Name (allowed values: gpt-4o-mini, gpt-4o, gpt-4)
 
 ```shell
-azd env set AZURE_OPEN_AI_DEPLOYMENT_MODEL gpt-4o-mini
+azd env set AZURE_OPENAI_DEPLOYMENT_MODEL gpt-4o-mini
 ```
 
 Change the Model Capacity (choose a number based on available GPT model capacity in your subscription)

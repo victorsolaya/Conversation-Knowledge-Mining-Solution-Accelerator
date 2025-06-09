@@ -35,7 +35,7 @@ search_key =  get_secrets_from_kv(key_vault_name,"AZURE-SEARCH-KEY")
 
 openai_api_base =  get_secrets_from_kv(key_vault_name,"AZURE-OPENAI-ENDPOINT")
 openai_api_version = get_secrets_from_kv(key_vault_name,"AZURE-OPENAI-PREVIEW-API-VERSION") 
-deployment =  get_secrets_from_kv(key_vault_name,"AZURE-OPEN-AI-DEPLOYMENT-MODEL")  #"gpt-4o-mini"
+deployment =  get_secrets_from_kv(key_vault_name,"AZURE-OPENAI-DEPLOYMENT-MODEL")  #"gpt-4o-mini"
 
 
 # Function: Get Embeddings 

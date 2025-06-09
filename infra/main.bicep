@@ -203,8 +203,8 @@ module backend_docker 'deploy_backend_docker.bicep' = {
     keyVaultName: kvault.outputs.keyvaultName
     aiServicesName: aifoundry.outputs.aiServicesName
     appSettings: {
-      AZURE_OPEN_AI_DEPLOYMENT_MODEL: gptModelName
-      AZURE_OPEN_AI_ENDPOINT: aifoundry.outputs.aiServicesTarget
+      AZURE_OPENAI_DEPLOYMENT_MODEL: gptModelName
+      AZURE_OPENAI_ENDPOINT: aifoundry.outputs.aiServicesTarget
       AZURE_OPENAI_API_VERSION: azureOpenAIApiVersion
       AZURE_OPENAI_RESOURCE: aifoundry.outputs.aiServicesName
       AZURE_AI_AGENT_ENDPOINT: aifoundry.outputs.projectEndpoint
@@ -219,7 +219,6 @@ module backend_docker 'deploy_backend_docker.bicep' = {
       SQLDB_USERNAME: sqlDBModule.outputs.sqlDbUser
       SQLDB_USER_MID: managedIdentityModule.outputs.managedIdentityBackendAppOutput.clientId
 
-      OPENAI_API_VERSION: azureOpenAIApiVersion
       AZURE_AI_SEARCH_ENDPOINT: aifoundry.outputs.aiSearchTarget
       AZURE_AI_SEARCH_API_KEY: '@Microsoft.KeyVault(SecretUri=${kvault.outputs.keyvaultUri}secrets/AZURE-SEARCH-KEY/)'
       AZURE_AI_SEARCH_INDEX: 'call_transcripts_index'
@@ -263,15 +262,14 @@ output AZURE_COSMOSDB_ACCOUNT string = cosmosDBModule.outputs.cosmosAccountName
 output AZURE_COSMOSDB_CONVERSATIONS_CONTAINER string = 'conversations'
 output AZURE_COSMOSDB_DATABASE string = 'db_conversation_history'
 output AZURE_COSMOSDB_ENABLE_FEEDBACK string = 'True'
-output AZURE_OPEN_AI_DEPLOYMENT_MODEL string = gptModelName
+output AZURE_OPENAI_DEPLOYMENT_MODEL string = gptModelName
 output AZURE_OPEN_AI_DEPLOYMENT_MODEL_CAPACITY int = gptDeploymentCapacity
-output AZURE_OPEN_AI_ENDPOINT string = aifoundry.outputs.aiServicesTarget
+output AZURE_OPENAI_ENDPOINT string = aifoundry.outputs.aiServicesTarget
 output AZURE_OPEN_AI_MODEL_DEPLOYMENT_TYPE string = deploymentType
 output AZURE_OPENAI_EMBEDDING_MODEL string = embeddingModel
 output AZURE_OPENAI_EMBEDDING_MODEL_CAPACITY int = embeddingDeploymentCapacity
 output AZURE_OPENAI_API_VERSION string = azureOpenAIApiVersion
 output AZURE_OPENAI_RESOURCE string = aifoundry.outputs.aiServicesName
-output OPENAI_API_VERSION string = azureOpenAIApiVersion
 output REACT_APP_LAYOUT_CONFIG string = backend_docker.outputs.reactAppLayoutConfig
 output SQLDB_DATABASE string = sqlDBModule.outputs.sqlDbName
 output SQLDB_SERVER string = sqlDBModule.outputs.sqlServerName

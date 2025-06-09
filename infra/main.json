@@ -1322,7 +1322,7 @@
             {
               "type": "Microsoft.KeyVault/vaults/secrets",
               "apiVersion": "2021-11-01-preview",
-              "name": "[format('{0}/{1}', parameters('keyVaultName'), 'AZURE-OPEN-AI-DEPLOYMENT-MODEL')]",
+              "name": "[format('{0}/{1}', parameters('keyVaultName'), 'AZURE-OPENAI-DEPLOYMENT-MODEL')]",
               "properties": {
                 "value": "[parameters('gptModelName')]"
               }
@@ -2490,8 +2490,8 @@
           },
           "appSettings": {
             "value": {
-              "AZURE_OPEN_AI_DEPLOYMENT_MODEL": "[parameters('gptModelName')]",
-              "AZURE_OPEN_AI_ENDPOINT": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_ai_foundry'), '2022-09-01').outputs.aiServicesTarget.value]",
+              "AZURE_OPENAI_DEPLOYMENT_MODEL": "[parameters('gptModelName')]",
+              "AZURE_OPENAI_ENDPOINT": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_ai_foundry'), '2022-09-01').outputs.aiServicesTarget.value]",
               "AZURE_OPENAI_API_VERSION": "[variables('azureOpenAIApiVersion')]",
               "AZURE_OPENAI_RESOURCE": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_ai_foundry'), '2022-09-01').outputs.aiServicesName.value]",
               "AZURE_AI_AGENT_ENDPOINT": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_ai_foundry'), '2022-09-01').outputs.projectEndpoint.value]",
@@ -3214,7 +3214,7 @@
       "type": "string",
       "value": "True"
     },
-    "AZURE_OPEN_AI_DEPLOYMENT_MODEL": {
+    "AZURE_OPENAI_DEPLOYMENT_MODEL": {
       "type": "string",
       "value": "[parameters('gptModelName')]"
     },
@@ -3222,7 +3222,7 @@
       "type": "int",
       "value": "[parameters('gptDeploymentCapacity')]"
     },
-    "AZURE_OPEN_AI_ENDPOINT": {
+    "AZURE_OPENAI_ENDPOINT": {
       "type": "string",
       "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_ai_foundry'), '2022-09-01').outputs.aiServicesTarget.value]"
     },
