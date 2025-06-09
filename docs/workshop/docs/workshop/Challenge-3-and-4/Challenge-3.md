@@ -57,10 +57,8 @@ One of the easiest and most fun changes you can make to the app is updating the 
    ![Azure Portal Settings > Configuration](../img/portal-app-api-env.png)
 5. Locate the following environment variables:
    - `AZURE_AI_SEARCH_API_KEY`
-   - `AZURE_OPENAI_API_KEY`
 6. Copy their values and paste them into your local `\workshop\docs\workshop\.env.sample` file:
    `AZURE_AI_SEARCH_API_KEY=your-key-from-portal`
-   `AZURE_OPENAI_API_KEY=your-other-key-from-portal`
 7. Rename the .env.sample file to .env
 8. Open a terminal or command prompt.
 9. Navigate to the project directory where `start.cmd` is located:

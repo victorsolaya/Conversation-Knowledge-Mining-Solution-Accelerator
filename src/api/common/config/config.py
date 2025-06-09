@@ -1,6 +1,12 @@
+"""Configuration module for environment variables and Azure service settings.
+
+This module defines the Config class, which loads configuration values from
+environment variables for SQL Database, Azure OpenAI, Azure AI Search, and
+other related services.
+"""
+
 import os
 from dotenv import load_dotenv
-
 load_dotenv()
 
 
@@ -14,9 +20,8 @@ class Config:
         self.mid_id = os.getenv("SQLDB_USER_MID")
 
         # Azure OpenAI configuration
-        self.azure_openai_endpoint = os.getenv("AZURE_OPEN_AI_ENDPOINT")
-        self.azure_openai_deployment_model = os.getenv("AZURE_OPEN_AI_DEPLOYMENT_MODEL")
-        self.azure_openai_api_key = os.getenv("AZURE_OPENAI_API_KEY")
+        self.azure_openai_endpoint = os.getenv("AZURE_OPENAI_ENDPOINT")
+        self.azure_openai_deployment_model = os.getenv("AZURE_OPENAI_DEPLOYMENT_MODEL")
         self.azure_openai_api_version = os.getenv("AZURE_OPENAI_API_VERSION")
         self.azure_openai_resource = os.getenv("AZURE_OPENAI_RESOURCE")
 
@@ -27,7 +32,7 @@ class Config:
 
         # AI Project Client configuration
         self.use_ai_project_client = os.getenv("USE_AI_PROJECT_CLIENT", "False").lower() == "true"
-        self.azure_ai_project_conn_string = os.getenv("AZURE_AI_PROJECT_CONN_STRING")
+        self.ai_project_endpoint = os.getenv("AZURE_AI_AGENT_ENDPOINT")
 
         # Chat history configuration
         self.use_chat_history_enabled = os.getenv("USE_CHAT_HISTORY_ENABLED", "false").strip().lower() == "true"
