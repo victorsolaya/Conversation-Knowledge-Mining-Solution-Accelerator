@@ -9,7 +9,7 @@ from semantic_kernel.exceptions.agent_exceptions import AgentException as RealAg
 
 
 # ---- Patch imports before importing the service under test ----
-@patch("common.config.config.Config")
+@patch("helpers.azure_openai_helper.Config")
 @patch("semantic_kernel.agents.AzureAIAgentThread")
 @patch("azure.ai.agents.models.TruncationObject")
 @patch("semantic_kernel.exceptions.agent_exceptions.AgentException")
@@ -167,8 +167,6 @@ class TestChatService:
         
         service = ChatService(mock_request)
         
-        assert service.azure_openai_endpoint == "https://test.openai.azure.com"
-        assert service.azure_openai_api_version == "2024-02-15-preview"
         assert service.azure_openai_deployment_name == "gpt-4o-mini"
         assert service.agent == mock_request.app.state.agent
         assert ChatService.thread_cache is not None
