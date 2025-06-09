@@ -181,13 +181,18 @@ class TestChatWithDataPlugin:
         mock_execute_sql.assert_not_called()
 
     @pytest.mark.asyncio
-    @patch("plugins.chat_with_data_plugin.get_bearer_token_provider")
+    @patch("helpers.azure_openai_helper.Config")
+    @patch("helpers.azure_openai_helper.get_bearer_token_provider")
     @patch("helpers.azure_openai_helper.openai.AzureOpenAI")
-    async def test_get_answers_from_calltranscripts(self, mock_azure_openai, mock_token_provider, chat_plugin):
+    async def test_get_answers_from_calltranscripts(self, mock_azure_openai, mock_token_provider, mock_config, chat_plugin):
         # Setup mock
         mock_token_provider.return_value = lambda: "fake_token"
         mock_client = MagicMock()
         mock_azure_openai.return_value = mock_client
+        mock_config_instance = MagicMock()
+        mock_config_instance.azure_openai_endpoint = "https://test-openai.azure.com/"
+        mock_config_instance.azure_openai_api_version = "2024-02-15-preview"
+        mock_config.return_value = mock_config_instance
         mock_completion = MagicMock()
         mock_completion.choices = [MagicMock()]
         mock_completion.choices[0].message = MagicMock()
