@@ -13,7 +13,6 @@ def mock_env_vars():
         "SQLDB_USER_MID": "test_mid",
         "AZURE_OPENAI_ENDPOINT": "https://openai.test",
         "AZURE_OPENAI_DEPLOYMENT_MODEL": "gpt-4",
-        "AZURE_OPENAI_API_KEY": "test_key",
         "AZURE_OPENAI_API_VERSION": "2023-03-15-preview",
         "AZURE_OPENAI_RESOURCE": "test_resource",
         "AZURE_AI_SEARCH_ENDPOINT": "https://search.test",

@@ -27,7 +27,6 @@ class TestChatHelper:
         
         # Mock the config
         mock_config.return_value.azure_openai_endpoint = "https://test-endpoint"
-        mock_config.return_value.azure_openai_api_key = "test-key"
         mock_config.return_value.azure_openai_api_version = "2023-05-15"
         mock_config.return_value.azure_openai_deployment_model = "gpt-4"
         
@@ -62,7 +61,6 @@ class TestChatHelper:
         
         # Mock the config
         mock_config.return_value.azure_openai_endpoint = "https://test-endpoint"
-        mock_config.return_value.azure_openai_api_key = "test-key"
         mock_config.return_value.azure_openai_api_version = "2023-05-15"
         mock_config.return_value.azure_openai_deployment_model = "gpt-4"
         
@@ -85,7 +83,6 @@ class TestChatHelper:
         
         # Mock the config
         mock_config.return_value.azure_openai_endpoint = "https://test-endpoint"
-        mock_config.return_value.azure_openai_api_key = "test-key"
         mock_config.return_value.azure_openai_api_version = "2023-05-15"
         
         # Test the function
@@ -110,7 +107,6 @@ class TestChatHelper:
         
         # Mock the config
         mock_config.return_value.azure_openai_endpoint = "https://test-endpoint"
-        mock_config.return_value.azure_openai_api_key = "test-key"
         mock_config.return_value.azure_openai_api_version = "2023-05-15"
         
         # Test the function
