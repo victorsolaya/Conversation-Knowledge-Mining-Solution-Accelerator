@@ -14,7 +14,7 @@ By default this template will use the environment name as the prefix to prevent 
 | `AZURE_CONTENT_UNDERSTANDING_LOCATION`    | string  | `swedencentral`          | Specifies the region for content understanding resources.                  |
 | `AZURE_SECONDARY_LOCATION`                | string  | `eastus2`                | Specifies a secondary Azure region.                                        |
 | `AZURE_OPENAI_MODEL_DEPLOYMENT_TYPE`     | string  | `GlobalStandard`         | Defines the model deployment type (allowed: `Standard`, `GlobalStandard`). |
-| `AZURE_OPEN_AI_DEPLOYMENT_MODEL`          | string  | `gpt-4o-mini`            | Specifies the GPT model name (e.g., `gpt-4`, `gpt-4o-mini`).               |
+| `AZURE_OPENAI_DEPLOYMENT_MODEL`          | string  | `gpt-4o-mini`            | Specifies the GPT model name (e.g., `gpt-4`, `gpt-4o-mini`).               |
 | `AZURE_ENV_MODEL_VERSION`                 | string  | `2024-07-18`             | Sets the Azure model version (allowed: `2024-08-06`, etc.).                |
 | `AZURE_OPENAI_API_VERSION`            | string  | `2025-01-01-preview`     | Specifies the API version for Azure OpenAI.                                |
 | `AZURE_OPENAI_DEPLOYMENT_MODEL_CAPACITY` | integer | `30`                     | Sets the GPT model capacity.                                               |
