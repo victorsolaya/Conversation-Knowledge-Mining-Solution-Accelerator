@@ -26,7 +26,7 @@ def chat_plugin(mock_config):
 
 class TestChatWithDataPlugin:
     @patch("plugins.chat_with_data_plugin.get_bearer_token_provider")
-    @patch("plugins.chat_with_data_plugin.openai.AzureOpenAI")
+    @patch("helpers.azure_openai_helper.openai.AzureOpenAI")
     @pytest.mark.asyncio
     async def test_greeting(self, mock_azure_openai, mock_token_provider, chat_plugin):
         # Setup mock token provider
@@ -92,7 +92,7 @@ class TestChatWithDataPlugin:
         assert args["messages"][1]["content"] == "Hello"
 
     @pytest.mark.asyncio
-    @patch("plugins.chat_with_data_plugin.openai.AzureOpenAI")
+    @patch("helpers.azure_openai_helper.openai.AzureOpenAI")
     async def test_greeting_exception(self, mock_azure_openai, chat_plugin):
         # Setup mock to raise exception
         mock_client = MagicMock()
@@ -108,7 +108,7 @@ class TestChatWithDataPlugin:
     @pytest.mark.asyncio
     @patch("plugins.chat_with_data_plugin.get_bearer_token_provider")
     @patch("plugins.chat_with_data_plugin.execute_sql_query")
-    @patch("plugins.chat_with_data_plugin.openai.AzureOpenAI")
+    @patch("helpers.azure_openai_helper.openai.AzureOpenAI")
     async def test_get_SQL_Response(self, mock_azure_openai, mock_execute_sql, mock_token_provider, chat_plugin):
 
         # Setup mocks
@@ -166,7 +166,7 @@ class TestChatWithDataPlugin:
 
     @pytest.mark.asyncio
     @patch("plugins.chat_with_data_plugin.execute_sql_query")
-    @patch("plugins.chat_with_data_plugin.openai.AzureOpenAI")
+    @patch("helpers.azure_openai_helper.openai.AzureOpenAI")
     async def test_get_SQL_Response_exception(self, mock_azure_openai, mock_execute_sql, chat_plugin):
         # Setup mock to raise exception
         mock_client = MagicMock()
@@ -182,7 +182,7 @@ class TestChatWithDataPlugin:
 
     @pytest.mark.asyncio
     @patch("plugins.chat_with_data_plugin.get_bearer_token_provider")
-    @patch("plugins.chat_with_data_plugin.openai.AzureOpenAI")
+    @patch("helpers.azure_openai_helper.openai.AzureOpenAI")
     async def test_get_answers_from_calltranscripts(self, mock_azure_openai, mock_token_provider, chat_plugin):
         # Setup mock
         mock_token_provider.return_value = lambda: "fake_token"
@@ -216,7 +216,7 @@ class TestChatWithDataPlugin:
         assert args["extra_body"]["data_sources"][0]["type"] == "azure_search"
 
     @pytest.mark.asyncio
-    @patch("plugins.chat_with_data_plugin.openai.AzureOpenAI")
+    @patch("helpers.azure_openai_helper.openai.AzureOpenAI")
     async def test_get_answers_from_calltranscripts_with_citations(self, mock_azure_openai, chat_plugin):
         # Setup mock with citations in context
         mock_client = MagicMock()
@@ -251,7 +251,7 @@ class TestChatWithDataPlugin:
         assert result.message.context.citations[0]["content"].endswith("...")
 
     @pytest.mark.asyncio
-    @patch("plugins.chat_with_data_plugin.openai.AzureOpenAI")
+    @patch("helpers.azure_openai_helper.openai.AzureOpenAI")
     async def test_get_answers_from_calltranscripts_exception(self, mock_azure_openai, chat_plugin):
         # Setup mock to raise exception
         mock_client = MagicMock()

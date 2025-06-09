@@ -52,7 +52,6 @@ def test_config_initialization(mock_env_vars):
 
         # AI Project Client
         assert config.use_ai_project_client is True
-        assert config.azure_ai_project_conn_string == "Endpoint=sb://test/"
 
         # Chat history config
         assert config.use_chat_history_enabled is True
