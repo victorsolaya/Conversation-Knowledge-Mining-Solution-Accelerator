@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.36.1.42791",
-      "templateHash": "14571116812938220669"
+      "templateHash": "700951449427713742"
     }
   },
   "parameters": {
@@ -626,7 +626,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.36.1.42791",
-              "templateHash": "18372336587051722949"
+              "templateHash": "1417417976966483720"
             }
           },
           "parameters": {
@@ -2505,7 +2505,6 @@
               "SQLDB_SERVER": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_sql_db'), '2022-09-01').outputs.sqlServerName.value]",
               "SQLDB_USERNAME": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_sql_db'), '2022-09-01').outputs.sqlDbUser.value]",
               "SQLDB_USER_MID": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_managed_identity'), '2022-09-01').outputs.managedIdentityBackendAppOutput.value.clientId]",
-              "OPENAI_API_VERSION": "[variables('azureOpenAIApiVersion')]",
               "AZURE_AI_SEARCH_ENDPOINT": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_ai_foundry'), '2022-09-01').outputs.aiSearchTarget.value]",
               "AZURE_AI_SEARCH_API_KEY": "[format('@Microsoft.KeyVault(SecretUri={0}secrets/AZURE-SEARCH-KEY/)', reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_keyvault'), '2022-09-01').outputs.keyvaultUri.value)]",
               "AZURE_AI_SEARCH_INDEX": "call_transcripts_index",
@@ -3218,7 +3217,7 @@
       "type": "string",
       "value": "[parameters('gptModelName')]"
     },
-    "AZURE_OPEN_AI_DEPLOYMENT_MODEL_CAPACITY": {
+    "AZURE_OPENAI_DEPLOYMENT_MODEL_CAPACITY": {
       "type": "int",
       "value": "[parameters('gptDeploymentCapacity')]"
     },
@@ -3226,7 +3225,7 @@
       "type": "string",
       "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_ai_foundry'), '2022-09-01').outputs.aiServicesTarget.value]"
     },
-    "AZURE_OPEN_AI_MODEL_DEPLOYMENT_TYPE": {
+    "AZURE_OPENAI_MODEL_DEPLOYMENT_TYPE": {
       "type": "string",
       "value": "[parameters('deploymentType')]"
     },
@@ -3245,10 +3244,6 @@
     "AZURE_OPENAI_RESOURCE": {
       "type": "string",
       "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_ai_foundry'), '2022-09-01').outputs.aiServicesName.value]"
-    },
-    "OPENAI_API_VERSION": {
-      "type": "string",
-      "value": "[variables('azureOpenAIApiVersion')]"
     },
     "REACT_APP_LAYOUT_CONFIG": {
       "type": "string",

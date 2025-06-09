@@ -20,7 +20,7 @@ azd env set AZURE_SECONDARY_LOCATION eastus2
 Change the Model Deployment Type (allowed values: Standard, GlobalStandard)
 
 ```shell
-azd env set AZURE_OPEN_AI_MODEL_DEPLOYMENT_TYPE GlobalStandard
+azd env set AZURE_OPENAI_MODEL_DEPLOYMENT_TYPE GlobalStandard
 ```
 
 Set the Model Name (allowed values: gpt-4o-mini, gpt-4o, gpt-4)
@@ -32,7 +32,7 @@ azd env set AZURE_OPENAI_DEPLOYMENT_MODEL gpt-4o-mini
 Change the Model Capacity (choose a number based on available GPT model capacity in your subscription)
 
 ```shell
-azd env set AZURE_OPEN_AI_DEPLOYMENT_MODEL_CAPACITY 30
+azd env set AZURE_OPENAI_DEPLOYMENT_MODEL_CAPACITY 30
 ```
 
 Change the Embedding Model 
