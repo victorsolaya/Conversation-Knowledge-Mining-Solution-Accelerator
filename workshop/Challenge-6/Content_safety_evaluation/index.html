@@ -2326,16 +2326,14 @@ with Path(file_eval).open("w") as f:
 </clipboard-copy>
 </div>
 <div class="highlight-ipynb hl-python"><pre><span></span><span class="n">model_config</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">"azure_endpoint"</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"AZURE_OPEN_AI_ENDPOINT"</span><span class="p">),</span>
-    <span class="s2">"api_key"</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"AZURE_OPENAI_API_KEY"</span><span class="p">),</span>
-    <span class="s2">"azure_deployment"</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"AZURE_OPEN_AI_DEPLOYMENT_MODEL"</span><span class="p">),</span>
+    <span class="s2">"azure_endpoint"</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"AZURE_OPENAI_ENDPOINT"</span><span class="p">),</span>
+    <span class="s2">"azure_deployment"</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"AZURE_OPENAI_DEPLOYMENT_MODEL"</span><span class="p">),</span>
     <span class="s2">"api_version"</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"AZURE_OPENAI_API_VERSION"</span><span class="p">),</span>
 <span class="p">}</span>
 </pre></div>
 <div class="clipboard-copy-txt" id="cell-8">model_config = {
-    "azure_endpoint": os.environ.get("AZURE_OPEN_AI_ENDPOINT"),
-    "api_key": os.environ.get("AZURE_OPENAI_API_KEY"),
-    "azure_deployment": os.environ.get("AZURE_OPEN_AI_DEPLOYMENT_MODEL"),
+    "azure_endpoint": os.environ.get("AZURE_OPENAI_ENDPOINT"),
+    "azure_deployment": os.environ.get("AZURE_OPENAI_DEPLOYMENT_MODEL"),
     "api_version": os.environ.get("AZURE_OPENAI_API_VERSION"),
 }</div>
 </div>
