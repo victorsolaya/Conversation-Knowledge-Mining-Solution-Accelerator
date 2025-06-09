@@ -30,7 +30,6 @@ class HistoryService:
         )
 
         self.azure_openai_endpoint = config.azure_openai_endpoint
-        self.azure_openai_api_key = config.azure_openai_api_key
         self.azure_openai_api_version = config.azure_openai_api_version
         self.azure_openai_deployment_name = config.azure_openai_deployment_model
         self.azure_openai_resource = config.azure_openai_resource

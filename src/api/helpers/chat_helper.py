@@ -5,6 +5,7 @@ import time
 import uuid
 import logging
 from helpers.azure_openai_helper import get_azure_openai_client
+from common.config.config import Config
 
 # Configure logger
 logger = logging.getLogger(__name__)

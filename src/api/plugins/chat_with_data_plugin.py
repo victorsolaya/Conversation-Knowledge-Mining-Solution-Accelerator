@@ -10,8 +10,10 @@ from typing import Annotated
 
 from semantic_kernel.functions.kernel_function_decorator import kernel_function
 from azure.ai.projects import AIProjectClient
+from azure.identity import DefaultAzureCredential
 
 from common.database.sqldb_service import execute_sql_query
+from common.config.config import Config
 from helpers.azure_openai_helper import get_azure_openai_client
 
 
@@ -19,13 +21,11 @@ class ChatWithDataPlugin:
     def __init__(self):
         config = Config()
         self.azure_openai_deployment_model = config.azure_openai_deployment_model
-        self.azure_openai_endpoint = config.azure_openai_endpoint
-        self.azure_openai_api_version = config.azure_openai_api_version
+        self.ai_project_endpoint = config.ai_project_endpoint
         self.azure_ai_search_endpoint = config.azure_ai_search_endpoint
         self.azure_ai_search_api_key = config.azure_ai_search_api_key
         self.azure_ai_search_index = config.azure_ai_search_index
         self.use_ai_project_client = config.use_ai_project_client
-        self.azure_ai_project_conn_string = config.azure_ai_project_conn_string
 
     @kernel_function(name="Greeting",
                      description="Respond to any greeting or general questions")
@@ -34,8 +34,8 @@ class ChatWithDataPlugin:
 
         try:
             if self.use_ai_project_client:
-                project = AIProjectClient.from_connection_string(
-                    conn_str=self.azure_ai_project_conn_string,
+                project = AIProjectClient(
+                    endpoint=self.ai_project_endpoint,
                     credential=DefaultAzureCredential()
                 )
                 client = project.inference.get_chat_completions_client()
@@ -84,8 +84,8 @@ class ChatWithDataPlugin:
 
         try:
             if self.use_ai_project_client:
-                project = AIProjectClient.from_connection_string(
-                    conn_str=self.azure_ai_project_conn_string,
+                project = AIProjectClient(
+                    endpoint=self.ai_project_endpoint,
                     credential=DefaultAzureCredential()
                 )
                 client = project.inference.get_chat_completions_client()

@@ -15,7 +15,6 @@ def mock_config_instance():
     config.azure_cosmosdb_conversations_container = "test-container"
     config.azure_cosmosdb_enable_feedback = True
     config.azure_openai_endpoint = "https://test-openai.openai.azure.com/"
-    config.azure_openai_api_key = "test-api-key"
     config.azure_openai_api_version = "2024-02-15-preview"
     config.azure_openai_deployment_model = "gpt-4o-mini"
     config.azure_openai_resource = "test-resource"

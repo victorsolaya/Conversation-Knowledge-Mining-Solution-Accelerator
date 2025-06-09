@@ -27,6 +27,7 @@ from cachetools import TTLCache
 
 from helpers.utils import format_stream_response
 from helpers.azure_openai_helper import get_azure_openai_client
+from common.config.config import Config
 
 # Constants
 HOST_NAME = "CKM"
@@ -79,8 +80,6 @@ class ChatService:
 
     def __init__(self, request : Request):
         config = Config()
-        self.azure_openai_endpoint = config.azure_openai_endpoint
-        self.azure_openai_api_version = config.azure_openai_api_version
         self.azure_openai_deployment_name = config.azure_openai_deployment_model
         self.agent = request.app.state.agent
 

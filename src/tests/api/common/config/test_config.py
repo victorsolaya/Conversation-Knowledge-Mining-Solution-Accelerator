@@ -43,7 +43,6 @@ def test_config_initialization(mock_env_vars):
         # Azure OpenAI config
         assert config.azure_openai_endpoint == "https://openai.test"
         assert config.azure_openai_deployment_model == "gpt-4"
-        assert config.azure_openai_api_key == "test_key"
         assert config.azure_openai_api_version == "2023-03-15-preview"
         assert config.azure_openai_resource == "test_resource"
 
