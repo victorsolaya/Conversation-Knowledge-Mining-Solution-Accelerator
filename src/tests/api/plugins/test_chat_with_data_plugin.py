@@ -25,14 +25,19 @@ def chat_plugin(mock_config):
 
 
 class TestChatWithDataPlugin:
-    @patch("plugins.chat_with_data_plugin.get_bearer_token_provider")
+    @patch("helpers.azure_openai_helper.Config")
+    @patch("helpers.azure_openai_helper.get_bearer_token_provider")
     @patch("helpers.azure_openai_helper.openai.AzureOpenAI")
     @pytest.mark.asyncio
-    async def test_greeting(self, mock_azure_openai, mock_token_provider, chat_plugin):
+    async def test_greeting(self, mock_azure_openai, mock_token_provider, mock_config, chat_plugin):
         # Setup mock token provider
         mock_token_provider.return_value = lambda: "fake_token"
         
         # Setup mock client and completion response
+        mock_config_instance = MagicMock()
+        mock_config_instance.azure_openai_endpoint = "https://test-openai.azure.com/"
+        mock_config_instance.azure_openai_api_version = "2024-02-15-preview"
+        mock_config.return_value = mock_config_instance
         mock_client = MagicMock()
         mock_completion = MagicMock()
         mock_completion.choices = [MagicMock()]
@@ -106,12 +111,17 @@ class TestChatWithDataPlugin:
         assert result == "Details could not be retrieved. Please try again later."
 
     @pytest.mark.asyncio
-    @patch("plugins.chat_with_data_plugin.get_bearer_token_provider")
+    @patch("helpers.azure_openai_helper.Config")
+    @patch("helpers.azure_openai_helper.get_bearer_token_provider")
     @patch("plugins.chat_with_data_plugin.execute_sql_query")
     @patch("helpers.azure_openai_helper.openai.AzureOpenAI")
-    async def test_get_SQL_Response(self, mock_azure_openai, mock_execute_sql, mock_token_provider, chat_plugin):
+    async def test_get_SQL_Response(self, mock_azure_openai, mock_execute_sql, mock_token_provider, mock_config, chat_plugin):
 
         # Setup mocks
+        mock_config_instance = MagicMock()
+        mock_config_instance.azure_openai_endpoint = "https://test-openai.azure.com/"
+        mock_config_instance.azure_openai_api_version = "2024-02-15-preview"
+        mock_config.return_value = mock_config_instance
         mock_token_provider.return_value = lambda: "fake_token"
         mock_client = MagicMock()
         mock_azure_openai.return_value = mock_client
@@ -136,6 +146,7 @@ class TestChatWithDataPlugin:
         mock_execute_sql.assert_called_once_with("SELECT * FROM km_processed_data")
 
     @pytest.mark.asyncio
+    @patch("helpers.azure_openai_helper.Config")
     @patch("plugins.chat_with_data_plugin.execute_sql_query")
     @patch("plugins.chat_with_data_plugin.AIProjectClient")
     @patch("plugins.chat_with_data_plugin.DefaultAzureCredential")
@@ -144,8 +155,12 @@ class TestChatWithDataPlugin:
         chat_plugin.use_ai_project_client = True
         
         # Setup mocks
+        mock_config_instance = MagicMock()
+        mock_config_instance.ai_project_endpoint = "https://test-openai.azure.com/"
+        mock_config.return_value = mock_config_instance
         mock_project = MagicMock()
-        mock_ai_project_client.from_connection_string.return_value = mock_project
+        mock_ai_project_client = MagicMock()
+        mock_ai_project_client.return_value = mock_project
         mock_client = MagicMock()
         mock_project.inference.get_chat_completions_client.return_value = mock_client
         mock_completion = MagicMock()
@@ -160,8 +175,10 @@ class TestChatWithDataPlugin:
         
         # Assertions
         assert result == "Query results data with AI Project Client"
-        mock_ai_project_client.from_connection_string.assert_called_once()
-        mock_client.complete.assert_called_once()
+        mock_client.assert_called_once_with(
+            endpoint="https://test-openai.azure.com/",
+            credential=mock_azure_credential,
+        )
         mock_execute_sql.assert_called_once_with("\nSELECT * FROM km_processed_data\n")
 
     @pytest.mark.asyncio
