@@ -158,12 +158,6 @@ module sqlDBModule 'deploy_sql_db.bicep' = {
   scope: resourceGroup(resourceGroup().name)
 }
 
-//========== Updates to Key Vault ========== //
-resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' existing = {
-  name: aifoundry.outputs.keyvaultName
-  scope: resourceGroup(resourceGroup().name)
-}
-
 //========== Deployment script to upload sample data ========== //
 module uploadFiles 'deploy_post_deployment_scripts.bicep' = {
   name : 'deploy_post_deployment_scripts'
