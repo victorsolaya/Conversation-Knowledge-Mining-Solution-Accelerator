@@ -24,25 +24,38 @@ if ($USE_LOCAL_BUILD -eq $false) {
 
 Write-Output "Local Build enabled. Starting build process."
 
-# STEP 1: Set Azure subscription
+# STEP 1: Ensure user is logged into Azure
+Write-Host "Checking Azure login status..."
+$account = az account show 2>$null | ConvertFrom-Json
+
+if (-not $account) {
+    Write-Host "Not logged in. Attempting az login..."
+    az login | Out-Null
+    if ($LASTEXITCODE -ne 0) {
+        Write-Error "Azure login failed."
+        exit 1
+    }
+} else {
+    Write-Host "Already logged in to Azure as: $($account.user.name)"
+}
+
+# STEP 2: Set Azure subscription
 az account set --subscription "$AZURE_SUBSCRIPTION_ID"
 if ($LASTEXITCODE -ne 0) {
     Write-Error "Failed to set Azure subscription."
     exit 1
 }
 
-# STEP 2: Deploy container registry
+# STEP 3: Deploy container registry
 Write-Host "Deploying container registry in location: $AZURE_LOCATION"
 $OUTPUTS = az deployment group create --resource-group $AZURE_RESOURCE_GROUP --template-file "./infra/deploy_container_registry.bicep" --parameters environmentName=$ENV_NAME --query "properties.outputs" --output json | ConvertFrom-Json
 
 # Extract ACR name and endpoint
 $ACR_NAME = $OUTPUTS.createdAcrName.value
-$ACR_ENDPOINT = $OUTPUTS.acrEndpoint.value
 
 Write-Host "Extracted ACR Name: $ACR_NAME"
-Write-Host "Extracted ACR Endpoint: $ACR_ENDPOINT"
 
-# STEP 3: Login to Azure Container Registry
+# STEP 4: Login to Azure Container Registry
 Write-Host "Logging into Azure Container Registry: $ACR_NAME"
 az acr login -n $ACR_NAME
 if ($LASTEXITCODE -ne 0) {
@@ -50,16 +63,16 @@ if ($LASTEXITCODE -ne 0) {
     exit 1
 }
 
-# STEP 4: Get current script directory
+# STEP 5: Get current script directory
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 
-# STEP 5: Resolve full paths to Dockerfiles and build contexts
+# STEP 6: Resolve full paths to Dockerfiles and build contexts
 $WebAppDockerfilePath = Join-Path $ScriptDir "..\..\src\App\WebApp.Dockerfile" | Resolve-Path
 $WebAppContextPath = Join-Path $ScriptDir "..\..\src\App" | Resolve-Path
 $ApiAppDockerfilePath = Join-Path $ScriptDir "..\..\src\api\ApiApp.Dockerfile" | Resolve-Path
 $ApiAppContextPath = Join-Path $ScriptDir "..\..\src\api" | Resolve-Path
 
-# STEP 6: Define function to build and push Docker images
+# STEP 7: Define function to build and push Docker images
 function Build-And-Push-Image {
     param (
         [string]$IMAGE_NAME,
@@ -88,7 +101,7 @@ function Build-And-Push-Image {
     Write-Host "--- Docker image pushed successfully: $IMAGE_URI ---`n"
 }
 
-# STEP 7: Build and push images with provided tag
+# STEP 8: Build and push images with provided tag
 $ACR_IMAGE_TAG = "latest"
 Build-And-Push-Image "km-api" $ApiAppDockerfilePath $ApiAppContextPath $ACR_IMAGE_TAG
 Build-And-Push-Image "km-app" $WebAppDockerfilePath $WebAppContextPath $ACR_IMAGE_TAG

@@ -18,21 +18,33 @@ fi
 which jq || { echo "jq is not installed"; exit 1; }
 
 # Exit early if local build is not requested
-if [[ "$USE_LOCAL_BUILD" != "true" ]]; then
+if [[ "${USE_LOCAL_BUILD,,}" != "true" ]]; then
     echo "Local Build not enabled. Using prebuilt image."
     exit 0
 fi
 
 echo "Local Build enabled. Starting build process."
 
-# STEP 1: Set Azure subscription
+# STEP 1: Ensure user is logged into Azure
+if ! az account show > /dev/null 2>&1; then
+    echo "Not logged in to Azure. Attempting az login..."
+    az login
+    if [[ $? -ne 0 ]]; then
+        echo "Azure login failed."
+        exit 1
+    fi
+else
+    echo "Already logged in to Azure."
+fi
+
+# STEP 2: Set Azure subscription
 az account set --subscription "$AZURE_SUBSCRIPTION_ID"
 if [[ $? -ne 0 ]]; then
     echo "Failed to set Azure subscription."
     exit 1
 fi
 
-# STEP 2: Deploy container registry
+# STEP 3: Deploy container registry
 echo "Deploying container registry in location: $AZURE_LOCATION"
 OUTPUTS=$(az deployment group create \
     --resource-group "$AZURE_RESOURCE_GROUP" \
@@ -42,12 +54,10 @@ OUTPUTS=$(az deployment group create \
     --output json)
 
 ACR_NAME=$(echo "$OUTPUTS" | jq -r '.createdAcrName.value')
-ACR_ENDPOINT=$(echo "$OUTPUTS" | jq -r '.acrEndpoint.value')
 
 echo "Extracted ACR Name: $ACR_NAME"
-echo "Extracted ACR Endpoint: $ACR_ENDPOINT"
 
-# STEP 3: Login to Azure Container Registry
+# STEP 4: Login to Azure Container Registry
 echo "Logging into Azure Container Registry: $ACR_NAME"
 az acr login -n "$ACR_NAME"
 if [[ $? -ne 0 ]]; then
@@ -55,16 +65,16 @@ if [[ $? -ne 0 ]]; then
     exit 1
 fi
 
-# STEP 4: Get current script directory
+# STEP 5: Get current script directory
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-# STEP 5: Resolve full paths to Dockerfiles and build contexts
+# STEP 6: Resolve full paths to Dockerfiles and build contexts
 WEBAPP_DOCKERFILE_PATH="$SCRIPT_DIR/../../src/App/WebApp.Dockerfile"
 WEBAPP_CONTEXT_PATH="$SCRIPT_DIR/../../src/App"
 APIAPP_DOCKERFILE_PATH="$SCRIPT_DIR/../../src/api/ApiApp.Dockerfile"
 APIAPP_CONTEXT_PATH="$SCRIPT_DIR/../../src/api"
 
-# STEP 6: Define function to build and push Docker images
+# STEP 7: Define function to build and push Docker images
 build_and_push_image() {
     IMAGE_NAME="$1"
     BUILD_PATH="$2"
@@ -90,7 +100,7 @@ build_and_push_image() {
     echo "--- Docker image pushed successfully: $IMAGE_URI ---"
 }
 
-# STEP 7: Build and push images with provided tag
+# STEP 8: Build and push images with provided tag
 ACR_IMAGE_TAG="latest"
 build_and_push_image "km-api" "$APIAPP_DOCKERFILE_PATH" "$APIAPP_CONTEXT_PATH" "$ACR_IMAGE_TAG"
 build_and_push_image "km-app" "$WEBAPP_DOCKERFILE_PATH" "$WEBAPP_CONTEXT_PATH" "$ACR_IMAGE_TAG"
