@@ -58,7 +58,6 @@ param embeddingModel string = 'text-embedding-ada-002'
 param embeddingDeploymentCapacity int = 80
 
 param imageTag string = 'latest'
-var acrName = 'kmcontainerreg'
 
 param AZURE_LOCATION string=''
 var solutionLocation = empty(AZURE_LOCATION) ? resourceGroup().location : AZURE_LOCATION
@@ -74,6 +73,7 @@ var solutionPrefix = 'km${padLeft(take(uniqueId, 12), 12, '0')}'
 
 var containerRegistryName = '${abbrs.containers.containerRegistry}${solutionPrefix}'
 var containerRegistryNameCleaned = replace(containerRegistryName, '-', '')
+var acrName = useLocalBuildLower == 'true' ? containerRegistryNameCleaned : 'kmcontainerreg'
 
 var baseUrl = 'https://raw.githubusercontent.com/microsoft/Conversation-Knowledge-Mining-Solution-Accelerator/main/'
 
@@ -206,7 +206,7 @@ module backend_docker 'deploy_backend_docker.bicep' = {
     name: 'api-${solutionPrefix}'
     solutionLocation: solutionLocation
     imageTag: imageTag
-    acrName: useLocalBuildLower == 'true' ? containerRegistryNameCleaned : acrName
+    acrName: acrName
     appServicePlanId: hostingplan.outputs.name
     applicationInsightsId: aifoundry.outputs.applicationInsightsId
     userassignedIdentityId: managedIdentityModule.outputs.managedIdentityBackendAppOutput.id
@@ -249,7 +249,7 @@ module frontend_docker 'deploy_frontend_docker.bicep' = {
     name: '${abbrs.compute.webApp}${solutionPrefix}'
     solutionLocation:solutionLocation
     imageTag: imageTag
-    acrName: useLocalBuildLower == 'true' ? containerRegistryNameCleaned : acrName
+    acrName: acrName
     appServicePlanId: hostingplan.outputs.name
     applicationInsightsId: aifoundry.outputs.applicationInsightsId
     useLocalBuild: useLocalBuildLower
@@ -294,7 +294,7 @@ output USE_CHAT_HISTORY_ENABLED string = 'True'
 output DISPLAY_CHART_DEFAULT string = 'False'
 output AZURE_AI_AGENT_ENDPOINT string = aifoundry.outputs.projectEndpoint
 output AZURE_AI_AGENT_MODEL_DEPLOYMENT_NAME string = gptModelName
-output ACR_NAME string = useLocalBuildLower == 'true' ? containerRegistryNameCleaned : acrName
+output ACR_NAME string = acrName
 output AZURE_ENV_IMAGETAG string = imageTag
 
 output API_APP_URL string = backend_docker.outputs.appUrl

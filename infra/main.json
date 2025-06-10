@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.36.1.42791",
-      "templateHash": "13054052551237865749"
+      "templateHash": "14513743709389250876"
     }
   },
   "parameters": {
@@ -348,10 +348,13 @@
     },
     "abbrs": "[variables('$fxv#0')]",
     "solutionLocation": "[if(empty(parameters('AZURE_LOCATION')), resourceGroup().location, parameters('AZURE_LOCATION'))]",
+    "useLocalBuildLower": "[toLower(parameters('useLocalBuild'))]",
     "uniqueId": "[toLower(uniqueString(subscription().id, parameters('environmentName'), variables('solutionLocation')))]",
     "solutionPrefix": "[format('km{0}', padLeft(take(variables('uniqueId'), 12), 12, '0'))]",
-    "baseUrl": "https://raw.githubusercontent.com/microsoft/Conversation-Knowledge-Mining-Solution-Accelerator/main/",
-    "useLocalBuildLower": "[toLower(parameters('useLocalBuild'))]"
+    "containerRegistryName": "[format('{0}{1}', variables('abbrs').containers.containerRegistry, variables('solutionPrefix'))]",
+    "containerRegistryNameCleaned": "[replace(variables('containerRegistryName'), '-', '')]",
+    "acrName": "[if(equals(variables('useLocalBuildLower'), 'true'), variables('containerRegistryNameCleaned'), 'kmcontainerreg')]",
+    "baseUrl": "https://raw.githubusercontent.com/microsoft/Conversation-Knowledge-Mining-Solution-Accelerator/main/"
   },
   "resources": [
     {
@@ -582,322 +585,6 @@
     {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2022-09-01",
-      "name": "deploy_container_registry",
-      "properties": {
-        "expressionEvaluationOptions": {
-          "scope": "inner"
-        },
-        "mode": "Incremental",
-        "parameters": {
-          "environmentName": {
-            "value": "[parameters('environmentName')]"
-          },
-          "solutionLocation": {
-            "value": "[variables('solutionLocation')]"
-          }
-        },
-        "template": {
-          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
-          "contentVersion": "1.0.0.0",
-          "metadata": {
-            "_generator": {
-              "name": "bicep",
-              "version": "0.36.1.42791",
-              "templateHash": "11409634590405343991"
-            }
-          },
-          "parameters": {
-            "environmentName": {
-              "type": "string"
-            },
-            "solutionLocation": {
-              "type": "string",
-              "defaultValue": "[resourceGroup().location]"
-            }
-          },
-          "variables": {
-            "$fxv#0": {
-              "ai": {
-                "aiSearch": "srch-",
-                "aiServices": "aisa-",
-                "aiVideoIndexer": "avi-",
-                "machineLearningWorkspace": "mlw-",
-                "openAIService": "oai-",
-                "botService": "bot-",
-                "computerVision": "cv-",
-                "contentModerator": "cm-",
-                "contentSafety": "cs-",
-                "customVisionPrediction": "cstv-",
-                "customVisionTraining": "cstvt-",
-                "documentIntelligence": "di-",
-                "faceApi": "face-",
-                "healthInsights": "hi-",
-                "immersiveReader": "ir-",
-                "languageService": "lang-",
-                "speechService": "spch-",
-                "translator": "trsl-",
-                "aiHub": "aih-",
-                "aiHubProject": "aihp-"
-              },
-              "analytics": {
-                "analysisServicesServer": "as",
-                "databricksWorkspace": "dbw-",
-                "dataExplorerCluster": "dec",
-                "dataExplorerClusterDatabase": "dedb",
-                "dataFactory": "adf-",
-                "digitalTwin": "dt-",
-                "streamAnalytics": "asa-",
-                "synapseAnalyticsPrivateLinkHub": "synplh-",
-                "synapseAnalyticsSQLDedicatedPool": "syndp",
-                "synapseAnalyticsSparkPool": "synsp",
-                "synapseAnalyticsWorkspaces": "synw",
-                "dataLakeStoreAccount": "dls",
-                "dataLakeAnalyticsAccount": "dla",
-                "eventHubsNamespace": "evhns-",
-                "eventHub": "evh-",
-                "eventGridDomain": "evgd-",
-                "eventGridSubscriptions": "evgs-",
-                "eventGridTopic": "evgt-",
-                "eventGridSystemTopic": "egst-",
-                "hdInsightHadoopCluster": "hadoop-",
-                "hdInsightHBaseCluster": "hbase-",
-                "hdInsightKafkaCluster": "kafka-",
-                "hdInsightSparkCluster": "spark-",
-                "hdInsightStormCluster": "storm-",
-                "hdInsightMLServicesCluster": "mls-",
-                "iotHub": "iot-",
-                "provisioningServices": "provs-",
-                "provisioningServicesCertificate": "pcert-",
-                "powerBIEmbedded": "pbi-",
-                "timeSeriesInsightsEnvironment": "tsi-"
-              },
-              "compute": {
-                "appServiceEnvironment": "ase-",
-                "appServicePlan": "asp-",
-                "loadTesting": "lt-",
-                "availabilitySet": "avail-",
-                "arcEnabledServer": "arcs-",
-                "arcEnabledKubernetesCluster": "arck",
-                "batchAccounts": "ba-",
-                "cloudService": "cld-",
-                "communicationServices": "acs-",
-                "diskEncryptionSet": "des",
-                "functionApp": "func-",
-                "gallery": "gal",
-                "hostingEnvironment": "host-",
-                "imageTemplate": "it-",
-                "managedDiskOS": "osdisk",
-                "managedDiskData": "disk",
-                "notificationHubs": "ntf-",
-                "notificationHubsNamespace": "ntfns-",
-                "proximityPlacementGroup": "ppg-",
-                "restorePointCollection": "rpc-",
-                "snapshot": "snap-",
-                "staticWebApp": "stapp-",
-                "virtualMachine": "vm",
-                "virtualMachineScaleSet": "vmss-",
-                "virtualMachineMaintenanceConfiguration": "mc-",
-                "virtualMachineStorageAccount": "stvm",
-                "webApp": "app-"
-              },
-              "containers": {
-                "aksCluster": "aks-",
-                "aksSystemNodePool": "npsystem-",
-                "aksUserNodePool": "np-",
-                "containerApp": "ca-",
-                "containerAppsEnvironment": "cae-",
-                "containerRegistry": "cr",
-                "containerInstance": "ci",
-                "serviceFabricCluster": "sf-",
-                "serviceFabricManagedCluster": "sfmc-"
-              },
-              "databases": {
-                "cosmosDBDatabase": "cosmos-",
-                "cosmosDBApacheCassandra": "coscas-",
-                "cosmosDBMongoDB": "cosmon-",
-                "cosmosDBNoSQL": "cosno-",
-                "cosmosDBTable": "costab-",
-                "cosmosDBGremlin": "cosgrm-",
-                "cosmosDBPostgreSQL": "cospos-",
-                "cacheForRedis": "redis-",
-                "sqlDatabaseServer": "sql-",
-                "sqlDatabase": "sqldb-",
-                "sqlElasticJobAgent": "sqlja-",
-                "sqlElasticPool": "sqlep-",
-                "mariaDBServer": "maria-",
-                "mariaDBDatabase": "mariadb-",
-                "mySQLDatabase": "mysql-",
-                "postgreSQLDatabase": "psql-",
-                "sqlServerStretchDatabase": "sqlstrdb-",
-                "sqlManagedInstance": "sqlmi-"
-              },
-              "developerTools": {
-                "appConfigurationStore": "appcs-",
-                "mapsAccount": "map-",
-                "signalR": "sigr",
-                "webPubSub": "wps-"
-              },
-              "devOps": {
-                "managedGrafana": "amg-"
-              },
-              "integration": {
-                "apiManagementService": "apim-",
-                "integrationAccount": "ia-",
-                "logicApp": "logic-",
-                "serviceBusNamespace": "sbns-",
-                "serviceBusQueue": "sbq-",
-                "serviceBusTopic": "sbt-",
-                "serviceBusTopicSubscription": "sbts-"
-              },
-              "managementGovernance": {
-                "automationAccount": "aa-",
-                "applicationInsights": "appi-",
-                "monitorActionGroup": "ag-",
-                "monitorDataCollectionRules": "dcr-",
-                "monitorAlertProcessingRule": "apr-",
-                "blueprint": "bp-",
-                "blueprintAssignment": "bpa-",
-                "dataCollectionEndpoint": "dce-",
-                "logAnalyticsWorkspace": "log-",
-                "logAnalyticsQueryPacks": "pack-",
-                "managementGroup": "mg-",
-                "purviewInstance": "pview-",
-                "resourceGroup": "rg-",
-                "templateSpecsName": "ts-"
-              },
-              "migration": {
-                "migrateProject": "migr-",
-                "databaseMigrationService": "dms-",
-                "recoveryServicesVault": "rsv-"
-              },
-              "networking": {
-                "applicationGateway": "agw-",
-                "applicationSecurityGroup": "asg-",
-                "cdnProfile": "cdnp-",
-                "cdnEndpoint": "cdne-",
-                "connections": "con-",
-                "dnsForwardingRuleset": "dnsfrs-",
-                "dnsPrivateResolver": "dnspr-",
-                "dnsPrivateResolverInboundEndpoint": "in-",
-                "dnsPrivateResolverOutboundEndpoint": "out-",
-                "firewall": "afw-",
-                "firewallPolicy": "afwp-",
-                "expressRouteCircuit": "erc-",
-                "expressRouteGateway": "ergw-",
-                "frontDoorProfile": "afd-",
-                "frontDoorEndpoint": "fde-",
-                "frontDoorFirewallPolicy": "fdfp-",
-                "ipGroups": "ipg-",
-                "loadBalancerInternal": "lbi-",
-                "loadBalancerExternal": "lbe-",
-                "loadBalancerRule": "rule-",
-                "localNetworkGateway": "lgw-",
-                "natGateway": "ng-",
-                "networkInterface": "nic-",
-                "networkSecurityGroup": "nsg-",
-                "networkSecurityGroupSecurityRules": "nsgsr-",
-                "networkWatcher": "nw-",
-                "privateLink": "pl-",
-                "privateEndpoint": "pep-",
-                "publicIPAddress": "pip-",
-                "publicIPAddressPrefix": "ippre-",
-                "routeFilter": "rf-",
-                "routeServer": "rtserv-",
-                "routeTable": "rt-",
-                "serviceEndpointPolicy": "se-",
-                "trafficManagerProfile": "traf-",
-                "userDefinedRoute": "udr-",
-                "virtualNetwork": "vnet-",
-                "virtualNetworkGateway": "vgw-",
-                "virtualNetworkManager": "vnm-",
-                "virtualNetworkPeering": "peer-",
-                "virtualNetworkSubnet": "snet-",
-                "virtualWAN": "vwan-",
-                "virtualWANHub": "vhub-"
-              },
-              "security": {
-                "bastion": "bas-",
-                "keyVault": "kv-",
-                "keyVaultManagedHSM": "kvmhsm-",
-                "managedIdentity": "id-",
-                "sshKey": "sshkey-",
-                "vpnGateway": "vpng-",
-                "vpnConnection": "vcn-",
-                "vpnSite": "vst-",
-                "webApplicationFirewallPolicy": "waf",
-                "webApplicationFirewallPolicyRuleGroup": "wafrg"
-              },
-              "storage": {
-                "storSimple": "ssimp",
-                "backupVault": "bvault-",
-                "backupVaultPolicy": "bkpol-",
-                "fileShare": "share-",
-                "storageAccount": "st",
-                "storageSyncService": "sss-"
-              },
-              "virtualDesktop": {
-                "labServicesPlan": "lp-",
-                "virtualDesktopHostPool": "vdpool-",
-                "virtualDesktopApplicationGroup": "vdag-",
-                "virtualDesktopWorkspace": "vdws-",
-                "virtualDesktopScalingPlan": "vdscaling-"
-              }
-            },
-            "uniqueId": "[toLower(uniqueString(subscription().id, parameters('environmentName'), parameters('solutionLocation')))]",
-            "solutionName": "[format('km{0}', padLeft(take(variables('uniqueId'), 12), 12, '0'))]",
-            "abbrs": "[variables('$fxv#0')]",
-            "containerRegistryName": "[format('{0}{1}', variables('abbrs').containers.containerRegistry, variables('solutionName'))]",
-            "containerRegistryNameCleaned": "[replace(variables('containerRegistryName'), '-', '')]"
-          },
-          "resources": [
-            {
-              "type": "Microsoft.ContainerRegistry/registries",
-              "apiVersion": "2021-09-01",
-              "name": "[variables('containerRegistryName')]",
-              "location": "[parameters('solutionLocation')]",
-              "sku": {
-                "name": "Premium"
-              },
-              "properties": {
-                "dataEndpointEnabled": false,
-                "networkRuleBypassOptions": "AzureServices",
-                "networkRuleSet": {
-                  "defaultAction": "Allow"
-                },
-                "policies": {
-                  "quarantinePolicy": {
-                    "status": "disabled"
-                  },
-                  "retentionPolicy": {
-                    "status": "enabled",
-                    "days": 7
-                  },
-                  "trustPolicy": {
-                    "status": "disabled",
-                    "type": "Notary"
-                  }
-                },
-                "publicNetworkAccess": "Enabled",
-                "zoneRedundancy": "Disabled"
-              }
-            }
-          ],
-          "outputs": {
-            "createdAcrName": {
-              "type": "string",
-              "value": "[variables('containerRegistryNameCleaned')]"
-            },
-            "createdAcrId": {
-              "type": "string",
-              "value": "[resourceId('Microsoft.ContainerRegistry/registries', variables('containerRegistryName'))]"
-            }
-          }
-        }
-      }
-    },
-    {
-      "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2022-09-01",
       "name": "deploy_ai_foundry",
       "resourceGroup": "[resourceGroup().name]",
       "properties": {
@@ -953,7 +640,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.36.1.42791",
-              "templateHash": "1417417976966483720"
+              "templateHash": "11772006007673244318"
             }
           },
           "parameters": {
@@ -1259,7 +946,6 @@
                 "raiPolicyName": "Microsoft.Default"
               }
             ],
-            "containerRegistryNameCleaned": "[replace(variables('containerRegistryName'), '-', '')]",
             "useExisting": "[not(empty(parameters('existingLogAnalyticsWorkspaceId')))]",
             "existingLawSubscription": "[if(variables('useExisting'), split(parameters('existingLogAnalyticsWorkspaceId'), '/')[2], '')]",
             "existingLawResourceGroup": "[if(variables('useExisting'), split(parameters('existingLogAnalyticsWorkspaceId'), '/')[4], '')]",
@@ -1854,7 +1540,6 @@
         }
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Resources/deployments', 'deploy_container_registry')]",
         "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_keyvault')]",
         "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_managed_identity')]"
       ]
@@ -2765,7 +2450,9 @@
           "imageTag": {
             "value": "[parameters('imageTag')]"
           },
-          "acrName": "[if(equals(variables('useLocalBuildLower'), 'true'), createObject('value', reference(resourceId('Microsoft.Resources/deployments', 'deploy_container_registry'), '2022-09-01').outputs.createdAcrName.value), createObject('value', variables('acrName')))]",
+          "acrName": {
+            "value": "[variables('acrName')]"
+          },
           "appServicePlanId": {
             "value": "[reference(resourceId('Microsoft.Resources/deployments', 'deploy_app_service_plan'), '2022-09-01').outputs.name.value]"
           },
@@ -2783,6 +2470,9 @@
           },
           "aiServicesName": {
             "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_ai_foundry'), '2022-09-01').outputs.aiServicesName.value]"
+          },
+          "useLocalBuild": {
+            "value": "[variables('useLocalBuildLower')]"
           },
           "appSettings": {
             "value": {
@@ -2818,7 +2508,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.36.1.42791",
-              "templateHash": "8652244806087395710"
+              "templateHash": "12970430650179594844"
             }
           },
           "parameters": {
@@ -2854,6 +2544,9 @@
               "type": "string"
             },
             "aiServicesName": {
+              "type": "string"
+            },
+            "useLocalBuild": {
               "type": "string"
             },
             "name": {
@@ -2931,6 +2624,20 @@
               ]
             },
             {
+              "condition": "[equals(parameters('useLocalBuild'), 'true')]",
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2022-04-01",
+              "scope": "[format('Microsoft.ContainerRegistry/registries/{0}', parameters('acrName'))]",
+              "name": "[guid(format('{0}-app-module', parameters('name')), resourceId('Microsoft.Authorization/roleDefinitions', '7f951dda-4ed3-4680-a7ca-43fe172d538d'))]",
+              "properties": {
+                "roleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', '7f951dda-4ed3-4680-a7ca-43fe172d538d')]",
+                "principalId": "[reference(resourceId('Microsoft.Resources/deployments', format('{0}-app-module', parameters('name'))), '2022-09-01').outputs.identityPrincipalId.value]"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', format('{0}-app-module', parameters('name')))]"
+              ]
+            },
+            {
               "type": "Microsoft.Resources/deployments",
               "apiVersion": "2022-09-01",
               "name": "[format('{0}-app-module', parameters('name'))]",
@@ -2969,7 +2676,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.36.1.42791",
-                      "templateHash": "13681420120720011117"
+                      "templateHash": "3106328795970379851"
                     }
                   },
                   "parameters": {
@@ -3160,7 +2867,6 @@
       },
       "dependsOn": [
         "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_ai_foundry')]",
-        "[resourceId('Microsoft.Resources/deployments', 'deploy_container_registry')]",
         "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_cosmos_db')]",
         "[resourceId('Microsoft.Resources/deployments', 'deploy_app_service_plan')]",
         "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_keyvault')]",
@@ -3188,7 +2894,9 @@
           "imageTag": {
             "value": "[parameters('imageTag')]"
           },
-          "acrName": "[if(equals(variables('useLocalBuildLower'), 'true'), createObject('value', reference(resourceId('Microsoft.Resources/deployments', 'deploy_container_registry'), '2022-09-01').outputs.createdAcrName.value), createObject('value', variables('acrName')))]",
+          "acrName": {
+            "value": "[variables('acrName')]"
+          },
           "appServicePlanId": {
             "value": "[reference(resourceId('Microsoft.Resources/deployments', 'deploy_app_service_plan'), '2022-09-01').outputs.name.value]"
           },
@@ -3211,7 +2919,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.36.1.42791",
-              "templateHash": "9504691758974706160"
+              "templateHash": "14303739685044053977"
             }
           },
           "parameters": {
@@ -3298,7 +3006,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.36.1.42791",
-                      "templateHash": "13681420120720011117"
+                      "templateHash": "3106328795970379851"
                     }
                   },
                   "parameters": {
@@ -3482,7 +3190,6 @@
       "dependsOn": [
         "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_ai_foundry')]",
         "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_backend_docker')]",
-        "[resourceId('Microsoft.Resources/deployments', 'deploy_container_registry')]",
         "[resourceId('Microsoft.Resources/deployments', 'deploy_app_service_plan')]"
       ]
     }
@@ -3623,6 +3330,14 @@
     "AZURE_AI_AGENT_MODEL_DEPLOYMENT_NAME": {
       "type": "string",
       "value": "[parameters('gptModelName')]"
+    },
+    "ACR_NAME": {
+      "type": "string",
+      "value": "[variables('acrName')]"
+    },
+    "AZURE_ENV_IMAGETAG": {
+      "type": "string",
+      "value": "[parameters('imageTag')]"
     },
     "API_APP_URL": {
       "type": "string",
