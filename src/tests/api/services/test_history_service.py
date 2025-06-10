@@ -15,7 +15,6 @@ def mock_config_instance():
     config.azure_cosmosdb_conversations_container = "test-container"
     config.azure_cosmosdb_enable_feedback = True
     config.azure_openai_endpoint = "https://test-openai.openai.azure.com/"
-    config.azure_openai_api_key = "test-api-key"
     config.azure_openai_api_version = "2024-02-15-preview"
     config.azure_openai_deployment_model = "gpt-4o-mini"
     config.azure_openai_resource = "test-resource"
@@ -29,7 +28,7 @@ def history_service(mock_config_instance):
         # Create patches for other dependencies used by HistoryService
         with patch("services.history_service.CosmosConversationClient"):
             with patch("services.history_service.AsyncAzureOpenAI"):
-                with patch("services.history_service.get_bearer_token_provider"):
+                with patch("helpers.azure_openai_helper.get_bearer_token_provider"):
                     with patch("services.history_service.complete_chat_request"):
                         service = HistoryService()
                         return service
@@ -58,7 +57,6 @@ class TestHistoryService:
         assert history_service.azure_cosmosdb_database == mock_config_instance.azure_cosmosdb_database
         assert history_service.azure_cosmosdb_account == mock_config_instance.azure_cosmosdb_account
         assert history_service.azure_openai_endpoint == mock_config_instance.azure_openai_endpoint
-        assert history_service.azure_openai_api_key == mock_config_instance.azure_openai_api_key
         assert history_service.chat_history_enabled
 
     def test_init_cosmosdb_client_enabled(self, history_service):
@@ -107,8 +105,7 @@ class TestHistoryService:
 
     def test_init_openai_client_no_api_key(self, history_service):
         """Test OpenAI client initialization with no API key"""
-        history_service.azure_openai_api_key = None
-        with patch("services.history_service.get_bearer_token_provider", return_value="token_provider"):
+        with patch("helpers.azure_openai_helper.get_bearer_token_provider", return_value="token_provider"):
             with patch("services.history_service.AsyncAzureOpenAI", return_value="openai_client"):
                 client = history_service.init_openai_client()
                 assert client == "openai_client"

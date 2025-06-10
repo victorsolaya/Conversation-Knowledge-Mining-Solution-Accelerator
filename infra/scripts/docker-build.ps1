@@ -89,7 +89,7 @@ function Build-And-Push-Image {
 }
 
 # STEP 7: Build and push images with provided tag
-$ACR_IMAGE_TAG = "latest_migrated"
+$ACR_IMAGE_TAG = "latest"
 Build-And-Push-Image "km-api" $ApiAppDockerfilePath $ApiAppContextPath $ACR_IMAGE_TAG
 Build-And-Push-Image "km-app" $WebAppDockerfilePath $WebAppContextPath $ACR_IMAGE_TAG
 

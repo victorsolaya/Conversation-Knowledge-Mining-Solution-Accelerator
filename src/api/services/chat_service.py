@@ -1,3 +1,11 @@
+"""
+Provides the ChatService class and related utilities for handling chat interactions,
+streaming responses, RAG (Retrieval-Augmented Generation) processing, and chart data
+generation for visualization in a call center knowledge mining solution.
+
+Includes thread management, caching, and integration with Azure OpenAI and FastAPI.
+"""
+
 import json
 import logging
 import time
@@ -7,17 +15,19 @@ import asyncio
 import random
 import re
 
-import openai
 from fastapi import HTTPException, Request, status
 from fastapi.responses import StreamingResponse
 
 from semantic_kernel.agents import AzureAIAgentThread
-from azure.ai.projects.models import TruncationObject
 from semantic_kernel.exceptions.agent_exceptions import AgentException
 
-from common.config.config import Config
-from helpers.utils import format_stream_response
+from azure.ai.agents.models import TruncationObject
+
 from cachetools import TTLCache
+
+from helpers.utils import format_stream_response
+from helpers.azure_openai_helper import get_azure_openai_client
+from common.config.config import Config
 
 # Constants
 HOST_NAME = "CKM"
@@ -70,11 +80,7 @@ class ChatService:
 
     def __init__(self, request : Request):
         config = Config()
-        self.azure_openai_endpoint = config.azure_openai_endpoint
-        self.azure_openai_api_key = config.azure_openai_api_key
-        self.azure_openai_api_version = config.azure_openai_api_version
         self.azure_openai_deployment_name = config.azure_openai_deployment_model
-        self.azure_ai_project_conn_string = config.azure_ai_project_conn_string
         self.agent = request.app.state.agent
 
         if ChatService.thread_cache is None:
@@ -85,11 +91,7 @@ class ChatService:
         Parses the RAG response dynamically to extract chart data for Chart.js.
         """
         try:
-            client = openai.AzureOpenAI(
-                azure_endpoint=self.azure_openai_endpoint,
-                api_key=self.azure_openai_api_key,
-                api_version=self.azure_openai_api_version,
-            )
+            client = get_azure_openai_client()
 
             system_prompt = """You are an assistant that helps generate valid chart data to be shown using chart.js with version 4.4.4 compatible.
             Include chart type and chart options.

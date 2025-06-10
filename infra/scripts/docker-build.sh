@@ -91,7 +91,7 @@ build_and_push_image() {
 }
 
 # STEP 7: Build and push images with provided tag
-ACR_IMAGE_TAG="latest_migrated"
+ACR_IMAGE_TAG="latest"
 build_and_push_image "km-api" "$APIAPP_DOCKERFILE_PATH" "$APIAPP_CONTEXT_PATH" "$ACR_IMAGE_TAG"
 build_and_push_image "km-app" "$WEBAPP_DOCKERFILE_PATH" "$WEBAPP_CONTEXT_PATH" "$ACR_IMAGE_TAG"
 

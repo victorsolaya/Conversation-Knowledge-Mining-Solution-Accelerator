@@ -37,7 +37,8 @@ param gptModelName string = 'gpt-4o-mini'
 @description('Version of the GPT model to deploy:')
 param gptModelVersion string = '2024-07-18'
 
-var azureOpenAIApiVersion = '2024-02-15-preview'
+param azureOpenAIApiVersion string = '2025-01-01-preview'
+
 
 @minValue(10)
 @description('Capacity of the GPT deployment:')
@@ -56,23 +57,25 @@ param embeddingModel string = 'text-embedding-ada-002'
 @description('Capacity of the Embedding Model deployment')
 param embeddingDeploymentCapacity int = 80
 
-param imageTag string = 'latest_migrated'
+param imageTag string = 'latest'
 var acrName = 'kmcontainerreg'
 
 param AZURE_LOCATION string=''
 var solutionLocation = empty(AZURE_LOCATION) ? resourceGroup().location : AZURE_LOCATION
-
-var uniqueId = toLower(uniqueString(subscription().id, environmentName, solutionLocation))
-var solutionPrefix = 'km${padLeft(take(uniqueId, 12), 12, '0')}'
-// var resourceGroupName = resourceGroup().name
-
-var baseUrl = 'https://raw.githubusercontent.com/microsoft/Conversation-Knowledge-Mining-Solution-Accelerator/main/'
 
 @description('Set this flag to true only if you are deplpoying from Local')
 param useLocalBuild string = 'false'
 
 // Convert input to lowercase
 var useLocalBuildLower = toLower(useLocalBuild)
+
+var uniqueId = toLower(uniqueString(subscription().id, environmentName, solutionLocation))
+var solutionPrefix = 'km${padLeft(take(uniqueId, 12), 12, '0')}'
+
+var containerRegistryName = '${abbrs.containers.containerRegistry}${solutionPrefix}'
+var containerRegistryNameCleaned = replace(containerRegistryName, '-', '')
+
+var baseUrl = 'https://raw.githubusercontent.com/microsoft/Conversation-Knowledge-Mining-Solution-Accelerator/main/'
 
 // ========== Managed Identity ========== //
 module managedIdentityModule 'deploy_managed_identity.bicep' = {
@@ -96,15 +99,6 @@ module kvault 'deploy_keyvault.bicep' = {
   scope: resourceGroup(resourceGroup().name)
 }
 
-// ========== Container Registry ========== //
-module containerRegistry 'deploy_container_registry.bicep' = {
-  name: 'deploy_container_registry'
-  params: {
-    environmentName: environmentName
-    solutionLocation: solutionLocation
-  }
-}
-
 // ==========AI Foundry and related resources ========== //
 module aifoundry 'deploy_ai_foundry.bicep' = {
   name: 'deploy_ai_foundry'
@@ -121,7 +115,6 @@ module aifoundry 'deploy_ai_foundry.bicep' = {
     embeddingModel: embeddingModel
     embeddingDeploymentCapacity: embeddingDeploymentCapacity
     managedIdentityObjectId: managedIdentityModule.outputs.managedIdentityOutput.objectId
-    containerRegistryId: containerRegistry.outputs.createdAcrId
     existingLogAnalyticsWorkspaceId: existingLogAnalyticsWorkspaceId
 
   }
@@ -186,6 +179,7 @@ module uploadFiles 'deploy_post_deployment_scripts.bicep' = {
     keyVaultName:aifoundry.outputs.keyvaultName
     logAnalyticsWorkspaceResourceName: aifoundry.outputs.logAnalyticsWorkspaceResourceName
     logAnalyticsWorkspaceResourceGroup: aifoundry.outputs.logAnalyticsWorkspaceResourceGroup
+    logAnalyticsWorkspaceSubscription: aifoundry.outputs.logAnalyticsWorkspaceSubscription
     sqlServerName: sqlDBModule.outputs.sqlServerName
     sqlDbName: sqlDBModule.outputs.sqlDbName
     sqlUsers: [
@@ -212,20 +206,21 @@ module backend_docker 'deploy_backend_docker.bicep' = {
     name: 'api-${solutionPrefix}'
     solutionLocation: solutionLocation
     imageTag: imageTag
-    acrName: useLocalBuildLower == 'true' ? containerRegistry.outputs.createdAcrName : acrName 
+    acrName: useLocalBuildLower == 'true' ? containerRegistryNameCleaned : acrName
     appServicePlanId: hostingplan.outputs.name
     applicationInsightsId: aifoundry.outputs.applicationInsightsId
-    azureAiProjectConnString: keyVault.getSecret('AZURE-AI-PROJECT-CONN-STRING')
     userassignedIdentityId: managedIdentityModule.outputs.managedIdentityBackendAppOutput.id
     aiProjectName: aifoundry.outputs.aiProjectName
     keyVaultName: kvault.outputs.keyvaultName
+    aiServicesName: aifoundry.outputs.aiServicesName
     useLocalBuild: useLocalBuildLower
     appSettings: {
-      AZURE_OPEN_AI_DEPLOYMENT_MODEL: gptModelName
-      AZURE_OPEN_AI_ENDPOINT: aifoundry.outputs.aiServicesTarget
+      AZURE_OPENAI_DEPLOYMENT_MODEL: gptModelName
+      AZURE_OPENAI_ENDPOINT: aifoundry.outputs.aiServicesTarget
       AZURE_OPENAI_API_VERSION: azureOpenAIApiVersion
       AZURE_OPENAI_RESOURCE: aifoundry.outputs.aiServicesName
-      AZURE_OPENAI_API_KEY: '@Microsoft.KeyVault(SecretUri=${kvault.outputs.keyvaultUri}secrets/AZURE-OPENAI-KEY/)'
+      AZURE_AI_AGENT_ENDPOINT: aifoundry.outputs.projectEndpoint
+      AZURE_AI_AGENT_MODEL_DEPLOYMENT_NAME: gptModelName
       USE_CHAT_HISTORY_ENABLED: 'True'
       AZURE_COSMOSDB_ACCOUNT: cosmosDBModule.outputs.cosmosAccountName
       AZURE_COSMOSDB_CONVERSATIONS_CONTAINER: cosmosDBModule.outputs.cosmosContainerName
@@ -236,13 +231,13 @@ module backend_docker 'deploy_backend_docker.bicep' = {
       SQLDB_USERNAME: sqlDBModule.outputs.sqlDbUser
       SQLDB_USER_MID: managedIdentityModule.outputs.managedIdentityBackendAppOutput.clientId
 
-      OPENAI_API_VERSION: azureOpenAIApiVersion
       AZURE_AI_SEARCH_ENDPOINT: aifoundry.outputs.aiSearchTarget
       AZURE_AI_SEARCH_API_KEY: '@Microsoft.KeyVault(SecretUri=${kvault.outputs.keyvaultUri}secrets/AZURE-SEARCH-KEY/)'
       AZURE_AI_SEARCH_INDEX: 'call_transcripts_index'
       USE_AI_PROJECT_CLIENT: 'False'
       DISPLAY_CHART_DEFAULT: 'False'
       APPLICATIONINSIGHTS_CONNECTION_STRING: aifoundry.outputs.applicationInsightsConnectionString
+      DUMMY_TEST: 'True'
     }
   }
   scope: resourceGroup(resourceGroup().name)
@@ -254,7 +249,7 @@ module frontend_docker 'deploy_frontend_docker.bicep' = {
     name: '${abbrs.compute.webApp}${solutionPrefix}'
     solutionLocation:solutionLocation
     imageTag: imageTag
-    acrName: useLocalBuildLower == 'true' ? containerRegistry.outputs.createdAcrName : acrName
+    acrName: useLocalBuildLower == 'true' ? containerRegistryNameCleaned : acrName
     appServicePlanId: hostingplan.outputs.name
     applicationInsightsId: aifoundry.outputs.applicationInsightsId
     useLocalBuild: useLocalBuildLower
@@ -272,8 +267,8 @@ output ENVIRONMENT_NAME string = environmentName
 output AZURE_CONTENT_UNDERSTANDING_LOCATION string = contentUnderstandingLocation
 output AZURE_SECONDARY_LOCATION string = secondaryLocation
 output APPINSIGHTS_INSTRUMENTATIONKEY string = backend_docker.outputs.appInsightInstrumentationKey
-output AZURE_AI_PROJECT_CONN_STRING string = aifoundry.outputs.azureProjectConnString
-output AZURE_AI_PROJECT_NAME string = aifoundry.outputs.azureProjectName
+output AZURE_AI_PROJECT_CONN_STRING string = aifoundry.outputs.projectEndpoint
+output AZURE_AI_PROJECT_NAME string = aifoundry.outputs.aiProjectName
 output AZURE_AI_SEARCH_API_KEY string = ''
 output AZURE_AI_SEARCH_ENDPOINT string = aifoundry.outputs.aiSearchTarget
 output AZURE_AI_SEARCH_INDEX string = 'call_transcripts_index'
@@ -281,16 +276,14 @@ output AZURE_COSMOSDB_ACCOUNT string = cosmosDBModule.outputs.cosmosAccountName
 output AZURE_COSMOSDB_CONVERSATIONS_CONTAINER string = 'conversations'
 output AZURE_COSMOSDB_DATABASE string = 'db_conversation_history'
 output AZURE_COSMOSDB_ENABLE_FEEDBACK string = 'True'
-output AZURE_OPEN_AI_DEPLOYMENT_MODEL string = gptModelName
-output AZURE_OPEN_AI_DEPLOYMENT_MODEL_CAPACITY int = gptDeploymentCapacity
-output AZURE_OPEN_AI_ENDPOINT string = aifoundry.outputs.aiServicesTarget
-output AZURE_OPENAI_API_KEY string = ''
-output AZURE_OPEN_AI_MODEL_DEPLOYMENT_TYPE string = deploymentType
+output AZURE_OPENAI_DEPLOYMENT_MODEL string = gptModelName
+output AZURE_OPENAI_DEPLOYMENT_MODEL_CAPACITY int = gptDeploymentCapacity
+output AZURE_OPENAI_ENDPOINT string = aifoundry.outputs.aiServicesTarget
+output AZURE_OPENAI_MODEL_DEPLOYMENT_TYPE string = deploymentType
 output AZURE_OPENAI_EMBEDDING_MODEL string = embeddingModel
 output AZURE_OPENAI_EMBEDDING_MODEL_CAPACITY int = embeddingDeploymentCapacity
 output AZURE_OPENAI_API_VERSION string = azureOpenAIApiVersion
 output AZURE_OPENAI_RESOURCE string = aifoundry.outputs.aiServicesName
-output OPENAI_API_VERSION string = azureOpenAIApiVersion
 output REACT_APP_LAYOUT_CONFIG string = backend_docker.outputs.reactAppLayoutConfig
 output SQLDB_DATABASE string = sqlDBModule.outputs.sqlDbName
 output SQLDB_SERVER string = sqlDBModule.outputs.sqlServerName
@@ -299,8 +292,10 @@ output SQLDB_USERNAME string = sqlDBModule.outputs.sqlDbUser
 output USE_AI_PROJECT_CLIENT string = 'False'
 output USE_CHAT_HISTORY_ENABLED string = 'True'
 output DISPLAY_CHART_DEFAULT string = 'False'
-output ACR_NAME string = containerRegistry.outputs.createdAcrName
-output ACR_IMAGE_TAG string = imageTag
+output AZURE_AI_AGENT_ENDPOINT string = aifoundry.outputs.projectEndpoint
+output AZURE_AI_AGENT_MODEL_DEPLOYMENT_NAME string = gptModelName
+output ACR_NAME string = useLocalBuildLower == 'true' ? containerRegistryNameCleaned : acrName
+output AZURE_ENV_IMAGETAG string = imageTag
 
 output API_APP_URL string = backend_docker.outputs.appUrl
 output WEB_APP_URL string = frontend_docker.outputs.appUrl
