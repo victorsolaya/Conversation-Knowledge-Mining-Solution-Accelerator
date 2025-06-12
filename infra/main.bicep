@@ -9,6 +9,9 @@ param environmentName string
 @description('Optional: Existing Log Analytics Workspace Resource ID')
 param existingLogAnalyticsWorkspaceId string = ''
 
+@description('Use this parameter to use an existing AI project resource ID')
+param azureExistingAIProjectResourceId string = ''
+
 @minLength(1)
 @description('Location for the Content Understanding service deployment:')
 @allowed(['swedencentral', 'australiaeast'])
@@ -107,10 +110,12 @@ module aifoundry 'deploy_ai_foundry.bicep' = {
     embeddingDeploymentCapacity: embeddingDeploymentCapacity
     managedIdentityObjectId: managedIdentityModule.outputs.managedIdentityOutput.objectId
     existingLogAnalyticsWorkspaceId: existingLogAnalyticsWorkspaceId
+    azureExistingAIProjectResourceId: azureExistingAIProjectResourceId 
 
   }
   scope: resourceGroup(resourceGroup().name)
 }
+
 
 // ========== Storage account module ========== //
 module storageAccount 'deploy_storage_account.bicep' = {

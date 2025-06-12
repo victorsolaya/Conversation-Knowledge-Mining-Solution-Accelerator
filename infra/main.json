@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.36.1.42791",
-      "templateHash": "13054052551237865749"
+      "templateHash": "17384992257633373307"
     }
   },
   "parameters": {
@@ -22,6 +22,13 @@
       "defaultValue": "",
       "metadata": {
         "description": "Optional: Existing Log Analytics Workspace Resource ID"
+      }
+    },
+    "azureExistingAIProjectResourceId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Use this parameter to use an existing AI project resource ID"
       }
     },
     "contentUnderstandingLocation": {
@@ -620,6 +627,9 @@
           },
           "existingLogAnalyticsWorkspaceId": {
             "value": "[parameters('existingLogAnalyticsWorkspaceId')]"
+          },
+          "azureExistingAIProjectResourceId": {
+            "value": "[parameters('azureExistingAIProjectResourceId')]"
           }
         },
         "template": {
@@ -629,7 +639,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.36.1.42791",
-              "templateHash": "1417417976966483720"
+              "templateHash": "6692231970308776075"
             }
           },
           "parameters": {
@@ -670,6 +680,10 @@
               "type": "string"
             },
             "existingLogAnalyticsWorkspaceId": {
+              "type": "string",
+              "defaultValue": ""
+            },
+            "azureExistingAIProjectResourceId": {
               "type": "string",
               "defaultValue": ""
             }
@@ -941,6 +955,7 @@
             "existingLawSubscription": "[if(variables('useExisting'), split(parameters('existingLogAnalyticsWorkspaceId'), '/')[2], '')]",
             "existingLawResourceGroup": "[if(variables('useExisting'), split(parameters('existingLogAnalyticsWorkspaceId'), '/')[4], '')]",
             "existingLawName": "[if(variables('useExisting'), split(parameters('existingLogAnalyticsWorkspaceId'), '/')[8], '')]",
+            "existingProjEndpoint": "[if(not(empty(parameters('azureExistingAIProjectResourceId'))), format('https://{0}.services.ai.azure.com/api/projects/{1}', split(parameters('azureExistingAIProjectResourceId'), '/')[8], split(parameters('azureExistingAIProjectResourceId'), '/')[10]), '')]",
             "storageNameCleaned": "[replace(variables('storageName'), '-', '')]"
           },
           "resources": [
@@ -1233,6 +1248,7 @@
               ]
             },
             {
+              "condition": "[empty(parameters('azureExistingAIProjectResourceId'))]",
               "type": "Microsoft.CognitiveServices/accounts/projects",
               "apiVersion": "2025-04-01-preview",
               "name": "[format('{0}/{1}', variables('aiServicesName'), variables('aiProjectName'))]",
@@ -1247,6 +1263,7 @@
               ]
             },
             {
+              "condition": "[empty(parameters('azureExistingAIProjectResourceId'))]",
               "type": "Microsoft.CognitiveServices/accounts/projects/connections",
               "apiVersion": "2025-04-01-preview",
               "name": "[format('{0}/{1}/{2}', variables('aiServicesName'), variables('aiProjectName'), 'myVectorStoreProjectConnectionName')]",
@@ -1267,6 +1284,7 @@
               ]
             },
             {
+              "condition": "[empty(parameters('azureExistingAIProjectResourceId'))]",
               "type": "Microsoft.CognitiveServices/accounts/projects/connections",
               "apiVersion": "2025-04-01-preview",
               "name": "[format('{0}/{1}/{2}', variables('aiServicesName'), variables('aiProjectName'), 'myStorageProjectConnectionName')]",
@@ -1553,7 +1571,7 @@
             },
             "projectEndpoint": {
               "type": "string",
-              "value": "[reference(resourceId('Microsoft.CognitiveServices/accounts/projects', variables('aiServicesName'), variables('aiProjectName')), '2025-04-01-preview').endpoints['AI Foundry API']]"
+              "value": "[if(not(empty(variables('existingProjEndpoint'))), variables('existingProjEndpoint'), format('https://{0}.services.ai.azure.com/api/projects/{1}', variables('aiServicesName'), variables('aiProjectName')))]"
             },
             "applicationInsightsConnectionString": {
               "type": "string",

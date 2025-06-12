@@ -13,3 +13,4 @@ param embeddingModel = readEnvironmentVariable('AZURE_OPENAI_EMBEDDING_MODEL', '
 param imageTag = readEnvironmentVariable('AZURE_ENV_IMAGETAG', 'latest')
 param embeddingDeploymentCapacity = int(readEnvironmentVariable('AZURE_OPENAI_EMBEDDING_MODEL_CAPACITY', '80'))
 param existingLogAnalyticsWorkspaceId = readEnvironmentVariable('AZURE_ENV_LOG_ANALYTICS_WORKSPACE_ID', '')
+param azureExistingAIProjectResourceId = readEnvironmentVariable('AZURE_EXISTING_AI_PROJECT_RESOURCE_ID', '')

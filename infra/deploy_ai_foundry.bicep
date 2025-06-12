@@ -12,6 +12,7 @@ param embeddingModel string
 param embeddingDeploymentCapacity int
 param managedIdentityObjectId string
 param existingLogAnalyticsWorkspaceId string = ''
+param azureExistingAIProjectResourceId string = ''
 
 var abbrs = loadJsonContent('./abbreviations.json')
 var storageName = '${solutionName}hubstorage'
@@ -55,6 +56,9 @@ var useExisting = !empty(existingLogAnalyticsWorkspaceId)
 var existingLawSubscription = useExisting ? split(existingLogAnalyticsWorkspaceId, '/')[2] : ''
 var existingLawResourceGroup = useExisting ? split(existingLogAnalyticsWorkspaceId, '/')[4] : ''
 var existingLawName = useExisting ? split(existingLogAnalyticsWorkspaceId, '/')[8] : ''
+
+// Endpoint from existing AI Project Resource ID if provided
+var existingProjEndpoint = !empty(azureExistingAIProjectResourceId) ? format('https://{0}.services.ai.azure.com/api/projects/{1}', split(azureExistingAIProjectResourceId, '/')[8], split(azureExistingAIProjectResourceId, '/')[10]) : ''
 
 resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' existing = {
   name: keyVaultName
@@ -330,7 +334,7 @@ resource aiDeveloperAiServiceAccessProj 'Microsoft.Authorization/roleAssignments
   }
 }
 
-resource aiProject 'Microsoft.CognitiveServices/accounts/projects@2025-04-01-preview' = {
+resource aiProject 'Microsoft.CognitiveServices/accounts/projects@2025-04-01-preview' =  if (empty(azureExistingAIProjectResourceId)) {
   parent: aiServices
   name: aiProjectName
   location: solutionLocation
@@ -341,7 +345,7 @@ resource aiProject 'Microsoft.CognitiveServices/accounts/projects@2025-04-01-pre
   properties: {}
 }
 
-resource project_connection_azureai_search 'Microsoft.CognitiveServices/accounts/projects/connections@2025-04-01-preview' = {
+resource project_connection_azureai_search 'Microsoft.CognitiveServices/accounts/projects/connections@2025-04-01-preview' =  if (empty(azureExistingAIProjectResourceId)){
   name: 'myVectorStoreProjectConnectionName'
   parent: aiProject
   properties: {
@@ -358,7 +362,7 @@ resource project_connection_azureai_search 'Microsoft.CognitiveServices/accounts
   }
 }
 
-resource project_connection_azure_storage 'Microsoft.CognitiveServices/accounts/projects/connections@2025-04-01-preview' = {
+resource project_connection_azure_storage 'Microsoft.CognitiveServices/accounts/projects/connections@2025-04-01-preview' =  if (empty(azureExistingAIProjectResourceId)) {
   name: 'myStorageProjectConnectionName'
   parent: aiProject
   properties: {
@@ -431,7 +435,7 @@ resource azureOpenAIEndpointEntry 'Microsoft.KeyVault/vaults/secrets@2021-11-01-
   }
 }
 
-resource azureAIProjectConnectionStringEntry 'Microsoft.KeyVault/vaults/secrets@2021-11-01-preview' = {
+resource azureAIProjectConnectionStringEntry 'Microsoft.KeyVault/vaults/secrets@2021-11-01-preview' = if (empty(azureExistingAIProjectResourceId))  {
   parent: keyVault
   name: 'AZURE-AI-PROJECT-CONN-STRING'
   properties: {
@@ -564,5 +568,6 @@ output storageAccountName string = storageNameCleaned
 
 output azureOpenAIKeyName string = azureOpenAIApiKeyEntry.name
 
-output projectEndpoint string = aiProject.properties.endpoints['AI Foundry API']
+// output projectEndpoint string = aiProject.properties.endpoints['AI Foundry API']
+output projectEndpoint string = !empty(existingProjEndpoint) ? existingProjEndpoint : format('https://{0}.services.ai.azure.com/api/projects/{1}', aiServicesName, aiProjectName)
 output applicationInsightsConnectionString string = applicationInsights.properties.ConnectionString
