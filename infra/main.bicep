@@ -62,7 +62,7 @@ param imageTag string = 'latest'
 param AZURE_LOCATION string=''
 var solutionLocation = empty(AZURE_LOCATION) ? resourceGroup().location : AZURE_LOCATION
 
-@description('Set this flag to true only if you are deplpoying from Local')
+@description('Set this flag to true only if you are deploying from Local')
 param useLocalBuild string = 'false'
 
 // Convert input to lowercase
