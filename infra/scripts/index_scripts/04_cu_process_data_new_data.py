@@ -50,7 +50,7 @@ server = get_secrets_from_kv(KEY_VAULT_NAME, "SQLDB-SERVER")
 database = get_secrets_from_kv(KEY_VAULT_NAME, "SQLDB-DATABASE")
 azure_ai_endpoint = get_secrets_from_kv(KEY_VAULT_NAME, "AZURE-OPENAI-CU-ENDPOINT")
 azure_ai_api_version = "2024-12-01-preview"
-embedding_model = get_secrets_from_kv("AZURE-OPENAI-EMBEDDING-MODEL")
+embedding_model = get_secrets_from_kv(KEY_VAULT_NAME, "AZURE-OPENAI-EMBEDDING-MODEL")
 print("Secrets retrieved.")
 
 # Azure DataLake setup
