@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.36.1.42791",
-      "templateHash": "12380342505519175343"
+      "templateHash": "13936938252745125074"
     }
   },
   "parameters": {
@@ -640,7 +640,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.36.1.42791",
-              "templateHash": "6614968821470076141"
+              "templateHash": "4587341204165583142"
             }
           },
           "parameters": {
@@ -1061,6 +1061,9 @@
               "sku": {
                 "name": "basic"
               },
+              "identity": {
+                "type": "SystemAssigned"
+              },
               "properties": {
                 "replicaCount": 1,
                 "partitionCount": 1,
@@ -1072,9 +1075,11 @@
                 "encryptionWithCmk": {
                   "enforcement": "Unspecified"
                 },
-                "disableLocalAuth": false,
+                "disableLocalAuth": true,
                 "authOptions": {
-                  "apiKeyOnly": {}
+                  "aadOrApiKey": {
+                    "aadAuthFailureMode": "http401WithBearerChallenge"
+                  }
                 },
                 "semanticSearch": "free"
               }

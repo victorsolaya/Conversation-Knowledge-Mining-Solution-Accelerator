@@ -153,6 +153,9 @@ resource aiSearch 'Microsoft.Search/searchServices@2024-06-01-preview' = {
   sku: {
     name: 'basic'
   }
+  identity: {
+    type: 'SystemAssigned'
+  }
   properties: {
     replicaCount: 1
     partitionCount: 1
@@ -164,9 +167,11 @@ resource aiSearch 'Microsoft.Search/searchServices@2024-06-01-preview' = {
     encryptionWithCmk: {
       enforcement: 'Unspecified'
     }
-    disableLocalAuth: false
+    disableLocalAuth: true
     authOptions: {
-      apiKeyOnly: {}
+      aadOrApiKey:{
+        aadAuthFailureMode: 'http401WithBearerChallenge'
+      }
     }
     semanticSearch: 'free'
   }
