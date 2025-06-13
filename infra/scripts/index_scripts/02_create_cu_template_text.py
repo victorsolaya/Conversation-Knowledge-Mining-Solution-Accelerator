@@ -8,7 +8,7 @@ from content_understanding_client import AzureContentUnderstandingClient
 
 
 # === Configuration ===
-KEY_VAULT_NAME = 'kv-kmk2zuiwdy7dlg'
+KEY_VAULT_NAME = 'kv_to-be-replaced'
 MANAGED_IDENTITY_CLIENT_ID = 'mici_to-be-replaced'
 AZURE_AI_API_VERSION = "2024-12-01-preview"
 ANALYZER_ID = "ckm-json"

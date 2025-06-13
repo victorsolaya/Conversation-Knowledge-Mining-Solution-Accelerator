@@ -14,7 +14,7 @@ from openai import AzureOpenAI
 from content_understanding_client import AzureContentUnderstandingClient
 
 # Constants and configuration
-KEY_VAULT_NAME = 'kv-kmk2zuiwdy7dlg'
+KEY_VAULT_NAME = 'kv_to-be-replaced'
 MANAGED_IDENTITY_CLIENT_ID = 'mici_to-be-replaced'
 FILE_SYSTEM_CLIENT_NAME = "data"
 DIRECTORY = 'call_transcripts'

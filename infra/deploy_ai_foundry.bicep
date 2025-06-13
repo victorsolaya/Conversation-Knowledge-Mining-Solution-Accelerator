@@ -168,11 +168,6 @@ resource aiSearch 'Microsoft.Search/searchServices@2024-06-01-preview' = {
       enforcement: 'Unspecified'
     }
     disableLocalAuth: true
-    authOptions: {
-      aadOrApiKey:{
-        aadAuthFailureMode: 'http401WithBearerChallenge'
-      }
-    }
     semanticSearch: 'free'
   }
 }

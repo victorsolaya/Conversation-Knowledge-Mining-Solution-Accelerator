@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.36.1.42791",
-      "templateHash": "5892715668592591725"
+      "templateHash": "5856830728452763121"
     }
   },
   "parameters": {
@@ -640,7 +640,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.36.1.42791",
-              "templateHash": "16410429825552923878"
+              "templateHash": "11716070346490705965"
             }
           },
           "parameters": {
@@ -1076,11 +1076,6 @@
                   "enforcement": "Unspecified"
                 },
                 "disableLocalAuth": true,
-                "authOptions": {
-                  "aadOrApiKey": {
-                    "aadAuthFailureMode": "http401WithBearerChallenge"
-                  }
-                },
                 "semanticSearch": "free"
               }
             },
