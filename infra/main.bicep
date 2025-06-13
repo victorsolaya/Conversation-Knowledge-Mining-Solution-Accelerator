@@ -63,6 +63,10 @@ param embeddingDeploymentCapacity int = 80
 param imageTag string = 'latest'
 
 param AZURE_LOCATION string=''
+
+param existing_ai_service_name string = ''
+param existing_ai_project_name string = ''
+
 var solutionLocation = empty(AZURE_LOCATION) ? resourceGroup().location : AZURE_LOCATION
 
 var uniqueId = toLower(uniqueString(subscription().id, environmentName, solutionLocation))
@@ -110,7 +114,8 @@ module aifoundry 'deploy_ai_foundry.bicep' = {
     embeddingDeploymentCapacity: embeddingDeploymentCapacity
     managedIdentityObjectId: managedIdentityModule.outputs.managedIdentityOutput.objectId
     existingLogAnalyticsWorkspaceId: existingLogAnalyticsWorkspaceId
-     azureExistingAIProjectResourceId: azureExistingAIProjectResourceId 
+    existing_ai_service_name: existing_ai_service_name
+    existing_ai_project_name: existing_ai_project_name
 
   }
   scope: resourceGroup(resourceGroup().name)
