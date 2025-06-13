@@ -19,7 +19,7 @@ MANAGED_IDENTITY_CLIENT_ID = 'mici_to-be-replaced'
 FILE_SYSTEM_CLIENT_NAME = "data"
 DIRECTORY = 'call_transcripts'
 AUDIO_DIRECTORY = 'audiodata'
-INDEX_NAME = "call_transcripts_index1"
+INDEX_NAME = "call_transcripts_index"
 
 def get_secrets_from_kv(kv_name, secret_name):
     kv_credential = DefaultAzureCredential(managed_identity_client_id=MANAGED_IDENTITY_CLIENT_ID)
