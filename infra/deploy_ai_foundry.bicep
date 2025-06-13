@@ -219,8 +219,8 @@ resource ManagedIdentityAIUserFoundryAssignment 'Microsoft.Authorization/roleAss
 }
 
 resource AISearchAIUserProjectAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-  name: guid(resourceGroup().id, aiSearch.id, aiUser.id)
-  scope:aiProject
+  name: guid(resourceGroup().id, aiSearch.id, aiUser.id, 'project')
+  scope: aiProject
   properties: {
     principalId: aiSearch.identity.principalId
     roleDefinitionId: aiUser.id
@@ -229,8 +229,8 @@ resource AISearchAIUserProjectAssignment 'Microsoft.Authorization/roleAssignment
 }
 
 resource AISearchAIUserFoundryAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-  name: guid(resourceGroup().id, aiSearch.id, aiUser.id)
-  scope:aiServices
+  name: guid(resourceGroup().id, aiSearch.id, aiUser.id, 'foundry')
+  scope: aiServices
   properties: {
     principalId: aiSearch.identity.principalId
     roleDefinitionId: aiUser.id
@@ -243,7 +243,7 @@ resource cognitiveServicesOpenAIUser 'Microsoft.Authorization/roleDefinitions@20
 }
 
 resource AISearchOpenAIUserProjectAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-  name: guid(resourceGroup().id, aiSearch.id, aiUser.id)
+  name: guid(resourceGroup().id, aiSearch.id, aiUser.id, 'openai-project')
   scope: aiProject
   properties: {
     principalId: aiSearch.identity.principalId
@@ -253,7 +253,7 @@ resource AISearchOpenAIUserProjectAssignment 'Microsoft.Authorization/roleAssign
 }
 
 resource AISearchOpenAIUserFoundryAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-  name: guid(resourceGroup().id, aiSearch.id, aiUser.id)
+  name: guid(resourceGroup().id, aiSearch.id, aiUser.id, 'openai-foundry')
   scope: aiServices
   properties: {
     principalId: aiSearch.identity.principalId

@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.36.1.42791",
-      "templateHash": "13936938252745125074"
+      "templateHash": "5892715668592591725"
     }
   },
   "parameters": {
@@ -640,7 +640,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.36.1.42791",
-              "templateHash": "4587341204165583142"
+              "templateHash": "16410429825552923878"
             }
           },
           "parameters": {
@@ -1132,7 +1132,7 @@
               "type": "Microsoft.Authorization/roleAssignments",
               "apiVersion": "2022-04-01",
               "scope": "[format('Microsoft.CognitiveServices/accounts/{0}/projects/{1}', variables('aiServicesName'), variables('aiProjectName'))]",
-              "name": "[guid(resourceGroup().id, resourceId('Microsoft.Search/searchServices', variables('aiSearchName')), resourceId('Microsoft.Authorization/roleDefinitions', '53ca6127-db72-4b80-b1b0-d745d6d5456d'))]",
+              "name": "[guid(resourceGroup().id, resourceId('Microsoft.Search/searchServices', variables('aiSearchName')), resourceId('Microsoft.Authorization/roleDefinitions', '53ca6127-db72-4b80-b1b0-d745d6d5456d'), 'project')]",
               "properties": {
                 "principalId": "[reference(resourceId('Microsoft.Search/searchServices', variables('aiSearchName')), '2024-06-01-preview', 'full').identity.principalId]",
                 "roleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', '53ca6127-db72-4b80-b1b0-d745d6d5456d')]",
@@ -1147,7 +1147,7 @@
               "type": "Microsoft.Authorization/roleAssignments",
               "apiVersion": "2022-04-01",
               "scope": "[format('Microsoft.CognitiveServices/accounts/{0}', variables('aiServicesName'))]",
-              "name": "[guid(resourceGroup().id, resourceId('Microsoft.Search/searchServices', variables('aiSearchName')), resourceId('Microsoft.Authorization/roleDefinitions', '53ca6127-db72-4b80-b1b0-d745d6d5456d'))]",
+              "name": "[guid(resourceGroup().id, resourceId('Microsoft.Search/searchServices', variables('aiSearchName')), resourceId('Microsoft.Authorization/roleDefinitions', '53ca6127-db72-4b80-b1b0-d745d6d5456d'), 'foundry')]",
               "properties": {
                 "principalId": "[reference(resourceId('Microsoft.Search/searchServices', variables('aiSearchName')), '2024-06-01-preview', 'full').identity.principalId]",
                 "roleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', '53ca6127-db72-4b80-b1b0-d745d6d5456d')]",
@@ -1162,7 +1162,7 @@
               "type": "Microsoft.Authorization/roleAssignments",
               "apiVersion": "2022-04-01",
               "scope": "[format('Microsoft.CognitiveServices/accounts/{0}/projects/{1}', variables('aiServicesName'), variables('aiProjectName'))]",
-              "name": "[guid(resourceGroup().id, resourceId('Microsoft.Search/searchServices', variables('aiSearchName')), resourceId('Microsoft.Authorization/roleDefinitions', '53ca6127-db72-4b80-b1b0-d745d6d5456d'))]",
+              "name": "[guid(resourceGroup().id, resourceId('Microsoft.Search/searchServices', variables('aiSearchName')), resourceId('Microsoft.Authorization/roleDefinitions', '53ca6127-db72-4b80-b1b0-d745d6d5456d'), 'openai-project')]",
               "properties": {
                 "principalId": "[reference(resourceId('Microsoft.Search/searchServices', variables('aiSearchName')), '2024-06-01-preview', 'full').identity.principalId]",
                 "roleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', '5e0bd9bd-7b93-4f28-af87-19fc36ad61bd')]",
@@ -1177,7 +1177,7 @@
               "type": "Microsoft.Authorization/roleAssignments",
               "apiVersion": "2022-04-01",
               "scope": "[format('Microsoft.CognitiveServices/accounts/{0}', variables('aiServicesName'))]",
-              "name": "[guid(resourceGroup().id, resourceId('Microsoft.Search/searchServices', variables('aiSearchName')), resourceId('Microsoft.Authorization/roleDefinitions', '53ca6127-db72-4b80-b1b0-d745d6d5456d'))]",
+              "name": "[guid(resourceGroup().id, resourceId('Microsoft.Search/searchServices', variables('aiSearchName')), resourceId('Microsoft.Authorization/roleDefinitions', '53ca6127-db72-4b80-b1b0-d745d6d5456d'), 'openai-foundry')]",
               "properties": {
                 "principalId": "[reference(resourceId('Microsoft.Search/searchServices', variables('aiSearchName')), '2024-06-01-preview', 'full').identity.principalId]",
                 "roleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', '5e0bd9bd-7b93-4f28-af87-19fc36ad61bd')]",
