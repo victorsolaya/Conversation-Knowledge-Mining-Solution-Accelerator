@@ -204,11 +204,97 @@ resource aiUser 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = 
   name: '53ca6127-db72-4b80-b1b0-d745d6d5456d'
 }
 
-resource aiUserAccessFoundry 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+resource ManagedIdentityAIUserFoundryAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
   name: guid(resourceGroup().id, managedIdentityObjectId, aiUser.id)
   properties: {
     principalId: managedIdentityObjectId
     roleDefinitionId: aiUser.id
+    principalType: 'ServicePrincipal' 
+  }
+}
+
+resource AISearchAIUserProjectAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(resourceGroup().id, aiSearch.id, aiUser.id)
+  scope:aiProject
+  properties: {
+    principalId: aiSearch.identity.principalId
+    roleDefinitionId: aiUser.id
+    principalType: 'ServicePrincipal' 
+  }
+}
+
+resource AISearchAIUserFoundryAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(resourceGroup().id, aiSearch.id, aiUser.id)
+  scope:aiServices
+  properties: {
+    principalId: aiSearch.identity.principalId
+    roleDefinitionId: aiUser.id
+    principalType: 'ServicePrincipal' 
+  }
+}
+
+resource cognitiveServicesOpenAIUser 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = {
+  name: '5e0bd9bd-7b93-4f28-af87-19fc36ad61bd'
+}
+
+resource AISearchOpenAIUserProjectAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(resourceGroup().id, aiSearch.id, aiUser.id)
+  scope: aiProject
+  properties: {
+    principalId: aiSearch.identity.principalId
+    roleDefinitionId: cognitiveServicesOpenAIUser.id
+    principalType: 'ServicePrincipal' 
+  }
+}
+
+resource AISearchOpenAIUserFoundryAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(resourceGroup().id, aiSearch.id, aiUser.id)
+  scope: aiServices
+  properties: {
+    principalId: aiSearch.identity.principalId
+    roleDefinitionId: cognitiveServicesOpenAIUser.id
+    principalType: 'ServicePrincipal' 
+  }
+}
+
+resource searchIndexDataReader 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = {
+  name: '1407120a-92aa-4202-b7e9-c0e197c71c8f'
+}
+
+resource AIProjectSearchIndexDataReaderAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(resourceGroup().id, aiProject.id, searchIndexDataReader.id)
+  scope: aiSearch
+  properties: {
+    principalId: aiProject.identity.principalId
+    roleDefinitionId: searchIndexDataReader.id
+    principalType: 'ServicePrincipal' 
+  }
+}
+
+resource searchServiceContributor 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = {
+  name: '7ca78c08-252a-4471-8644-bb5ff32d4ba0'
+}
+
+resource AIProjectSearchServiceContributorAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(resourceGroup().id, aiProject.id, searchServiceContributor.id)
+  scope: aiSearch
+  properties: {
+    principalId: aiProject.identity.principalId
+    roleDefinitionId: searchServiceContributor.id
+    principalType: 'ServicePrincipal' 
+  }
+}
+
+resource searchIndexDataContributor 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = {
+  name: '8ebe5a00-799e-43f5-93ac-243d3dce84a7'
+}
+
+resource ManagedIdentitySearchIndexDataContributorAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(resourceGroup().id, aiProject.id, searchIndexDataContributor.id)
+  scope: aiSearch
+  properties: {
+    principalId: managedIdentityObjectId
+    roleDefinitionId: searchIndexDataContributor.id
     principalType: 'ServicePrincipal' 
   }
 }
@@ -237,14 +323,6 @@ resource azureOpenAIInferenceKey 'Microsoft.KeyVault/vaults/secrets@2021-11-01-p
   }
 }
 
-resource azureOpenAIApiKeyEntry 'Microsoft.KeyVault/vaults/secrets@2021-11-01-preview' = {
-  parent: keyVault
-  name: 'AZURE-OPENAI-KEY'
-  properties: {
-    value: aiServices.listKeys().key1 //aiServices_m.listKeys().key1
-  }
-}
-
 resource azureOpenAIDeploymentModel 'Microsoft.KeyVault/vaults/secrets@2021-11-01-preview' = {
   parent: keyVault
   name: 'AZURE-OPENAI-DEPLOYMENT-MODEL'
@@ -269,6 +347,14 @@ resource azureOpenAIEndpointEntry 'Microsoft.KeyVault/vaults/secrets@2021-11-01-
   }
 }
 
+resource azureOpenAIEmbeddingDeploymentModel 'Microsoft.KeyVault/vaults/secrets@2021-11-01-preview' = {
+  parent: keyVault
+  name: 'AZURE-OPENAI-EMBEDDING-MODEL'
+  properties: {
+    value: embeddingModel
+  }
+}
+
 resource azureAIProjectConnectionStringEntry 'Microsoft.KeyVault/vaults/secrets@2021-11-01-preview' = {
   parent: keyVault
   name: 'AZURE-AI-PROJECT-CONN-STRING'
@@ -285,27 +371,11 @@ resource azureOpenAICUEndpointEntry 'Microsoft.KeyVault/vaults/secrets@2021-11-0
   }
 }
 
-resource azureOpenAICUApiKeyEntry 'Microsoft.KeyVault/vaults/secrets@2021-11-01-preview' = {
-  parent: keyVault
-  name: 'AZURE-OPENAI-CU-KEY'
-  properties: {
-    value: aiServices_CU.listKeys().key1
-  }
-}
-
 resource azureOpenAICUApiVersionEntry 'Microsoft.KeyVault/vaults/secrets@2021-11-01-preview' = {
   parent: keyVault
   name: 'AZURE-OPENAI-CU-VERSION'
   properties: {
     value: '?api-version=2024-12-01-preview'
-  }
-}
-
-resource azureSearchAdminKeyEntry 'Microsoft.KeyVault/vaults/secrets@2021-11-01-preview' = {
-  parent: keyVault
-  name: 'AZURE-SEARCH-KEY'
-  properties: {
-    value: aiSearch.listAdminKeys().primaryKey
   }
 }
 
@@ -397,8 +467,6 @@ output applicationInsightsId string = applicationInsights.id
 output logAnalyticsWorkspaceResourceName string = useExisting ? existingLogAnalyticsWorkspace.name : logAnalytics.name
 output logAnalyticsWorkspaceResourceGroup string = useExisting ? existingLawResourceGroup : resourceGroup().name
 output logAnalyticsWorkspaceSubscription string = useExisting ? existingLawSubscription : subscription().subscriptionId
-
-output azureOpenAIKeyName string = azureOpenAIApiKeyEntry.name
 
 output projectEndpoint string = aiProject.properties.endpoints['AI Foundry API']
 output applicationInsightsConnectionString string = applicationInsights.properties.ConnectionString
