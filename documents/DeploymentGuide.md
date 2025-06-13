@@ -120,6 +120,7 @@ When you start the deployment, most parameters will have **default values**, but
 | **Embedding Model Capacity**                | Set the capacity for **embedding models** (in thousands).                                                 | 80k                    |
 | **Image Tag**                               | Docker image tag to deploy. Common values: `latest`, `dev`, `hotfix`.                  | latest       |
 | **Existing Log Analytics Workspace**        | To reuse an existing Log Analytics Workspace ID.                                                          | *(empty)*              |
+| **Use Local Build**                         | Boolean flag to determine if local container builds should be used.                         | false             |
 
 
 
