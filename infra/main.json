@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.36.1.42791",
-      "templateHash": "14173916872981347871"
+      "templateHash": "564349637541191724"
     }
   },
   "parameters": {
@@ -26,7 +26,7 @@
     },
     "azureExistingAIProjectResourceId": {
       "type": "string",
-      "defaultValue": "/subscriptions/ff9b5430-90ea-44c0-8a00-e488c1bf56f4/resourceGroups/rg-bsanusi-1174/providers/Microsoft.CognitiveServices/accounts/bsanusi-azd-test-resource/projects/bsanusi-azd-test",
+      "defaultValue": "",
       "metadata": {
         "description": "Use this parameter to use an existing AI project resource ID"
       }

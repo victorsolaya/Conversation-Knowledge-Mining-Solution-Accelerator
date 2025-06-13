@@ -10,7 +10,7 @@ param environmentName string
 param existingLogAnalyticsWorkspaceId string = ''
 
 @description('Use this parameter to use an existing AI project resource ID')
-param azureExistingAIProjectResourceId string = '/subscriptions/ff9b5430-90ea-44c0-8a00-e488c1bf56f4/resourceGroups/rg-bsanusi-1174/providers/Microsoft.CognitiveServices/accounts/bsanusi-azd-test-resource/projects/bsanusi-azd-test'
+param azureExistingAIProjectResourceId string = ''
 
 @minLength(1)
 @description('Location for the Content Understanding service deployment:')
