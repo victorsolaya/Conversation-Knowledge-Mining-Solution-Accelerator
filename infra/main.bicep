@@ -226,7 +226,6 @@ module backend_docker 'deploy_backend_docker.bicep' = {
       SQLDB_USER_MID: managedIdentityModule.outputs.managedIdentityBackendAppOutput.clientId
 
       AZURE_AI_SEARCH_ENDPOINT: aifoundry.outputs.aiSearchTarget
-      AZURE_AI_SEARCH_API_KEY: '@Microsoft.KeyVault(SecretUri=${kvault.outputs.keyvaultUri}secrets/AZURE-SEARCH-KEY/)'
       AZURE_AI_SEARCH_INDEX: 'call_transcripts_index'
       USE_AI_PROJECT_CLIENT: 'False'
       DISPLAY_CHART_DEFAULT: 'False'
