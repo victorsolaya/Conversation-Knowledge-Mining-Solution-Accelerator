@@ -64,8 +64,8 @@ param imageTag string = 'latest'
 
 param AZURE_LOCATION string=''
 
-param existing_ai_service_name string = 'bsanusi-azd-test-resource'
-param existing_ai_project_name string = 'bsanusi-azd-test'
+param existing_ai_service_name string = ''
+param existing_ai_project_name string = ''
 
 var solutionLocation = empty(AZURE_LOCATION) ? resourceGroup().location : AZURE_LOCATION
 

@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.36.1.42791",
-      "templateHash": "15750410646051894064"
+      "templateHash": "3672001194925177196"
     }
   },
   "parameters": {
@@ -112,11 +112,11 @@
     },
     "existing_ai_service_name": {
       "type": "string",
-      "defaultValue": "bsanusi-azd-test-resource"
+      "defaultValue": ""
     },
     "existing_ai_project_name": {
       "type": "string",
-      "defaultValue": "bsanusi-azd-test"
+      "defaultValue": ""
     }
   },
   "variables": {
