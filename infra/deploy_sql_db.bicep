@@ -1,49 +1,31 @@
-@minLength(3)
-@maxLength(15)
-@description('Solution Name')
-param solutionName string
 param solutionLocation string
 param keyVaultName string
-param managedIdentityId string
 param managedIdentityObjectId string
 param managedIdentityName string
 
-// @description('The name of the SQL logical server.')
-// param serverName string = '${ solutionName }-sql-server'
-
-// @description('The name of the SQL Database.')
-// param sqlDBName string = '${ solutionName }-sql-db'
-
-// @description('Location for all resources.')
-// param location string = solutionLocation
-
-// @description('The administrator username of the SQL logical server.')
-// param administratorLogin string = 'sqladmin'
-
-// @description('The administrator password of the SQL logical server.')
-// @secure()
-// param administratorLoginPassword string = 'TestPassword_1234'
-
-var serverName = '${ solutionName }-sql-server'
-var sqlDBName = '${ solutionName }-sql-db'
+param serverName string
+param sqlDBName string
 var location = solutionLocation
 var administratorLogin = 'sqladmin'
 var administratorLoginPassword = 'TestPassword_1234'
 
-param users array = [
-]
-
 resource sqlServer 'Microsoft.Sql/servers@2023-08-01-preview' = {
   name: serverName
   location: location
-  kind:'v12.0'
+  kind: 'v12.0'
   properties: {
-      administratorLogin: administratorLogin
-      administratorLoginPassword: administratorLoginPassword
-      publicNetworkAccess: 'Enabled'
-      version: '12.0'
-      restrictOutboundNetworkAccess: 'Disabled'
+    publicNetworkAccess: 'Enabled'
+    version: '12.0'
+    restrictOutboundNetworkAccess: 'Disabled'
+    minimalTlsVersion: '1.2' // Enforce TLS 1.2 to comply with Azure policy
+    administrators: {
+      login: managedIdentityName
+      sid: managedIdentityObjectId
+      tenantId: subscription().tenantId
+      administratorType: 'ActiveDirectory'
+      azureADOnlyAuthentication: true
     }
+  }
 }
 
 resource firewallRule 'Microsoft.Sql/servers/firewallRules@2023-08-01-preview' = {
@@ -74,40 +56,15 @@ resource sqlDB 'Microsoft.Sql/servers/databases@2023-08-01-preview' = {
     family: 'Gen5'
     capacity: 2
   }
-  kind:'v12.0,user,vcore,serverless'
+  kind: 'v12.0,user,vcore,serverless'
   properties: {
     collation: 'SQL_Latin1_General_CP1_CI_AS'
-    autoPauseDelay:60
-    minCapacity:1
+    autoPauseDelay: 60
+    minCapacity: 1
     readScale: 'Disabled'
     zoneRedundant: false
   }
 }
-
-resource SQLServerName_ActiveDirectory 'Microsoft.Sql/servers/administrators@2023-08-01-preview' = {
-  parent: sqlServer
-  name: 'ActiveDirectory'
-  properties: {
-    login: managedIdentityName
-    sid: managedIdentityObjectId
-    tenantId: subscription().tenantId
-    administratorType: 'ActiveDirectory'
-  }
-}
-
-module sqluser 'create-sql-user-and-role.bicep' = [for user in users: {
-  name: 'sqluser-${guid(location, user.principalId, user.principalName, sqlDBName, sqlServer.name)}'
-  params: {
-    managedIdentityId: managedIdentityId
-    principalId: user.principalId
-    principalName: user.principalName
-    sqlDatabaseName: sqlDBName
-    location: location
-    sqlServerName: sqlServer.name
-    databaseRoles: user.databaseRoles
-  }
-  dependsOn: [ sqlDB, SQLServerName_ActiveDirectory ]
-}]
 
 resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' existing = {
   name: keyVaultName
@@ -117,7 +74,7 @@ resource sqldbServerEntry 'Microsoft.KeyVault/vaults/secrets@2021-11-01-preview'
   parent: keyVault
   name: 'SQLDB-SERVER'
   properties: {
-    value: '${serverName}.database.windows.net'
+    value: '${serverName}${environment().suffixes.sqlServerHostname}'
   }
 }
 
@@ -148,10 +105,3 @@ resource sqldbDatabasePwd 'Microsoft.KeyVault/vaults/secrets@2021-11-01-preview'
 output sqlServerName string = '${serverName}.database.windows.net'
 output sqlDbName string = sqlDBName
 output sqlDbUser string = administratorLogin
-
-// output sqlDbOutput object = {
-//   sqlServerName: '${serverName}.database.windows.net' 
-//   sqlDbName: sqlDBName
-//   sqlDbUser: administratorLogin
-//   sqlDbPwd: administratorLoginPassword
-// }

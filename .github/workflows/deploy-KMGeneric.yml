@@ -79,7 +79,9 @@ jobs:
         id: generate_rg_name
         run: |
           echo "Generating a unique resource group name..."
+
           ACCL_NAME="kmgeneric"
+
           SHORT_UUID=$(uuidgen | cut -d'-' -f1)
           UNIQUE_RG_NAME="arg-${ACCL_NAME}-${SHORT_UUID}"
           echo "RESOURCE_GROUP_NAME=${UNIQUE_RG_NAME}" >> $GITHUB_ENV
@@ -118,7 +120,9 @@ jobs:
           az deployment group create \
             --resource-group ${{ env.RESOURCE_GROUP_NAME }} \
             --template-file infra/main.bicep \
+
             --parameters environmentName=${{env.SOLUTION_PREFIX}} contentUnderstandingLocation="swedencentral" secondaryLocation="${{ env.AZURE_LOCATION }}" imageTag=${{ steps.determine_tag.outputs.tagname }} gptDeploymentCapacity=150
+
      
 
       - name: Extract Web App and API App URLs

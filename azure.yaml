@@ -8,26 +8,20 @@ name: conversation-knowledge-mining
 metadata:
   template: conversation-knowledge-mining@1.0
 
-parameters:
-  solutionPrefix:
-    type: string
-    default: bs-azdtest  
-  otherLocation:
-    type: string
-    default: eastus2
-  baseUrl:
-    type: string
-    default: 'https://raw.githubusercontent.com/microsoft/Conversation-Knowledge-Mining-Solution-Accelerator/'
-
-deployment:
-  mode: Incremental
-  template: ./infra/main.bicep  # Path to the main.bicep file inside the 'deployment' folder
-  parameters:
-    solutionPrefix: ${parameters.solutionPrefix}
-    otherLocation: ${parameters.otherLocation}
-    baseUrl: ${parameters.baseUrl}
-
 hooks:
+  preprovision:
+    windows:
+      run: |
+        $timestamp = Get-Date -Format "yyyyMMdd-HHmmss"; $logFile = "azd_preprovision_$timestamp.log"; ./infra/scripts/docker-build.ps1 $env:AZURE_SUBSCRIPTION_ID $env:AZURE_ENV_NAME $env:AZURE_LOCATION $env:AZURE_RESOURCE_GROUP $env:USE_LOCAL_BUILD *>&1 | Tee-Object -FilePath $logFile
+      shell: pwsh
+      continueOnError: false
+      interactive: true
+    posix:
+      run: |
+        timestamp=$(date +"%Y%m%d-%H%M%S"); logFile="azd_preprovision_$timestamp.log"; sed -i 's/\r$//' ./infra/scripts/docker-build.sh; ./infra/scripts/docker-build.sh "$AZURE_SUBSCRIPTION_ID" "$AZURE_ENV_NAME" "$AZURE_LOCATION" "$AZURE_RESOURCE_GROUP" "$USE_LOCAL_BUILD" 2>&1 | tee "$logFile"
+      shell: sh
+      continueOnError: false
+      interactive: true
   postprovision:
     windows:
       run: |
@@ -43,38 +37,3 @@ hooks:
       shell: sh
       continueOnError: false
       interactive: true
-# environment:
-#   name: conversation-knowledge-mining-solution-accelerator
-#   location: eastus
-
-# metadata:
-#     template: azd-init@1.11.1
-# services:
-#     add-user-scripts:
-#         project: Deployment/scripts/add_user_scripts
-#         host: containerapp
-#         language: python
-#     app:
-#         project: App
-#         host: containerapp
-#         language: python
-#     fabric-scripts:
-#         project: Deployment/scripts/fabric_scripts
-#         host: containerapp
-#         language: python
-#     index-scripts:
-#         project: Deployment/scripts/index_scripts
-#         host: containerapp
-#         language: python
-#     km-charts-function:
-#         project: AzureFunctions/km-charts-function
-#         host: containerapp
-#         language: python
-#         docker:
-#             path: Dockerfile
-#     km-rag-function:
-#         project: AzureFunctions/km-rag-function
-#         host: containerapp
-#         language: python
-#         docker:
-#             path: Dockerfile
