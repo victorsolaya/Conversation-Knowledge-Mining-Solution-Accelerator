@@ -64,12 +64,6 @@ cursor = conn.cursor()
 print("SQL Server connection established.")
 
 
-# Set up the connection
-connection_string = f"DRIVER={driver};SERVER={server};DATABASE={database};"
-conn = pyodbc.connect(
-    connection_string, attrs_before={SQL_COPT_SS_ACCESS_TOKEN: token_struct}
-)
-
 # Content Understanding client
 cu_credential = DefaultAzureCredential(managed_identity_client_id=MANAGED_IDENTITY_CLIENT_ID)
 cu_token_provider = get_bearer_token_provider(cu_credential, "https://cognitiveservices.azure.com/.default")
