@@ -9,8 +9,8 @@ param environmentName string
 @description('Optional: Existing Log Analytics Workspace Resource ID')
 param existingLogAnalyticsWorkspaceId string = ''
 
-@description('Use this parameter to use an existing AI project resource ID')
-param azureExistingAIProjectResourceId string = ''
+// @description('Use this parameter to use an existing AI project resource ID')
+// param azureExistingAIProjectResourceId string = ''
 
 @minLength(1)
 @description('Location for the Content Understanding service deployment:')
@@ -64,8 +64,8 @@ param imageTag string = 'latest'
 
 param AZURE_LOCATION string=''
 
-param existing_ai_service_name string = ''
-param existing_ai_project_name string = ''
+param existing_ai_service_name string = 'bsanusi-azd-test-resource'
+param existing_ai_project_name string = 'bsanusi-azd-test'
 
 var solutionLocation = empty(AZURE_LOCATION) ? resourceGroup().location : AZURE_LOCATION
 

@@ -15,6 +15,7 @@ param existingLogAnalyticsWorkspaceId string = ''
 param existing_ai_service_name string = ''
 param existing_ai_project_name string = ''
 
+
 var abbrs = loadJsonContent('./abbreviations.json')
 var aiServicesName = '${abbrs.ai.aiServices}${solutionName}'
 var aiServicesName_cu = '${abbrs.ai.aiServices}${solutionName}-cu'
@@ -284,7 +285,7 @@ resource azureOpenAIApiKeyEntry 'Microsoft.KeyVault/vaults/secrets@2021-11-01-pr
 
 resource existingazureOpenAIApiKeyEntry 'Microsoft.KeyVault/vaults/secrets@2021-11-01-preview' =  if (!empty(existingAIServicesName)){
   parent: keyVault
-  name: 'AZURE-OPENAI-KEY'
+  name: 'AZURE-OPENAI-KEY-EXISTING'
   properties: {
     value: existingaiServices.listKeys().key1 //aiServices_m.listKeys().key1
   }
@@ -316,7 +317,7 @@ resource azureOpenAIEndpointEntry 'Microsoft.KeyVault/vaults/secrets@2021-11-01-
 
 resource existingazureOpenAIEndpointEntry 'Microsoft.KeyVault/vaults/secrets@2021-11-01-preview' = if (!empty(existingAIServicesName)) {
   parent: keyVault
-  name: 'AZURE-OPENAI-ENDPOINT'
+  name: 'AZURE-OPENAI-ENDPOINT-EXISTING'
   properties: {
     value: existingaiServices.properties.endpoints['OpenAI Language Model Instance API'] //aiServices_m.properties.endpoint
   }
@@ -332,7 +333,7 @@ resource azureAIProjectConnectionStringEntry 'Microsoft.KeyVault/vaults/secrets@
 
 resource existingazureAIProjectConnectionStringEntry 'Microsoft.KeyVault/vaults/secrets@2021-11-01-preview' = if (!empty(existingAIProjectName)) {
   parent: keyVault
-  name: 'AZURE-AI-PROJECT-CONN-STRING'
+  name: 'AZURE-AI-PROJECT-CONN-STRING-EXISTING'
   properties: {
     value: '${existingAIServicesName};${subscription().subscriptionId};${resourceGroup().name};${existingAIProjectName}'
   }
@@ -404,7 +405,7 @@ resource cogServiceEndpointEntry 'Microsoft.KeyVault/vaults/secrets@2021-11-01-p
 
 resource existingcogServiceEndpointEntry 'Microsoft.KeyVault/vaults/secrets@2021-11-01-preview' = if (!empty(existingAIServicesName)) {
   parent: keyVault
-  name: 'COG-SERVICES-ENDPOINT'
+  name: 'COG-SERVICES-ENDPOINT-EXISTING'
   properties: {
     value: existingaiServices.properties.endpoint
   }
@@ -420,7 +421,7 @@ resource cogServiceKeyEntry 'Microsoft.KeyVault/vaults/secrets@2021-11-01-previe
 
 resource existingcogServiceKeyEntry 'Microsoft.KeyVault/vaults/secrets@2021-11-01-preview' = if (!empty(existingAIServicesName)) {
   parent: keyVault
-  name: 'COG-SERVICES-KEY'
+  name: 'COG-SERVICES-KEY-EXISTING'
   properties: {
     value: existingaiServices.listKeys().key1
   }
@@ -436,7 +437,7 @@ resource cogServiceNameEntry 'Microsoft.KeyVault/vaults/secrets@2021-11-01-previ
 
 resource existingcogServiceNameEntry 'Microsoft.KeyVault/vaults/secrets@2021-11-01-preview' = if (!empty(existingAIServicesName)){
   parent: keyVault
-  name: 'COG-SERVICES-NAME'
+  name: 'COG-SERVICES-NAME-EXISTING'
   properties: {
     value: existingAIServicesName
   }

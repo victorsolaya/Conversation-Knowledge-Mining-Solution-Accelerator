@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.36.1.42791",
-      "templateHash": "564349637541191724"
+      "templateHash": "15750410646051894064"
     }
   },
   "parameters": {
@@ -22,13 +22,6 @@
       "defaultValue": "",
       "metadata": {
         "description": "Optional: Existing Log Analytics Workspace Resource ID"
-      }
-    },
-    "azureExistingAIProjectResourceId": {
-      "type": "string",
-      "defaultValue": "",
-      "metadata": {
-        "description": "Use this parameter to use an existing AI project resource ID"
       }
     },
     "contentUnderstandingLocation": {
@@ -116,6 +109,14 @@
     "AZURE_LOCATION": {
       "type": "string",
       "defaultValue": ""
+    },
+    "existing_ai_service_name": {
+      "type": "string",
+      "defaultValue": "bsanusi-azd-test-resource"
+    },
+    "existing_ai_project_name": {
+      "type": "string",
+      "defaultValue": "bsanusi-azd-test"
     }
   },
   "variables": {
@@ -628,8 +629,11 @@
           "existingLogAnalyticsWorkspaceId": {
             "value": "[parameters('existingLogAnalyticsWorkspaceId')]"
           },
-          "azureExistingAIProjectResourceId": {
-            "value": "[parameters('azureExistingAIProjectResourceId')]"
+          "existing_ai_service_name": {
+            "value": "[parameters('existing_ai_service_name')]"
+          },
+          "existing_ai_project_name": {
+            "value": "[parameters('existing_ai_project_name')]"
           }
         },
         "template": {
@@ -639,7 +643,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.36.1.42791",
-              "templateHash": "13827446485527033787"
+              "templateHash": "15133695187696264733"
             }
           },
           "parameters": {
@@ -683,7 +687,11 @@
               "type": "string",
               "defaultValue": ""
             },
-            "azureExistingAIProjectResourceId": {
+            "existing_ai_service_name": {
+              "type": "string",
+              "defaultValue": ""
+            },
+            "existing_ai_project_name": {
               "type": "string",
               "defaultValue": ""
             }
@@ -951,10 +959,10 @@
             "existingLawSubscription": "[if(variables('useExisting'), split(parameters('existingLogAnalyticsWorkspaceId'), '/')[2], '')]",
             "existingLawResourceGroup": "[if(variables('useExisting'), split(parameters('existingLogAnalyticsWorkspaceId'), '/')[4], '')]",
             "existingLawName": "[if(variables('useExisting'), split(parameters('existingLogAnalyticsWorkspaceId'), '/')[8], '')]",
-            "existingOpenAIEndpoint": "[if(not(empty(parameters('azureExistingAIProjectResourceId'))), format('https://{0}.openai.azure.com/', split(parameters('azureExistingAIProjectResourceId'), '/')[8]), '')]",
-            "existingProjEndpoint": "[if(not(empty(parameters('azureExistingAIProjectResourceId'))), format('https://{0}.services.ai.azure.com/api/projects/{1}', split(parameters('azureExistingAIProjectResourceId'), '/')[8], split(parameters('azureExistingAIProjectResourceId'), '/')[10]), '')]",
-            "existingAIServicesName": "[if(not(empty(parameters('azureExistingAIProjectResourceId'))), split(parameters('azureExistingAIProjectResourceId'), '/')[8], '')]",
-            "existingAIProjectName": "[if(not(empty(parameters('azureExistingAIProjectResourceId'))), split(parameters('azureExistingAIProjectResourceId'), '/')[10], '')]"
+            "existingOpenAIEndpoint": "[if(not(empty(parameters('existing_ai_service_name'))), format('https://{0}.openai.azure.com/', parameters('existing_ai_service_name')), '')]",
+            "existingProjEndpoint": "[if(not(empty(parameters('existing_ai_service_name'))), format('https://{0}.services.ai.azure.com/api/projects/{1}', parameters('existing_ai_service_name'), parameters('existing_ai_project_name')), '')]",
+            "existingAIServicesName": "[if(not(empty(parameters('existing_ai_service_name'))), parameters('existing_ai_service_name'), '')]",
+            "existingAIProjectName": "[if(not(empty(parameters('existing_ai_project_name'))), parameters('existing_ai_project_name'), '')]"
           },
           "resources": [
             {
@@ -988,7 +996,7 @@
               ]
             },
             {
-              "condition": "[empty(parameters('azureExistingAIProjectResourceId'))]",
+              "condition": "[empty(variables('existingAIServicesName'))]",
               "type": "Microsoft.CognitiveServices/accounts",
               "apiVersion": "2025-04-01-preview",
               "name": "[variables('aiServicesName')]",
@@ -1043,7 +1051,7 @@
                 "mode": "serial",
                 "batchSize": 1
               },
-              "condition": "[equals(parameters('azureExistingAIProjectResourceId'), '')]",
+              "condition": "[equals(variables('existingAIServicesName'), '')]",
               "type": "Microsoft.CognitiveServices/accounts/deployments",
               "apiVersion": "2025-04-01-preview",
               "name": "[format('{0}/{1}', variables('aiServicesName'), variables('aiModelDeployments')[copyIndex()].name)]",
@@ -1063,7 +1071,6 @@
               ]
             },
             {
-              "condition": "[empty(parameters('azureExistingAIProjectResourceId'))]",
               "type": "Microsoft.Search/searchServices",
               "apiVersion": "2024-06-01-preview",
               "name": "[variables('aiSearchName')]",
@@ -1090,7 +1097,7 @@
               }
             },
             {
-              "condition": "[empty(parameters('azureExistingAIProjectResourceId'))]",
+              "condition": "[empty(variables('existingAIServicesName'))]",
               "type": "Microsoft.CognitiveServices/accounts/projects",
               "apiVersion": "2025-04-01-preview",
               "name": "[format('{0}/{1}', variables('aiServicesName'), variables('aiProjectName'))]",
@@ -1105,6 +1112,7 @@
               ]
             },
             {
+              "condition": "[empty(variables('existingAIServicesName'))]",
               "type": "Microsoft.CognitiveServices/accounts/projects/connections",
               "apiVersion": "2025-04-01-preview",
               "name": "[format('{0}/{1}/{2}', variables('aiServicesName'), variables('aiProjectName'), 'myVectorStoreProjectConnectionName')]",
@@ -1121,6 +1129,26 @@
               },
               "dependsOn": [
                 "[resourceId('Microsoft.CognitiveServices/accounts/projects', variables('aiServicesName'), variables('aiProjectName'))]",
+                "[resourceId('Microsoft.Search/searchServices', variables('aiSearchName'))]"
+              ]
+            },
+            {
+              "condition": "[not(empty(variables('existingAIServicesName')))]",
+              "type": "Microsoft.CognitiveServices/accounts/projects/connections",
+              "apiVersion": "2025-04-01-preview",
+              "name": "[format('{0}/{1}/{2}', variables('existingAIServicesName'), variables('existingAIProjectName'), 'myVectorStoreProjectConnectionName')]",
+              "properties": {
+                "category": "CognitiveSearch",
+                "target": "[format('https://{0}.search.windows.net', variables('aiSearchName'))]",
+                "authType": "AAD",
+                "isSharedToAll": true,
+                "metadata": {
+                  "ApiType": "Azure",
+                  "ResourceId": "[resourceId('Microsoft.Search/searchServices', variables('aiSearchName'))]",
+                  "location": "[reference(resourceId('Microsoft.Search/searchServices', variables('aiSearchName')), '2024-06-01-preview', 'full').location]"
+                }
+              },
+              "dependsOn": [
                 "[resourceId('Microsoft.Search/searchServices', variables('aiSearchName'))]"
               ]
             },
@@ -1159,6 +1187,7 @@
               }
             },
             {
+              "condition": "[empty(variables('existingAIServicesName'))]",
               "type": "Microsoft.KeyVault/vaults/secrets",
               "apiVersion": "2021-11-01-preview",
               "name": "[format('{0}/{1}', parameters('keyVaultName'), 'AZURE-OPENAI-KEY')]",
@@ -1168,6 +1197,15 @@
               "dependsOn": [
                 "[resourceId('Microsoft.CognitiveServices/accounts', variables('aiServicesName'))]"
               ]
+            },
+            {
+              "condition": "[not(empty(variables('existingAIServicesName')))]",
+              "type": "Microsoft.KeyVault/vaults/secrets",
+              "apiVersion": "2021-11-01-preview",
+              "name": "[format('{0}/{1}', parameters('keyVaultName'), 'AZURE-OPENAI-KEY-EXISTING')]",
+              "properties": {
+                "value": "[listKeys(resourceId('Microsoft.CognitiveServices/accounts', variables('existingAIServicesName')), '2025-04-01-preview').key1]"
+              }
             },
             {
               "type": "Microsoft.KeyVault/vaults/secrets",
@@ -1186,6 +1224,7 @@
               }
             },
             {
+              "condition": "[empty(variables('existingAIServicesName'))]",
               "type": "Microsoft.KeyVault/vaults/secrets",
               "apiVersion": "2021-11-01-preview",
               "name": "[format('{0}/{1}', parameters('keyVaultName'), 'AZURE-OPENAI-ENDPOINT')]",
@@ -1197,6 +1236,16 @@
               ]
             },
             {
+              "condition": "[not(empty(variables('existingAIServicesName')))]",
+              "type": "Microsoft.KeyVault/vaults/secrets",
+              "apiVersion": "2021-11-01-preview",
+              "name": "[format('{0}/{1}', parameters('keyVaultName'), 'AZURE-OPENAI-ENDPOINT-EXISTING')]",
+              "properties": {
+                "value": "[reference(resourceId('Microsoft.CognitiveServices/accounts', variables('existingAIServicesName')), '2025-04-01-preview').endpoints['OpenAI Language Model Instance API']]"
+              }
+            },
+            {
+              "condition": "[empty(variables('existingAIProjectName'))]",
               "type": "Microsoft.KeyVault/vaults/secrets",
               "apiVersion": "2021-11-01-preview",
               "name": "[format('{0}/{1}', parameters('keyVaultName'), 'AZURE-AI-PROJECT-CONN-STRING')]",
@@ -1206,6 +1255,15 @@
               "dependsOn": [
                 "[resourceId('Microsoft.CognitiveServices/accounts/projects', variables('aiServicesName'), variables('aiProjectName'))]"
               ]
+            },
+            {
+              "condition": "[not(empty(variables('existingAIProjectName')))]",
+              "type": "Microsoft.KeyVault/vaults/secrets",
+              "apiVersion": "2021-11-01-preview",
+              "name": "[format('{0}/{1}', parameters('keyVaultName'), 'AZURE-AI-PROJECT-CONN-STRING-EXISTING')]",
+              "properties": {
+                "value": "[format('{0};{1};{2};{3}', variables('existingAIServicesName'), subscription().subscriptionId, resourceGroup().name, variables('existingAIProjectName'))]"
+              }
             },
             {
               "type": "Microsoft.KeyVault/vaults/secrets",
@@ -1279,6 +1337,7 @@
               }
             },
             {
+              "condition": "[empty(variables('existingAIServicesName'))]",
               "type": "Microsoft.KeyVault/vaults/secrets",
               "apiVersion": "2021-11-01-preview",
               "name": "[format('{0}/{1}', parameters('keyVaultName'), 'COG-SERVICES-ENDPOINT')]",
@@ -1290,6 +1349,16 @@
               ]
             },
             {
+              "condition": "[not(empty(variables('existingAIServicesName')))]",
+              "type": "Microsoft.KeyVault/vaults/secrets",
+              "apiVersion": "2021-11-01-preview",
+              "name": "[format('{0}/{1}', parameters('keyVaultName'), 'COG-SERVICES-ENDPOINT-EXISTING')]",
+              "properties": {
+                "value": "[reference(resourceId('Microsoft.CognitiveServices/accounts', variables('existingAIServicesName')), '2025-04-01-preview').endpoint]"
+              }
+            },
+            {
+              "condition": "[empty(variables('existingAIServicesName'))]",
               "type": "Microsoft.KeyVault/vaults/secrets",
               "apiVersion": "2021-11-01-preview",
               "name": "[format('{0}/{1}', parameters('keyVaultName'), 'COG-SERVICES-KEY')]",
@@ -1301,11 +1370,30 @@
               ]
             },
             {
+              "condition": "[not(empty(variables('existingAIServicesName')))]",
+              "type": "Microsoft.KeyVault/vaults/secrets",
+              "apiVersion": "2021-11-01-preview",
+              "name": "[format('{0}/{1}', parameters('keyVaultName'), 'COG-SERVICES-KEY-EXISTING')]",
+              "properties": {
+                "value": "[listKeys(resourceId('Microsoft.CognitiveServices/accounts', variables('existingAIServicesName')), '2025-04-01-preview').key1]"
+              }
+            },
+            {
+              "condition": "[empty(variables('existingAIServicesName'))]",
               "type": "Microsoft.KeyVault/vaults/secrets",
               "apiVersion": "2021-11-01-preview",
               "name": "[format('{0}/{1}', parameters('keyVaultName'), 'COG-SERVICES-NAME')]",
               "properties": {
                 "value": "[variables('aiServicesName')]"
+              }
+            },
+            {
+              "condition": "[not(empty(variables('existingAIServicesName')))]",
+              "type": "Microsoft.KeyVault/vaults/secrets",
+              "apiVersion": "2021-11-01-preview",
+              "name": "[format('{0}/{1}', parameters('keyVaultName'), 'COG-SERVICES-NAME-EXISTING')]",
+              "properties": {
+                "value": "[variables('existingAIServicesName')]"
               }
             },
             {
