@@ -56,7 +56,8 @@ var existingOpenAIEndpoint = !empty(azureExistingAIProjectResourceId) ? format('
 var existingProjEndpoint = !empty(azureExistingAIProjectResourceId) ? format('https://{0}.services.ai.azure.com/api/projects/{1}', split(azureExistingAIProjectResourceId, '/')[8], split(azureExistingAIProjectResourceId, '/')[10]) : ''
 var existingAIServicesName = !empty(azureExistingAIProjectResourceId) ? split(azureExistingAIProjectResourceId, '/')[8] : ''
 var existingAIProjectName = !empty(azureExistingAIProjectResourceId) ? split(azureExistingAIProjectResourceId, '/')[10] : ''
-
+var existingAIServiceSubscription = !empty(azureExistingAIProjectResourceId) ? split(azureExistingAIProjectResourceId, '/')[2] : ''
+var existingAIServiceResourceGroup = !empty(azureExistingAIProjectResourceId) ? split(azureExistingAIProjectResourceId, '/')[4] : ''
 
 resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' existing = {
   name: keyVaultName
@@ -138,7 +139,7 @@ resource aiServices_CU 'Microsoft.CognitiveServices/accounts@2025-04-01-preview'
 }
 
 @batchSize(1)
-resource aiServicesDeployments 'Microsoft.CognitiveServices/accounts/deployments@2025-04-01-preview' = [for aiModeldeployment in aiModelDeployments: if (azureExistingAIProjectResourceId == '') {
+resource aiServicesDeployments 'Microsoft.CognitiveServices/accounts/deployments@2025-04-01-preview' = [for aiModeldeployment in aiModelDeployments: if (empty(azureExistingAIProjectResourceId)) {
   parent: aiServices //aiServices_m
   name: aiModeldeployment.name
   properties: {
@@ -154,7 +155,7 @@ resource aiServicesDeployments 'Microsoft.CognitiveServices/accounts/deployments
   }
 }]
 
-resource aiSearch 'Microsoft.Search/searchServices@2024-06-01-preview' =  if (empty(azureExistingAIProjectResourceId)) {
+resource aiSearch 'Microsoft.Search/searchServices@2024-06-01-preview' = {
   name: aiSearchName
   location: solutionLocation
   sku: {
@@ -190,14 +191,13 @@ resource aiProject 'Microsoft.CognitiveServices/accounts/projects@2025-04-01-pre
   properties: {}
 }
 
-resource project_connection_azureai_search 'Microsoft.CognitiveServices/accounts/projects/connections@2025-04-01-preview' = {
-  name: 'myVectorStoreProjectConnectionName'
+resource aiproject_aisearch_connection_new 'Microsoft.CognitiveServices/accounts/projects/connections@2025-04-01-preview' = if (empty(azureExistingAIProjectResourceId)) {
+  name: 'myVectorStoreProjectConnectionName-${solutionName}'
   parent: aiProject
   properties: {
     category: 'CognitiveSearch'
     target: 'https://${aiSearchName}.search.windows.net'
     authType: 'AAD'
-    //useWorkspaceManagedIdentity: false
     isSharedToAll: true
     metadata: {
       ApiType: 'Azure'
@@ -206,6 +206,21 @@ resource project_connection_azureai_search 'Microsoft.CognitiveServices/accounts
     }
   }
 }
+
+module aiProjectSearchConnectionModule 'projectSearchConnection.bicep' = if (!empty(azureExistingAIProjectResourceId)) {
+  name: 'aiProjectSearchConnectionDeployment'
+  scope: resourceGroup(existingAIServiceSubscription, existingAIServiceResourceGroup)
+  params: {
+    existingAIServiceSubscription: existingAIServiceSubscription
+    existingAIServiceResourceGroup: existingAIServiceResourceGroup
+    existingAIProjectName: existingAIProjectName
+    aiSearchName: aiSearchName
+    aiSearchResourceId: aiSearch.id
+    aiSearchLocation: aiSearch.location
+    solutionName: solutionName
+  }
+}
+
 
 resource aiUser 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = {
   name: '53ca6127-db72-4b80-b1b0-d745d6d5456d'
@@ -244,14 +259,6 @@ resource azureOpenAIInferenceKey 'Microsoft.KeyVault/vaults/secrets@2021-11-01-p
   }
 }
 
-resource azureOpenAIApiKeyEntry 'Microsoft.KeyVault/vaults/secrets@2021-11-01-preview' = {
-  parent: keyVault
-  name: 'AZURE-OPENAI-KEY'
-  properties: {
-    value: aiServices.listKeys().key1 //aiServices_m.listKeys().key1
-  }
-}
-
 resource azureOpenAIDeploymentModel 'Microsoft.KeyVault/vaults/secrets@2021-11-01-preview' = {
   parent: keyVault
   name: 'AZURE-OPENAI-DEPLOYMENT-MODEL'
@@ -272,7 +279,7 @@ resource azureOpenAIEndpointEntry 'Microsoft.KeyVault/vaults/secrets@2021-11-01-
   parent: keyVault
   name: 'AZURE-OPENAI-ENDPOINT'
   properties: {
-    value: aiServices.properties.endpoints['OpenAI Language Model Instance API'] //aiServices_m.properties.endpoint
+    value: !empty(existingOpenAIEndpoint) ? existingOpenAIEndpoint : aiServices.properties.endpoints['OpenAI Language Model Instance API'] //aiServices_m.properties.endpoint
   }
 }
 
@@ -289,14 +296,6 @@ resource azureOpenAICUEndpointEntry 'Microsoft.KeyVault/vaults/secrets@2021-11-0
   name: 'AZURE-OPENAI-CU-ENDPOINT'
   properties: {
     value: aiServices_CU.properties.endpoints['OpenAI Language Model Instance API']
-  }
-}
-
-resource azureOpenAICUApiKeyEntry 'Microsoft.KeyVault/vaults/secrets@2021-11-01-preview' = {
-  parent: keyVault
-  name: 'AZURE-OPENAI-CU-KEY'
-  properties: {
-    value: aiServices_CU.listKeys().key1
   }
 }
 
@@ -344,15 +343,7 @@ resource cogServiceEndpointEntry 'Microsoft.KeyVault/vaults/secrets@2021-11-01-p
   parent: keyVault
   name: 'COG-SERVICES-ENDPOINT'
   properties: {
-    value: aiServices.properties.endpoint
-  }
-}
-
-resource cogServiceKeyEntry 'Microsoft.KeyVault/vaults/secrets@2021-11-01-preview' = {
-  parent: keyVault
-  name: 'COG-SERVICES-KEY'
-  properties: {
-    value: aiServices.listKeys().key1
+    value: !empty(existingOpenAIEndpoint) ? existingOpenAIEndpoint : aiServices.properties.endpoints['OpenAI Language Model Instance API']
   }
 }
 
@@ -403,8 +394,6 @@ output applicationInsightsId string = applicationInsights.id
 output logAnalyticsWorkspaceResourceName string = useExisting ? existingLogAnalyticsWorkspace.name : logAnalytics.name
 output logAnalyticsWorkspaceResourceGroup string = useExisting ? existingLawResourceGroup : resourceGroup().name
 output logAnalyticsWorkspaceSubscription string = useExisting ? existingLawSubscription : subscription().subscriptionId
-
-output azureOpenAIKeyName string = azureOpenAIApiKeyEntry.name
 
 output projectEndpoint string = !empty(existingProjEndpoint) ? existingProjEndpoint : aiProject.properties.endpoints['AI Foundry API']
 output applicationInsightsConnectionString string = applicationInsights.properties.ConnectionString
