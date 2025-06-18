@@ -7,10 +7,11 @@ ENV_NAME="$2"
 AZURE_LOCATION="$3"
 AZURE_RESOURCE_GROUP="$4"
 USE_LOCAL_BUILD="$5"
+AZURE_ENV_IMAGETAG="$6"
 
 # Validate required parameters
 if [[ -z "$AZURE_SUBSCRIPTION_ID" || -z "$ENV_NAME" || -z "$AZURE_LOCATION" || -z "$AZURE_RESOURCE_GROUP" ]]; then
-    echo "Missing required arguments. Usage: docker-build.sh <AZURE_SUBSCRIPTION_ID> <ENV_NAME> <AZURE_LOCATION> <AZURE_RESOURCE_GROUP> <USE_LOCAL_BUILD>"
+    echo "Missing required arguments. Usage: docker-build.sh <AZURE_SUBSCRIPTION_ID> <ENV_NAME> <AZURE_LOCATION> <AZURE_RESOURCE_GROUP> <USE_LOCAL_BUILD> <AZURE_ENV_IMAGETAG>"
     exit 1
 fi
 
@@ -22,6 +23,8 @@ if [[ "${USE_LOCAL_BUILD,,}" != "true" ]]; then
     echo "Local Build not enabled. Using prebuilt image."
     exit 0
 fi
+
+AZURE_ENV_IMAGETAG=${AZURE_ENV_IMAGETAG:-latest}
 
 echo "Local Build enabled. Starting build process."
 
@@ -101,8 +104,7 @@ build_and_push_image() {
 }
 
 # STEP 8: Build and push images with provided tag
-ACR_IMAGE_TAG="latest"
-build_and_push_image "km-api" "$APIAPP_DOCKERFILE_PATH" "$APIAPP_CONTEXT_PATH" "$ACR_IMAGE_TAG"
-build_and_push_image "km-app" "$WEBAPP_DOCKERFILE_PATH" "$WEBAPP_CONTEXT_PATH" "$ACR_IMAGE_TAG"
+build_and_push_image "km-api" "$APIAPP_DOCKERFILE_PATH" "$APIAPP_CONTEXT_PATH" "$AZURE_ENV_IMAGETAG"
+build_and_push_image "km-app" "$WEBAPP_DOCKERFILE_PATH" "$WEBAPP_CONTEXT_PATH" "$AZURE_ENV_IMAGETAG"
 
-echo -e "\nAll Docker images built and pushed successfully with tag: $ACR_IMAGE_TAG"
+echo -e "\nAll Docker images built and pushed successfully with tag: $AZURE_ENV_IMAGETAG"
