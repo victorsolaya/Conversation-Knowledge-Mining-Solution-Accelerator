@@ -5,7 +5,9 @@
 
 The frontend is a **React-based web interface** that allows users to explore insights from conversations, interact with an AI-powered chatbot, and view dynamic visualizations.
 
-![image](../../../../../../documents/Images/ReadMe/ui.png)
+
+![image](../../img/ReadMe/ckm-ui.png)
+
 
 ### Features
 
