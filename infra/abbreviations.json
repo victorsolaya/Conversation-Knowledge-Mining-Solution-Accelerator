@@ -19,7 +19,9 @@
     "speechService": "spch-",
     "translator": "trsl-",
     "aiHub": "aih-",
-    "aiHubProject": "aihp-"
+    "aiHubProject": "aihp-",
+    "aiFoundry": "aif-",
+    "aiFoundryProject": "aifp-"
   },
   "analytics": {
     "analysisServicesServer": "as",

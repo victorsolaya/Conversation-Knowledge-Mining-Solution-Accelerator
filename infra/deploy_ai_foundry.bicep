@@ -22,7 +22,7 @@ var workspaceName = '${abbrs.managementGovernance.logAnalyticsWorkspace}${soluti
 var applicationInsightsName = '${abbrs.managementGovernance.applicationInsights}${solutionName}'
 var keyvaultName = '${abbrs.security.keyVault}${solutionName}'
 var location = solutionLocation //'eastus2'
-var aiProjectName = '${abbrs.ai.aiHubProject}${solutionName}'
+var aiProjectName = '${abbrs.ai.aiFoundryProject}${solutionName}'
 var aiSearchName = '${abbrs.ai.aiSearch}${solutionName}'
 
 var aiModelDeployments = [
@@ -207,20 +207,18 @@ resource aiproject_aisearch_connection_new 'Microsoft.CognitiveServices/accounts
   }
 }
 
-module aiProjectSearchConnectionModule 'projectSearchConnection.bicep' = if (!empty(azureExistingAIProjectResourceId)) {
+module existing_AIProject_SearchConnectionModule 'deploy_aifp_aisearch_connection.bicep' = if (!empty(azureExistingAIProjectResourceId)) {
   name: 'aiProjectSearchConnectionDeployment'
   scope: resourceGroup(existingAIServiceSubscription, existingAIServiceResourceGroup)
   params: {
-    existingAIServiceSubscription: existingAIServiceSubscription
-    existingAIServiceResourceGroup: existingAIServiceResourceGroup
     existingAIProjectName: existingAIProjectName
+    existingAIServicesName: existingAIServicesName
     aiSearchName: aiSearchName
     aiSearchResourceId: aiSearch.id
     aiSearchLocation: aiSearch.location
     solutionName: solutionName
   }
 }
-
 
 resource aiUser 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = {
   name: '53ca6127-db72-4b80-b1b0-d745d6d5456d'
@@ -280,14 +278,6 @@ resource azureOpenAIEndpointEntry 'Microsoft.KeyVault/vaults/secrets@2021-11-01-
   name: 'AZURE-OPENAI-ENDPOINT'
   properties: {
     value: !empty(existingOpenAIEndpoint) ? existingOpenAIEndpoint : aiServices.properties.endpoints['OpenAI Language Model Instance API'] //aiServices_m.properties.endpoint
-  }
-}
-
-resource azureAIProjectConnectionStringEntry 'Microsoft.KeyVault/vaults/secrets@2021-11-01-preview' = {
-  parent: keyVault
-  name: 'AZURE-AI-PROJECT-CONN-STRING'
-  properties: {
-    value: '${aiProjectName};${subscription().subscriptionId};${resourceGroup().name};${aiProject.name}'
   }
 }
 
