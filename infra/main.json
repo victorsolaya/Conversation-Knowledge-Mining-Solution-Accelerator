@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.36.1.42791",
-      "templateHash": "14769206549361904379"
+      "templateHash": "14797468639789152416"
     }
   },
   "parameters": {
@@ -652,7 +652,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.36.1.42791",
-              "templateHash": "1294065809838303541"
+              "templateHash": "1288056001550775266"
             }
           },
           "parameters": {
@@ -1208,17 +1208,6 @@
               "name": "[format('{0}/{1}', parameters('keyVaultName'), 'AZURE-OPENAI-CU-ENDPOINT')]",
               "properties": {
                 "value": "[reference(resourceId('Microsoft.CognitiveServices/accounts', variables('aiServicesName_cu')), '2025-04-01-preview').endpoints['OpenAI Language Model Instance API']]"
-              },
-              "dependsOn": [
-                "[resourceId('Microsoft.CognitiveServices/accounts', variables('aiServicesName_cu'))]"
-              ]
-            },
-            {
-              "type": "Microsoft.KeyVault/vaults/secrets",
-              "apiVersion": "2021-11-01-preview",
-              "name": "[format('{0}/{1}', parameters('keyVaultName'), 'AZURE-OPENAI-CU-KEY')]",
-              "properties": {
-                "value": "[listKeys(resourceId('Microsoft.CognitiveServices/accounts', variables('aiServicesName_cu')), '2025-04-01-preview').key1]"
               },
               "dependsOn": [
                 "[resourceId('Microsoft.CognitiveServices/accounts', variables('aiServicesName_cu'))]"
@@ -2521,7 +2510,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.36.1.42791",
-              "templateHash": "12601944025413037469"
+              "templateHash": "2610739623677529550"
             }
           },
           "parameters": {
@@ -2827,7 +2816,6 @@
               }
             },
             {
-              "condition": "[not(empty(parameters('azureExistingAIProjectResourceId')))]",
               "type": "Microsoft.Resources/deployments",
               "apiVersion": "2022-09-01",
               "name": "assignAiUserRoleToAiProject",
