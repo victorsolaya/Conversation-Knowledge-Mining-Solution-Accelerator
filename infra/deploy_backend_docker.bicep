@@ -9,13 +9,15 @@ param solutionLocation string
 param appSettings object = {}
 param appServicePlanId string
 param userassignedIdentityId string
-param aiProjectName string
 param keyVaultName string
 param aiServicesName string
 param useLocalBuild string
+param azureExistingAIProjectResourceId string = ''
+var existingAIServiceSubscription = !empty(azureExistingAIProjectResourceId) ? split(azureExistingAIProjectResourceId, '/')[2] : subscription().subscriptionId
+var existingAIServiceResourceGroup = !empty(azureExistingAIProjectResourceId) ? split(azureExistingAIProjectResourceId, '/')[4] : resourceGroup().name
+var existingAIServicesName = !empty(azureExistingAIProjectResourceId) ? split(azureExistingAIProjectResourceId, '/')[8] : ''
 
 var imageName = 'DOCKER|${acrName}.azurecr.io/km-api:${imageTag}'
-//var name = '${solutionName}-api'
 param name string 
 var reactAppLayoutConfig ='''{
   "appConfig": {
@@ -121,24 +123,7 @@ resource role 'Microsoft.DocumentDB/databaseAccounts/sqlRoleAssignments@2022-05-
 
 resource aiServices 'Microsoft.CognitiveServices/accounts@2025-04-01-preview' existing = {
   name: aiServicesName
-}
-
-resource aiProject 'Microsoft.CognitiveServices/accounts/projects@2025-04-01-preview' existing = {
-  parent: aiServices
-  name: aiProjectName
-}
-
-resource aiDeveloper 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = {
-  name: '64702f94-c441-49e6-a78b-ef80e0188fee'
-}
-
-resource aiDeveloperAccessProj 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-  name: guid(appService.name, aiProject.id, aiDeveloper.id)
-  scope: aiProject
-  properties: {
-    roleDefinitionId: aiDeveloper.id
-    principalId: appService.outputs.identityPrincipalId
-  }
+  scope: resourceGroup(existingAIServiceSubscription, existingAIServiceResourceGroup)
 }
 
 resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' existing = {
@@ -162,21 +147,14 @@ resource aiUser 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = 
   name: '53ca6127-db72-4b80-b1b0-d745d6d5456d'
 }
 
-resource aiUserAccessProj 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-  name: guid(appService.name, aiProject.id, aiUser.id)
-  scope: aiProject
-  properties: {
-    roleDefinitionId: aiUser.id
+module assignAiUserRoleToAiProject 'deploy_foundry_role_assignment.bicep' = if (!empty(azureExistingAIProjectResourceId)){
+  name: 'assignAiUserRoleToAiProject'
+  scope: resourceGroup(existingAIServiceSubscription, existingAIServiceResourceGroup)
+  params: {
     principalId: appService.outputs.identityPrincipalId
-  }
-}
-
-resource aiUserAccessFoundry 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-  name: guid(appService.name, aiServices.id, aiUser.id)
-  scope: aiServices
-  properties: {
     roleDefinitionId: aiUser.id
-    principalId: appService.outputs.identityPrincipalId
+    roleAssignmentName: guid(appService.name, aiServices.id, aiUser.id)
+    aiServicesName: !empty(azureExistingAIProjectResourceId) ? existingAIServicesName : aiServicesName
   }
 }
 

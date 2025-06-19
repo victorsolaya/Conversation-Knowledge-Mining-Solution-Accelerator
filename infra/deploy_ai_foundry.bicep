@@ -233,6 +233,17 @@ resource aiUserAccessFoundry 'Microsoft.Authorization/roleAssignments@2022-04-01
   }
 }
 
+module assignAiUserRoleToManagedIdentity 'deploy_foundry_role_assignment.bicep' = if(!empty(azureExistingAIProjectResourceId)) {
+  name: 'assignAiUserRoleToManagedIdentity'
+  scope: resourceGroup(existingAIServiceSubscription, existingAIServiceResourceGroup)
+  params: {
+    roleDefinitionId: aiUser.id
+    roleAssignmentName: guid(managedIdentityObjectId, aiServices.id, aiUser.id)
+    aiServicesName: !empty(azureExistingAIProjectResourceId) ? existingAIServicesName : aiServicesName
+    userassignedIdentityId: managedIdentityObjectId
+  }
+}
+
 resource tenantIdEntry 'Microsoft.KeyVault/vaults/secrets@2021-11-01-preview' = {
   parent: keyVault
   name: 'TENANT-ID'
@@ -286,6 +297,14 @@ resource azureOpenAICUEndpointEntry 'Microsoft.KeyVault/vaults/secrets@2021-11-0
   name: 'AZURE-OPENAI-CU-ENDPOINT'
   properties: {
     value: aiServices_CU.properties.endpoints['OpenAI Language Model Instance API']
+  }
+}
+
+resource azureOpenAICUApiKeyEntry 'Microsoft.KeyVault/vaults/secrets@2021-11-01-preview' = {
+  parent: keyVault
+  name: 'AZURE-OPENAI-CU-KEY'
+  properties: {
+    value: aiServices_CU.listKeys().key1
   }
 }
 
