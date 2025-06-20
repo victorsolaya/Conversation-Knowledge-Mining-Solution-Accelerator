@@ -224,23 +224,14 @@ resource aiUser 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = 
   name: '53ca6127-db72-4b80-b1b0-d745d6d5456d'
 }
 
-resource assignAiUserRoleToManagedIdentity 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-  name: guid(resourceGroup().id, managedIdentityObjectId, aiUser.id)
-  properties: {
-    principalId: managedIdentityObjectId
-    roleDefinitionId: aiUser.id
-    principalType: 'ServicePrincipal' 
-  }
-}
-
-module AISearchAIUserFoundryAssignment 'deploy_foundry_role_assignment.bicep' = {
-  name: 'assignAiUserRoleToManagedIdentity'
+module assignFoundryRoleToMI 'deploy_foundry_role_assignment.bicep' = {
+  name: 'assignFoundryRoleToMI'
   scope: resourceGroup(existingAIServiceSubscription, existingAIServiceResourceGroup)
   params: {
     roleDefinitionId: aiUser.id
-    roleAssignmentName: guid(resourceGroup().id, aiSearch.id, aiUser.id, 'foundry')
+    roleAssignmentName: guid(resourceGroup().id, managedIdentityObjectId, aiUser.id, 'foundry')
     aiServicesName: !empty(azureExistingAIProjectResourceId) ? existingAIServicesName : aiServicesName
-    userassignedIdentityId: managedIdentityObjectId
+    principalId: managedIdentityObjectId
   }
 }
 
@@ -248,12 +239,12 @@ resource cognitiveServicesOpenAIUser 'Microsoft.Authorization/roleDefinitions@20
   name: '5e0bd9bd-7b93-4f28-af87-19fc36ad61bd'
 }
 
-module AISearchOpenAIUserFoundryAssignment 'deploy_foundry_role_assignment.bicep' = {
-  name: 'assignAiUserRoleToManagedIdentity'
+module assignOpenAIRoleToAISearch 'deploy_foundry_role_assignment.bicep' = {
+  name: 'assignOpenAIRoleToAISearch'
   scope: resourceGroup(existingAIServiceSubscription, existingAIServiceResourceGroup)
   params: {
     roleDefinitionId: cognitiveServicesOpenAIUser.id
-    roleAssignmentName: guid(resourceGroup().id, aiSearch.id, aiUser.id, 'openai-foundry')
+    roleAssignmentName: guid(resourceGroup().id, aiSearch.id, cognitiveServicesOpenAIUser.id, 'openai-foundry')
     aiServicesName: !empty(azureExistingAIProjectResourceId) ? existingAIServicesName : aiServicesName
     principalId: aiSearch.identity.principalId
   }
@@ -263,13 +254,13 @@ resource searchIndexDataReader 'Microsoft.Authorization/roleDefinitions@2022-04-
   name: '1407120a-92aa-4202-b7e9-c0e197c71c8f'
 }
 
-resource AIProjectSearchIndexDataReaderAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = if (empty(azureExistingAIProjectResourceId)){
+resource assignSearchIndexDataReaderToAiProject 'Microsoft.Authorization/roleAssignments@2022-04-01' = if (empty(azureExistingAIProjectResourceId)) {
   name: guid(resourceGroup().id, aiProject.id, searchIndexDataReader.id)
   scope: aiSearch
   properties: {
     principalId: aiProject.identity.principalId
     roleDefinitionId: searchIndexDataReader.id
-    principalType: 'ServicePrincipal' 
+    principalType: 'ServicePrincipal'
   }
 }
 
@@ -277,13 +268,13 @@ resource searchServiceContributor 'Microsoft.Authorization/roleDefinitions@2022-
   name: '7ca78c08-252a-4471-8644-bb5ff32d4ba0'
 }
 
-resource AIProjectSearchServiceContributorAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = if (empty(azureExistingAIProjectResourceId)){
+resource assignSearchServiceContributorToAiProject 'Microsoft.Authorization/roleAssignments@2022-04-01' = if (empty(azureExistingAIProjectResourceId)) {
   name: guid(resourceGroup().id, aiProject.id, searchServiceContributor.id)
   scope: aiSearch
   properties: {
     principalId: aiProject.identity.principalId
     roleDefinitionId: searchServiceContributor.id
-    principalType: 'ServicePrincipal' 
+    principalType: 'ServicePrincipal'
   }
 }
 
@@ -291,13 +282,13 @@ resource searchIndexDataContributor 'Microsoft.Authorization/roleDefinitions@202
   name: '8ebe5a00-799e-43f5-93ac-243d3dce84a7'
 }
 
-resource ManagedIdentitySearchIndexDataContributorAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+resource assignSearchIndexDataContributorToMI 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
   name: guid(resourceGroup().id, aiProject.id, searchIndexDataContributor.id)
   scope: aiSearch
   properties: {
     principalId: managedIdentityObjectId
     roleDefinitionId: searchIndexDataContributor.id
-    principalType: 'ServicePrincipal' 
+    principalType: 'ServicePrincipal'
   }
 }
 
@@ -346,6 +337,14 @@ resource azureOpenAIEndpointEntry 'Microsoft.KeyVault/vaults/secrets@2021-11-01-
   name: 'AZURE-OPENAI-ENDPOINT'
   properties: {
     value: !empty(existingOpenAIEndpoint) ? existingOpenAIEndpoint : aiServices.properties.endpoints['OpenAI Language Model Instance API'] //aiServices_m.properties.endpoint
+  }
+}
+
+resource azureOpenAIEmbeddingDeploymentModel 'Microsoft.KeyVault/vaults/secrets@2021-11-01-preview' = {Add commentMore actions
+  parent: keyVault
+  name: 'AZURE-OPENAI-EMBEDDING-MODEL'
+  properties: {
+    value: embeddingModel
   }
 }
 
