@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.36.1.42791",
-      "templateHash": "3033954888112024580"
+      "templateHash": "7329428866237825277"
     }
   },
   "parameters": {
@@ -652,7 +652,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.36.1.42791",
-              "templateHash": "11716070346490705965"
+              "templateHash": "18071133839467770360"
             }
           },
           "parameters": {
@@ -1142,76 +1142,7 @@
               ]
             },
             {
-              "type": "Microsoft.Authorization/roleAssignments",
-              "apiVersion": "2022-04-01",
-              "name": "[guid(resourceGroup().id, parameters('managedIdentityObjectId'), resourceId('Microsoft.Authorization/roleDefinitions', '53ca6127-db72-4b80-b1b0-d745d6d5456d'))]",
-              "properties": {
-                "principalId": "[parameters('managedIdentityObjectId')]",
-                "roleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', '53ca6127-db72-4b80-b1b0-d745d6d5456d')]",
-                "principalType": "ServicePrincipal"
-              }
-            },
-            {
-              "type": "Microsoft.Authorization/roleAssignments",
-              "apiVersion": "2022-04-01",
-              "scope": "[format('Microsoft.CognitiveServices/accounts/{0}/projects/{1}', variables('aiServicesName'), variables('aiProjectName'))]",
-              "name": "[guid(resourceGroup().id, resourceId('Microsoft.Search/searchServices', variables('aiSearchName')), resourceId('Microsoft.Authorization/roleDefinitions', '53ca6127-db72-4b80-b1b0-d745d6d5456d'), 'project')]",
-              "properties": {
-                "principalId": "[reference(resourceId('Microsoft.Search/searchServices', variables('aiSearchName')), '2024-06-01-preview', 'full').identity.principalId]",
-                "roleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', '53ca6127-db72-4b80-b1b0-d745d6d5456d')]",
-                "principalType": "ServicePrincipal"
-              },
-              "dependsOn": [
-                "[resourceId('Microsoft.CognitiveServices/accounts/projects', variables('aiServicesName'), variables('aiProjectName'))]",
-                "[resourceId('Microsoft.Search/searchServices', variables('aiSearchName'))]"
-              ]
-            },
-            {
-              "type": "Microsoft.Authorization/roleAssignments",
-              "apiVersion": "2022-04-01",
-              "scope": "[format('Microsoft.CognitiveServices/accounts/{0}', variables('aiServicesName'))]",
-              "name": "[guid(resourceGroup().id, resourceId('Microsoft.Search/searchServices', variables('aiSearchName')), resourceId('Microsoft.Authorization/roleDefinitions', '53ca6127-db72-4b80-b1b0-d745d6d5456d'), 'foundry')]",
-              "properties": {
-                "principalId": "[reference(resourceId('Microsoft.Search/searchServices', variables('aiSearchName')), '2024-06-01-preview', 'full').identity.principalId]",
-                "roleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', '53ca6127-db72-4b80-b1b0-d745d6d5456d')]",
-                "principalType": "ServicePrincipal"
-              },
-              "dependsOn": [
-                "[resourceId('Microsoft.Search/searchServices', variables('aiSearchName'))]",
-                "[resourceId('Microsoft.CognitiveServices/accounts', variables('aiServicesName'))]"
-              ]
-            },
-            {
-              "type": "Microsoft.Authorization/roleAssignments",
-              "apiVersion": "2022-04-01",
-              "scope": "[format('Microsoft.CognitiveServices/accounts/{0}/projects/{1}', variables('aiServicesName'), variables('aiProjectName'))]",
-              "name": "[guid(resourceGroup().id, resourceId('Microsoft.Search/searchServices', variables('aiSearchName')), resourceId('Microsoft.Authorization/roleDefinitions', '53ca6127-db72-4b80-b1b0-d745d6d5456d'), 'openai-project')]",
-              "properties": {
-                "principalId": "[reference(resourceId('Microsoft.Search/searchServices', variables('aiSearchName')), '2024-06-01-preview', 'full').identity.principalId]",
-                "roleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', '5e0bd9bd-7b93-4f28-af87-19fc36ad61bd')]",
-                "principalType": "ServicePrincipal"
-              },
-              "dependsOn": [
-                "[resourceId('Microsoft.CognitiveServices/accounts/projects', variables('aiServicesName'), variables('aiProjectName'))]",
-                "[resourceId('Microsoft.Search/searchServices', variables('aiSearchName'))]"
-              ]
-            },
-            {
-              "type": "Microsoft.Authorization/roleAssignments",
-              "apiVersion": "2022-04-01",
-              "scope": "[format('Microsoft.CognitiveServices/accounts/{0}', variables('aiServicesName'))]",
-              "name": "[guid(resourceGroup().id, resourceId('Microsoft.Search/searchServices', variables('aiSearchName')), resourceId('Microsoft.Authorization/roleDefinitions', '53ca6127-db72-4b80-b1b0-d745d6d5456d'), 'openai-foundry')]",
-              "properties": {
-                "principalId": "[reference(resourceId('Microsoft.Search/searchServices', variables('aiSearchName')), '2024-06-01-preview', 'full').identity.principalId]",
-                "roleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', '5e0bd9bd-7b93-4f28-af87-19fc36ad61bd')]",
-                "principalType": "ServicePrincipal"
-              },
-              "dependsOn": [
-                "[resourceId('Microsoft.Search/searchServices', variables('aiSearchName'))]",
-                "[resourceId('Microsoft.CognitiveServices/accounts', variables('aiServicesName'))]"
-              ]
-            },
-            {
+              "condition": "[empty(parameters('azureExistingAIProjectResourceId'))]",
               "type": "Microsoft.Authorization/roleAssignments",
               "apiVersion": "2022-04-01",
               "scope": "[format('Microsoft.Search/searchServices/{0}', variables('aiSearchName'))]",
@@ -1227,6 +1158,7 @@
               ]
             },
             {
+              "condition": "[empty(parameters('azureExistingAIProjectResourceId'))]",
               "type": "Microsoft.Authorization/roleAssignments",
               "apiVersion": "2022-04-01",
               "scope": "[format('Microsoft.Search/searchServices/{0}', variables('aiSearchName'))]",
@@ -1314,17 +1246,6 @@
               "properties": {
                 "value": "[parameters('embeddingModel')]"
               }
-            },
-            {
-              "type": "Microsoft.KeyVault/vaults/secrets",
-              "apiVersion": "2021-11-01-preview",
-              "name": "[format('{0}/{1}', parameters('keyVaultName'), 'AZURE-AI-PROJECT-CONN-STRING')]",
-              "properties": {
-                "value": "[format('{0};{1};{2};{3}', variables('aiProjectName'), subscription().subscriptionId, resourceGroup().name, variables('aiProjectName'))]"
-              },
-              "dependsOn": [
-                "[resourceId('Microsoft.CognitiveServices/accounts/projects', variables('aiServicesName'), variables('aiProjectName'))]"
-              ]
             },
             {
               "type": "Microsoft.KeyVault/vaults/secrets",
@@ -1505,10 +1426,9 @@
               ]
             },
             {
-              "condition": "[not(empty(parameters('azureExistingAIProjectResourceId')))]",
               "type": "Microsoft.Resources/deployments",
               "apiVersion": "2022-09-01",
-              "name": "assignAiUserRoleToManagedIdentity",
+              "name": "assignFoundryRoleToMI",
               "subscriptionId": "[variables('existingAIServiceSubscription')]",
               "resourceGroup": "[variables('existingAIServiceResourceGroup')]",
               "properties": {
@@ -1521,10 +1441,10 @@
                     "value": "[resourceId('Microsoft.Authorization/roleDefinitions', '53ca6127-db72-4b80-b1b0-d745d6d5456d')]"
                   },
                   "roleAssignmentName": {
-                    "value": "[guid(parameters('managedIdentityObjectId'), resourceId('Microsoft.CognitiveServices/accounts', variables('aiServicesName')), resourceId('Microsoft.Authorization/roleDefinitions', '53ca6127-db72-4b80-b1b0-d745d6d5456d'))]"
+                    "value": "[guid(resourceGroup().id, parameters('managedIdentityObjectId'), resourceId('Microsoft.Authorization/roleDefinitions', '53ca6127-db72-4b80-b1b0-d745d6d5456d'), 'foundry')]"
                   },
                   "aiServicesName": "[if(not(empty(parameters('azureExistingAIProjectResourceId'))), createObject('value', variables('existingAIServicesName')), createObject('value', variables('aiServicesName')))]",
-                  "userassignedIdentityId": {
+                  "principalId": {
                     "value": "[parameters('managedIdentityObjectId')]"
                   }
                 },
@@ -1535,7 +1455,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.36.1.42791",
-                      "templateHash": "16582241388406677888"
+                      "templateHash": "2925963278128724941"
                     }
                   },
                   "parameters": {
@@ -1552,15 +1472,10 @@
                     },
                     "aiServicesName": {
                       "type": "string"
-                    },
-                    "userassignedIdentityId": {
-                      "type": "string",
-                      "defaultValue": ""
                     }
                   },
                   "resources": [
                     {
-                      "condition": "[and(not(empty(parameters('aiServicesName'))), not(empty(parameters('principalId'))))]",
                       "type": "Microsoft.Authorization/roleAssignments",
                       "apiVersion": "2022-04-01",
                       "scope": "[format('Microsoft.CognitiveServices/accounts/{0}', parameters('aiServicesName'))]",
@@ -1569,24 +1484,76 @@
                         "roleDefinitionId": "[parameters('roleDefinitionId')]",
                         "principalId": "[parameters('principalId')]"
                       }
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "type": "Microsoft.Resources/deployments",
+              "apiVersion": "2022-09-01",
+              "name": "assignOpenAIRoleToAISearch",
+              "subscriptionId": "[variables('existingAIServiceSubscription')]",
+              "resourceGroup": "[variables('existingAIServiceResourceGroup')]",
+              "properties": {
+                "expressionEvaluationOptions": {
+                  "scope": "inner"
+                },
+                "mode": "Incremental",
+                "parameters": {
+                  "roleDefinitionId": {
+                    "value": "[resourceId('Microsoft.Authorization/roleDefinitions', '5e0bd9bd-7b93-4f28-af87-19fc36ad61bd')]"
+                  },
+                  "roleAssignmentName": {
+                    "value": "[guid(resourceGroup().id, resourceId('Microsoft.Search/searchServices', variables('aiSearchName')), resourceId('Microsoft.Authorization/roleDefinitions', '5e0bd9bd-7b93-4f28-af87-19fc36ad61bd'), 'openai-foundry')]"
+                  },
+                  "aiServicesName": "[if(not(empty(parameters('azureExistingAIProjectResourceId'))), createObject('value', variables('existingAIServicesName')), createObject('value', variables('aiServicesName')))]",
+                  "principalId": {
+                    "value": "[reference(resourceId('Microsoft.Search/searchServices', variables('aiSearchName')), '2024-06-01-preview', 'full').identity.principalId]"
+                  }
+                },
+                "template": {
+                  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                  "contentVersion": "1.0.0.0",
+                  "metadata": {
+                    "_generator": {
+                      "name": "bicep",
+                      "version": "0.36.1.42791",
+                      "templateHash": "2925963278128724941"
+                    }
+                  },
+                  "parameters": {
+                    "principalId": {
+                      "type": "string",
+                      "defaultValue": ""
                     },
+                    "roleDefinitionId": {
+                      "type": "string"
+                    },
+                    "roleAssignmentName": {
+                      "type": "string",
+                      "defaultValue": ""
+                    },
+                    "aiServicesName": {
+                      "type": "string"
+                    }
+                  },
+                  "resources": [
                     {
-                      "condition": "[not(empty(parameters('userassignedIdentityId')))]",
                       "type": "Microsoft.Authorization/roleAssignments",
                       "apiVersion": "2022-04-01",
                       "scope": "[format('Microsoft.CognitiveServices/accounts/{0}', parameters('aiServicesName'))]",
                       "name": "[parameters('roleAssignmentName')]",
                       "properties": {
                         "roleDefinitionId": "[parameters('roleDefinitionId')]",
-                        "principalId": "[parameters('userassignedIdentityId')]",
-                        "principalType": "ServicePrincipal"
+                        "principalId": "[parameters('principalId')]"
                       }
                     }
                   ]
                 }
               },
               "dependsOn": [
-                "[resourceId('Microsoft.CognitiveServices/accounts', variables('aiServicesName'))]"
+                "[resourceId('Microsoft.Search/searchServices', variables('aiSearchName'))]"
               ]
             }
           ],
@@ -2622,7 +2589,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.36.1.42791",
-              "templateHash": "2610739623677529550"
+              "templateHash": "8369705254030220171"
             }
           },
           "parameters": {
@@ -2957,7 +2924,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.36.1.42791",
-                      "templateHash": "16582241388406677888"
+                      "templateHash": "2925963278128724941"
                     }
                   },
                   "parameters": {
@@ -2974,15 +2941,10 @@
                     },
                     "aiServicesName": {
                       "type": "string"
-                    },
-                    "userassignedIdentityId": {
-                      "type": "string",
-                      "defaultValue": ""
                     }
                   },
                   "resources": [
                     {
-                      "condition": "[and(not(empty(parameters('aiServicesName'))), not(empty(parameters('principalId'))))]",
                       "type": "Microsoft.Authorization/roleAssignments",
                       "apiVersion": "2022-04-01",
                       "scope": "[format('Microsoft.CognitiveServices/accounts/{0}', parameters('aiServicesName'))]",
@@ -2990,18 +2952,6 @@
                       "properties": {
                         "roleDefinitionId": "[parameters('roleDefinitionId')]",
                         "principalId": "[parameters('principalId')]"
-                      }
-                    },
-                    {
-                      "condition": "[not(empty(parameters('userassignedIdentityId')))]",
-                      "type": "Microsoft.Authorization/roleAssignments",
-                      "apiVersion": "2022-04-01",
-                      "scope": "[format('Microsoft.CognitiveServices/accounts/{0}', parameters('aiServicesName'))]",
-                      "name": "[parameters('roleAssignmentName')]",
-                      "properties": {
-                        "roleDefinitionId": "[parameters('roleDefinitionId')]",
-                        "principalId": "[parameters('userassignedIdentityId')]",
-                        "principalType": "ServicePrincipal"
                       }
                     }
                   ]
