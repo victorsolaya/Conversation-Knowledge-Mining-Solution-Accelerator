@@ -300,14 +300,6 @@ resource azureOpenAICUEndpointEntry 'Microsoft.KeyVault/vaults/secrets@2021-11-0
   }
 }
 
-resource azureOpenAICUApiKeyEntry 'Microsoft.KeyVault/vaults/secrets@2021-11-01-preview' = {
-  parent: keyVault
-  name: 'AZURE-OPENAI-CU-KEY'
-  properties: {
-    value: aiServices_CU.listKeys().key1
-  }
-}
-
 resource azureOpenAICUApiVersionEntry 'Microsoft.KeyVault/vaults/secrets@2021-11-01-preview' = {
   parent: keyVault
   name: 'AZURE-OPENAI-CU-VERSION'
