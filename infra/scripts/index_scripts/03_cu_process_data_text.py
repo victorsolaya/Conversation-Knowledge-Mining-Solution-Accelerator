@@ -182,7 +182,6 @@ conn.commit()
 
 
 AZURE_AI_ENDPOINT = get_secrets_from_kv(key_vault_name,"AZURE-OPENAI-CU-ENDPOINT")
-AZURE_OPENAI_CU_KEY = get_secrets_from_kv(key_vault_name,"AZURE-OPENAI-CU-KEY")
 AZURE_AI_API_VERSION = "2024-12-01-preview" 
 
 credential = DefaultAzureCredential(managed_identity_client_id=managed_identity_client_id)
@@ -191,7 +190,6 @@ token_provider = get_bearer_token_provider(credential, "https://cognitiveservice
 client = AzureContentUnderstandingClient(
     endpoint=AZURE_AI_ENDPOINT,
     api_version=AZURE_AI_API_VERSION,
-    subscription_key=AZURE_OPENAI_CU_KEY,
     token_provider=token_provider
     )
 

@@ -4,15 +4,20 @@ param (
     [string]$ENV_NAME,
     [string]$AZURE_LOCATION,
     [string]$AZURE_RESOURCE_GROUP,
-    [string]$USE_LOCAL_BUILD
+    [string]$USE_LOCAL_BUILD,
+    [string]$AZURE_ENV_IMAGETAG
 )
 
 # Convert USE_LOCAL_BUILD to Boolean
 $USE_LOCAL_BUILD = if ($USE_LOCAL_BUILD -match "^(?i:true)$") { $true } else { $false }
 
+if ([string]::IsNullOrEmpty($AZURE_ENV_IMAGETAG)) {
+    $AZURE_ENV_IMAGETAG = "latest"
+}
+
 # Validate required parameters
 if (-not $AZURE_SUBSCRIPTION_ID -or -not $ENV_NAME -or -not $AZURE_LOCATION -or -not $AZURE_RESOURCE_GROUP) {
-    Write-Error "Missing required arguments. Usage: docker-build.ps1 <AZURE_SUBSCRIPTION_ID> <ENV_NAME> <AZURE_LOCATION> <AZURE_RESOURCE_GROUP> <USE_LOCAL_BUILD>"
+    Write-Error "Missing required arguments. Usage: docker-build.ps1 <AZURE_SUBSCRIPTION_ID> <ENV_NAME> <AZURE_LOCATION> <AZURE_RESOURCE_GROUP> <USE_LOCAL_BUILD> <AZURE_ENV_IMAGETAG>"
     exit 1
 }
 
@@ -102,8 +107,7 @@ function Build-And-Push-Image {
 }
 
 # STEP 8: Build and push images with provided tag
-$ACR_IMAGE_TAG = "latest"
-Build-And-Push-Image "km-api" $ApiAppDockerfilePath $ApiAppContextPath $ACR_IMAGE_TAG
-Build-And-Push-Image "km-app" $WebAppDockerfilePath $WebAppContextPath $ACR_IMAGE_TAG
+Build-And-Push-Image "km-api" $ApiAppDockerfilePath $ApiAppContextPath $AZURE_ENV_IMAGETAG
+Build-And-Push-Image "km-app" $WebAppDockerfilePath $WebAppContextPath $AZURE_ENV_IMAGETAG
 
-Write-Host "`nAll Docker images built and pushed successfully with tag: $ACR_IMAGE_TAG"
+Write-Host "`nAll Docker images built and pushed successfully with tag: $AZURE_ENV_IMAGETAG"

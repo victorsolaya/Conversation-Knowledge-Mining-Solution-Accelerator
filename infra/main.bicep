@@ -9,6 +9,9 @@ param environmentName string
 @description('Optional: Existing Log Analytics Workspace Resource ID')
 param existingLogAnalyticsWorkspaceId string = ''
 
+@description('Use this parameter to use an existing AI project resource ID')
+param azureExistingAIProjectResourceId string = ''
+
 @minLength(1)
 @description('Location for the Content Understanding service deployment:')
 @allowed(['swedencentral', 'australiaeast'])
@@ -116,10 +119,12 @@ module aifoundry 'deploy_ai_foundry.bicep' = {
     embeddingDeploymentCapacity: embeddingDeploymentCapacity
     managedIdentityObjectId: managedIdentityModule.outputs.managedIdentityOutput.objectId
     existingLogAnalyticsWorkspaceId: existingLogAnalyticsWorkspaceId
+    azureExistingAIProjectResourceId: azureExistingAIProjectResourceId 
 
   }
   scope: resourceGroup(resourceGroup().name)
 }
+
 
 // ========== Storage account module ========== //
 module storageAccount 'deploy_storage_account.bicep' = {
@@ -204,10 +209,10 @@ module backend_docker 'deploy_backend_docker.bicep' = {
     appServicePlanId: hostingplan.outputs.name
     applicationInsightsId: aifoundry.outputs.applicationInsightsId
     userassignedIdentityId: managedIdentityModule.outputs.managedIdentityBackendAppOutput.id
-    aiProjectName: aifoundry.outputs.aiProjectName
     keyVaultName: kvault.outputs.keyvaultName
     aiServicesName: aifoundry.outputs.aiServicesName
     useLocalBuild: useLocalBuildLower
+    azureExistingAIProjectResourceId: azureExistingAIProjectResourceId 
     appSettings: {
       AZURE_OPENAI_DEPLOYMENT_MODEL: gptModelName
       AZURE_OPENAI_ENDPOINT: aifoundry.outputs.aiServicesTarget

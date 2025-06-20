@@ -9,7 +9,7 @@ By default this template will use the environment name as the prefix to prevent 
 
 | Name                                      | Type    | Default Value            | Purpose                                                                    |
 | ----------------------------------------- | ------- | ------------------------ | -------------------------------------------------------------------------- |
-| `AZURE_LOCATION`                          | string  | ` ` *(empty)*            | Sets the Azure region for resource deployment.                             |
+| `AZURE_LOCATION`                          | string  | ` `            | Sets the Azure region for resource deployment.                             |
 | `AZURE_ENV_NAME`                          | string  | `env_name`               | Sets the environment name prefix for all Azure resources.                  |
 | `AZURE_CONTENT_UNDERSTANDING_LOCATION`    | string  | `swedencentral`          | Specifies the region for content understanding resources.                  |
 | `AZURE_SECONDARY_LOCATION`                | string  | `eastus2`                | Specifies a secondary Azure region.                                        |
@@ -21,7 +21,9 @@ By default this template will use the environment name as the prefix to prevent 
 | `AZURE_OPENAI_EMBEDDING_MODEL`            | string  | `text-embedding-ada-002` | Sets the name of the embedding model to use.                               |
 | `AZURE_ENV_IMAGETAG`                      | string  | `latest`        | Sets the image tag (`latest`, `dev`, `hotfix`, etc.).   |
 | `AZURE_OPENAI_EMBEDDING_MODEL_CAPACITY`   | integer | `80`                     | Sets the capacity for the embedding model deployment.                      |
-| `AZURE_ENV_LOG_ANALYTICS_WORKSPACE_ID`    | string  | ` ` *(empty)*            | Reuses an existing Log Analytics Workspace instead of creating a new one.  |
+| `AZURE_ENV_LOG_ANALYTICS_WORKSPACE_ID`    | string  | `<Existing Workspace Id>`            | Reuses an existing Log Analytics Workspace instead of creating a new one.  |
+| `USE_LOCAL_BUILD`    | string  | `false`           | Indicates whether to use a local container build for deployment.  |
+| `AZURE_EXISTING_AI_PROJECT_RESOURCE_ID`    | string  | `<Existing AI Project resource Id>`            | Reuses an existing AIFoundry and AIFoundryProject instead of creating a new one.  |
 
 
 
