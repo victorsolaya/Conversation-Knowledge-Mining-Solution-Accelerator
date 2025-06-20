@@ -24,7 +24,7 @@ If you'd like to customize the solution accelerator, here are some ways you migh
         3.  Provide name for Environment and click Create
         4.  Select Public libraries in left panel
         5.  Click Add from .yml
-        6.  Upload .yml from [here](./Deployment/scripts/fabric_scripts/ckm_cu_env.yml)
+        6.  Upload .yml from [here](.././infra/scripts/fabric_scripts/ckm_cu_env.yml)
         7.  Click Publish
     7.  Retrieve Workspace ID from URL, refer to documentation additional assistance ([here](https://learn.microsoft.com/en-us/fabric/admin/portal-workspace#identify-your-workspace-id))
 

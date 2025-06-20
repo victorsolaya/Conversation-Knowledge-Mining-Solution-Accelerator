@@ -117,7 +117,7 @@ nav:
       - CU-AI Foundry: workshop/Challenge-0/CU-Challenge.md
   - Challenge 1:
       - Solution Overview: workshop/Challenge-1/Solution_Overview.md
-      - Deployment: workshop/Challenge-1/index.md
+      - Deployment: workshop/Challenge-1/Deployment.md
       # - App Authentication: workshop/Challenge-1/App_Authentication.md
       - Explore Data: workshop/Challenge-1/Code_Walkthrough/01_Data_Explore.md
       - Frontend: workshop/Challenge-1/Code_Walkthrough/02_Frontend.md
@@ -134,8 +134,8 @@ nav:
       - Knowledge Mining API Notebook: workshop/Challenge-3-and-4/knowledge_mining_api.ipynb
   - Challenge 5:
       - Overview: workshop/Challenge-5/index.md
-      - Chapter Generation Notebook: workshop/Challenge-5/video_chapter_generation.ipynb
-      - Tag Generation Notebook: workshop/Challenge-5/video_tag_generation.ipynb
+      - Chapter Generation Notebook: workshop/Challenge-5/notebooks/video_chapter_generation.ipynb
+      - Tag Generation Notebook: workshop/Challenge-5/notebooks/video_tag_generation.ipynb
   - Challenge 6:
       - Overview: workshop/Challenge-6/index.md
       - Content Safety Evaluation Notebook: workshop/Challenge-6/Content_safety_evaluation.ipynb

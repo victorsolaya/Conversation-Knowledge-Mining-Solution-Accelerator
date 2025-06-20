@@ -23,13 +23,13 @@ The current repository is instrumented with a `workshop/docs` folder that contai
 1. Install the `mkdocs-material` package
 
     ```bash
-    pip install mkdocs-material
+    pip install mkdocs-material mkdocs-jupyter
     ```
 
 2. Run the `mkdocs serve` command from the `workshop` folder
 
     ```bash
-    cd workshop/docs
+    cd docs/workshopcd
     mkdocs serve -a localhost:5000
     ```
 
