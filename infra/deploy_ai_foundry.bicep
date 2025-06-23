@@ -24,6 +24,7 @@ var keyvaultName = '${abbrs.security.keyVault}${solutionName}'
 var location = solutionLocation //'eastus2'
 var aiProjectName = '${abbrs.ai.aiFoundryProject}${solutionName}'
 var aiSearchName = '${abbrs.ai.aiSearch}${solutionName}'
+var aiSearchConnectionName = 'myVectorStoreProjectConnectionName-${solutionName}'
 
 var aiModelDeployments = [
   {
@@ -192,7 +193,7 @@ resource aiProject 'Microsoft.CognitiveServices/accounts/projects@2025-04-01-pre
 }
 
 resource aiproject_aisearch_connection_new 'Microsoft.CognitiveServices/accounts/projects/connections@2025-04-01-preview' = if (empty(azureExistingAIProjectResourceId)) {
-  name: 'myVectorStoreProjectConnectionName-${solutionName}'
+  name: aiSearchConnectionName
   parent: aiProject
   properties: {
     category: 'CognitiveSearch'
@@ -216,7 +217,7 @@ module existing_AIProject_SearchConnectionModule 'deploy_aifp_aisearch_connectio
     aiSearchName: aiSearchName
     aiSearchResourceId: aiSearch.id
     aiSearchLocation: aiSearch.location
-    solutionName: solutionName
+    aiSearchConnectionName: aiSearchConnectionName
   }
 }
 
@@ -438,6 +439,7 @@ output aiSearchId string = aiSearch.id
 output aiSearchTarget string = 'https://${aiSearch.name}.search.windows.net'
 output aiSearchService string = aiSearch.name
 output aiProjectName string = !empty(existingAIProjectName) ? existingAIProjectName : aiProject.name
+output aiSearchConnectionName string = aiSearchConnectionName
 
 output applicationInsightsId string = applicationInsights.id
 output logAnalyticsWorkspaceResourceName string = useExisting ? existingLogAnalyticsWorkspace.name : logAnalytics.name

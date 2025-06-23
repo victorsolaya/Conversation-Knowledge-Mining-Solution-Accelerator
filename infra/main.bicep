@@ -232,6 +232,7 @@ module backend_docker 'deploy_backend_docker.bicep' = {
 
       AZURE_AI_SEARCH_ENDPOINT: aifoundry.outputs.aiSearchTarget
       AZURE_AI_SEARCH_INDEX: 'call_transcripts_index'
+      AZURE_AI_SEARCH_CONNECTION_NAME: aifoundry.outputs.aiSearchConnectionName
       USE_AI_PROJECT_CLIENT: 'False'
       DISPLAY_CHART_DEFAULT: 'False'
       APPLICATIONINSIGHTS_CONNECTION_STRING: aifoundry.outputs.applicationInsightsConnectionString
@@ -270,6 +271,7 @@ output AZURE_AI_PROJECT_NAME string = aifoundry.outputs.aiProjectName
 output AZURE_AI_SEARCH_API_KEY string = ''
 output AZURE_AI_SEARCH_ENDPOINT string = aifoundry.outputs.aiSearchTarget
 output AZURE_AI_SEARCH_INDEX string = 'call_transcripts_index'
+output AZURE_AI_SEARCH_CONNECTION_NAME string = aifoundry.outputs.aiSearchConnectionName
 output AZURE_COSMOSDB_ACCOUNT string = cosmosDBModule.outputs.cosmosAccountName
 output AZURE_COSMOSDB_CONVERSATIONS_CONTAINER string = 'conversations'
 output AZURE_COSMOSDB_DATABASE string = 'db_conversation_history'
