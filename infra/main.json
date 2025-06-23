@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.36.1.42791",
-      "templateHash": "7329428866237825277"
+      "templateHash": "214250180471366961"
     }
   },
   "parameters": {
@@ -652,7 +652,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.36.1.42791",
-              "templateHash": "18071133839467770360"
+              "templateHash": "9062647612195846559"
             }
           },
           "parameters": {
@@ -941,6 +941,7 @@
             "location": "[parameters('solutionLocation')]",
             "aiProjectName": "[format('{0}{1}', variables('abbrs').ai.aiFoundryProject, parameters('solutionName'))]",
             "aiSearchName": "[format('{0}{1}', variables('abbrs').ai.aiSearch, parameters('solutionName'))]",
+            "aiSearchConnectionName": "[format('myVectorStoreProjectConnectionName-{0}', parameters('solutionName'))]",
             "aiModelDeployments": [
               {
                 "name": "[parameters('gptModelName')]",
@@ -1124,7 +1125,7 @@
               "condition": "[empty(parameters('azureExistingAIProjectResourceId'))]",
               "type": "Microsoft.CognitiveServices/accounts/projects/connections",
               "apiVersion": "2025-04-01-preview",
-              "name": "[format('{0}/{1}/{2}', variables('aiServicesName'), variables('aiProjectName'), format('myVectorStoreProjectConnectionName-{0}', parameters('solutionName')))]",
+              "name": "[format('{0}/{1}/{2}', variables('aiServicesName'), variables('aiProjectName'), variables('aiSearchConnectionName'))]",
               "properties": {
                 "category": "CognitiveSearch",
                 "target": "[format('https://{0}.search.windows.net', variables('aiSearchName'))]",
@@ -1367,8 +1368,8 @@
                   "aiSearchLocation": {
                     "value": "[reference(resourceId('Microsoft.Search/searchServices', variables('aiSearchName')), '2024-06-01-preview', 'full').location]"
                   },
-                  "solutionName": {
-                    "value": "[parameters('solutionName')]"
+                  "aiSearchConnectionName": {
+                    "value": "[variables('aiSearchConnectionName')]"
                   }
                 },
                 "template": {
@@ -1378,7 +1379,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.36.1.42791",
-                      "templateHash": "8509587136441355562"
+                      "templateHash": "13522134910751631918"
                     }
                   },
                   "parameters": {
@@ -1397,7 +1398,7 @@
                     "aiSearchLocation": {
                       "type": "string"
                     },
-                    "solutionName": {
+                    "aiSearchConnectionName": {
                       "type": "string"
                     }
                   },
@@ -1405,7 +1406,7 @@
                     {
                       "type": "Microsoft.CognitiveServices/accounts/projects/connections",
                       "apiVersion": "2025-04-01-preview",
-                      "name": "[format('{0}/{1}/myVectorStoreProjectConnectionName-{2}', parameters('existingAIServicesName'), parameters('existingAIProjectName'), parameters('solutionName'))]",
+                      "name": "[format('{0}/{1}/{2}', parameters('existingAIServicesName'), parameters('existingAIProjectName'), parameters('aiSearchConnectionName'))]",
                       "properties": {
                         "category": "CognitiveSearch",
                         "target": "[format('https://{0}.search.windows.net', parameters('aiSearchName'))]",
@@ -1593,6 +1594,10 @@
             "aiProjectName": {
               "type": "string",
               "value": "[if(not(empty(variables('existingAIProjectName'))), variables('existingAIProjectName'), variables('aiProjectName'))]"
+            },
+            "aiSearchConnectionName": {
+              "type": "string",
+              "value": "[variables('aiSearchConnectionName')]"
             },
             "applicationInsightsId": {
               "type": "string",
@@ -2556,6 +2561,9 @@
           "azureExistingAIProjectResourceId": {
             "value": "[parameters('azureExistingAIProjectResourceId')]"
           },
+          "aiSearchName": {
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_ai_foundry'), '2022-09-01').outputs.aiSearchName.value]"
+          },
           "appSettings": {
             "value": {
               "AZURE_OPENAI_DEPLOYMENT_MODEL": "[parameters('gptModelName')]",
@@ -2575,6 +2583,7 @@
               "SQLDB_USER_MID": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_managed_identity'), '2022-09-01').outputs.managedIdentityBackendAppOutput.value.clientId]",
               "AZURE_AI_SEARCH_ENDPOINT": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_ai_foundry'), '2022-09-01').outputs.aiSearchTarget.value]",
               "AZURE_AI_SEARCH_INDEX": "call_transcripts_index",
+              "AZURE_AI_SEARCH_CONNECTION_NAME": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_ai_foundry'), '2022-09-01').outputs.aiSearchConnectionName.value]",
               "USE_AI_PROJECT_CLIENT": "False",
               "DISPLAY_CHART_DEFAULT": "False",
               "APPLICATIONINSIGHTS_CONNECTION_STRING": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_ai_foundry'), '2022-09-01').outputs.applicationInsightsConnectionString.value]",
@@ -2589,7 +2598,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.36.1.42791",
-              "templateHash": "8369705254030220171"
+              "templateHash": "6892774461979694755"
             }
           },
           "parameters": {
@@ -2631,6 +2640,9 @@
               "type": "string",
               "defaultValue": ""
             },
+            "aiSearchName": {
+              "type": "string"
+            },
             "name": {
               "type": "string"
             }
@@ -2663,6 +2675,19 @@
               "name": "[guid(format('{0}-app-module', parameters('name')), parameters('keyVaultName'), resourceId('Microsoft.Authorization/roleDefinitions', '4633458b-17de-408a-b874-0445c86b69e6'))]",
               "properties": {
                 "roleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', '4633458b-17de-408a-b874-0445c86b69e6')]",
+                "principalId": "[reference(resourceId('Microsoft.Resources/deployments', format('{0}-app-module', parameters('name'))), '2022-09-01').outputs.identityPrincipalId.value]"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', format('{0}-app-module', parameters('name')))]"
+              ]
+            },
+            {
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2022-04-01",
+              "scope": "[format('Microsoft.Search/searchServices/{0}', parameters('aiSearchName'))]",
+              "name": "[guid(format('{0}-app-module', parameters('name')), parameters('aiSearchName'), resourceId('Microsoft.Authorization/roleDefinitions', 'c68f8d98-5534-41c8-8d7a-3cc485642e6f'))]",
+              "properties": {
+                "roleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', 'c68f8d98-5534-41c8-8d7a-3cc485642e6f')]",
                 "principalId": "[reference(resourceId('Microsoft.Resources/deployments', format('{0}-app-module', parameters('name'))), '2022-09-01').outputs.identityPrincipalId.value]"
               },
               "dependsOn": [
@@ -3355,6 +3380,10 @@
     "AZURE_AI_SEARCH_INDEX": {
       "type": "string",
       "value": "call_transcripts_index"
+    },
+    "AZURE_AI_SEARCH_CONNECTION_NAME": {
+      "type": "string",
+      "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_ai_foundry'), '2022-09-01').outputs.aiSearchConnectionName.value]"
     },
     "AZURE_COSMOSDB_ACCOUNT": {
       "type": "string",

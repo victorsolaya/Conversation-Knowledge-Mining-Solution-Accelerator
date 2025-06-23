@@ -13,6 +13,7 @@ param keyVaultName string
 param aiServicesName string
 param useLocalBuild string
 param azureExistingAIProjectResourceId string = ''
+param aiSearchName string
 var existingAIServiceSubscription = !empty(azureExistingAIProjectResourceId) ? split(azureExistingAIProjectResourceId, '/')[2] : subscription().subscriptionId
 var existingAIServiceResourceGroup = !empty(azureExistingAIProjectResourceId) ? split(azureExistingAIProjectResourceId, '/')[4] : resourceGroup().name
 var existingAIServicesName = !empty(azureExistingAIProjectResourceId) ? split(azureExistingAIProjectResourceId, '/')[8] : ''
@@ -139,6 +140,23 @@ resource keyVaultSecretsUserAssignment 'Microsoft.Authorization/roleAssignments@
   scope: keyVault
   properties: {
     roleDefinitionId: keyVaultSecretsUser.id
+    principalId: appService.outputs.identityPrincipalId
+  }
+}
+
+resource aiSearch 'Microsoft.Search/searchServices@2024-06-01-preview' existing = {
+  name: aiSearchName
+}
+
+resource searchIndexDataReader 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = {
+  name: 'c68f8d98-5534-41c8-8d7a-3cc485642e6f'
+}
+
+resource searchIndexDataReaderAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(appService.name, aiSearch.name, searchIndexDataReader.id)
+  scope: aiSearch
+  properties: {
+    roleDefinitionId: searchIndexDataReader.id
     principalId: appService.outputs.identityPrincipalId
   }
 }

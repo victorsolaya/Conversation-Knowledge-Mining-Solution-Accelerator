@@ -212,7 +212,8 @@ module backend_docker 'deploy_backend_docker.bicep' = {
     keyVaultName: kvault.outputs.keyvaultName
     aiServicesName: aifoundry.outputs.aiServicesName
     useLocalBuild: useLocalBuildLower
-    azureExistingAIProjectResourceId: azureExistingAIProjectResourceId 
+    azureExistingAIProjectResourceId: azureExistingAIProjectResourceId
+    aiSearchName: aifoundry.outputs.aiSearchName 
     appSettings: {
       AZURE_OPENAI_DEPLOYMENT_MODEL: gptModelName
       AZURE_OPENAI_ENDPOINT: aifoundry.outputs.aiServicesTarget
