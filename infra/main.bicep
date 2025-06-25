@@ -20,11 +20,11 @@ param azureExistingAIProjectResourceId string = ''
     type: 'location'
   }
 })
-param contentUnderstandingLocation string
+param contentUnderstandingLocation string = 'swedencentral'
 
 @minLength(1)
 @description('Secondary location for databases creation(example:eastus2):')
-param secondaryLocation string
+param secondaryLocation string = 'eastus2'
 
 @minLength(1)
 @description('GPT model deployment type:')
@@ -72,6 +72,20 @@ param useLocalBuild string = 'false'
 var useLocalBuildLower = toLower(useLocalBuild)
 
 var uniqueId = toLower(uniqueString(subscription().id, environmentName, solutionLocation))
+
+
+@metadata({
+  azd:{
+    type: 'location'
+    usageName: [
+      'OpenAI.GlobalStandard.gpt-4o-mini,30'
+      'OpenAI.Standard.text-embedding-ada-002,80'
+    ]
+  }
+})
+@description('Location for AI Foundry deployment. This is the location where the AI Foundry resources will be deployed.')
+param AZURE_AI_SERVICE_LOCATION string
+
 var solutionPrefix = 'km${padLeft(take(uniqueId, 12), 12, '0')}'
 
 var containerRegistryName = '${abbrs.containers.containerRegistry}${solutionPrefix}'
@@ -107,7 +121,7 @@ module aifoundry 'deploy_ai_foundry.bicep' = {
   name: 'deploy_ai_foundry'
   params: {
     solutionName: solutionPrefix
-    solutionLocation: solutionLocation
+    solutionLocation: AZURE_AI_SERVICE_LOCATION
     keyVaultName: kvault.outputs.keyvaultName
     cuLocation: contentUnderstandingLocation
     deploymentType: deploymentType
