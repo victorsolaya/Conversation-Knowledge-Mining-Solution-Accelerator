@@ -149,7 +149,7 @@ resource aiSearch 'Microsoft.Search/searchServices@2024-06-01-preview' existing 
 }
 
 resource searchIndexDataReader 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = {
-  name: 'c68f8d98-5534-41c8-8d7a-3cc485642e6f'
+  name: '1407120a-92aa-4202-b7e9-c0e197c71c8f'
 }
 
 resource searchIndexDataReaderAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {

@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.36.1.42791",
-      "templateHash": "3478392094002963506"
+      "templateHash": "4924556831865181765"
     }
   },
   "parameters": {
@@ -2598,7 +2598,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.36.1.42791",
-              "templateHash": "6892774461979694755"
+              "templateHash": "5409549666736613979"
             }
           },
           "parameters": {
@@ -2685,9 +2685,9 @@
               "type": "Microsoft.Authorization/roleAssignments",
               "apiVersion": "2022-04-01",
               "scope": "[format('Microsoft.Search/searchServices/{0}', parameters('aiSearchName'))]",
-              "name": "[guid(format('{0}-app-module', parameters('name')), parameters('aiSearchName'), resourceId('Microsoft.Authorization/roleDefinitions', 'c68f8d98-5534-41c8-8d7a-3cc485642e6f'))]",
+              "name": "[guid(format('{0}-app-module', parameters('name')), parameters('aiSearchName'), resourceId('Microsoft.Authorization/roleDefinitions', '1407120a-92aa-4202-b7e9-c0e197c71c8f'))]",
               "properties": {
-                "roleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', 'c68f8d98-5534-41c8-8d7a-3cc485642e6f')]",
+                "roleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', '1407120a-92aa-4202-b7e9-c0e197c71c8f')]",
                 "principalId": "[reference(resourceId('Microsoft.Resources/deployments', format('{0}-app-module', parameters('name'))), '2022-09-01').outputs.identityPrincipalId.value]"
               },
               "dependsOn": [
