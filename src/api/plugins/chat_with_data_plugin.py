@@ -195,7 +195,6 @@ class ChatWithDataPlugin:
                         agent_id=agent.id,
                         tool_choice={"type": "azure_ai_search"}
                     )
-                    print(f"Run finished with status: {run.status}")
 
                     if run.status == "failed":
                         print(f"Run failed: {run.last_error}")
@@ -236,8 +235,5 @@ class ChatWithDataPlugin:
                             print(f"Failed to clean up agent: {cleanup_error}", flush=True)
 
         except Exception as e:
-            print(f"An error occurred: {e}", flush=True)
             return "Details could not be retrieved. Please try again later."
-
-        print("Answer from get_answers_from_calltranscripts:", answer, flush=True)
         return answer

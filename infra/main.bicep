@@ -234,7 +234,7 @@ module backend_docker 'deploy_backend_docker.bicep' = {
       AZURE_AI_SEARCH_ENDPOINT: aifoundry.outputs.aiSearchTarget
       AZURE_AI_SEARCH_INDEX: 'call_transcripts_index'
       AZURE_AI_SEARCH_CONNECTION_NAME: aifoundry.outputs.aiSearchConnectionName
-      USE_AI_PROJECT_CLIENT: 'False'
+      USE_AI_PROJECT_CLIENT: 'True'
       DISPLAY_CHART_DEFAULT: 'False'
       APPLICATIONINSIGHTS_CONNECTION_STRING: aifoundry.outputs.applicationInsightsConnectionString
       DUMMY_TEST: 'True'

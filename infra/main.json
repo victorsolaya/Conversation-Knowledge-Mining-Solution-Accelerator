@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.36.1.42791",
-      "templateHash": "214250180471366961"
+      "templateHash": "3478392094002963506"
     }
   },
   "parameters": {
@@ -2584,7 +2584,7 @@
               "AZURE_AI_SEARCH_ENDPOINT": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_ai_foundry'), '2022-09-01').outputs.aiSearchTarget.value]",
               "AZURE_AI_SEARCH_INDEX": "call_transcripts_index",
               "AZURE_AI_SEARCH_CONNECTION_NAME": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_ai_foundry'), '2022-09-01').outputs.aiSearchConnectionName.value]",
-              "USE_AI_PROJECT_CLIENT": "False",
+              "USE_AI_PROJECT_CLIENT": "True",
               "DISPLAY_CHART_DEFAULT": "False",
               "APPLICATIONINSIGHTS_CONNECTION_STRING": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_ai_foundry'), '2022-09-01').outputs.applicationInsightsConnectionString.value]",
               "DUMMY_TEST": "True"
