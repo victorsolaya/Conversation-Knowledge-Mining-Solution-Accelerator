@@ -6,17 +6,17 @@ This module provides functions for:
 - Answering questions using call transcript data from Azure AI Search.
 """
 
+import re
 from typing import Annotated, Dict, Any
 import ast
 
-import requests
 from semantic_kernel.functions.kernel_function_decorator import kernel_function
 from azure.ai.projects import AIProjectClient
 from azure.ai.agents.models import (
     AzureAISearchQueryType, 
-    AzureAISearchTool, 
-    ListSortOrder, 
-    MessageRole, 
+    AzureAISearchTool,
+    ListSortOrder,
+    MessageRole,
     RunStepToolCallDetails)
 from azure.identity import DefaultAzureCredential
 
@@ -131,31 +131,29 @@ class ChatWithDataPlugin:
         return answer
 
     @kernel_function(name="ChatWithCallTranscripts",
-                     description="Provides summaries or detailed explanations from the search index.")
+                 description="Provides summaries or detailed explanations from the search index.")
     async def get_answers_from_calltranscripts(
             self,
             question: Annotated[str, "the question"]
     ):
+        answer: Dict[str, Any] = {"answer": "", "citations": []}
+        agent = None
+
         try:
-            
             field_mapping = {
-                "contentFields": ["content"],  # Fields containing the content to be searched
+                "contentFields": ["content"],
                 "urlField": "sourceurl",
                 "titleField": "chunk_id",
             }
 
-            # Initialize the AIProjectClient with the endpoint and credentials
             project_client = AIProjectClient(
                 endpoint=self.ai_project_endpoint,
-                credential=DefaultAzureCredential(exclude_interactive_browser_credential=False),  # Use Azure Default Credential for authentication
+                credential=DefaultAzureCredential(exclude_interactive_browser_credential=False),
                 api_version="2025-05-01",
             )
 
             with project_client:
-                # If you have a custom field mapping, create a Project Index to store the mapping
-                project_index = None
-                if field_mapping:
-                    print("Creating project index...")
+                try:
                     project_index = project_client.indexes.create_or_update(
                         name=f"project-index-{self.azure_ai_search_index}",
                         version="1",
@@ -166,134 +164,80 @@ class ChatWithDataPlugin:
                             "fieldMapping": field_mapping
                         }
                     )
-                    print(f"Created index, name: {project_index.name}, version: {project_index.version}")
 
-                # Initialize the Azure AI Search tool with the required parameters
-                # Use the project index if it was created above, otherwise use the search index directly
+                    ai_search = AzureAISearchTool(
+                        index_asset_id=f"{project_index.name}/versions/{project_index.version}",
+                        index_connection_id=None,
+                        index_name=None,
+                        query_type=AzureAISearchQueryType.VECTOR_SEMANTIC_HYBRID,
+                        top_k=5,
+                        filter="",
+                    )
 
-                ai_search = AzureAISearchTool(
-                    index_asset_id=f"{project_index.name}/versions/{project_index.version}",  # Asset ID for the index created above
-                    index_connection_id=None,
-                    index_name=None,
-                    query_type=AzureAISearchQueryType.VECTOR_SEMANTIC_HYBRID, 
-                    top_k=5,
-                    filter="",
-                )
+                    agent = project_client.agents.create_agent(
+                        model=self.azure_openai_deployment_model,
+                        name="ChatWithCallTranscriptsAgent",
+                        instructions="You are a helpful agent. Use the tools provided and always cite your sources.",
+                        tools=ai_search.definitions,
+                        tool_resources=ai_search.resources,
+                    )
 
-                # Create an agent with the specified model, name, instructions, and tools
-                agent = project_client.agents.create_agent(
-                    model=self.azure_openai_deployment_model,
-                    name="ChatWithCallTranscriptsAgent",
-                    instructions="You are a helpful agent. Use the tools provided and always cite your sources.",  # Instructions for the agent
-                    tools=ai_search.definitions,
-                    tool_resources=ai_search.resources,
-                )
-                print(f"Created agent, ID: {agent.id}")
+                    thread = project_client.agents.threads.create()
 
-                # Create a thread for communication with the agent
-                thread = project_client.agents.threads.create()
-                print(f"Created thread, ID: {thread.id}")
+                    project_client.agents.messages.create(
+                        thread_id=thread.id,
+                        role=MessageRole.USER,
+                        content=question,
+                    )
 
-                # Send a message to the thread
-                message = project_client.agents.messages.create(
-                    thread_id=thread.id,
-                    role=MessageRole.USER,
-                    content=question,
-                )
-                print(f"Created message, ID: {message['id']}")
+                    run = project_client.agents.runs.create_and_process(
+                        thread_id=thread.id,
+                        agent_id=agent.id,
+                        tool_choice={"type": "azure_ai_search"}
+                    )
+                    print(f"Run finished with status: {run.status}")
 
-                # Create and process an agent run in the thread using the tool
-                run = project_client.agents.runs.create_and_process(thread_id=thread.id, agent_id=agent.id, tool_choice={"type": "azure_ai_search"})
-                print(f"Run finished with status: {run.status}")
+                    if run.status == "failed":
+                        print(f"Run failed: {run.last_error}")
+                    else:
+                        def convert_citation_markers(text):
+                            def replace_marker(match):
+                                parts = match.group(1).split(":")
+                                if len(parts) == 2 and parts[1].isdigit():
+                                    new_index = int(parts[1]) + 1
+                                    return f"[{new_index}]"
+                                return match.group(0)
 
-                if run.status == "failed":
-                    print(f"Run failed: {run.last_error}")
-                else:
-                    # Create a credential using DefaultAzureCredential (supports Managed Identity, CLI login, etc.)
-                    credential = DefaultAzureCredential()
-                    token = credential.get_token("https://search.azure.com/.default")
-                    access_token = token.token
+                            return re.sub(r'【(\d+:\d+)†source】', replace_marker, text)
+                        
+                        for run_step in project_client.agents.run_steps.list(thread_id=thread.id, run_id=run.id):
+                            if isinstance(run_step.step_details, RunStepToolCallDetails):
+                                for tool_call in run_step.step_details.tool_calls:
+                                    output_data = tool_call['azure_ai_search']['output']
+                                    tool_output = ast.literal_eval(output_data) if isinstance(output_data, str) else output_data
+                                    urls = tool_output.get("metadata", {}).get("get_urls", [])
+                                    titles = tool_output.get("metadata", {}).get("titles", [])
 
-                    # Initialize the final response structure
-                    final_response: Dict[str, Any] = {
-                        "answer": "",
-                        "citations": []
-                    }
+                                    for i, url in enumerate(urls):
+                                        title = titles[i] if i < len(titles) else ""
+                                        answer["citations"].append({"url": url, "title": title})
 
-                    # Step 1: Extract citation metadata
-                    for run_step in project_client.agents.run_steps.list(thread_id=thread.id, run_id=run.id):
-                        if isinstance(run_step.step_details, RunStepToolCallDetails):
-                            for tool_call in run_step.step_details.tool_calls:
-                                tool_output = ast.literal_eval(tool_call['azure_ai_search']['output'])
-                                print(f"Tool output: {tool_output}", flush=True)
-                                urls = tool_output["metadata"].get("get_urls", [])
-                                titles = tool_output["metadata"].get("titles", [])
-                                ids = tool_output["metadata"].get("ids", [])
+                        messages = project_client.agents.messages.list(thread_id=thread.id, order=ListSortOrder.ASCENDING)
+                        for msg in messages:
+                            if msg.role == MessageRole.AGENT and msg.text_messages:
+                                answer["answer"] = msg.text_messages[-1].text.value
+                                answer["answer"] = convert_citation_markers(answer["answer"])
+                                break
+                finally:
+                    if agent:
+                        try:
+                            project_client.agents.delete_agent(agent.id)
+                        except Exception as cleanup_error:
+                            print(f"Failed to clean up agent: {cleanup_error}", flush=True)
 
-                                for i, url in enumerate(urls):
-                                    title = titles[i] if i < len(titles) else ""
-                                    doc_id = ids[i] if i < len(ids) else ""
-                                    final_response["citations"].append({
-                                        "url": url,
-                                        "title": title,
-                                        "doc_id": doc_id
-                                    })
-
-                    # # Step 2: Fetch and add content for each citation using RBAC token
-                    # for citation in final_response["citations"]:
-                    #     try:
-                    #         response = requests.get(
-                    #             citation["url"],
-                    #             headers={
-                    #                 "Authorization": f"Bearer {access_token}",
-                    #                 "Content-Type": "application/json"
-                    #             },
-                    #             timeout=10  # Set a timeout for the request
-                    #         )
-                    #         if response.status_code == 200:
-                    #             data = response.json()
-                    #             content = data.get("content", "")
-                    #             citation["content"] = content[:20000] if len(content) > 20000 else content
-                    #         else:
-                    #             citation["content"] = f"Error: HTTP {response.status_code}"
-                    #     except Exception as e:
-                    #         citation["content"] = f"Exception: {str(e)}"
-
-                    # Step 3: Get the answer from the last agent message
-                    messages = project_client.agents.messages.list(thread_id=thread.id, order=ListSortOrder.ASCENDING)
-                    for msg in messages:
-                        if msg.role == MessageRole.AGENT and msg.text_messages:
-                            final_response["answer"] = msg.text_messages[-1].text.value
-                            break
-
-                    # Output the final structured response
-                    answer = final_response
-
-
-
-                    messages = project_client.agents.messages.list(thread_id=thread.id, order=ListSortOrder.ASCENDING)
-                    for message in messages:
-                        if message.role == MessageRole.AGENT and message.url_citation_annotations:
-                            placeholder_annotations = {
-                                annotation.text: f" [see {annotation.url_citation.title}] ({annotation.url_citation.url})"
-                                for annotation in message.url_citation_annotations
-                            }
-                            for message_text in message.text_messages:
-                                message_str = message_text.text.value
-                                for k, v in placeholder_annotations.items():
-                                    message_str = message_str.replace(k, v)
-                                print(f"{message.role}: {message_str}")
-                        else:
-                            for message_text in message.text_messages:
-                                print(f"{message.role}: {message_text.text.value}")
-
-
-                            
-
-                    # Optional: clean up
-                    project_client.agents.delete_agent(agent.id)
         except Exception as e:
             print(f"An error occurred: {e}", flush=True)
-            answer = "Details could not be retrieved. Please try again later."
+            return "Details could not be retrieved. Please try again later."
+
         print("Answer from get_answers_from_calltranscripts:", answer, flush=True)
         return answer
