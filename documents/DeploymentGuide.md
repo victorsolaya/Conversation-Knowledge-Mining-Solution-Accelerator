@@ -170,32 +170,25 @@ Once you've opened the project in [Codespaces](#github-codespaces), [Dev Contain
 
 6. If you are done trying out the application, you can delete the resources by running `azd down`.
 
-### Publishing Local Build Container to Azure Container Registry
+## Post Deployment Steps
+1. Optional: Publishing Local Build Container to Azure Container Registry 
 
-If you need to rebuild the source code and push the updated container to the deployed Azure Container Registry, follow these steps:
-
-1. Set the environment variable `USE_LOCAL_BUILD` to `True`:
+   If you need to rebuild the source code and push the updated container to the deployed Azure Container Registry, follow these steps:
 
    - **Linux/macOS**:
      ```bash
-     export USE_LOCAL_BUILD=True
+     cd ./infra/scripts/
+     ./docker-build.sh
      ```
 
    - **Windows (PowerShell)**:
      ```powershell
-     $env:USE_LOCAL_BUILD = $true
+     cd .\infra\scripts\
+     .\docker-build.ps1
      ```
-2. Run the `az login` command
-   ```bash
-   az login
-   ```
 
-3. Run the `azd up` command again to rebuild and push the updated container:
-   ```bash
-   azd up
-   ```
+    This will create a new Azure Container Registry, rebuild the source code, package it into a container, and push it to the Container Registry created.
 
-This will rebuild the source code, package it into a container, and push it to the Azure Container Registry associated with your deployment.
 
 ## Post Deployment Steps
 

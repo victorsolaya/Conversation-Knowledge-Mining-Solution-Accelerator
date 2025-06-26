@@ -47,7 +47,7 @@ param azureOpenAIApiVersion string = '2025-01-01-preview'
 @description('Capacity of the GPT deployment:')
 // You can increase this, but capacity is limited per model/region, so you will get errors if you go over
 // https://learn.microsoft.com/en-us/azure/ai-services/openai/quotas-limits
-param gptDeploymentCapacity int = 30
+param gptDeploymentCapacity int = 150
 
 @minLength(1)
 @description('Name of the Text Embedding model to deploy:')
@@ -78,13 +78,13 @@ var uniqueId = toLower(uniqueString(subscription().id, environmentName, solution
   azd:{
     type: 'location'
     usageName: [
-      'OpenAI.GlobalStandard.gpt-4o-mini,30'
+      'OpenAI.GlobalStandard.gpt-4o-mini,150'
       'OpenAI.Standard.text-embedding-ada-002,80'
     ]
   }
 })
 @description('Location for AI Foundry deployment. This is the location where the AI Foundry resources will be deployed.')
-param AZURE_AI_SERVICE_LOCATION string
+param aiDeploymentsLocation string
 
 var solutionPrefix = 'km${padLeft(take(uniqueId, 12), 12, '0')}'
 
@@ -121,7 +121,7 @@ module aifoundry 'deploy_ai_foundry.bicep' = {
   name: 'deploy_ai_foundry'
   params: {
     solutionName: solutionPrefix
-    solutionLocation: AZURE_AI_SERVICE_LOCATION
+    solutionLocation: aiDeploymentsLocation
     keyVaultName: kvault.outputs.keyvaultName
     cuLocation: contentUnderstandingLocation
     deploymentType: deploymentType
