@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.36.1.42791",
-      "templateHash": "5435212576810356228"
+      "templateHash": "14735826169588989426"
     }
   },
   "parameters": {
@@ -652,7 +652,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.36.1.42791",
-              "templateHash": "14461865257385219923"
+              "templateHash": "7839466728713692137"
             }
           },
           "parameters": {
@@ -1145,7 +1145,7 @@
             {
               "type": "Microsoft.Authorization/roleAssignments",
               "apiVersion": "2022-04-01",
-              "scope": "[format('Microsoft.Search/searchServices/{0}', variables('aiSearchName'))]",
+              "scope": "[format('Microsoft.CognitiveServices/accounts/{0}', variables('aiServicesName_cu'))]",
               "name": "[guid(resourceGroup().id, resourceId('Microsoft.CognitiveServices/accounts', variables('aiServicesName_cu')), resourceId('Microsoft.Authorization/roleDefinitions', '53ca6127-db72-4b80-b1b0-d745d6d5456d'))]",
               "properties": {
                 "principalId": "[parameters('managedIdentityObjectId')]",
@@ -1153,7 +1153,6 @@
                 "principalType": "ServicePrincipal"
               },
               "dependsOn": [
-                "[resourceId('Microsoft.Search/searchServices', variables('aiSearchName'))]",
                 "[resourceId('Microsoft.CognitiveServices/accounts', variables('aiServicesName_cu'))]"
               ]
             },

@@ -239,7 +239,7 @@ module assignFoundryRoleToMI 'deploy_foundry_role_assignment.bicep' = {
 
 resource assignAiUserToAiFoundryCU 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
   name: guid(resourceGroup().id, aiServices_CU.id, aiUser.id)
-  scope: aiSearch
+  scope: aiServices_CU
   properties: {
     principalId: managedIdentityObjectId
     roleDefinitionId: aiUser.id
