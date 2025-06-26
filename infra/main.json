@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.36.1.42791",
-      "templateHash": "14735826169588989426"
+      "templateHash": "17588791379180192510"
     }
   },
   "parameters": {
@@ -111,7 +111,7 @@
     },
     "imageTag": {
       "type": "string",
-      "defaultValue": "latest"
+      "defaultValue": "latest_fdp"
     },
     "AZURE_LOCATION": {
       "type": "string",
@@ -652,7 +652,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.36.1.42791",
-              "templateHash": "7839466728713692137"
+              "templateHash": "9604789250113151596"
             }
           },
           "parameters": {
@@ -971,8 +971,8 @@
             "existingProjEndpoint": "[if(not(empty(parameters('azureExistingAIProjectResourceId'))), format('https://{0}.services.ai.azure.com/api/projects/{1}', split(parameters('azureExistingAIProjectResourceId'), '/')[8], split(parameters('azureExistingAIProjectResourceId'), '/')[10]), '')]",
             "existingAIServicesName": "[if(not(empty(parameters('azureExistingAIProjectResourceId'))), split(parameters('azureExistingAIProjectResourceId'), '/')[8], '')]",
             "existingAIProjectName": "[if(not(empty(parameters('azureExistingAIProjectResourceId'))), split(parameters('azureExistingAIProjectResourceId'), '/')[10], '')]",
-            "existingAIServiceSubscription": "[if(not(empty(parameters('azureExistingAIProjectResourceId'))), split(parameters('azureExistingAIProjectResourceId'), '/')[2], '')]",
-            "existingAIServiceResourceGroup": "[if(not(empty(parameters('azureExistingAIProjectResourceId'))), split(parameters('azureExistingAIProjectResourceId'), '/')[4], '')]"
+            "existingAIServiceSubscription": "[if(not(empty(parameters('azureExistingAIProjectResourceId'))), split(parameters('azureExistingAIProjectResourceId'), '/')[2], subscription().subscriptionId)]",
+            "existingAIServiceResourceGroup": "[if(not(empty(parameters('azureExistingAIProjectResourceId'))), split(parameters('azureExistingAIProjectResourceId'), '/')[4], resourceGroup().name)]"
           },
           "resources": [
             {
