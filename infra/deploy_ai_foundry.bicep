@@ -232,7 +232,18 @@ module assignFoundryRoleToMI 'deploy_foundry_role_assignment.bicep' = {
     roleDefinitionId: aiUser.id
     roleAssignmentName: guid(resourceGroup().id, managedIdentityObjectId, aiUser.id, 'foundry')
     aiServicesName: !empty(azureExistingAIProjectResourceId) ? existingAIServicesName : aiServicesName
+    aiProjectName: !empty(azureExistingAIProjectResourceId) ? existingAIProjectName : aiProjectName
     principalId: managedIdentityObjectId
+  }
+}
+
+resource assignAiUserToAiFoundryCU 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(resourceGroup().id, aiServices_CU.id, aiUser.id)
+  scope: aiSearch
+  properties: {
+    principalId: managedIdentityObjectId
+    roleDefinitionId: aiUser.id
+    principalType: 'ServicePrincipal'
   }
 }
 
@@ -247,6 +258,7 @@ module assignOpenAIRoleToAISearch 'deploy_foundry_role_assignment.bicep' = {
     roleDefinitionId: cognitiveServicesOpenAIUser.id
     roleAssignmentName: guid(resourceGroup().id, aiSearch.id, cognitiveServicesOpenAIUser.id, 'openai-foundry')
     aiServicesName: !empty(azureExistingAIProjectResourceId) ? existingAIServicesName : aiServicesName
+    aiProjectName: !empty(azureExistingAIProjectResourceId) ? existingAIProjectName : aiProjectName
     principalId: aiSearch.identity.principalId
   }
 }
@@ -265,6 +277,16 @@ resource assignSearchIndexDataReaderToAiProject 'Microsoft.Authorization/roleAss
   }
 }
 
+resource assignSearchIndexDataReaderToExistingAiProject 'Microsoft.Authorization/roleAssignments@2022-04-01' = if (!empty(azureExistingAIProjectResourceId)) {
+  name: guid(resourceGroup().id, existingAIProjectName, searchIndexDataReader.id, 'Existing')
+  scope: aiSearch
+  properties: {
+    principalId: assignOpenAIRoleToAISearch.outputs.aiProjectPrincipalId
+    roleDefinitionId: searchIndexDataReader.id
+    principalType: 'ServicePrincipal'
+  }
+}
+
 resource searchServiceContributor 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = {
   name: '7ca78c08-252a-4471-8644-bb5ff32d4ba0'
 }
@@ -274,6 +296,16 @@ resource assignSearchServiceContributorToAiProject 'Microsoft.Authorization/role
   scope: aiSearch
   properties: {
     principalId: aiProject.identity.principalId
+    roleDefinitionId: searchServiceContributor.id
+    principalType: 'ServicePrincipal'
+  }
+}
+
+resource assignSearchServiceContributorToExistingAiProject 'Microsoft.Authorization/roleAssignments@2022-04-01' = if (!empty(azureExistingAIProjectResourceId)) {
+  name: guid(resourceGroup().id, existingAIProjectName, searchServiceContributor.id, 'Existing')
+  scope: aiSearch
+  properties: {
+    principalId: assignOpenAIRoleToAISearch.outputs.aiProjectPrincipalId
     roleDefinitionId: searchServiceContributor.id
     principalType: 'ServicePrincipal'
   }
