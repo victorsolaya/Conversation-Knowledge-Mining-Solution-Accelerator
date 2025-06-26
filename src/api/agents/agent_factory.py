@@ -63,7 +63,7 @@ class AgentFactory:
                 )
                 cls._conversation_agent = agent
         return cls._conversation_agent
-    
+
     @classmethod
     async def get_search_agent(cls) -> dict:
         async with cls._lock:
@@ -139,7 +139,7 @@ class AgentFactory:
                             print(f"Failed to delete thread {thread_id} for conversation {conversation_id}: {e}", flush=True)
                 await cls._conversation_agent.client.agents.delete_agent(cls._conversation_agent.id)
                 cls._conversation_agent = None
-            
+
             # Delete Search Agent
             if cls._search_agent is not None:
                 try:

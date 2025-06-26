@@ -128,8 +128,7 @@ class ChatWithDataPlugin:
             answer = 'Details could not be retrieved. Please try again later.'
         return answer
 
-    @kernel_function(name="ChatWithCallTranscripts",
-                 description="Provides summaries or detailed explanations from the search index.")
+    @kernel_function(name="ChatWithCallTranscripts", description="Provides summaries or detailed explanations from the search index.")
     async def get_answers_from_calltranscripts(
             self,
             question: Annotated[str, "the question"]
@@ -169,7 +168,7 @@ class ChatWithDataPlugin:
                         return match.group(0)
 
                     return re.sub(r'【(\d+:\d+)†source】', replace_marker, text)
-                
+
                 for run_step in project_client.agents.run_steps.list(thread_id=thread.id, run_id=run.id):
                     if isinstance(run_step.step_details, RunStepToolCallDetails):
                         for tool_call in run_step.step_details.tool_calls:
@@ -189,6 +188,6 @@ class ChatWithDataPlugin:
                         answer["answer"] = convert_citation_markers(answer["answer"])
                         break
                 project_client.agents.threads.delete(thread_id=thread.id)
-        except Exception as e:
+        except Exception:
             return "Details could not be retrieved. Please try again later."
         return answer
