@@ -13,8 +13,6 @@ import ast
 from semantic_kernel.functions.kernel_function_decorator import kernel_function
 from azure.ai.projects import AIProjectClient
 from azure.ai.agents.models import (
-    AzureAISearchQueryType, 
-    AzureAISearchTool,
     ListSortOrder,
     MessageRole,
     RunStepToolCallDetails)
@@ -140,100 +138,57 @@ class ChatWithDataPlugin:
         agent = None
 
         try:
-            field_mapping = {
-                "contentFields": ["content"],
-                "urlField": "sourceurl",
-                "titleField": "chunk_id",
-            }
+            from agents.agent_factory import AgentFactory
+            agent_info = await AgentFactory.get_search_agent()
+            agent = agent_info["agent"]
+            project_client = agent_info["client"]
 
-            project_client = AIProjectClient(
-                endpoint=self.ai_project_endpoint,
-                credential=DefaultAzureCredential(exclude_interactive_browser_credential=False),
-                api_version="2025-05-01",
+            thread = project_client.agents.threads.create()
+
+            project_client.agents.messages.create(
+                thread_id=thread.id,
+                role=MessageRole.USER,
+                content=question,
             )
 
-            with project_client:
-                try:
-                    project_index = project_client.indexes.create_or_update(
-                        name=f"project-index-{self.azure_ai_search_index}",
-                        version="1",
-                        body={
-                            "connectionName": self.azure_ai_search_connection_name,
-                            "indexName": self.azure_ai_search_index,
-                            "type": "AzureSearch",
-                            "fieldMapping": field_mapping
-                        }
-                    )
+            run = project_client.agents.runs.create_and_process(
+                thread_id=thread.id,
+                agent_id=agent.id,
+                tool_choice={"type": "azure_ai_search"}
+            )
 
-                    ai_search = AzureAISearchTool(
-                        index_asset_id=f"{project_index.name}/versions/{project_index.version}",
-                        index_connection_id=None,
-                        index_name=None,
-                        query_type=AzureAISearchQueryType.VECTOR_SEMANTIC_HYBRID,
-                        top_k=5,
-                        filter="",
-                    )
+            if run.status == "failed":
+                print(f"Run failed: {run.last_error}")
+            else:
+                def convert_citation_markers(text):
+                    def replace_marker(match):
+                        parts = match.group(1).split(":")
+                        if len(parts) == 2 and parts[1].isdigit():
+                            new_index = int(parts[1]) + 1
+                            return f"[{new_index}]"
+                        return match.group(0)
 
-                    agent = project_client.agents.create_agent(
-                        model=self.azure_openai_deployment_model,
-                        name="ChatWithCallTranscriptsAgent",
-                        instructions="You are a helpful agent. Use the tools provided and always cite your sources.",
-                        tools=ai_search.definitions,
-                        tool_resources=ai_search.resources,
-                    )
+                    return re.sub(r'【(\d+:\d+)†source】', replace_marker, text)
+                
+                for run_step in project_client.agents.run_steps.list(thread_id=thread.id, run_id=run.id):
+                    if isinstance(run_step.step_details, RunStepToolCallDetails):
+                        for tool_call in run_step.step_details.tool_calls:
+                            output_data = tool_call['azure_ai_search']['output']
+                            tool_output = ast.literal_eval(output_data) if isinstance(output_data, str) else output_data
+                            urls = tool_output.get("metadata", {}).get("get_urls", [])
+                            titles = tool_output.get("metadata", {}).get("titles", [])
 
-                    thread = project_client.agents.threads.create()
+                            for i, url in enumerate(urls):
+                                title = titles[i] if i < len(titles) else ""
+                                answer["citations"].append({"url": url, "title": title})
 
-                    project_client.agents.messages.create(
-                        thread_id=thread.id,
-                        role=MessageRole.USER,
-                        content=question,
-                    )
-
-                    run = project_client.agents.runs.create_and_process(
-                        thread_id=thread.id,
-                        agent_id=agent.id,
-                        tool_choice={"type": "azure_ai_search"}
-                    )
-
-                    if run.status == "failed":
-                        print(f"Run failed: {run.last_error}")
-                    else:
-                        def convert_citation_markers(text):
-                            def replace_marker(match):
-                                parts = match.group(1).split(":")
-                                if len(parts) == 2 and parts[1].isdigit():
-                                    new_index = int(parts[1]) + 1
-                                    return f"[{new_index}]"
-                                return match.group(0)
-
-                            return re.sub(r'【(\d+:\d+)†source】', replace_marker, text)
-                        
-                        for run_step in project_client.agents.run_steps.list(thread_id=thread.id, run_id=run.id):
-                            if isinstance(run_step.step_details, RunStepToolCallDetails):
-                                for tool_call in run_step.step_details.tool_calls:
-                                    output_data = tool_call['azure_ai_search']['output']
-                                    tool_output = ast.literal_eval(output_data) if isinstance(output_data, str) else output_data
-                                    urls = tool_output.get("metadata", {}).get("get_urls", [])
-                                    titles = tool_output.get("metadata", {}).get("titles", [])
-
-                                    for i, url in enumerate(urls):
-                                        title = titles[i] if i < len(titles) else ""
-                                        answer["citations"].append({"url": url, "title": title})
-
-                        messages = project_client.agents.messages.list(thread_id=thread.id, order=ListSortOrder.ASCENDING)
-                        for msg in messages:
-                            if msg.role == MessageRole.AGENT and msg.text_messages:
-                                answer["answer"] = msg.text_messages[-1].text.value
-                                answer["answer"] = convert_citation_markers(answer["answer"])
-                                break
-                finally:
-                    if agent:
-                        try:
-                            project_client.agents.delete_agent(agent.id)
-                        except Exception as cleanup_error:
-                            print(f"Failed to clean up agent: {cleanup_error}", flush=True)
-
+                messages = project_client.agents.messages.list(thread_id=thread.id, order=ListSortOrder.ASCENDING)
+                for msg in messages:
+                    if msg.role == MessageRole.AGENT and msg.text_messages:
+                        answer["answer"] = msg.text_messages[-1].text.value
+                        answer["answer"] = convert_citation_markers(answer["answer"])
+                        break
+                project_client.agents.threads.delete(thread_id=thread.id)
         except Exception as e:
             return "Details could not be retrieved. Please try again later."
         return answer
