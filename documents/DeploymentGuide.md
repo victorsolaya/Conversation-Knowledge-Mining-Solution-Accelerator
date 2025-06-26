@@ -171,26 +171,6 @@ Once you've opened the project in [Codespaces](#github-codespaces), [Dev Contain
 6. If you are done trying out the application, you can delete the resources by running `azd down`.
 
 ## Post Deployment Steps
-1. Optional: Publishing Local Build Container to Azure Container Registry 
-
-   If you need to rebuild the source code and push the updated container to the deployed Azure Container Registry, follow these steps:
-
-   - **Linux/macOS**:
-     ```bash
-     cd ./infra/scripts/
-     ./docker-build.sh
-     ```
-
-   - **Windows (PowerShell)**:
-     ```powershell
-     cd .\infra\scripts\
-     .\docker-build.ps1
-     ```
-
-    This will create a new Azure Container Registry, rebuild the source code, package it into a container, and push it to the Container Registry created.
-
-
-## Post Deployment Steps
 
 1. **Add App Authentication**
    
