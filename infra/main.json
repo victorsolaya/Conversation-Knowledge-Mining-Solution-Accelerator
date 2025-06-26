@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.36.1.42791",
-      "templateHash": "17588791379180192510"
+      "templateHash": "5809090349009875682"
     }
   },
   "parameters": {
@@ -33,6 +33,7 @@
     },
     "contentUnderstandingLocation": {
       "type": "string",
+      "defaultValue": "swedencentral",
       "allowedValues": [
         "swedencentral",
         "australiaeast"
@@ -47,6 +48,7 @@
     },
     "secondaryLocation": {
       "type": "string",
+      "defaultValue": "eastus2",
       "minLength": 1,
       "metadata": {
         "description": "Secondary location for databases creation(example:eastus2):"
@@ -84,7 +86,7 @@
     },
     "gptDeploymentCapacity": {
       "type": "int",
-      "defaultValue": 30,
+      "defaultValue": 150,
       "minValue": 10,
       "metadata": {
         "description": "Capacity of the GPT deployment:"
@@ -122,6 +124,19 @@
       "defaultValue": "false",
       "metadata": {
         "description": "Set this flag to true only if you are deploying from Local"
+      }
+    },
+    "aiDeploymentsLocation": {
+      "type": "string",
+      "metadata": {
+        "azd": {
+          "type": "location",
+          "usageName": [
+            "OpenAI.GlobalStandard.gpt-4o-mini,150",
+            "OpenAI.Standard.text-embedding-ada-002,80"
+          ]
+        },
+        "description": "Location for AI Foundry deployment. This is the location where the AI Foundry resources will be deployed."
       }
     }
   },
@@ -606,7 +621,7 @@
             "value": "[variables('solutionPrefix')]"
           },
           "solutionLocation": {
-            "value": "[variables('solutionLocation')]"
+            "value": "[parameters('aiDeploymentsLocation')]"
           },
           "keyVaultName": {
             "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_keyvault'), '2022-09-01').outputs.keyvaultName.value]"
