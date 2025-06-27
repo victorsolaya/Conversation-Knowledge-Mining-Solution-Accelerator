@@ -225,7 +225,17 @@ resource aiUser 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = 
   name: '53ca6127-db72-4b80-b1b0-d745d6d5456d'
 }
 
-module assignFoundryRoleToMI 'deploy_foundry_role_assignment.bicep' = {
+resource assignFoundryRoleToMI 'Microsoft.Authorization/roleAssignments@2022-04-01' = if (empty(azureExistingAIProjectResourceId))  {
+  name: guid(resourceGroup().id, aiServices.id, aiUser.id)
+  scope: aiServices
+  properties: {
+    principalId: managedIdentityObjectId
+    roleDefinitionId: aiUser.id
+    principalType: 'ServicePrincipal'
+  }
+}
+
+module assignFoundryRoleToMIExisting 'deploy_foundry_role_assignment.bicep' = if (!empty(azureExistingAIProjectResourceId)) {
   name: 'assignFoundryRoleToMI'
   scope: resourceGroup(existingAIServiceSubscription, existingAIServiceResourceGroup)
   params: {

@@ -21,7 +21,7 @@ from azure.identity import DefaultAzureCredential
 from common.database.sqldb_service import execute_sql_query
 from common.config.config import Config
 from helpers.azure_openai_helper import get_azure_openai_client
-
+from agents.search_agent_factory import SearchAgentFactory
 
 class ChatWithDataPlugin:
     def __init__(self):
@@ -137,8 +137,7 @@ class ChatWithDataPlugin:
         agent = None
 
         try:
-            from agents.agent_factory import AgentFactory
-            agent_info = await AgentFactory.get_search_agent()
+            agent_info = await SearchAgentFactory.get_agent()
             agent = agent_info["agent"]
             project_client = agent_info["client"]
 
