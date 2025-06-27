@@ -23,6 +23,7 @@ from common.config.config import Config
 from helpers.azure_openai_helper import get_azure_openai_client
 from agents.search_agent_factory import SearchAgentFactory
 
+
 class ChatWithDataPlugin:
     def __init__(self):
         config = Config()

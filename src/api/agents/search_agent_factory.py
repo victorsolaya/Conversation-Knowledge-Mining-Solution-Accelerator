@@ -7,6 +7,7 @@ from azure.identity import DefaultAzureCredential
 
 from common.config.config import Config
 
+
 class SearchAgentFactory:
     _lock = asyncio.Lock()
     _agent: Optional[dict] = None

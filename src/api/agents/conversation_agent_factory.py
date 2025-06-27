@@ -7,6 +7,7 @@ from semantic_kernel.agents import AzureAIAgent, AzureAIAgentThread, AzureAIAgen
 from plugins.chat_with_data_plugin import ChatWithDataPlugin
 from services.chat_service import ChatService
 
+
 class ConversationAgentFactory:
     _lock = asyncio.Lock()
     _agent: Optional[AzureAIAgent] = None
