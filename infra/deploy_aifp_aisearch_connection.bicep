@@ -3,10 +3,10 @@ param existingAIServicesName string
 param aiSearchName string
 param aiSearchResourceId string
 param aiSearchLocation string
-param solutionName string
+param aiSearchConnectionName string
 
 resource projectAISearchConnection 'Microsoft.CognitiveServices/accounts/projects/connections@2025-04-01-preview' = {
-  name: '${existingAIServicesName}/${existingAIProjectName}/myVectorStoreProjectConnectionName-${solutionName}'
+  name: '${existingAIServicesName}/${existingAIProjectName}/${aiSearchConnectionName}'
   properties: {
     category: 'CognitiveSearch'
     target: 'https://${aiSearchName}.search.windows.net'

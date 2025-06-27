@@ -2,13 +2,18 @@ param principalId string = ''
 param roleDefinitionId string
 param roleAssignmentName string = ''
 param aiServicesName string
-param userassignedIdentityId string = ''
+param aiProjectName string = ''
 
 resource aiServices 'Microsoft.CognitiveServices/accounts@2025-04-01-preview' existing = {
   name: aiServicesName
 }
 
-resource roleAssignmentToFoundry 'Microsoft.Authorization/roleAssignments@2022-04-01' = if (!empty(aiServicesName) && !empty(principalId)) {
+resource aiProject 'Microsoft.CognitiveServices/accounts/projects@2025-04-01-preview' existing = if (!empty(aiProjectName)) {
+  name: aiProjectName
+  parent: aiServices
+}
+
+resource roleAssignmentToFoundry 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
   name: roleAssignmentName
   scope: aiServices
   properties: {
@@ -17,12 +22,5 @@ resource roleAssignmentToFoundry 'Microsoft.Authorization/roleAssignments@2022-0
   }
 }
 
-resource roleAssignmentToManagedIdentity 'Microsoft.Authorization/roleAssignments@2022-04-01' = if (!empty(userassignedIdentityId)) {
-  name: roleAssignmentName
-  scope: aiServices
-  properties: {
-    roleDefinitionId: roleDefinitionId
-    principalId: userassignedIdentityId
-    principalType: 'ServicePrincipal'
-  }
-}
+output aiServicesPrincipalId string = aiServices.identity.principalId
+output aiProjectPrincipalId string =  !empty(aiProjectName) ? aiProject.identity.principalId : ''
