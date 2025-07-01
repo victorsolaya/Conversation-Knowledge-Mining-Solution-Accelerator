@@ -36,7 +36,7 @@ class SearchAgentFactory:
                 )
 
                 project_index = project_client.indexes.create_or_update(
-                    name=f"project-index-{azure_ai_search_index_name}-{solution_name}",
+                    name=f"project-index-{azure_ai_search_connection_name}-{azure_ai_search_index_name}",
                     version="1",
                     body={
                         "connectionName": azure_ai_search_connection_name,
