@@ -29,6 +29,7 @@ async def test_get_agent_creates_new_instance(
     mock_config.azure_ai_search_connection_name = "fake-connection"
     mock_config.azure_ai_search_index = "fake-index"
     mock_config.azure_openai_deployment_model = "fake-model"
+    mock_config.solution_name = "fake-solution"
     mock_config_class.return_value = mock_config
 
     # Mock project client
@@ -56,7 +57,7 @@ async def test_get_agent_creates_new_instance(
     assert result["agent"] == mock_agent
     assert result["client"] == mock_project_client
     mock_project_client.indexes.create_or_update.assert_called_once_with(
-        name="project-index-fake-connection-fake-index",
+        name="project-index-fake-index-fake-solution",
         version="1",
         body={
             "connectionName": "fake-connection",
