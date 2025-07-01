@@ -41,3 +41,5 @@ class Config:
         self.azure_cosmosdb_account = os.getenv("AZURE_COSMOSDB_ACCOUNT")
         self.azure_cosmosdb_conversations_container = os.getenv("AZURE_COSMOSDB_CONVERSATIONS_CONTAINER")
         self.azure_cosmosdb_enable_feedback = os.getenv("AZURE_COSMOSDB_ENABLE_FEEDBACK", "false").lower() == "true"
+
+        self.solution_name = os.getenv("SOLUTION_NAME", "")

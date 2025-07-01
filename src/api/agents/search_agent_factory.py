@@ -21,6 +21,7 @@ class SearchAgentFactory:
                 azure_ai_search_connection_name = config.azure_ai_search_connection_name
                 azure_ai_search_index_name = config.azure_ai_search_index
                 deployment_model = config.azure_openai_deployment_model
+                solution_name = config.solution_name
 
                 field_mapping = {
                     "contentFields": ["content"],
@@ -56,7 +57,7 @@ class SearchAgentFactory:
 
                 agent = project_client.agents.create_agent(
                     model=deployment_model,
-                    name="KM-ChatWithCallTranscriptsAgent",
+                    name=f"KM-ChatWithCallTranscriptsAgent-{solution_name}",
                     instructions="You are a helpful agent. Use the tools provided and always cite your sources.",
                     tools=ai_search.definitions,
                     tool_resources=ai_search.resources,
@@ -70,6 +71,7 @@ class SearchAgentFactory:
 
     @classmethod
     async def delete_agent(cls):
-        if cls._agent is not None:
-            cls._agent["client"].agents.delete_agent(cls._agent["agent"].id)
-            cls._agent = None
+        async with cls._lock:
+            if cls._agent is not None:
+                cls._agent["client"].agents.delete_agent(cls._agent["agent"].id)
+                cls._agent = None

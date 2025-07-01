@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.36.1.42791",
-      "templateHash": "373408339880701879"
+      "templateHash": "1377300534086071379"
     }
   },
   "parameters": {
@@ -2694,7 +2694,8 @@
               "USE_AI_PROJECT_CLIENT": "True",
               "DISPLAY_CHART_DEFAULT": "False",
               "APPLICATIONINSIGHTS_CONNECTION_STRING": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_ai_foundry'), '2022-09-01').outputs.applicationInsightsConnectionString.value]",
-              "DUMMY_TEST": "True"
+              "DUMMY_TEST": "True",
+              "SOLUTION_NAME": "[variables('solutionPrefix')]"
             }
           }
         },
