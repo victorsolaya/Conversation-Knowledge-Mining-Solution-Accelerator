@@ -7,6 +7,8 @@ from semantic_kernel.agents import AzureAIAgent, AzureAIAgentThread, AzureAIAgen
 from plugins.chat_with_data_plugin import ChatWithDataPlugin
 from services.chat_service import ChatService
 
+from common.config.config import Config
+
 
 class ConversationAgentFactory:
     _lock = asyncio.Lock()
@@ -16,11 +18,13 @@ class ConversationAgentFactory:
     async def get_agent(cls) -> AzureAIAgent:
         async with cls._lock:
             if cls._agent is None:
+                config = Config()
+                solution_name = config.solution_name
                 ai_agent_settings = AzureAIAgentSettings()
                 creds = DefaultAzureCredential()
                 client = AzureAIAgent.create_client(credential=creds, endpoint=ai_agent_settings.endpoint)
 
-                agent_name = "KM-ConversationKnowledgeAgent"
+                agent_name = f"KM-ConversationKnowledgeAgent-{solution_name}"
                 agent_instructions = '''You are a helpful assistant.
                 Always return the citations as is in final response.
                 Always return citation markers exactly as they appear in the source data, placed in the "answer" field at the correct location. Do not modify, convert, or simplify these markers.
@@ -48,14 +52,15 @@ class ConversationAgentFactory:
 
     @classmethod
     async def delete_agent(cls):
-        if cls._agent is not None:
-            thread_cache = getattr(ChatService, "thread_cache", None)
-            if thread_cache is not None:
-                for conversation_id, thread_id in list(thread_cache.items()):
-                    try:
-                        thread = AzureAIAgentThread(client=cls._agent.client, thread_id=thread_id)
-                        await thread.delete()
-                    except Exception as e:
-                        print(f"Failed to delete thread {thread_id} for conversation {conversation_id}: {e}", flush=True)
-            await cls._agent.client.agents.delete_agent(cls._agent.id)
-            cls._agent = None
+        async with cls._lock:
+            if cls._agent is not None:
+                thread_cache = getattr(ChatService, "thread_cache", None)
+                if thread_cache is not None:
+                    for conversation_id, thread_id in list(thread_cache.items()):
+                        try:
+                            thread = AzureAIAgentThread(client=cls._agent.client, thread_id=thread_id)
+                            await thread.delete()
+                        except Exception as e:
+                            print(f"Failed to delete thread {thread_id} for conversation {conversation_id}: {e}", flush=True)
+                await cls._agent.client.agents.delete_agent(cls._agent.id)
+                cls._agent = None
