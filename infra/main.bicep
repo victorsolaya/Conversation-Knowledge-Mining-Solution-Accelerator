@@ -252,6 +252,7 @@ module backend_docker 'deploy_backend_docker.bicep' = {
       DISPLAY_CHART_DEFAULT: 'False'
       APPLICATIONINSIGHTS_CONNECTION_STRING: aifoundry.outputs.applicationInsightsConnectionString
       DUMMY_TEST: 'True'
+      SOLUTION_NAME: solutionPrefix
     }
   }
   scope: resourceGroup(resourceGroup().name)

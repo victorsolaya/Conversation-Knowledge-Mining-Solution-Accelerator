@@ -56,7 +56,7 @@ async def test_get_agent_creates_new_instance(
     assert result["agent"] == mock_agent
     assert result["client"] == mock_project_client
     mock_project_client.indexes.create_or_update.assert_called_once_with(
-        name="project-index-fake-index",
+        name="project-index-fake-connection-fake-index",
         version="1",
         body={
             "connectionName": "fake-connection",
