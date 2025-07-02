@@ -9,6 +9,7 @@ from services.chat_service import ChatService
 
 from common.config.config import Config
 
+
 class ConversationAgentFactory:
     _lock = asyncio.Lock()
     _agent: Optional[AzureAIAgent] = None
