@@ -20,11 +20,11 @@ param azureExistingAIProjectResourceId string = ''
     type: 'location'
   }
 })
-param contentUnderstandingLocation string
+param contentUnderstandingLocation string = 'swedencentral'
 
 @minLength(1)
 @description('Secondary location for databases creation(example:eastus2):')
-param secondaryLocation string
+param secondaryLocation string = 'eastus2'
 
 @minLength(1)
 @description('GPT model deployment type:')
@@ -47,7 +47,7 @@ param azureOpenAIApiVersion string = '2025-01-01-preview'
 @description('Capacity of the GPT deployment:')
 // You can increase this, but capacity is limited per model/region, so you will get errors if you go over
 // https://learn.microsoft.com/en-us/azure/ai-services/openai/quotas-limits
-param gptDeploymentCapacity int = 30
+param gptDeploymentCapacity int = 150
 
 @minLength(1)
 @description('Name of the Text Embedding model to deploy:')
@@ -60,7 +60,7 @@ param embeddingModel string = 'text-embedding-ada-002'
 @description('Capacity of the Embedding Model deployment')
 param embeddingDeploymentCapacity int = 80
 
-param imageTag string = 'latest'
+param imageTag string = 'latest_fdp'
 
 param AZURE_LOCATION string=''
 var solutionLocation = empty(AZURE_LOCATION) ? resourceGroup().location : AZURE_LOCATION
@@ -72,6 +72,20 @@ param useLocalBuild string = 'false'
 var useLocalBuildLower = toLower(useLocalBuild)
 
 var uniqueId = toLower(uniqueString(subscription().id, environmentName, solutionLocation))
+
+
+@metadata({
+  azd:{
+    type: 'location'
+    usageName: [
+      'OpenAI.GlobalStandard.gpt-4o-mini,150'
+      'OpenAI.Standard.text-embedding-ada-002,80'
+    ]
+  }
+})
+@description('Location for AI Foundry deployment. This is the location where the AI Foundry resources will be deployed.')
+param aiDeploymentsLocation string
+
 var solutionPrefix = 'km${padLeft(take(uniqueId, 12), 12, '0')}'
 
 var containerRegistryName = '${abbrs.containers.containerRegistry}${solutionPrefix}'
@@ -107,7 +121,7 @@ module aifoundry 'deploy_ai_foundry.bicep' = {
   name: 'deploy_ai_foundry'
   params: {
     solutionName: solutionPrefix
-    solutionLocation: solutionLocation
+    solutionLocation: aiDeploymentsLocation
     keyVaultName: kvault.outputs.keyvaultName
     cuLocation: contentUnderstandingLocation
     deploymentType: deploymentType
@@ -212,7 +226,8 @@ module backend_docker 'deploy_backend_docker.bicep' = {
     keyVaultName: kvault.outputs.keyvaultName
     aiServicesName: aifoundry.outputs.aiServicesName
     useLocalBuild: useLocalBuildLower
-    azureExistingAIProjectResourceId: azureExistingAIProjectResourceId 
+    azureExistingAIProjectResourceId: azureExistingAIProjectResourceId
+    aiSearchName: aifoundry.outputs.aiSearchName 
     appSettings: {
       AZURE_OPENAI_DEPLOYMENT_MODEL: gptModelName
       AZURE_OPENAI_ENDPOINT: aifoundry.outputs.aiServicesTarget
@@ -231,12 +246,13 @@ module backend_docker 'deploy_backend_docker.bicep' = {
       SQLDB_USER_MID: managedIdentityModule.outputs.managedIdentityBackendAppOutput.clientId
 
       AZURE_AI_SEARCH_ENDPOINT: aifoundry.outputs.aiSearchTarget
-      AZURE_AI_SEARCH_API_KEY: '@Microsoft.KeyVault(SecretUri=${kvault.outputs.keyvaultUri}secrets/AZURE-SEARCH-KEY/)'
       AZURE_AI_SEARCH_INDEX: 'call_transcripts_index'
-      USE_AI_PROJECT_CLIENT: 'False'
+      AZURE_AI_SEARCH_CONNECTION_NAME: aifoundry.outputs.aiSearchConnectionName
+      USE_AI_PROJECT_CLIENT: 'True'
       DISPLAY_CHART_DEFAULT: 'False'
       APPLICATIONINSIGHTS_CONNECTION_STRING: aifoundry.outputs.applicationInsightsConnectionString
       DUMMY_TEST: 'True'
+      SOLUTION_NAME: solutionPrefix
     }
   }
   scope: resourceGroup(resourceGroup().name)
@@ -271,6 +287,7 @@ output AZURE_AI_PROJECT_NAME string = aifoundry.outputs.aiProjectName
 output AZURE_AI_SEARCH_API_KEY string = ''
 output AZURE_AI_SEARCH_ENDPOINT string = aifoundry.outputs.aiSearchTarget
 output AZURE_AI_SEARCH_INDEX string = 'call_transcripts_index'
+output AZURE_AI_SEARCH_CONNECTION_NAME string = aifoundry.outputs.aiSearchConnectionName
 output AZURE_COSMOSDB_ACCOUNT string = cosmosDBModule.outputs.cosmosAccountName
 output AZURE_COSMOSDB_CONVERSATIONS_CONTAINER string = 'conversations'
 output AZURE_COSMOSDB_DATABASE string = 'db_conversation_history'
