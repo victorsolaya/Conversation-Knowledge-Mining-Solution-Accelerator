@@ -125,7 +125,7 @@ class TestChatWithDataPlugin:
     @patch("helpers.azure_openai_helper.get_bearer_token_provider")
     @patch("plugins.chat_with_data_plugin.execute_sql_query")
     @patch("helpers.azure_openai_helper.openai.AzureOpenAI")
-    async def test_get_SQL_Response(self, mock_azure_openai, mock_execute_sql, mock_token_provider, mock_config, chat_plugin):
+    async def test_get_sql_response(self, mock_azure_openai, mock_execute_sql, mock_token_provider, mock_config, chat_plugin):
 
         # Setup mocks
         mock_config_instance = MagicMock()
@@ -143,7 +143,7 @@ class TestChatWithDataPlugin:
         mock_execute_sql.return_value = "Query results data"
         
         # Call the method
-        result = await chat_plugin.get_SQL_Response("Show me all call data")
+        result = await chat_plugin.get_sql_response("Show me all call data")
         
         # Assertions
         assert result == "Query results data"
@@ -160,7 +160,7 @@ class TestChatWithDataPlugin:
     @patch("plugins.chat_with_data_plugin.execute_sql_query")
     @patch("plugins.chat_with_data_plugin.AIProjectClient")
     @patch("plugins.chat_with_data_plugin.DefaultAzureCredential")
-    async def test_get_SQL_Response_with_ai_project_client(self, mock_azure_credential, mock_ai_project_client, mock_execute_sql, mock_config, chat_plugin):
+    async def test_get_sql_response_with_ai_project_client(self, mock_azure_credential, mock_ai_project_client, mock_execute_sql, mock_config, chat_plugin):
         # Setup AIProjectClient
         chat_plugin.use_ai_project_client = True
         
@@ -182,7 +182,7 @@ class TestChatWithDataPlugin:
         mock_execute_sql.return_value = "Query results data with AI Project Client"
         
         # Call the method
-        result = await chat_plugin.get_SQL_Response("Show me call data")
+        result = await chat_plugin.get_sql_response("Show me call data")
         
         # Assertions
         assert result == "Query results data with AI Project Client"
@@ -195,14 +195,14 @@ class TestChatWithDataPlugin:
     @pytest.mark.asyncio
     @patch("plugins.chat_with_data_plugin.execute_sql_query")
     @patch("helpers.azure_openai_helper.openai.AzureOpenAI")
-    async def test_get_SQL_Response_exception(self, mock_azure_openai, mock_execute_sql, chat_plugin):
+    async def test_get_sql_response_exception(self, mock_azure_openai, mock_execute_sql, chat_plugin):
         # Setup mock to raise exception
         mock_client = MagicMock()
         mock_azure_openai.return_value = mock_client
         mock_client.chat.completions.create.side_effect = Exception("Test error")
         
         # Call the method
-        result = await chat_plugin.get_SQL_Response("Show me data")
+        result = await chat_plugin.get_sql_response("Show me data")
         
         # Assertions
         assert result == "Details could not be retrieved. Please try again later."
