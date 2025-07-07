@@ -10,8 +10,8 @@ Content Understanding is an innovative solution designed to analyze and interpre
 
 | File | Description |
 | --- | --- |
-| [video_chapter_generation.ipynb](video_chapter_generation.ipynb) | Extract semantic descriptions using content understanding API, and then leverage OpenAI to group into video chapters. |
-| [video_tag_generation.ipynb](video_tag_generation.ipynb) | Generate video tags based on Azure Content Understanding and Azure OpenAI. |
+| [video_chapter_generation.ipynb](../Challenge-5/notebooks/video_chapter_generation.ipynb) | Extract semantic descriptions using content understanding API, and then leverage OpenAI to group into video chapters. |
+| [video_tag_generation.ipynb](../Challenge-5/notebooks/video_tag_generation.ipynb) | Generate video tags based on Azure Content Understanding and Azure OpenAI. |
 
 ## Getting started
 

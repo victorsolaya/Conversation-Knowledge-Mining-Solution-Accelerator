@@ -3,7 +3,7 @@ We will set up the initial environment for you to build on top of during your Mi
 
 ### **Prerequisites**
 
-- To deploy this solution accelerator, ensure you have access to an [Azure subscription](https://azure.microsoft.com/free/) with the necessary permissions to create **resource groups and resources**. Follow the steps in  [Azure Account Set Up](../../../../docs/AzureAccountSetUp.md)
+- To deploy this solution accelerator, ensure you have access to an [Azure subscription](https://azure.microsoft.com/free/) with the necessary permissions to create **resource groups and resources**. Follow the steps in  [Azure Account Set Up](../../../../../documents/AzureAccountSetUp.md)
 - [VS Code](https://code.visualstudio.com/download) installed locally
 
 
@@ -15,20 +15,20 @@ Check the [Azure Products by Region](https://azure.microsoft.com/en-us/explore/g
 - Azure AI Content Understanding
 - Embedding Deployment Capacity  
 - GPT Model Capacity
-- [Azure Semantic Search](../../../../docs/AzureSemanticSearchRegion.md)  
+- [Azure Semantic Search](../../../../../documents/AzureSemanticSearchRegion.md)  
 
 Here are some example regions where the services are available: East US2
 
 ### ⚠️ Important: Check Azure OpenAI Quota Availability  
 
-➡️ To ensure sufficient quota is available in your subscription, please follow **[Quota check instructions guide](../../../../docs/QuotaCheck.md)** before you deploy the solution.
+➡️ To ensure sufficient quota is available in your subscription, please follow **[Quota check instructions guide](../../../../../documents/QuotaCheck.md)** before you deploy the solution.
 
 
 ### Quota Recommendations  
 By default, the **GPT model capacity** in deployment is set to **30k tokens**.  
 > **We recommend increasing the capacity to 120k tokens for optimal performance.** 
 
-To adjust quota settings, follow these [steps](../../../../docs/AzureGPTQuotaSettings.md)  
+To adjust quota settings, follow these [steps](../../../../../documents/AzureGPTQuotaSettings.md)  
 
 
 
@@ -84,6 +84,6 @@ Additional Steps
 
 1. **Optional**: Add App Authentication
    
-    Follow steps in [App Authentication](../../../../docs/AppAuthentication.md) to configure authenitcation in app service.
+    Follow steps in [App Authentication](../../../../../documents/AppAuthentication.md) to configure authenitcation in app service.
 
     Note: Authentication changes can take up to 10 minutes 
