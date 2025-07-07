@@ -5,7 +5,7 @@ One of the easiest and most fun changes you can make to the app is updating the 
 ---
 
 ### Step 1: Prepare Your New Logo
-1. Create or use a new logo (e.g [Contoso Img logo](../../../../src/App/src/Assets/ContosoImg.png)) in `src/app/src/Assets/`.
+1. Create or use a new logo (e.g [Contoso Img logo](../../../../../src/App/src/Assets/ContosoImg.png)) in `src/app/src/Assets/`.
 2. Save the logo as an image file (e.g., `logo.png`).
 3. Ensure the image has a reasonable size (e.g., 100x100 pixels) for better display.
 4. Place the logo file in the following folder:

@@ -10,5 +10,5 @@ An analyst managing large volumes of conversational data needs a solution to vis
  
 ### Technical key features
 
-![image](../workshop/support-docs/Images/ReadMe/techkeyfeatures.png)
+![image](../workshop/img/ReadMe/techkeyfeatures.png)
 
