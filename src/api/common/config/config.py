@@ -34,6 +34,7 @@ class Config:
         # AI Project Client configuration
         self.use_ai_project_client = os.getenv("USE_AI_PROJECT_CLIENT", "False").lower() == "true"
         self.ai_project_endpoint = os.getenv("AZURE_AI_AGENT_ENDPOINT")
+        self.ai_project_api_version = os.getenv("AZURE_AI_AGENT_API_VERSION", "2025-05-01")
 
         # Chat history configuration
         self.use_chat_history_enabled = os.getenv("USE_CHAT_HISTORY_ENABLED", "false").strip().lower() == "true"

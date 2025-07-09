@@ -1,77 +1,76 @@
-import asyncio
-from typing import Optional
-
-from azure.ai.agents.models import AzureAISearchQueryType, AzureAISearchTool
-from azure.ai.projects import AIProjectClient
 from azure.identity import DefaultAzureCredential
+from azure.ai.agents.models import AzureAISearchTool, AzureAISearchQueryType
+from azure.ai.projects import AIProjectClient
 
-from common.config.config import Config
+from agents.agent_factory_base import BaseAgentFactory
 
 
-class SearchAgentFactory:
-    _lock = asyncio.Lock()
-    _agent: Optional[dict] = None
-
-    @classmethod
-    async def get_agent(cls) -> dict:
-        async with cls._lock:
-            if cls._agent is None:
-                config = Config()
-                endpoint = config.ai_project_endpoint
-                azure_ai_search_connection_name = config.azure_ai_search_connection_name
-                azure_ai_search_index_name = config.azure_ai_search_index
-                deployment_model = config.azure_openai_deployment_model
-                solution_name = config.solution_name
-
-                field_mapping = {
-                    "contentFields": ["content"],
-                    "urlField": "sourceurl",
-                    "titleField": "chunk_id",
-                }
-
-                project_client = AIProjectClient(
-                    endpoint=endpoint,
-                    credential=DefaultAzureCredential(exclude_interactive_browser_credential=False),
-                    api_version="2025-05-01",
-                )
-
-                project_index = project_client.indexes.create_or_update(
-                    name=f"project-index-{azure_ai_search_connection_name}-{azure_ai_search_index_name}",
-                    version="1",
-                    body={
-                        "connectionName": azure_ai_search_connection_name,
-                        "indexName": azure_ai_search_index_name,
-                        "type": "AzureSearch",
-                        "fieldMapping": field_mapping
-                    }
-                )
-
-                ai_search = AzureAISearchTool(
-                    index_asset_id=f"{project_index.name}/versions/{project_index.version}",
-                    index_connection_id=None,
-                    index_name=None,
-                    query_type=AzureAISearchQueryType.VECTOR_SEMANTIC_HYBRID,
-                    top_k=5,
-                    filter=""
-                )
-
-                agent = project_client.agents.create_agent(
-                    model=deployment_model,
-                    name=f"KM-ChatWithCallTranscriptsAgent-{solution_name}",
-                    instructions="You are a helpful agent. Use the tools provided and always cite your sources.",
-                    tools=ai_search.definitions,
-                    tool_resources=ai_search.resources,
-                )
-
-                cls._agent = {
-                    "agent": agent,
-                    "client": project_client
-                }
-        return cls._agent
+class SearchAgentFactory(BaseAgentFactory):
+    """Factory class for creating search agents with Azure AI Search integration."""
 
     @classmethod
-    async def delete_agent(cls):
-        async with cls._lock:
-            if cls._agent is not None:
-                cls._agent["client"].agents.delete_agent(cls._agent["agent"].id)
-                cls._agent = None
+    async def create_agent(cls, config):
+        """
+        Asynchronously creates a search agent using Azure AI Search and registers it
+        with the provided project configuration.
+
+        Args:
+            config: Configuration object containing Azure project and search index settings.
+
+        Returns:
+            dict: A dictionary containing the created agent and the project client.
+        """
+        project_client = AIProjectClient(
+            endpoint=config.ai_project_endpoint,
+            credential=DefaultAzureCredential(exclude_interactive_browser_credential=False),
+            api_version=config.ai_project_api_version,
+        )
+
+        field_mapping = {
+            "contentFields": ["content"],
+            "urlField": "sourceurl",
+            "titleField": "chunk_id",
+        }
+
+        project_index = project_client.indexes.create_or_update(
+            name=f"project-index-{config.azure_ai_search_connection_name}-{config.azure_ai_search_index}",
+            version="1",
+            body={
+                "connectionName": config.azure_ai_search_connection_name,
+                "indexName": config.azure_ai_search_index,
+                "type": "AzureSearch",
+                "fieldMapping": field_mapping
+            }
+        )
+
+        ai_search = AzureAISearchTool(
+            index_asset_id=f"{project_index.name}/versions/{project_index.version}",
+            index_connection_id=None,
+            index_name=None,
+            query_type=AzureAISearchQueryType.VECTOR_SEMANTIC_HYBRID,
+            top_k=5,
+            filter=""
+        )
+
+        agent = project_client.agents.create_agent(
+            model=config.azure_openai_deployment_model,
+            name=f"KM-ChatWithCallTranscriptsAgent-{config.solution_name}",
+            instructions="You are a helpful agent. Use the tools provided and always cite your sources.",
+            tools=ai_search.definitions,
+            tool_resources=ai_search.resources,
+        )
+
+        return {
+            "agent": agent,
+            "client": project_client
+        }
+
+    @classmethod
+    async def _delete_agent_instance(cls, agent_wrapper: dict):
+        """
+        Asynchronously deletes the specified agent instance from the Azure AI project.
+
+        Args:
+            agent_wrapper (dict): A dictionary containing the 'agent' and the corresponding 'client'.
+        """
+        agent_wrapper["client"].agents.delete_agent(agent_wrapper["agent"].id)

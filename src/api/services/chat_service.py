@@ -145,7 +145,7 @@ class ChatService:
             if thread_id:
                 thread = AzureAIAgentThread(client=self.agent.client, thread_id=thread_id)
 
-            truncation_strategy = TruncationObject(type="last_messages", last_messages=2)
+            truncation_strategy = TruncationObject(type="last_messages", last_messages=4)
 
             async for response in self.agent.invoke_stream(messages=query, thread=thread, truncation_strategy=truncation_strategy):
                 if ChatService.thread_cache is not None:

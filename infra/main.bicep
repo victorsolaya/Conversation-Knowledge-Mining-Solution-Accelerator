@@ -42,6 +42,7 @@ param gptModelVersion string = '2024-07-18'
 
 param azureOpenAIApiVersion string = '2025-01-01-preview'
 
+param azureAiAgentApiVersion string = '2025-05-01'
 
 @minValue(10)
 @description('Capacity of the GPT deployment:')
@@ -234,6 +235,7 @@ module backend_docker 'deploy_backend_docker.bicep' = {
       AZURE_OPENAI_API_VERSION: azureOpenAIApiVersion
       AZURE_OPENAI_RESOURCE: aifoundry.outputs.aiServicesName
       AZURE_AI_AGENT_ENDPOINT: aifoundry.outputs.projectEndpoint
+      AZURE_AI_AGENT_API_VERSION: azureAiAgentApiVersion
       AZURE_AI_AGENT_MODEL_DEPLOYMENT_NAME: gptModelName
       USE_CHAT_HISTORY_ENABLED: 'True'
       AZURE_COSMOSDB_ACCOUNT: cosmosDBModule.outputs.cosmosAccountName
@@ -283,6 +285,7 @@ output AZURE_CONTENT_UNDERSTANDING_LOCATION string = contentUnderstandingLocatio
 output AZURE_SECONDARY_LOCATION string = secondaryLocation
 output APPINSIGHTS_INSTRUMENTATIONKEY string = backend_docker.outputs.appInsightInstrumentationKey
 output AZURE_AI_PROJECT_CONN_STRING string = aifoundry.outputs.projectEndpoint
+output AZURE_AI_AGENT_API_VERSION string = azureAiAgentApiVersion
 output AZURE_AI_PROJECT_NAME string = aifoundry.outputs.aiProjectName
 output AZURE_AI_SEARCH_API_KEY string = ''
 output AZURE_AI_SEARCH_ENDPOINT string = aifoundry.outputs.aiSearchTarget
