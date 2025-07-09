@@ -2,12 +2,6 @@
 
 set -e
 
-# AZURE_SUBSCRIPTION_ID="$1"
-# ENV_NAME="$2"
-# AZURE_RESOURCE_GROUP="$4"
-# USE_LOCAL_BUILD="$5"
-# AZURE_ENV_IMAGETAG="$6"
-
 get_azd_env_value_or_default() {
     local key="$1"
     local default="$2"
@@ -26,6 +20,7 @@ get_azd_env_value_or_default() {
 
     echo "$value"
 }
+
 # Required env variables
 AZURE_SUBSCRIPTION_ID=$(get_azd_env_value_or_default "AZURE_SUBSCRIPTION_ID" "" true)
 ENV_NAME=$(get_azd_env_value_or_default "AZURE_ENV_NAME" "" true)
@@ -44,24 +39,10 @@ echo "AZURE_ENV_IMAGETAG = $AZURE_ENV_IMAGETAG"
 echo "WEB_APP_NAME = $WEB_APP_NAME"
 echo "API_APP_NAME = $API_APP_NAME"
 
-# Validate required parameters
-# if [[ -z "$AZURE_SUBSCRIPTION_ID" || -z "$ENV_NAME" || -z "$AZURE_LOCATION" || -z "$AZURE_RESOURCE_GROUP" ]]; then
-#     echo "Missing required arguments. Usage: docker-build.sh <AZURE_SUBSCRIPTION_ID> <ENV_NAME> <AZURE_LOCATION> <AZURE_RESOURCE_GROUP> <USE_LOCAL_BUILD> <AZURE_ENV_IMAGETAG>"
-#     exit 1
-# fi
-
 # Ensure jq is installed
-which jq || { echo "jq is not installed"; exit 1; }
+which jq || { echo -e "\njq is not installed"; exit 1; }
 
-# Exit early if local build is not requested
-# if [[ "${USE_LOCAL_BUILD,,}" != "true" ]]; then
-#     echo "Local Build not enabled. Using prebuilt image."
-#     exit 0
-# fi
-
-# AZURE_ENV_IMAGETAG=${AZURE_ENV_IMAGETAG:-latest}
-
-echo "Starting build process."
+echo -e "\nStarting build process..."
 
 # STEP 1: Ensure user is logged into Azure
 if ! az account show > /dev/null 2>&1; then
@@ -87,7 +68,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # STEP 4: Deploy container registry
 TEMPLATE_FILE="$SCRIPT_DIR/../deploy_container_registry.bicep"
-echo "Deploying container registry"
+echo -e "\nDeploying container registry"
 OUTPUTS=$(az deployment group create \
     --resource-group "$AZURE_RESOURCE_GROUP" \
     --template-file "$TEMPLATE_FILE" \
@@ -97,7 +78,7 @@ OUTPUTS=$(az deployment group create \
 
 ACR_NAME=$(echo "$OUTPUTS" | jq -r '.createdAcrName.value')
 
-echo "Extracted ACR Name: $ACR_NAME"
+echo "ACR Name: $ACR_NAME"
 
 # STEP 5: Login to Azure Container Registry
 echo "Logging into Azure Container Registry: $ACR_NAME"
@@ -143,7 +124,7 @@ build_and_push_image() {
 build_and_push_image "km-api" "$APIAPP_DOCKERFILE_PATH" "$APIAPP_CONTEXT_PATH" "$AZURE_ENV_IMAGETAG"
 build_and_push_image "km-app" "$WEBAPP_DOCKERFILE_PATH" "$WEBAPP_CONTEXT_PATH" "$AZURE_ENV_IMAGETAG"
 
-echo -e "\nAll Docker images built and pushed successfully with tag: $AZURE_ENV_IMAGETAG"
+echo -e "\nAll Docker images built and pushed successfully with tag: $AZURE_ENV_IMAGETAG\n"
 
 # STEP 9: Function to Update Web App settings to use Managed Identity for ACR pull
 update_web_app_settings() {
@@ -156,7 +137,7 @@ update_web_app_settings() {
         echo "Error: Web App configuration not found for $webAppName"
         exit 1
     fi
-    az resource update --ids "$webAppConfig" --set properties.acrUseManagedIdentityCreds=True --output none
+    az resource update --ids "$webAppConfig" --set properties.acrUseManagedIdentityCreds=True --output none --only-show-errors
     if [[ $? -ne 0 ]]; then
         echo "Failed to update Web App settings for $webAppName"
         exit 1
@@ -174,18 +155,25 @@ update_web_app_image() {
     local resourceGroup="$2"
     local image="$3"
 
-    echo "Updating Web App $webAppName to use new image tag: $image"
-    az webapp config container set --name "$webAppName" --resource-group "$resourceGroup" --container-image-name "$image"
+    echo -e "\nUpdating Web App $webAppName to use new image tag: $image"
+    az webapp config container set --name "$webAppName" --resource-group "$resourceGroup" --container-image-name "$image" --only-show-errors
     if [[ $? -ne 0 ]]; then
         echo "Failed to update Web App $webAppName to use new image: $image"
         exit 1
     fi
     echo "Web App $webAppName updated successfully to use new image: $image"
 
+    echo -e "\nRestarting Web App $webAppName to apply changes"
+    az webapp restart --name "$webAppName" --resource-group "$resourceGroup" --output none --only-show-errors
+    if [[ $? -ne 0 ]]; then
+        echo "Failed to restart Web App $webAppName"
+        exit 1
+    fi
+    echo "Web App $webAppName restarted successfully"
 }
 
 # STEP 12: Update Web Apps to use new images
 update_web_app_image "$WEB_APP_NAME" "$AZURE_RESOURCE_GROUP" "$ACR_NAME.azurecr.io/km-app:$AZURE_ENV_IMAGETAG"
 update_web_app_image "$API_APP_NAME" "$AZURE_RESOURCE_GROUP" "$ACR_NAME.azurecr.io/km-api:$AZURE_ENV_IMAGETAG"
 
-echo "Web Apps updated successfully to use new images"
+echo -e "\nWeb Apps updated successfully to use new images"
