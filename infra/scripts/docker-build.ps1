@@ -188,3 +188,5 @@ Update-WebApp-Image -WebAppName $WEB_APP_NAME -ResourceGroup $AZURE_RESOURCE_GRO
 Update-WebApp-Image -WebAppName $API_APP_NAME -ResourceGroup $AZURE_RESOURCE_GROUP -Image "$ACR_NAME.azurecr.io/km-api:$AZURE_ENV_IMAGETAG"
 
 Write-Host "`nWeb Apps updated successfully to use new images"
+
+Write-Host "`nIt might take a few minutes for the changes to take effect.`n"

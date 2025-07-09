@@ -177,3 +177,5 @@ update_web_app_image "$WEB_APP_NAME" "$AZURE_RESOURCE_GROUP" "$ACR_NAME.azurecr.
 update_web_app_image "$API_APP_NAME" "$AZURE_RESOURCE_GROUP" "$ACR_NAME.azurecr.io/km-api:$AZURE_ENV_IMAGETAG"
 
 echo -e "\nWeb Apps updated successfully to use new images"
+
+echo -e "\nIt might take a few minutes for the changes to take effect.\n"
