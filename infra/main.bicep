@@ -134,7 +134,7 @@ module aifoundry 'deploy_ai_foundry.bicep' = {
     embeddingDeploymentCapacity: embeddingDeploymentCapacity
     managedIdentityObjectId: managedIdentityModule.outputs.managedIdentityOutput.objectId
     existingLogAnalyticsWorkspaceId: existingLogAnalyticsWorkspaceId
-    azureExistingAIProjectResourceId: azureExistingAIProjectResourceId 
+    azureExistingAIProjectResourceId: azureExistingAIProjectResourceId
 
   }
   scope: resourceGroup(resourceGroup().name)
@@ -219,6 +219,7 @@ module backend_docker 'deploy_backend_docker.bicep' = {
   params: {
     name: 'api-${solutionPrefix}'
     solutionLocation: solutionLocation
+    aideploymentsLocation: aiDeploymentsLocation
     imageTag: imageTag
     acrName: acrName
     appServicePlanId: hostingplan.outputs.name
