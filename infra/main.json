@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.36.1.42791",
-      "templateHash": "9020784167987493688"
+      "version": "0.36.177.2456",
+      "templateHash": "9063338594300862129"
     }
   },
   "parameters": {
@@ -412,8 +412,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.36.1.42791",
-              "templateHash": "18216206668580483589"
+              "version": "0.36.177.2456",
+              "templateHash": "11418532774181135376"
             }
           },
           "parameters": {
@@ -523,8 +523,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.36.1.42791",
-              "templateHash": "12477407174917893830"
+              "version": "0.36.177.2456",
+              "templateHash": "3092820911477311087"
             }
           },
           "parameters": {
@@ -670,8 +670,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.36.1.42791",
-              "templateHash": "8370604725704200425"
+              "version": "0.36.177.2456",
+              "templateHash": "4770505269900967480"
             }
           },
           "parameters": {
@@ -1458,8 +1458,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.36.1.42791",
-                      "templateHash": "13522134910751631918"
+                      "version": "0.36.177.2456",
+                      "templateHash": "7885182694512326220"
                     }
                   },
                   "parameters": {
@@ -1537,8 +1537,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.36.1.42791",
-                      "templateHash": "1769343339359740915"
+                      "version": "0.36.177.2456",
+                      "templateHash": "11130863863424769976"
                     }
                   },
                   "parameters": {
@@ -1616,8 +1616,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.36.1.42791",
-                      "templateHash": "1769343339359740915"
+                      "version": "0.36.177.2456",
+                      "templateHash": "11130863863424769976"
                     }
                   },
                   "parameters": {
@@ -1772,8 +1772,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.36.1.42791",
-              "templateHash": "9136593669378781254"
+              "version": "0.36.177.2456",
+              "templateHash": "1210054684693900795"
             }
           },
           "parameters": {
@@ -1947,8 +1947,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.36.1.42791",
-              "templateHash": "5892297466606960496"
+              "version": "0.36.177.2456",
+              "templateHash": "12801806089322014536"
             }
           },
           "parameters": {
@@ -2156,8 +2156,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.36.1.42791",
-              "templateHash": "6711624612177513232"
+              "version": "0.36.177.2456",
+              "templateHash": "11179946820677763103"
             }
           },
           "parameters": {
@@ -2378,8 +2378,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.36.1.42791",
-              "templateHash": "10426348648679250893"
+              "version": "0.36.177.2456",
+              "templateHash": "16023413820618629745"
             }
           },
           "parameters": {
@@ -2559,8 +2559,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.36.1.42791",
-              "templateHash": "1944207486692306021"
+              "version": "0.36.177.2456",
+              "templateHash": "3006924210856144569"
             },
             "description": "Creates an Azure App Service plan."
           },
@@ -2710,8 +2710,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.36.1.42791",
-              "templateHash": "5554732629586088258"
+              "version": "0.36.177.2456",
+              "templateHash": "4126116147088050069"
             }
           },
           "parameters": {
@@ -2859,8 +2859,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.36.1.42791",
-                      "templateHash": "3106328795970379851"
+                      "version": "0.36.177.2456",
+                      "templateHash": "16849045049188896578"
                     }
                   },
                   "parameters": {
@@ -2985,8 +2985,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.36.1.42791",
-                              "templateHash": "8872422051335608470"
+                              "version": "0.36.177.2456",
+                              "templateHash": "2114937881746412139"
                             },
                             "description": "Updates app settings for an Azure App Service."
                           },
@@ -3061,8 +3061,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.36.1.42791",
-                      "templateHash": "1769343339359740915"
+                      "version": "0.36.177.2456",
+                      "templateHash": "11130863863424769976"
                     }
                   },
                   "parameters": {
@@ -3183,8 +3183,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.36.1.42791",
-              "templateHash": "14303739685044053977"
+              "version": "0.36.177.2456",
+              "templateHash": "12963922539753840423"
             }
           },
           "parameters": {
@@ -3270,8 +3270,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.36.1.42791",
-                      "templateHash": "3106328795970379851"
+                      "version": "0.36.177.2456",
+                      "templateHash": "16849045049188896578"
                     }
                   },
                   "parameters": {
@@ -3396,8 +3396,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.36.1.42791",
-                              "templateHash": "8872422051335608470"
+                              "version": "0.36.177.2456",
+                              "templateHash": "2114937881746412139"
                             },
                             "description": "Updates app settings for an Azure App Service."
                           },
