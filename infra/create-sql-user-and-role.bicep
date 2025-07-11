@@ -45,15 +45,15 @@ resource createSqlUserAndRole 'Microsoft.Resources/deploymentScripts@2020-10-01'
     }
     properties: {
       forceUpdateTag: uniqueScriptId
-      azPowerShellVersion: '12.5.0'
+      azPowerShellVersion: '7.2'
       retentionInterval: 'PT1H'
       cleanupPreference: 'OnSuccess'
       arguments: join(
         [
           '-SqlServerName \'${sqlServerName}\''
           '-SqlDatabaseName \'${sqlDatabaseName}\''
-          '-ObjectId \'${principalId}\''
           '-DisplayName \'${principalName}\''
+          '-ManagedIdentityClientId \'${managedIdentityId}\''
           '-DatabaseRole \'${databaseRole}\''
         ],
         ' '
