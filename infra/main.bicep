@@ -174,28 +174,7 @@ module sqlDBModule 'deploy_sql_db.bicep' = {
     keyVaultName: kvault.outputs.keyvaultName
     managedIdentityName: managedIdentityModule.outputs.managedIdentityOutput.name
     managedIdentityObjectId: managedIdentityModule.outputs.managedIdentityOutput.objectId
-  }
-  scope: resourceGroup(resourceGroup().name)
-}
-
-//========== Deployment script to upload sample data ========== //
-module uploadFiles 'deploy_post_deployment_scripts.bicep' = {
-  name : 'deploy_post_deployment_scripts'
-  params:{
-    solutionLocation: secondaryLocation
-    baseUrl: baseUrl
-    storageAccountName: storageAccount.outputs.storageName
-    containerName: storageAccount.outputs.storageContainer
-    containerAppName: '${abbrs.containers.containerApp}${solutionPrefix}'
-    environmentName: '${abbrs.containers.containerAppsEnvironment}${solutionPrefix}'
-    managedIdentityObjectId:managedIdentityModule.outputs.managedIdentityOutput.id
-    managedIdentityClientId:managedIdentityModule.outputs.managedIdentityOutput.clientId
-    keyVaultName:aifoundry.outputs.keyvaultName
-    logAnalyticsWorkspaceResourceName: aifoundry.outputs.logAnalyticsWorkspaceResourceName
-    logAnalyticsWorkspaceResourceGroup: aifoundry.outputs.logAnalyticsWorkspaceResourceGroup
-    logAnalyticsWorkspaceSubscription: aifoundry.outputs.logAnalyticsWorkspaceSubscription
-    sqlServerName: sqlDBModule.outputs.sqlServerName
-    sqlDbName: sqlDBModule.outputs.sqlDbName
+    managedIdentityId: managedIdentityModule.outputs.managedIdentityOutput.id
     sqlUsers: [
       {
         principalId: managedIdentityModule.outputs.managedIdentityBackendAppOutput.clientId
@@ -204,6 +183,32 @@ module uploadFiles 'deploy_post_deployment_scripts.bicep' = {
       }
     ]
   }
+  scope: resourceGroup(resourceGroup().name)
+}
+
+//========== Deployment script to upload sample data ========== //
+module uploadFiles 'deploy_upload_files_script.bicep' = {
+  name : 'deploy_upload_files_script'
+  params:{
+    solutionLocation: secondaryLocation
+    baseUrl: baseUrl
+    storageAccountName: storageAccount.outputs.storageName
+    containerName: storageAccount.outputs.storageContainer
+    managedIdentityObjectId:managedIdentityModule.outputs.managedIdentityOutput.id
+  }
+}
+
+//========== Deployment script to process and index data ========== //
+module createIndex 'deploy_index_scripts.bicep' = {
+  name : 'deploy_index_scripts'
+  params:{
+    solutionLocation: secondaryLocation
+    managedIdentityObjectId:managedIdentityModule.outputs.managedIdentityOutput.id
+    managedIdentityClientId:managedIdentityModule.outputs.managedIdentityOutput.clientId
+    baseUrl:baseUrl
+    keyVaultName:aifoundry.outputs.keyvaultName
+  }
+  dependsOn:[sqlDBModule,uploadFiles]
 }
 
 module hostingplan 'deploy_app_service_plan.bicep' = {
@@ -245,7 +250,6 @@ module backend_docker 'deploy_backend_docker.bicep' = {
       AZURE_COSMOSDB_ENABLE_FEEDBACK: 'True'
       SQLDB_DATABASE: sqlDBModule.outputs.sqlDbName
       SQLDB_SERVER: sqlDBModule.outputs.sqlServerName
-      SQLDB_USERNAME: sqlDBModule.outputs.sqlDbUser
       SQLDB_USER_MID: managedIdentityModule.outputs.managedIdentityBackendAppOutput.clientId
 
       AZURE_AI_SEARCH_ENDPOINT: aifoundry.outputs.aiSearchTarget
@@ -308,7 +312,6 @@ output REACT_APP_LAYOUT_CONFIG string = backend_docker.outputs.reactAppLayoutCon
 output SQLDB_DATABASE string = sqlDBModule.outputs.sqlDbName
 output SQLDB_SERVER string = sqlDBModule.outputs.sqlServerName
 output SQLDB_USER_MID string = managedIdentityModule.outputs.managedIdentityBackendAppOutput.clientId
-output SQLDB_USERNAME string = sqlDBModule.outputs.sqlDbUser
 output USE_AI_PROJECT_CLIENT string = 'False'
 output USE_CHAT_HISTORY_ENABLED string = 'True'
 output DISPLAY_CHART_DEFAULT string = 'False'
