@@ -31,7 +31,7 @@ resource managedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-
   name: managedIdentityName
 }
 
-resource createSqlUserAndRole 'Microsoft.Resources/deploymentScripts@2020-10-01' = [
+resource createSqlUserAndRole 'Microsoft.Resources/deploymentScripts@2023-08-01' = [
   for databaseRole in databaseRoles: {
     name: 'sqlUserRole-${guid(principalId, databaseRole, sqlServerName, sqlDatabaseName)}'
     location: location

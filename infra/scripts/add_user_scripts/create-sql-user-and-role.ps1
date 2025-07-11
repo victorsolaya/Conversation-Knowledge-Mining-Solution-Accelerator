@@ -47,5 +47,11 @@ Write-Output "`nExecuting SQL:`n$sql`n"
 Connect-AzAccount -Identity -AccountId $ManagedIdentityClientId
 $token = (Get-AzAccessToken -ResourceUrl 'https://database.windows.net/').Token
 
+# Ensure SqlServer module is installed
+if (-not (Get-Module -ListAvailable -Name SqlServer)) {
+    Install-Module -Name SqlServer -Scope CurrentUser -Force -AllowClobber -SkipPublisherCheck
+}
+Import-Module SqlServer -Force
+
 # Execute SQL
 Invoke-Sqlcmd -ServerInstance $SqlServerName -Database $SqlDatabaseName -AccessToken $token -Query $sql -ErrorAction Stop

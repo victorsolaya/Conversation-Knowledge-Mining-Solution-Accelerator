@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.36.177.2456",
-      "templateHash": "16023350770287316379"
+      "templateHash": "77372103008610870"
     }
   },
   "parameters": {
@@ -2444,7 +2444,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.36.177.2456",
-              "templateHash": "11331469890038500147"
+              "templateHash": "11715813580437365987"
             }
           },
           "parameters": {
@@ -2599,7 +2599,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.36.177.2456",
-                      "templateHash": "1099349120877178012"
+                      "templateHash": "15961316584986214185"
                     }
                   },
                   "parameters": {
@@ -2667,7 +2667,7 @@
                     }
                   },
                   "variables": {
-                    "$fxv#0": "#Requires -Version 7.2\r\n\r\n<#\r\n.SYNOPSIS\r\n    Creates a SQL user and assigns the user account to one or more roles.\r\n\r\n.DESCRIPTION\r\n    This script connects to an Azure SQL Database using a managed identity and creates a user from an external identity.\r\n    It assigns the user to the specified database role if not already assigned.\r\n\r\n.PARAMETER SqlServerName\r\n    Azure SQL Server FQDN (e.g., myserver.database.windows.net)\r\n\r\n.PARAMETER SqlDatabaseName\r\n    The name of the SQL database\r\n\r\n.PARAMETER DisplayName\r\n    The display name (user name) for SQL user creation\r\n\r\n.PARAMETER ManagedIdentityClientId\r\n    The client ID of the user-assigned managed identity used to authenticate\r\n\r\n.PARAMETER DatabaseRole\r\n    The role to assign (e.g., db_datareader)\r\n#>\r\n\r\nparam(\r\n    [string] $SqlServerName,\r\n    [string] $SqlDatabaseName,\r\n    [string] $DisplayName,\r\n    [string] $ManagedIdentityClientId,\r\n    [string] $DatabaseRole\r\n)\r\n\r\n# SQL Script to create user and assign role\r\n$sql = @\"\r\nIF NOT EXISTS (SELECT * FROM sys.database_principals WHERE name = N'$DisplayName')\r\nBEGIN\r\n    CREATE USER [$DisplayName] FROM EXTERNAL PROVIDER;\r\nEND\r\nEXEC sp_addrolemember '$DatabaseRole', [$DisplayName];\r\n\"@\r\n\r\nWrite-Output \"`nExecuting SQL:`n$sql`n\"\r\n\r\n# Connect to Azure using Managed Identity\r\nConnect-AzAccount -Identity -AccountId $ManagedIdentityClientId\r\n$token = (Get-AzAccessToken -ResourceUrl 'https://database.windows.net/').Token\r\n\r\n# Execute SQL\r\nInvoke-Sqlcmd -ServerInstance $SqlServerName -Database $SqlDatabaseName -AccessToken $token -Query $sql -ErrorAction Stop"
+                    "$fxv#0": "#Requires -Version 7.2\r\n\r\n<#\r\n.SYNOPSIS\r\n    Creates a SQL user and assigns the user account to one or more roles.\r\n\r\n.DESCRIPTION\r\n    This script connects to an Azure SQL Database using a managed identity and creates a user from an external identity.\r\n    It assigns the user to the specified database role if not already assigned.\r\n\r\n.PARAMETER SqlServerName\r\n    Azure SQL Server FQDN (e.g., myserver.database.windows.net)\r\n\r\n.PARAMETER SqlDatabaseName\r\n    The name of the SQL database\r\n\r\n.PARAMETER DisplayName\r\n    The display name (user name) for SQL user creation\r\n\r\n.PARAMETER ManagedIdentityClientId\r\n    The client ID of the user-assigned managed identity used to authenticate\r\n\r\n.PARAMETER DatabaseRole\r\n    The role to assign (e.g., db_datareader)\r\n#>\r\n\r\nparam(\r\n    [string] $SqlServerName,\r\n    [string] $SqlDatabaseName,\r\n    [string] $DisplayName,\r\n    [string] $ManagedIdentityClientId,\r\n    [string] $DatabaseRole\r\n)\r\n\r\n# SQL Script to create user and assign role\r\n$sql = @\"\r\nIF NOT EXISTS (SELECT * FROM sys.database_principals WHERE name = N'$DisplayName')\r\nBEGIN\r\n    CREATE USER [$DisplayName] FROM EXTERNAL PROVIDER;\r\nEND\r\nEXEC sp_addrolemember '$DatabaseRole', [$DisplayName];\r\n\"@\r\n\r\nWrite-Output \"`nExecuting SQL:`n$sql`n\"\r\n\r\n# Connect to Azure using Managed Identity\r\nConnect-AzAccount -Identity -AccountId $ManagedIdentityClientId\r\n$token = (Get-AzAccessToken -ResourceUrl 'https://database.windows.net/').Token\r\n\r\n# Ensure SqlServer module is installed\r\nif (-not (Get-Module -ListAvailable -Name SqlServer)) {\r\n    Install-Module -Name SqlServer -Scope CurrentUser -Force -AllowClobber -SkipPublisherCheck\r\n}\r\nImport-Module SqlServer -Force\r\n\r\n# Execute SQL\r\nInvoke-Sqlcmd -ServerInstance $SqlServerName -Database $SqlDatabaseName -AccessToken $token -Query $sql -ErrorAction Stop\r\n"
                   },
                   "resources": {
                     "managedIdentity": {
@@ -2682,7 +2682,7 @@
                         "count": "[length(parameters('databaseRoles'))]"
                       },
                       "type": "Microsoft.Resources/deploymentScripts",
-                      "apiVersion": "2020-10-01",
+                      "apiVersion": "2023-08-01",
                       "name": "[format('sqlUserRole-{0}', guid(parameters('principalId'), parameters('databaseRoles')[copyIndex()], parameters('sqlServerName'), parameters('sqlDatabaseName')))]",
                       "location": "[parameters('location')]",
                       "tags": "[parameters('tags')]",
