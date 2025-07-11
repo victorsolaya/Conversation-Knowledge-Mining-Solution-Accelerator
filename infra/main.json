@@ -391,7 +391,7 @@
       "name": "default",
       "properties": {
         "tags": {
-          "templateName": "KM Generic"
+          "TemplateName": "KM Generic"
         }
       }
     },
