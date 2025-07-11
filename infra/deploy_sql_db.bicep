@@ -1,13 +1,18 @@
 param solutionLocation string
 param keyVaultName string
-param managedIdentityObjectId string
-param managedIdentityId string
 param managedIdentityName string
-
 param serverName string
 param sqlDBName string
 param sqlUsers array = []
+
 var location = solutionLocation
+
+resource managedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' existing = {
+  name: managedIdentityName
+}
+
+var managedIdentityClientId = managedIdentity.properties.clientId
+var managedIdentityObjectId = managedIdentity.properties.principalId
 
 resource sqlServer 'Microsoft.Sql/servers@2023-08-01-preview' = {
   name: serverName
@@ -17,7 +22,7 @@ resource sqlServer 'Microsoft.Sql/servers@2023-08-01-preview' = {
     publicNetworkAccess: 'Enabled'
     version: '12.0'
     restrictOutboundNetworkAccess: 'Disabled'
-    minimalTlsVersion: '1.2' // Enforce TLS 1.2 to comply with Azure policy
+    minimalTlsVersion: '1.2'
     administrators: {
       login: managedIdentityName
       sid: managedIdentityObjectId
@@ -70,7 +75,7 @@ module sqluser 'create-sql-user-and-role.bicep' = [
   for user in sqlUsers: {
     name: 'sqluser-${guid(solutionLocation, user.principalId, user.principalName, sqlDB.name, sqlServer.name)}'
     params: {
-      managedIdentityId: managedIdentityId
+      managedIdentityClientId: managedIdentityClientId
       location: solutionLocation
       sqlDatabaseName: sqlDB.name
       sqlServerName: sqlServer.name

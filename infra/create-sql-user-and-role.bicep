@@ -9,8 +9,8 @@ param tags object = {}
 @description('The database roles to assign to the user.')
 param databaseRoles string[] = ['db_datareader']
 
-@description('The ID of the managed identity to be used to run the script.')
-param managedIdentityId string
+@description('The name of the User Assigned Managed Identity to be used.')
+param managedIdentityName string
 
 @description('The principal (or object) ID of the user to create.')
 param principalId string
@@ -27,9 +27,9 @@ param sqlServerName string
 @description('Do not set - unique script ID to force the script to run.')
 param uniqueScriptId string = newGuid()
 
-// ========================================================================
-// AZURE RESOURCES
-// ========================================================================
+resource managedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' existing = {
+  name: managedIdentityName
+}
 
 resource createSqlUserAndRole 'Microsoft.Resources/deploymentScripts@2020-10-01' = [
   for databaseRole in databaseRoles: {
@@ -40,7 +40,7 @@ resource createSqlUserAndRole 'Microsoft.Resources/deploymentScripts@2020-10-01'
     identity: {
       type: 'UserAssigned'
       userAssignedIdentities: {
-        '${managedIdentityId}': {}
+        '${managedIdentity.id}': {}
       }
     }
     properties: {
@@ -53,7 +53,7 @@ resource createSqlUserAndRole 'Microsoft.Resources/deploymentScripts@2020-10-01'
           '-SqlServerName \'${sqlServerName}\''
           '-SqlDatabaseName \'${sqlDatabaseName}\''
           '-DisplayName \'${principalName}\''
-          '-ManagedIdentityClientId \'${managedIdentityId}\''
+          '-ManagedIdentityClientId \'${managedIdentity.properties.clientId}\''
           '-DatabaseRole \'${databaseRole}\''
         ],
         ' '
