@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.36.177.2456",
-      "templateHash": "17571000041445426297"
+      "templateHash": "16023350770287316379"
     }
   },
   "parameters": {
@@ -2424,12 +2424,6 @@
           "managedIdentityName": {
             "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_managed_identity'), '2022-09-01').outputs.managedIdentityOutput.value.name]"
           },
-          "managedIdentityObjectId": {
-            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_managed_identity'), '2022-09-01').outputs.managedIdentityOutput.value.objectId]"
-          },
-          "managedIdentityId": {
-            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_managed_identity'), '2022-09-01').outputs.managedIdentityOutput.value.id]"
-          },
           "sqlUsers": {
             "value": [
               {
@@ -2450,7 +2444,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.36.177.2456",
-              "templateHash": "11135511817984682546"
+              "templateHash": "11331469890038500147"
             }
           },
           "parameters": {
@@ -2458,12 +2452,6 @@
               "type": "string"
             },
             "keyVaultName": {
-              "type": "string"
-            },
-            "managedIdentityObjectId": {
-              "type": "string"
-            },
-            "managedIdentityId": {
               "type": "string"
             },
             "managedIdentityName": {
@@ -2497,7 +2485,7 @@
                 "minimalTlsVersion": "1.2",
                 "administrators": {
                   "login": "[parameters('managedIdentityName')]",
-                  "sid": "[parameters('managedIdentityObjectId')]",
+                  "sid": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('managedIdentityName')), '2023-01-31').principalId]",
                   "tenantId": "[subscription().tenantId]",
                   "administratorType": "ActiveDirectory",
                   "azureADOnlyAuthentication": true
@@ -2581,8 +2569,8 @@
                 },
                 "mode": "Incremental",
                 "parameters": {
-                  "managedIdentityId": {
-                    "value": "[parameters('managedIdentityId')]"
+                  "managedIdentityName": {
+                    "value": "[parameters('managedIdentityName')]"
                   },
                   "location": {
                     "value": "[parameters('solutionLocation')]"
@@ -2611,7 +2599,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.36.177.2456",
-                      "templateHash": "6254748294203479646"
+                      "templateHash": "1099349120877178012"
                     }
                   },
                   "parameters": {
@@ -2640,10 +2628,10 @@
                         "description": "The database roles to assign to the user."
                       }
                     },
-                    "managedIdentityId": {
+                    "managedIdentityName": {
                       "type": "string",
                       "metadata": {
-                        "description": "The ID of the managed identity to be used to run the script."
+                        "description": "The name of the User Assigned Managed Identity to be used."
                       }
                     },
                     "principalId": {
@@ -2679,9 +2667,15 @@
                     }
                   },
                   "variables": {
-                    "$fxv#0": "#Requires -Version 7.0\r\n\r\n<#\r\n.SYNOPSIS\r\n    Creates a SQL user and assigns the user account to one or more roles.\r\n\r\n.DESCRIPTION\r\n    During an application deployment, the managed identity (and potentially the developer identity)\r\n    must be added to the SQL database as a user and assigned to one or more roles. This script\r\n    accomplishes this task using the owner-managed identity for authentication.\r\n\r\n.PARAMETER SqlServerName\r\n    The name of the Azure SQL Server resource.\r\n\r\n.PARAMETER SqlDatabaseName\r\n    The name of the Azure SQL Database where the user will be created.\r\n\r\n.PARAMETER ClientId\r\n    The Client (Principal) ID (GUID) of the identity to be added.\r\n\r\n.PARAMETER DisplayName\r\n    The Object (Principal) display name of the identity to be added.\r\n\r\n.PARAMETER ManagedIdentityClientId\r\n    The Client ID of the managed identity that will authenticate to the SQL database.\r\n\r\n.PARAMETER DatabaseRole\r\n    The database role that should be assigned to the user (e.g., db_datareader, db_datawriter, db_owner).\r\n#>\r\n\r\nParam(\r\n    [string] $SqlServerName,\r\n    [string] $SqlDatabaseName,\r\n    [string] $ClientId,\r\n    [string] $DisplayName,\r\n    [string] $ManagedIdentityClientId,\r\n    [string] $DatabaseRole\r\n)\r\n\r\nfunction Resolve-Module($moduleName) {\r\n    # If module is imported; say that and do nothing\r\n    if (Get-Module | Where-Object { $_.Name -eq $moduleName }) {\r\n        Write-Debug \"Module $moduleName is already imported\"\r\n    } elseif (Get-Module -ListAvailable | Where-Object { $_.Name -eq $moduleName }) {\r\n        Import-Module $moduleName\r\n    } elseif (Find-Module -Name $moduleName | Where-Object { $_.Name -eq $moduleName }) {\r\n        Install-Module $moduleName -Force -Scope CurrentUser\r\n        Import-Module $moduleName\r\n    } else {\r\n        Write-Error \"Module $moduleName not found\"\r\n        [Environment]::exit(1)\r\n    }\r\n}\r\n\r\n###\r\n### MAIN SCRIPT\r\n###\r\nResolve-Module -moduleName Az.Resources\r\nResolve-Module -moduleName SqlServer\r\n\r\n$sql = @\"\r\nDECLARE @username nvarchar(max) = N'$($DisplayName)';\r\nDECLARE @clientId uniqueidentifier = '$($ClientId)';\r\nDECLARE @sid NVARCHAR(max) = CONVERT(VARCHAR(max), CONVERT(VARBINARY(16), @clientId), 1);\r\nDECLARE @cmd NVARCHAR(max) = N'CREATE USER [' + @username + '] WITH SID = ' + @sid + ', TYPE = E;';\r\nIF NOT EXISTS (SELECT * FROM sys.database_principals WHERE name = @username)\r\nBEGIN\r\n    EXEC(@cmd)\r\nEND\r\nEXEC sp_addrolemember '$($DatabaseRole)', @username;\r\n\"@\r\n\r\nWrite-Output \"`nSQL:`n$($sql)`n`n\"\r\n\r\nConnect-AzAccount -Identity -AccountId $ManagedIdentityClientId\r\n$token = (Get-AzAccessToken -AsSecureString -ResourceUrl https://database.windows.net/).Token\r\n$ssPtr = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($token)\r\ntry {\r\n    $plaintext = [System.Runtime.InteropServices.Marshal]::PtrToStringBSTR($ssPtr)\r\n    Invoke-Sqlcmd -ServerInstance $SqlServerName -Database $SqlDatabaseName -AccessToken $plaintext -Query $sql -ErrorAction 'Stop'\r\n} finally {\r\n    # The following line ensures that sensitive data is not left in memory.\r\n    $plainText = [System.Runtime.InteropServices.Marshal]::ZeroFreeBSTR($ssPtr)\r\n}"
+                    "$fxv#0": "#Requires -Version 7.2\r\n\r\n<#\r\n.SYNOPSIS\r\n    Creates a SQL user and assigns the user account to one or more roles.\r\n\r\n.DESCRIPTION\r\n    This script connects to an Azure SQL Database using a managed identity and creates a user from an external identity.\r\n    It assigns the user to the specified database role if not already assigned.\r\n\r\n.PARAMETER SqlServerName\r\n    Azure SQL Server FQDN (e.g., myserver.database.windows.net)\r\n\r\n.PARAMETER SqlDatabaseName\r\n    The name of the SQL database\r\n\r\n.PARAMETER DisplayName\r\n    The display name (user name) for SQL user creation\r\n\r\n.PARAMETER ManagedIdentityClientId\r\n    The client ID of the user-assigned managed identity used to authenticate\r\n\r\n.PARAMETER DatabaseRole\r\n    The role to assign (e.g., db_datareader)\r\n#>\r\n\r\nparam(\r\n    [string] $SqlServerName,\r\n    [string] $SqlDatabaseName,\r\n    [string] $DisplayName,\r\n    [string] $ManagedIdentityClientId,\r\n    [string] $DatabaseRole\r\n)\r\n\r\n# SQL Script to create user and assign role\r\n$sql = @\"\r\nIF NOT EXISTS (SELECT * FROM sys.database_principals WHERE name = N'$DisplayName')\r\nBEGIN\r\n    CREATE USER [$DisplayName] FROM EXTERNAL PROVIDER;\r\nEND\r\nEXEC sp_addrolemember '$DatabaseRole', [$DisplayName];\r\n\"@\r\n\r\nWrite-Output \"`nExecuting SQL:`n$sql`n\"\r\n\r\n# Connect to Azure using Managed Identity\r\nConnect-AzAccount -Identity -AccountId $ManagedIdentityClientId\r\n$token = (Get-AzAccessToken -ResourceUrl 'https://database.windows.net/').Token\r\n\r\n# Execute SQL\r\nInvoke-Sqlcmd -ServerInstance $SqlServerName -Database $SqlDatabaseName -AccessToken $token -Query $sql -ErrorAction Stop"
                   },
                   "resources": {
+                    "managedIdentity": {
+                      "existing": true,
+                      "type": "Microsoft.ManagedIdentity/userAssignedIdentities",
+                      "apiVersion": "2023-01-31",
+                      "name": "[parameters('managedIdentityName')]"
+                    },
                     "createSqlUserAndRole": {
                       "copy": {
                         "name": "createSqlUserAndRole",
@@ -2696,17 +2690,20 @@
                       "identity": {
                         "type": "UserAssigned",
                         "userAssignedIdentities": {
-                          "[format('{0}', parameters('managedIdentityId'))]": {}
+                          "[format('{0}', resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('managedIdentityName')))]": {}
                         }
                       },
                       "properties": {
                         "forceUpdateTag": "[parameters('uniqueScriptId')]",
-                        "azPowerShellVersion": "7.4",
+                        "azPowerShellVersion": "7.2",
                         "retentionInterval": "PT1H",
                         "cleanupPreference": "OnSuccess",
-                        "arguments": "[join(createArray(format('-SqlServerName ''{0}''', parameters('sqlServerName')), format('-SqlDatabaseName ''{0}''', parameters('sqlDatabaseName')), format('-ObjectId ''{0}''', parameters('principalId')), format('-DisplayName ''{0}''', parameters('principalName')), format('-DatabaseRole ''{0}''', parameters('databaseRoles')[copyIndex()])), ' ')]",
+                        "arguments": "[join(createArray(format('-SqlServerName ''{0}''', parameters('sqlServerName')), format('-SqlDatabaseName ''{0}''', parameters('sqlDatabaseName')), format('-DisplayName ''{0}''', parameters('principalName')), format('-ManagedIdentityClientId ''{0}''', reference('managedIdentity').clientId), format('-DatabaseRole ''{0}''', parameters('databaseRoles')[copyIndex()])), ' ')]",
                         "scriptContent": "[variables('$fxv#0')]"
-                      }
+                      },
+                      "dependsOn": [
+                        "managedIdentity"
+                      ]
                     }
                   }
                 }

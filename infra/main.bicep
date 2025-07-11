@@ -173,8 +173,6 @@ module sqlDBModule 'deploy_sql_db.bicep' = {
     solutionLocation: secondaryLocation
     keyVaultName: kvault.outputs.keyvaultName
     managedIdentityName: managedIdentityModule.outputs.managedIdentityOutput.name
-    managedIdentityObjectId: managedIdentityModule.outputs.managedIdentityOutput.objectId
-    managedIdentityId: managedIdentityModule.outputs.managedIdentityOutput.id
     sqlUsers: [
       {
         principalId: managedIdentityModule.outputs.managedIdentityBackendAppOutput.clientId

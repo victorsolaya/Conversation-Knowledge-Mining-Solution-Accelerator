@@ -11,9 +11,6 @@ resource managedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-
   name: managedIdentityName
 }
 
-var managedIdentityClientId = managedIdentity.properties.clientId
-var managedIdentityObjectId = managedIdentity.properties.principalId
-
 resource sqlServer 'Microsoft.Sql/servers@2023-08-01-preview' = {
   name: serverName
   location: location
@@ -25,7 +22,7 @@ resource sqlServer 'Microsoft.Sql/servers@2023-08-01-preview' = {
     minimalTlsVersion: '1.2'
     administrators: {
       login: managedIdentityName
-      sid: managedIdentityObjectId
+      sid: managedIdentity.properties.principalId
       tenantId: subscription().tenantId
       administratorType: 'ActiveDirectory'
       azureADOnlyAuthentication: true
@@ -75,7 +72,7 @@ module sqluser 'create-sql-user-and-role.bicep' = [
   for user in sqlUsers: {
     name: 'sqluser-${guid(solutionLocation, user.principalId, user.principalName, sqlDB.name, sqlServer.name)}'
     params: {
-      managedIdentityClientId: managedIdentityClientId
+      managedIdentityName: managedIdentityName
       location: solutionLocation
       sqlDatabaseName: sqlDB.name
       sqlServerName: sqlServer.name
