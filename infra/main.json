@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.36.177.2456",
-      "templateHash": "9536295457771067553"
+      "templateHash": "2673849697595523201"
     }
   },
   "parameters": {
@@ -2444,7 +2444,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.36.177.2456",
-              "templateHash": "5364629937447321611"
+              "templateHash": "3153540401424230964"
             }
           },
           "parameters": {
@@ -2599,7 +2599,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.36.177.2456",
-                      "templateHash": "13569470465283205788"
+                      "templateHash": "12753716435277936633"
                     }
                   },
                   "parameters": {
@@ -2667,7 +2667,7 @@
                     }
                   },
                   "variables": {
-                    "$fxv#0": "#Requires -Version 7.2\r\n\r\n<#\r\n.SYNOPSIS\r\n    Creates a SQL user and assigns the user account to a role using managed identity authentication.\r\n\r\n.DESCRIPTION\r\n    - Connects to Azure using a user-assigned managed identity.\r\n    - Creates a SQL user from an external identity if not exists.\r\n    - Assigns the user to a database role if not already assigned.\r\n\r\n.PARAMETER SqlServerName\r\n    Azure SQL Server FQDN (e.g., myserver.database.windows.net)\r\n\r\n.PARAMETER SqlDatabaseName\r\n    The name of the SQL database\r\n\r\n.PARAMETER DisplayName\r\n    The display name (user name) for SQL user creation\r\n\r\n.PARAMETER ManagedIdentityClientId\r\n    The client ID of the user-assigned managed identity used to authenticate\r\n\r\n.PARAMETER DatabaseRole\r\n    The role to assign (e.g., db_datareader)\r\n#>\r\n\r\nparam(\r\n    [string] $SqlServerName,\r\n    [string] $SqlDatabaseName,\r\n    [string] $DisplayName,\r\n    [string] $ManagedIdentityClientId,\r\n    [string] $DatabaseRole\r\n)\r\n\r\n###---------------------------------------------------\r\n### Function: Resolve-Module\r\n###---------------------------------------------------\r\nfunction Resolve-Module {\r\n    param (\r\n        [Parameter(Mandatory = $true)]\r\n        [string]$ModuleName\r\n    )\r\n\r\n    try {\r\n        if (Get-Module -Name $ModuleName -ListAvailable | Where-Object { $_.Name -eq $ModuleName }) {\r\n            if (-not (Get-Module -Name $ModuleName)) {\r\n                Import-Module $ModuleName -Force\r\n            }\r\n        } else {\r\n            $found = Find-Module -Name $ModuleName -ErrorAction SilentlyContinue\r\n            if ($found) {\r\n                Install-Module -Name $ModuleName -Force -Scope CurrentUser\r\n                Import-Module $ModuleName -Force\r\n            } else {\r\n                throw \"Module '$ModuleName' not found in repository.\"\r\n            }\r\n        }\r\n    } catch {\r\n        Write-Error \"Resolve-Module failed: $($_.Exception.Message)\"\r\n        exit 1\r\n    }\r\n}\r\n\r\n###---------------------------------------------------\r\n### Resolve Required Modules\r\n###---------------------------------------------------\r\nResolve-Module -moduleName Az.Resources\r\nResolve-Module -moduleName SqlServer\r\n\r\n###---------------------------------------------------\r\n### Authenticate with Managed Identity\r\n###---------------------------------------------------\r\ntry {\r\n    Connect-AzAccount -Identity -AccountId $ManagedIdentityClientId -ErrorAction Stop\r\n    $token = (Get-AzAccessToken -ResourceUrl 'https://database.windows.net/').Token\r\n} catch {\r\n    Write-Error \"Azure login or token retrieval failed: $($_.Exception.Message)\"\r\n    exit 1\r\n}\r\n\r\n###---------------------------------------------------\r\n### Prepare SQL Script\r\n###---------------------------------------------------\r\n$sql = @\"\r\nIF NOT EXISTS (\r\n    SELECT 1 FROM sys.database_principals WHERE name = N'$DisplayName'\r\n)\r\nBEGIN\r\n    CREATE USER [$DisplayName] FROM EXTERNAL PROVIDER;\r\n    PRINT 'User created.';\r\nEND\r\nELSE\r\nBEGIN\r\n    PRINT 'User already exists.';\r\nEND\r\n\r\nIF NOT EXISTS (\r\n    SELECT 1\r\n    FROM sys.database_role_members rm\r\n    JOIN sys.database_principals r ON rm.role_principal_id = r.principal_id\r\n    JOIN sys.database_principals u ON rm.member_principal_id = u.principal_id\r\n    WHERE r.name = N'$DatabaseRole' AND u.name = N'$DisplayName'\r\n)\r\nBEGIN\r\n    EXEC sp_addrolemember N'$DatabaseRole', N'$DisplayName';\r\n    PRINT 'Role assigned.';\r\nEND\r\nELSE\r\nBEGIN\r\n    PRINT 'User already in role.';\r\nEND\r\n\"@\r\n\r\nWrite-Output \"`nSQL to Execute:`n$sql`n\"\r\n\r\n###---------------------------------------------------\r\n### Execute SQL\r\n###---------------------------------------------------\r\ntry {\r\n    Invoke-Sqlcmd -ServerInstance $SqlServerName -Database $SqlDatabaseName -AccessToken $token -Query $sql -ErrorAction Stop\r\n    exit 0\r\n} catch {\r\n    Write-Error \"SQL execution failed: $($_.Exception.Message)\"\r\n    exit 1\r\n}\r\n"
+                    "$fxv#0": "#Requires -Version 7.2\r\n\r\n<#\r\n.SYNOPSIS\r\n    Creates a SQL user and assigns the user account to one or more roles.\r\n\r\n.DESCRIPTION\r\n    During an application deployment, the managed identity (and potentially the developer identity)\r\n    must be added to the SQL database as a user and assigned to one or more roles. This script\r\n    accomplishes this task using the owner-managed identity for authentication.\r\n\r\n.PARAMETER SqlServerName\r\n    The name of the Azure SQL Server resource.\r\n\r\n.PARAMETER SqlDatabaseName\r\n    The name of the Azure SQL Database where the user will be created.\r\n\r\n.PARAMETER ClientId\r\n    The Client (Principal) ID (GUID) of the identity to be added.\r\n\r\n.PARAMETER DisplayName\r\n    The Object (Principal) display name of the identity to be added.\r\n\r\n.PARAMETER DatabaseRole\r\n    The database role that should be assigned to the user (e.g., db_datareader, db_datawriter, db_owner).\r\n#>\r\n\r\nParam(\r\n    [string] $SqlServerName,\r\n    [string] $SqlDatabaseName,\r\n    [string] $ClientId,\r\n    [string] $DisplayName,\r\n    [string] $DatabaseRole\r\n)\r\n\r\nfunction Resolve-Module($moduleName) {\r\n    # If module is imported; say that and do nothing\r\n    if (Get-Module | Where-Object { $_.Name -eq $moduleName }) {\r\n        Write-Debug \"Module $moduleName is already imported\"\r\n    } elseif (Get-Module -ListAvailable | Where-Object { $_.Name -eq $moduleName }) {\r\n        Import-Module $moduleName\r\n    } elseif (Find-Module -Name $moduleName | Where-Object { $_.Name -eq $moduleName }) {\r\n        # Use specific version for SqlServer\r\n        if ($ModuleName -eq \"SqlServer\") {\r\n            Install-Module -Name $ModuleName -RequiredVersion 22.3.0 -Force -Scope CurrentUser\r\n        } else {\r\n            Install-Module -Name $ModuleName -Force\r\n        }\r\n        Import-Module $moduleName\r\n    } else {\r\n        Write-Error \"Module $moduleName not found\"\r\n        [Environment]::exit(1)\r\n    }\r\n}\r\n\r\n###\r\n### MAIN SCRIPT\r\n###\r\nResolve-Module -moduleName Az.Resources\r\nResolve-Module -moduleName SqlServer\r\n\r\n$sql = @\"\r\nDECLARE @username nvarchar(max) = N'$($DisplayName)';\r\nDECLARE @clientId uniqueidentifier = '$($ClientId)';\r\nDECLARE @sid NVARCHAR(max) = CONVERT(VARCHAR(max), CONVERT(VARBINARY(16), @clientId), 1);\r\nDECLARE @cmd NVARCHAR(max) = N'CREATE USER [' + @username + '] WITH SID = ' + @sid + ', TYPE = E;';\r\nIF NOT EXISTS (SELECT * FROM sys.database_principals WHERE name = @username)\r\nBEGIN\r\n    EXEC(@cmd)\r\nEND\r\nEXEC sp_addrolemember '$($DatabaseRole)', @username;\r\n\"@\r\n\r\nWrite-Output \"`nSQL:`n$($sql)`n`n\"\r\n\r\n$token = (Get-AzAccessToken -AsSecureString -ResourceUrl https://database.windows.net/).Token\r\n$ssPtr = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($token)\r\ntry {\r\n    $plaintext = [System.Runtime.InteropServices.Marshal]::PtrToStringBSTR($ssPtr)\r\n    Invoke-Sqlcmd -ServerInstance \"$SqlServerName.database.windows.net\" -Database $SqlDatabaseName -AccessToken $plaintext -Query $sql -ErrorAction 'Stop'\r\n} finally {\r\n    # The following line ensures that sensitive data is not left in memory.\r\n    $plainText = [System.Runtime.InteropServices.Marshal]::ZeroFreeBSTR($ssPtr)\r\n}"
                   },
                   "resources": {
                     "managedIdentity": {
@@ -2698,12 +2698,9 @@
                         "azPowerShellVersion": "7.2",
                         "retentionInterval": "PT1H",
                         "cleanupPreference": "OnSuccess",
-                        "arguments": "[join(createArray(format('-SqlServerName ''{0}''', parameters('sqlServerName')), format('-SqlDatabaseName ''{0}''', parameters('sqlDatabaseName')), format('-DisplayName ''{0}''', parameters('principalName')), format('-ManagedIdentityClientId ''{0}''', reference('managedIdentity').clientId), format('-DatabaseRole ''{0}''', parameters('databaseRoles')[copyIndex()])), ' ')]",
+                        "arguments": "[join(createArray(format('-SqlServerName ''{0}''', parameters('sqlServerName')), format('-SqlDatabaseName ''{0}''', parameters('sqlDatabaseName')), format('-ClientId ''{0}''', parameters('principalId')), format('-DisplayName ''{0}''', parameters('principalName')), format('-DatabaseRole ''{0}''', parameters('databaseRoles')[copyIndex()])), ' ')]",
                         "scriptContent": "[variables('$fxv#0')]"
-                      },
-                      "dependsOn": [
-                        "managedIdentity"
-                      ]
+                      }
                     }
                   }
                 }

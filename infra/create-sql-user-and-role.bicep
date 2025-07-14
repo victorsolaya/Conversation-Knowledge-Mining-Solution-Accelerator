@@ -52,8 +52,8 @@ resource createSqlUserAndRole 'Microsoft.Resources/deploymentScripts@2023-08-01'
         [
           '-SqlServerName \'${sqlServerName}\''
           '-SqlDatabaseName \'${sqlDatabaseName}\''
+          '-ClientId \'${principalId}\''
           '-DisplayName \'${principalName}\''
-          '-ManagedIdentityClientId \'${managedIdentity.properties.clientId}\''
           '-DatabaseRole \'${databaseRole}\''
         ],
         ' '
