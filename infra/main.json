@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.36.177.2456",
-      "templateHash": "6616332615371481762"
+      "templateHash": "17704462661346419099"
     }
   },
   "parameters": {
@@ -386,6 +386,16 @@
   },
   "resources": [
     {
+      "type": "Microsoft.Resources/tags",
+      "apiVersion": "2021-04-01",
+      "name": "default",
+      "properties": {
+        "tags": {
+          "TemplateName": "KM Generic"
+        }
+      }
+    },
+    {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2022-09-01",
       "name": "deploy_managed_identity",
@@ -671,7 +681,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.36.177.2456",
-              "templateHash": "1154018530262938884"
+              "templateHash": "4770505269900967480"
             }
           },
           "parameters": {
@@ -1649,7 +1659,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.36.177.2456",
-                      "templateHash": "10311862207366846138"
+                      "templateHash": "11130863863424769976"
                     }
                   },
                   "parameters": {
@@ -1818,7 +1828,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.36.177.2456",
-                      "templateHash": "10311862207366846138"
+                      "templateHash": "11130863863424769976"
                     }
                   },
                   "parameters": {
@@ -2992,7 +3002,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.36.177.2456",
-              "templateHash": "7356894116193161964"
+              "templateHash": "4126116147088050069"
             }
           },
           "parameters": {
@@ -3457,7 +3467,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.36.177.2456",
-                      "templateHash": "10311862207366846138"
+                      "templateHash": "11130863863424769976"
                     }
                   },
                   "parameters": {
