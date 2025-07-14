@@ -45,7 +45,7 @@ resource createSqlUserAndRole 'Microsoft.Resources/deploymentScripts@2023-08-01'
     }
     properties: {
       forceUpdateTag: uniqueScriptId
-      azPowerShellVersion: '7.2'
+      azPowerShellVersion: '7.4'
       retentionInterval: 'PT1H'
       cleanupPreference: 'OnSuccess'
       arguments: join(

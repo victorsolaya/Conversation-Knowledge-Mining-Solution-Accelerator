@@ -1,4 +1,4 @@
-#Requires -Version 7.2
+#Requires -Version 7.4
 
 <#
 .SYNOPSIS
@@ -65,8 +65,8 @@ function Resolve-Module {
 ###---------------------------------------------------
 ### Resolve Required Modules
 ###---------------------------------------------------
-Resolve-Module -ModuleName Az.Accounts
-Resolve-Module -ModuleName SqlServer
+Resolve-Module -moduleName Az.Resources
+Resolve-Module -moduleName SqlServer
 
 ###---------------------------------------------------
 ### Authenticate with Managed Identity
