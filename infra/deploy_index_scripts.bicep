@@ -9,7 +9,7 @@ param managedIdentityClientId string
 resource create_index 'Microsoft.Resources/deploymentScripts@2023-08-01' = {
   kind:'AzureCLI'
   name: 'create_search_indexes'
-  location: solutionLocation // Replace with your desired location
+  location: solutionLocation
   identity: {
     type: 'UserAssigned'
     userAssignedIdentities: {

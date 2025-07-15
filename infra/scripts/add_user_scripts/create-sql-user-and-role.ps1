@@ -33,6 +33,9 @@ Param(
     [string] $DatabaseRole
 )
 
+# Using specific version of SqlServer module to avoid issues with newer versions
+$SqlServerModuleVersion = "22.3.0"
+
 function Resolve-Module($moduleName) {
     # If module is imported; say that and do nothing
     if (Get-Module | Where-Object { $_.Name -eq $moduleName }) {
@@ -42,7 +45,7 @@ function Resolve-Module($moduleName) {
     } elseif (Find-Module -Name $moduleName | Where-Object { $_.Name -eq $moduleName }) {
         # Use specific version for SqlServer
         if ($ModuleName -eq "SqlServer") {
-            Install-Module -Name $ModuleName -RequiredVersion 22.3.0 -Force -Scope CurrentUser
+            Install-Module -Name $ModuleName -RequiredVersion $SqlServerModuleVersion -Force -Scope CurrentUser
         } else {
             Install-Module -Name $ModuleName -Force
         }
@@ -76,8 +79,13 @@ Write-Output "`nSQL:`n$($sql)`n`n"
 $token = (Get-AzAccessToken -AsSecureString -ResourceUrl https://database.windows.net/).Token
 $ssPtr = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($token)
 try {
+    $serverInstance = if ($SqlServerName -like "*.database.windows.net") {  
+        $SqlServerName  
+    } else {  
+        "$SqlServerName.database.windows.net"  
+    }
     $plaintext = [System.Runtime.InteropServices.Marshal]::PtrToStringBSTR($ssPtr)
-    Invoke-Sqlcmd -ServerInstance "$SqlServerName.database.windows.net" -Database $SqlDatabaseName -AccessToken $plaintext -Query $sql -ErrorAction 'Stop'
+    Invoke-Sqlcmd -ServerInstance $serverInstance -Database $SqlDatabaseName -AccessToken $plaintext -Query $sql -ErrorAction 'Stop'
 } finally {
     # The following line ensures that sensitive data is not left in memory.
     $plainText = [System.Runtime.InteropServices.Marshal]::ZeroFreeBSTR($ssPtr)
