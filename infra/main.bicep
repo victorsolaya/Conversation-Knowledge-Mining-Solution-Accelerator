@@ -202,7 +202,8 @@ module uploadFiles 'deploy_upload_files_script.bicep' = {
     baseUrl: baseUrl
     storageAccountName: storageAccount.outputs.storageName
     containerName: storageAccount.outputs.storageContainer
-    managedIdentityObjectId:managedIdentityModule.outputs.managedIdentityOutput.id
+    managedIdentityResourceId:managedIdentityModule.outputs.managedIdentityOutput.id
+    managedIdentityClientId:managedIdentityModule.outputs.managedIdentityOutput.clientId
   }
 }
 
@@ -211,7 +212,7 @@ module createIndex 'deploy_index_scripts.bicep' = {
   name : 'deploy_index_scripts'
   params:{
     solutionLocation: secondaryLocation
-    managedIdentityObjectId:managedIdentityModule.outputs.managedIdentityOutput.id
+    managedIdentityResourceId:managedIdentityModule.outputs.managedIdentityOutput.id
     managedIdentityClientId:managedIdentityModule.outputs.managedIdentityOutput.clientId
     baseUrl:baseUrl
     keyVaultName:aifoundry.outputs.keyvaultName

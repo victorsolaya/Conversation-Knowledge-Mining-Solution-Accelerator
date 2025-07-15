@@ -3,7 +3,7 @@ param solutionLocation string
 
 param baseUrl string
 param keyVaultName string
-param managedIdentityObjectId string
+param managedIdentityResourceId string
 param managedIdentityClientId string
 
 resource create_index 'Microsoft.Resources/deploymentScripts@2023-08-01' = {
@@ -13,7 +13,7 @@ resource create_index 'Microsoft.Resources/deploymentScripts@2023-08-01' = {
   identity: {
     type: 'UserAssigned'
     userAssignedIdentities: {
-      '${managedIdentityObjectId}' : {}
+      '${managedIdentityResourceId}' : {}
     }
   }
   properties: {
