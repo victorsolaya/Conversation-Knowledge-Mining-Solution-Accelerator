@@ -21,8 +21,8 @@
 .PARAMETER DisplayName
     The Object (Principal) display name of the identity to be added.
 
-.PARAMETER DatabaseRole
-    The database role that should be assigned to the user (e.g., db_datareader, db_datawriter, db_owner).
+.PARAMETER DatabaseRoles
+    A comma-separated string of database roles to assign (e.g., 'db_datareader,db_datawriter')
 #>
 
 Param(
@@ -30,7 +30,7 @@ Param(
     [string] $SqlDatabaseName,
     [string] $ClientId,
     [string] $DisplayName,
-    [string] $DatabaseRole
+    [string] $DatabaseRoles
 )
 
 # Using specific version of SqlServer module to avoid issues with newer versions
@@ -62,6 +62,15 @@ function Resolve-Module($moduleName) {
 Resolve-Module -moduleName Az.Resources
 Resolve-Module -moduleName SqlServer
 
+# Split comma-separated roles into an array
+$roleArray = $DatabaseRoles -split ','
+
+$roleSql = ""
+foreach ($role in $roleArray) {
+    $trimmedRole = $role.Trim()
+    $roleSql += "EXEC sp_addrolemember N'$trimmedRole', N'$DisplayName';`n"
+}
+
 $sql = @"
 DECLARE @username nvarchar(max) = N'$($DisplayName)';
 DECLARE @clientId uniqueidentifier = '$($ClientId)';
@@ -71,7 +80,7 @@ IF NOT EXISTS (SELECT * FROM sys.database_principals WHERE name = @username)
 BEGIN
     EXEC(@cmd)
 END
-EXEC sp_addrolemember '$($DatabaseRole)', @username;
+$($roleSql)
 "@
 
 Write-Output "`nSQL:`n$($sql)`n`n"

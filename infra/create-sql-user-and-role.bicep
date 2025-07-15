@@ -31,34 +31,32 @@ resource managedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-
   name: managedIdentityName
 }
 
-resource createSqlUserAndRole 'Microsoft.Resources/deploymentScripts@2023-08-01' = [
-  for databaseRole in databaseRoles: {
-    name: 'sqlUserRole-${guid(principalId, databaseRole, sqlServerName, sqlDatabaseName)}'
-    location: location
-    tags: tags
-    kind: 'AzurePowerShell'
-    identity: {
-      type: 'UserAssigned'
-      userAssignedIdentities: {
-        '${managedIdentity.id}': {}
-      }
-    }
-    properties: {
-      forceUpdateTag: uniqueScriptId
-      azPowerShellVersion: '7.2'
-      retentionInterval: 'PT1H'
-      cleanupPreference: 'OnSuccess'
-      arguments: join(
-        [
-          '-SqlServerName \'${sqlServerName}\''
-          '-SqlDatabaseName \'${sqlDatabaseName}\''
-          '-ClientId \'${principalId}\''
-          '-DisplayName \'${principalName}\''
-          '-DatabaseRole \'${databaseRole}\''
-        ],
-        ' '
-      )
-      scriptContent: loadTextContent('./scripts/add_user_scripts/create-sql-user-and-role.ps1')
+resource createSqlUserAndRole 'Microsoft.Resources/deploymentScripts@2023-08-01' = {
+  name: 'sqlUserRole-${guid(principalId, sqlServerName, sqlDatabaseName)}'
+  location: location
+  tags: tags
+  kind: 'AzurePowerShell'
+  identity: {
+    type: 'UserAssigned'
+    userAssignedIdentities: {
+      '${managedIdentity.id}': {}
     }
   }
-]
+  properties: {
+    forceUpdateTag: uniqueScriptId
+    azPowerShellVersion: '7.2'
+    retentionInterval: 'PT1H'
+    cleanupPreference: 'OnSuccess'
+    arguments: join(
+      [
+        '-SqlServerName \'${sqlServerName}\''
+        '-SqlDatabaseName \'${sqlDatabaseName}\''
+        '-ClientId \'${principalId}\''
+        '-DisplayName \'${principalName}\''
+        '-DatabaseRoles \'${join(databaseRoles, ',')}\''
+      ],
+      ' '
+    )
+    scriptContent: loadTextContent('./scripts/add_user_scripts/create-sql-user-and-role.ps1')
+  }
+}
