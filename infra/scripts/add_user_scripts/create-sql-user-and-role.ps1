@@ -44,10 +44,10 @@ function Resolve-Module($moduleName) {
         Import-Module $moduleName
     } elseif (Find-Module -Name $moduleName | Where-Object { $_.Name -eq $moduleName }) {
         # Use specific version for SqlServer
-        if ($ModuleName -eq "SqlServer") {
-            Install-Module -Name $ModuleName -RequiredVersion $SqlServerModuleVersion -Force -Scope CurrentUser
+        if ($moduleName -eq "SqlServer") {
+            Install-Module -Name $moduleName -RequiredVersion $SqlServerModuleVersion -Force -Scope CurrentUser
         } else {
-            Install-Module -Name $ModuleName -Force
+            Install-Module -Name $moduleName -Force
         }
         Import-Module $moduleName
     } else {
