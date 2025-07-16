@@ -6,15 +6,14 @@ param aiProjectName string = ''
 param aiLocation string=''
 param aiKind string=''
 param aiSkuName string=''
-param enableSystemAssignedIdentity bool = true
 param customSubDomainName string = ''
 param publicNetworkAccess string = ''
 param defaultNetworkAction string
 param vnetRules array = []
 param ipRules array = []
+param aiModelDeployments array = []
 
-// AI Services with Identity (enabled only if flag is true)
-resource aiServices 'Microsoft.CognitiveServices/accounts@2025-04-01-preview' = if (enableSystemAssignedIdentity) {
+resource aiServices 'Microsoft.CognitiveServices/accounts@2025-04-01-preview' = {
   name: aiServicesName
   location: aiLocation
   kind: aiKind
@@ -37,8 +36,24 @@ resource aiServices 'Microsoft.CognitiveServices/accounts@2025-04-01-preview' = 
   }
 }
 
-// AI Project with Identity (only if name provided and flag is true)
-resource aiProject 'Microsoft.CognitiveServices/accounts/projects@2025-04-01-preview' = if (!empty(aiProjectName) && enableSystemAssignedIdentity) {
+@batchSize(1)
+resource aiServicesDeployments 'Microsoft.CognitiveServices/accounts/deployments@2025-04-01-preview' = [for aiModeldeployment in aiModelDeployments: if (!empty(aiModelDeployments)) {
+  parent: aiServices
+  name: aiModeldeployment.name
+  properties: {
+    model: {
+      format: 'OpenAI'
+      name: aiModeldeployment.model
+    }
+    raiPolicyName: aiModeldeployment.raiPolicyName
+  }
+  sku:{
+    name: aiModeldeployment.sku.name
+    capacity: aiModeldeployment.sku.capacity
+  }
+}]
+
+resource aiProject 'Microsoft.CognitiveServices/accounts/projects@2025-04-01-preview' = if (!empty(aiProjectName)) {
   name: aiProjectName
   parent: aiServices
   location: aiLocation
