@@ -21,13 +21,14 @@ from fastapi.responses import StreamingResponse
 from semantic_kernel.agents import AzureAIAgentThread
 from semantic_kernel.exceptions.agent_exceptions import AgentException
 
-from azure.ai.agents.models import TruncationObject
+from azure.ai.agents.models import TruncationObject, MessageRole, ListSortOrder
 
 from cachetools import TTLCache
 
 from helpers.utils import format_stream_response
 from helpers.azure_openai_helper import get_azure_openai_client
 from common.config.config import Config
+from agents.chart_agent_factory import ChartAgentFactory
 
 # Constants
 HOST_NAME = "CKM"
@@ -86,48 +87,117 @@ class ChatService:
         if ChatService.thread_cache is None:
             ChatService.thread_cache = ExpCache(maxsize=1000, ttl=3600.0, agent=self.agent)
 
-    def process_rag_response(self, rag_response, query):
+    async def process_rag_response(self, rag_response, query):
         """
-        Parses the RAG response dynamically to extract chart data for Chart.js.
+        Uses the ChartAgent directly (agentic call) to extract chart data for Chart.js.
         """
         try:
-            client = get_azure_openai_client()
+            combined_input = f"{query}\n{rag_response}"
 
-            system_prompt = """You are an assistant that helps generate valid chart data to be shown using chart.js with version 4.4.4 compatible.
-            Include chart type and chart options.
-            Pick the best chart type for given data.
-            Do not generate a chart unless the input contains some numbers. Otherwise return a message that Chart cannot be generated.
-            Only return a valid JSON output and nothing else.
-            Verify that the generated JSON can be parsed using json.loads.
-            Do not include tooltip callbacks in JSON.
-            Always make sure that the generated json can be rendered in chart.js.
-            Always remove any extra trailing commas.
-            Verify and refine that JSON should not have any syntax errors like extra closing brackets.
-            Ensure Y-axis labels are fully visible by increasing **ticks.padding**, **ticks.maxWidth**, or enabling word wrapping where necessary.
-            Ensure bars and data points are evenly spaced and not squished or cropped at **100%** resolution by maintaining appropriate **barPercentage** and **categoryPercentage** values."""
-            user_prompt = f"""Generate chart data for -
-            {query}
-            {rag_response}
-            """
-            logger.info(">>> Processing chart data for response: %s", rag_response)
+            agent_info = await ChartAgentFactory.get_agent()
+            agent = agent_info["agent"]
+            client = agent_info["client"]
 
-            completion = client.chat.completions.create(
-                model=self.azure_openai_deployment_name,
-                messages=[
-                    {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": user_prompt},
-                ],
-                temperature=0,
+            thread = client.agents.threads.create()
+
+            client.agents.messages.create(
+                thread_id=thread.id,
+                role=MessageRole.USER,
+                content=combined_input
             )
 
-            chart_data = completion.choices[0].message.content.strip().replace("```json", "").replace("```", "")
-            logger.info(">>> Generated chart data: %s", chart_data)
+            print(f"thread with id:{thread.id}",flush=True)
+            print(f"agent id:{agent.id}",flush=True)
+            print(f"project clinet :{client}",flush=True)
 
-            return json.loads(chart_data)
+            run = client.agents.runs.create_and_process(
+                thread_id=thread.id,
+                agent_id=agent.id
+            )
+
+            if run.status == "failed":
+                print(f"[Chart Agent] Run failed: {run.last_error}")
+                return {"error": "Chart could not be generated due to agent failure."}
+
+            chart_json = ""
+            messages = client.agents.messages.list(thread_id=thread.id, order=ListSortOrder.ASCENDING)
+            for msg in messages:
+                if msg.role == MessageRole.AGENT and msg.text_messages:
+                    chart_json = msg.text_messages[-1].text.value.strip()
+                    break
+
+            client.agents.threads.delete(thread_id=thread.id)
+
+            chart_json = chart_json.replace("```json", "").replace("```", "").strip()
+            chart_data = json.loads(chart_json)
+
+            if not chart_data or "error" in chart_data:
+                return {
+                    "error": chart_data.get("error", "Chart could not be generated from this data."),
+                    "hint": "Try asking a question with some numerical values, like 'sales per region' or 'calls per day'."
+                }
+
+            return chart_data
 
         except Exception as e:
-            logger.error("Error processing RAG response: %s", e)
+            logger.error("Agent error in chart generation: %s", e)
             return {"error": "Chart could not be generated from this data. Please ask a different question."}
+
+
+        #     async def run_agent():
+        #         chart_data = {"error": "Chart could not be generated."}
+        #         try:
+        #             agent_info = await ChartAgentFactory.get_agent()
+        #             agent = agent_info["agent"]
+        #             client = agent_info["client"]
+
+        #             thread = client.agents.threads.create()
+        #             client.agents.messages.create(
+        #                 thread_id=thread.id,
+        #                 role=MessageRole.USER,
+        #                 content=combined_input
+        #             )
+
+        #             print(f"thread with id:{thread.id}",flush=True)
+        #             print(f"agent id:{agent.id}",flush=True)
+        #             print(f"project clinet :{client}",flush=True)
+
+        #             run = client.agents.runs.create_and_process(
+        #                 thread_id=thread.id,
+        #                 agent_id=agent.id
+        #             )
+
+        #             if run.status == "failed":
+        #                 print(f"[Chart Agent] Run failed: {run.last_error}")
+        #                 return {"error": "Chart could not be generated due to agent failure."}
+
+        #             chart_json = ""
+        #             messages = client.agents.messages.list(thread_id=thread.id, order=ListSortOrder.ASCENDING)
+        #             for msg in messages:
+        #                 if msg.role == MessageRole.AGENT and msg.text_messages:
+        #                     chart_json = msg.text_messages[-1].text.value.strip()
+        #                     break
+
+        #             chart_json = chart_json.replace("```json", "").replace("```", "").strip()
+        #             client.agents.threads.delete(thread_id=thread.id)
+
+        #             chart_data = json.loads(chart_json)
+        #         except Exception as e:
+        #             print(f"[Chart Agent Error]: {e}")
+        #         return chart_data
+
+        #     # Run the async agent call synchronously
+        #     loop = asyncio.get_event_loop()
+        #     chart_data = loop.run_until_complete(run_agent())
+
+        #     if not chart_data or "error" in chart_data:
+        #         return {"error": "Chart could not be generated from this data. Please ask a different question."}
+
+        #     return chart_data
+
+        # except Exception as e:
+        #     logger.error("Agent error in chart generation: %s", e)
+        #     return {"error": "Chart could not be generated from this data. Please ask a different question."}
 
     async def stream_openai_text(self, conversation_id: str, query: str) -> StreamingResponse:
         """
@@ -254,7 +324,7 @@ class ChatService:
             return {"error": "A previous RAG response is required to generate a chart."}
 
         # Process RAG response to generate chart data
-        chart_data = self.process_rag_response(last_rag_response, query)
+        chart_data = await self.process_rag_response(last_rag_response, query)
 
         if not chart_data or "error" in chart_data:
             return {
