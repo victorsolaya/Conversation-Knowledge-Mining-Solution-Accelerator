@@ -26,7 +26,6 @@ from azure.ai.agents.models import TruncationObject, MessageRole, ListSortOrder
 from cachetools import TTLCache
 
 from helpers.utils import format_stream_response
-from helpers.azure_openai_helper import get_azure_openai_client
 from common.config.config import Config
 from agents.chart_agent_factory import ChartAgentFactory
 
@@ -106,10 +105,6 @@ class ChatService:
                 content=combined_input
             )
 
-            print(f"thread with id:{thread.id}",flush=True)
-            print(f"agent id:{agent.id}",flush=True)
-            print(f"project clinet :{client}",flush=True)
-
             run = client.agents.runs.create_and_process(
                 thread_id=thread.id,
                 agent_id=agent.id
@@ -142,62 +137,6 @@ class ChatService:
         except Exception as e:
             logger.error("Agent error in chart generation: %s", e)
             return {"error": "Chart could not be generated from this data. Please ask a different question."}
-
-
-        #     async def run_agent():
-        #         chart_data = {"error": "Chart could not be generated."}
-        #         try:
-        #             agent_info = await ChartAgentFactory.get_agent()
-        #             agent = agent_info["agent"]
-        #             client = agent_info["client"]
-
-        #             thread = client.agents.threads.create()
-        #             client.agents.messages.create(
-        #                 thread_id=thread.id,
-        #                 role=MessageRole.USER,
-        #                 content=combined_input
-        #             )
-
-        #             print(f"thread with id:{thread.id}",flush=True)
-        #             print(f"agent id:{agent.id}",flush=True)
-        #             print(f"project clinet :{client}",flush=True)
-
-        #             run = client.agents.runs.create_and_process(
-        #                 thread_id=thread.id,
-        #                 agent_id=agent.id
-        #             )
-
-        #             if run.status == "failed":
-        #                 print(f"[Chart Agent] Run failed: {run.last_error}")
-        #                 return {"error": "Chart could not be generated due to agent failure."}
-
-        #             chart_json = ""
-        #             messages = client.agents.messages.list(thread_id=thread.id, order=ListSortOrder.ASCENDING)
-        #             for msg in messages:
-        #                 if msg.role == MessageRole.AGENT and msg.text_messages:
-        #                     chart_json = msg.text_messages[-1].text.value.strip()
-        #                     break
-
-        #             chart_json = chart_json.replace("```json", "").replace("```", "").strip()
-        #             client.agents.threads.delete(thread_id=thread.id)
-
-        #             chart_data = json.loads(chart_json)
-        #         except Exception as e:
-        #             print(f"[Chart Agent Error]: {e}")
-        #         return chart_data
-
-        #     # Run the async agent call synchronously
-        #     loop = asyncio.get_event_loop()
-        #     chart_data = loop.run_until_complete(run_agent())
-
-        #     if not chart_data or "error" in chart_data:
-        #         return {"error": "Chart could not be generated from this data. Please ask a different question."}
-
-        #     return chart_data
-
-        # except Exception as e:
-        #     logger.error("Agent error in chart generation: %s", e)
-        #     return {"error": "Chart could not be generated from this data. Please ask a different question."}
 
     async def stream_openai_text(self, conversation_id: str, query: str) -> StreamingResponse:
         """
