@@ -92,6 +92,14 @@ resource roleAssignmentToFoundry 'Microsoft.Authorization/roleAssignments@2022-0
   }
 }
 
-// Outputs
-output aiServicesPrincipalId string = enableSystemAssignedIdentity ? aiServicesWithIdentity.identity.principalId : aiServices.identity.principalId
-output aiProjectPrincipalId string = !empty(aiProjectName) && enableSystemAssignedIdentity ? aiProjectWithIdentity.identity.principalId : aiProject.identity.principalId
+// ========== Outputs ==========
+
+output aiServicesPrincipalId string = enableSystemAssignedIdentity
+  ? aiServicesWithIdentity.identity.principalId
+  : aiServices.identity.principalId
+
+output aiProjectPrincipalId string = !empty(aiProjectName)
+  ? (enableSystemAssignedIdentity
+      ? aiProjectWithIdentity.identity.principalId
+      : aiProject.identity.principalId)
+  : ''
