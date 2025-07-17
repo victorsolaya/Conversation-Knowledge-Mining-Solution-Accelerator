@@ -1,51 +1,44 @@
-# Import required modules
-
-
-from azure.keyvault.secrets import SecretClient  
-from azure.identity import DefaultAzureCredential
+# === Imports ===
 import sys
 from pathlib import Path
+
 from azure.identity import DefaultAzureCredential, get_bearer_token_provider
-
-key_vault_name=sys.argv[1]
-managed_identity_client_id = sys.argv[2]
-
-def get_secrets_from_kv(kv_name, secret_name):
-
-    # Set the name of the Azure Key Vault  
-    key_vault_name = kv_name 
-    credential = DefaultAzureCredential(managed_identity_client_id=managed_identity_client_id)
-
-    # Create a secret client object using the credential and Key Vault name  
-    secret_client =  SecretClient(vault_url=f"https://{key_vault_name}.vault.azure.net/", credential=credential)  
-
-    # Retrieve the secret value  
-    return(secret_client.get_secret(secret_name).value)
-
-
-# Add the parent directory to the path to use shared modules
-parent_dir = Path(Path.cwd()).parent
-sys.path.append(str(parent_dir))
+from azure.keyvault.secrets import SecretClient
 from content_understanding_client import AzureContentUnderstandingClient
-AZURE_AI_ENDPOINT = get_secrets_from_kv(key_vault_name,"AZURE-OPENAI-CU-ENDPOINT")
-AZURE_OPENAI_CU_KEY = get_secrets_from_kv(key_vault_name,"AZURE-OPENAI-CU-KEY")
-AZURE_AI_API_VERSION = "2024-12-01-preview" 
 
 
-credential = DefaultAzureCredential(managed_identity_client_id=managed_identity_client_id)
+# === Configuration ===
+KEY_VAULT_NAME = 'kv_to-be-replaced'
+MANAGED_IDENTITY_CLIENT_ID = 'mici_to-be-replaced'
+AZURE_AI_API_VERSION = "2024-12-01-preview"
+ANALYZER_ID = "ckm-json"
+ANALYZER_TEMPLATE_FILE = 'ckm-analyzer_config_text.json'
+
+
+# === Helper Functions ===
+def get_secret(secret_name: str, vault_name: str) -> str:
+    """
+    Retrieve a secret value from Azure Key Vault.
+    """
+    kv_credential = DefaultAzureCredential(managed_identity_client_id=MANAGED_IDENTITY_CLIENT_ID)
+    secret_client = SecretClient(vault_url=f"https://{vault_name}.vault.azure.net/", credential=kv_credential)
+    return secret_client.get_secret(secret_name).value
+
+
+# Add parent directory to import local modules
+sys.path.append(str(Path.cwd().parent))
+# Get endpoint from Key Vault
+endpoint = get_secret("AZURE-OPENAI-CU-ENDPOINT", KEY_VAULT_NAME)
+
+credential = DefaultAzureCredential(managed_identity_client_id=MANAGED_IDENTITY_CLIENT_ID)
+# Initialize Content Understanding Client
 token_provider = get_bearer_token_provider(credential, "https://cognitiveservices.azure.com/.default")
-
 client = AzureContentUnderstandingClient(
-    endpoint=AZURE_AI_ENDPOINT,
+    endpoint=endpoint,
     api_version=AZURE_AI_API_VERSION,
-    subscription_key=AZURE_OPENAI_CU_KEY,
     token_provider=token_provider
 )
 
-
-ANALYZER_ID = "ckm-json"
-ANALYZER_TEMPLATE_FILE = './infra/data/ckm-analyzer_config_text.json'
-
-# Create analyzer
+# Create Analyzer
 response = client.begin_create_analyzer(ANALYZER_ID, analyzer_template_path=ANALYZER_TEMPLATE_FILE)
 result = client.poll_result(response)

@@ -1,6 +1,6 @@
 param imageTag string
+param acrName string
 param applicationInsightsId string
-param solutionName string
 
 @description('Solution Location')
 param solutionLocation string
@@ -8,18 +8,20 @@ param solutionLocation string
 @secure()
 param appSettings object = {}
 param appServicePlanId string
-@secure()
- param azureOpenAIKey string
- @secure()
- param azureAiProjectConnString string
- @secure()
- param azureSearchAdminKey string
 param userassignedIdentityId string
-param aiProjectName string
+param keyVaultName string
+param aiServicesName string
+param useLocalBuild string
+param azureExistingAIProjectResourceId string = ''
+param aiSearchName string
+param aideploymentsLocation string
+var existingAIServiceSubscription = !empty(azureExistingAIProjectResourceId) ? split(azureExistingAIProjectResourceId, '/')[2] : subscription().subscriptionId
+var existingAIServiceResourceGroup = !empty(azureExistingAIProjectResourceId) ? split(azureExistingAIProjectResourceId, '/')[4] : resourceGroup().name
+var existingAIServicesName = !empty(azureExistingAIProjectResourceId) ? split(azureExistingAIProjectResourceId, '/')[8] : ''
+var existingAIProjectName = !empty(azureExistingAIProjectResourceId) ? split(azureExistingAIProjectResourceId, '/')[10] : ''
 
-var imageName = 'DOCKER|kmcontainerreg.azurecr.io/km-api:${imageTag}'
-var name = '${solutionName}-api'
-
+var imageName = 'DOCKER|${acrName}.azurecr.io/km-api:${imageTag}'
+param name string 
 var reactAppLayoutConfig ='''{
   "appConfig": {
     "THREE_COLUMN": {
@@ -92,12 +94,10 @@ module appService 'deploy_app_service.bicep' = {
     appServicePlanId: appServicePlanId
     appImageName: imageName
     userassignedIdentityId:userassignedIdentityId
+    useLocalBuild: useLocalBuild
     appSettings: union(
       appSettings,
       {
-        AZURE_OPENAI_API_KEY: azureOpenAIKey
-        AZURE_AI_SEARCH_API_KEY: azureSearchAdminKey
-        AZURE_AI_PROJECT_CONN_STRING:azureAiProjectConnString
         APPINSIGHTS_INSTRUMENTATIONKEY: reference(applicationInsightsId, '2015-05-01').InstrumentationKey
         REACT_APP_LAYOUT_CONFIG: reactAppLayoutConfig
       }
@@ -124,21 +124,88 @@ resource role 'Microsoft.DocumentDB/databaseAccounts/sqlRoleAssignments@2022-05-
   }
 }
 
-resource aiHubProject 'Microsoft.MachineLearningServices/workspaces@2024-01-01-preview' existing = {
-  name: aiProjectName
+resource aiServices 'Microsoft.CognitiveServices/accounts@2025-04-01-preview' existing = {
+  name: aiServicesName
+  scope: resourceGroup(existingAIServiceSubscription, existingAIServiceResourceGroup)
 }
 
-resource aiDeveloper 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = {
-  name: '64702f94-c441-49e6-a78b-ef80e0188fee'
+resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' existing = {
+  name: keyVaultName
 }
 
-resource aiDeveloperAccessProj 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-  name: guid(appService.name, aiHubProject.id, aiDeveloper.id)
-  scope: aiHubProject
+resource keyVaultSecretsUser 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = {
+  name: '4633458b-17de-408a-b874-0445c86b69e6'
+}
+
+resource keyVaultSecretsUserAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(appService.name, keyVault.name, keyVaultSecretsUser.id)
+  scope: keyVault
   properties: {
-    roleDefinitionId: aiDeveloper.id
+    roleDefinitionId: keyVaultSecretsUser.id
+    principalId: appService.outputs.identityPrincipalId
+  }
+}
+
+resource aiSearch 'Microsoft.Search/searchServices@2024-06-01-preview' existing = {
+  name: aiSearchName
+}
+
+resource searchIndexDataReader 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = {
+  name: '1407120a-92aa-4202-b7e9-c0e197c71c8f'
+}
+
+resource searchIndexDataReaderAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(appService.name, aiSearch.name, searchIndexDataReader.id)
+  scope: aiSearch
+  properties: {
+    roleDefinitionId: searchIndexDataReader.id
+    principalId: appService.outputs.identityPrincipalId
+  }
+}
+
+resource aiUser 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = {
+  name: '53ca6127-db72-4b80-b1b0-d745d6d5456d'
+}
+
+module existing_aiServicesModule 'existing_foundry_project.bicep' = if (!empty(azureExistingAIProjectResourceId)) {
+  name: 'existing_foundry_project'
+  scope: resourceGroup(existingAIServiceSubscription, existingAIServiceResourceGroup)
+  params: {
+    aiServicesName: existingAIServicesName
+    aiProjectName: existingAIProjectName
+  }
+}
+
+module assignAiUserRoleToAiProject 'deploy_foundry_role_assignment.bicep' = {
+  name: 'assignAiUserRoleToAiProject'
+  scope: resourceGroup(existingAIServiceSubscription, existingAIServiceResourceGroup)
+  params: {
+    principalId: appService.outputs.identityPrincipalId
+    roleDefinitionId: aiUser.id
+    roleAssignmentName: guid(appService.name, aiServices.id, aiUser.id)
+    aiServicesName: !empty(azureExistingAIProjectResourceId) ? existingAIServicesName : aiServicesName
+    aiProjectName: !empty(azureExistingAIProjectResourceId) ? split(azureExistingAIProjectResourceId, '/')[10] : ''
+    enableSystemAssignedIdentity: false
+  }
+}
+
+resource containerRegistry 'Microsoft.ContainerRegistry/registries@2021-09-01' existing = if (useLocalBuild == 'true') {
+  name: acrName
+}
+
+resource AcrPull 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = if (useLocalBuild == 'true') {
+  name: '7f951dda-4ed3-4680-a7ca-43fe172d538d'
+}
+
+resource acrPullRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = if (useLocalBuild == 'true') {
+  name: guid(appService.name, AcrPull.id)
+  scope: containerRegistry
+  properties: {
+    roleDefinitionId: AcrPull.id
     principalId: appService.outputs.identityPrincipalId
   }
 }
 
 output appUrl string = appService.outputs.appUrl
+output reactAppLayoutConfig string = reactAppLayoutConfig
+output appInsightInstrumentationKey string = reference(applicationInsightsId, '2015-05-01').InstrumentationKey

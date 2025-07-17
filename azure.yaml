@@ -5,6 +5,10 @@ environment:
   name: conversation-knowledge-mining
   location: eastus
 name: conversation-knowledge-mining
+
+requiredVersions:
+  azd: ">= 1.15.0"
+
 metadata:
   template: conversation-knowledge-mining@1.0
 
@@ -14,10 +18,6 @@ hooks:
       run: |
         Write-Host "Web app URL: "
         Write-Host "$env:WEB_APP_URL" -ForegroundColor Cyan
-        Write-Host "🚀 If you want to deploy the AI Model, run the following command in the Bash terminal:"
-        Write-Host "bash ./infra/scripts/deploy_ai_model.sh $env:RESOURCE_GROUP_NAME $env:SOLUTION_NAME $env:AZURE_OPEN_AI_MODEL_DEPLOYMENT_TYPE $env:AZURE_OPEN_AI_DEPLOYMENT_MODEL $env:AZURE_OPEN_AI_DEPLOYMENT_MODEL_CAPACITY $env:AZURE_OPENAI_EMBEDDING_MODEL $env:AZURE_OPENAI_EMBEDDING_MODEL_CAPACITY $env:MANAGED_IDENTITY_CLIENT_ID" -ForegroundColor Cyan
-        Write-Host "✅ If you want to use the Sample Data, run the following command in the Bash terminal to process it:"
-        Write-Host "bash ./infra/scripts/process_sample_data.sh $env:STORAGE_ACCOUNT_NAME $env:STORAGE_CONTAINER_NAME $env:MANAGED_IDENTITY_CLIENT_ID $env:KEY_VAULT_NAME $env:SQLDB_SERVER $env:SQLDB_DATABASE $env:RESOURCE_GROUP_NAME $env:API_APP_MANAGED_IDENTITY_CLIENT_ID $env:API_APP_MANAGED_IDENTITY_NAME" -ForegroundColor Cyan
       shell: pwsh
       continueOnError: false
       interactive: true
@@ -25,45 +25,6 @@ hooks:
       run: |
         echo "Web app URL: "
         echo $WEB_APP_URL
-        echo "🚀 If you want to deploy the AI Model, run the following command in the Bash terminal:"
-        echo "bash ./infra/scripts/deploy_ai_model.sh $RESOURCE_GROUP_NAME $SOLUTION_NAME $AZURE_OPEN_AI_MODEL_DEPLOYMENT_TYPE $AZURE_OPEN_AI_DEPLOYMENT_MODEL $AZURE_OPEN_AI_DEPLOYMENT_MODEL_CAPACITY $AZURE_OPENAI_EMBEDDING_MODEL $AZURE_OPENAI_EMBEDDING_MODEL_CAPACITY $MANAGED_IDENTITY_CLIENT_ID"
-        echo "✅ If you want to use the Sample Data, run the following command in the Bash terminal to process it:"
-        echo "bash ./infra/scripts/process_sample_data.sh $STORAGE_ACCOUNT_NAME $STORAGE_CONTAINER_NAME $MANAGED_IDENTITY_CLIENT_ID $KEY_VAULT_NAME $SQLDB_SERVER $SQLDB_DATABASE $RESOURCE_GROUP_NAME $API_APP_MANAGED_IDENTITY_CLIENT_ID $API_APP_MANAGED_IDENTITY_NAME"
       shell: sh
       continueOnError: false
       interactive: true
-# environment:
-#   name: conversation-knowledge-mining-solution-accelerator
-#   location: eastus
-
-# metadata:
-#     template: azd-init@1.11.1
-# services:
-#     add-user-scripts:
-#         project: Deployment/scripts/add_user_scripts
-#         host: containerapp
-#         language: python
-#     app:
-#         project: App
-#         host: containerapp
-#         language: python
-#     fabric-scripts:
-#         project: Deployment/scripts/fabric_scripts
-#         host: containerapp
-#         language: python
-#     index-scripts:
-#         project: Deployment/scripts/index_scripts
-#         host: containerapp
-#         language: python
-#     km-charts-function:
-#         project: AzureFunctions/km-charts-function
-#         host: containerapp
-#         language: python
-#         docker:
-#             path: Dockerfile
-#     km-rag-function:
-#         project: AzureFunctions/km-rag-function
-#         host: containerapp
-#         language: python
-#         docker:
-#             path: Dockerfile

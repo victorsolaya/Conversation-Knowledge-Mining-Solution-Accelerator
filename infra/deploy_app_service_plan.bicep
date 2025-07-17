@@ -1,11 +1,10 @@
 metadata description = 'Creates an Azure App Service plan.'
-param solutionName string
 
 @description('Solution Location')
 param solutionLocation string
 
 @description('Name of App Service plan')
-param HostingPlanName string = '${ solutionName }-app-service-plan'
+param HostingPlanName string 
 
 @description('The pricing tier for the App Service plan')
 @allowed(

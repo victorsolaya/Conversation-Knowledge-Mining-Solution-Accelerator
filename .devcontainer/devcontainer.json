@@ -4,11 +4,8 @@
     "forwardPorts": [50505],
     "features": {
         "ghcr.io/azure/azure-dev/azd:latest": {},
-        "ghcr.io/jlaundry/devcontainer-features/mssql-odbc-driver:1": {
-            "version": "18"
-        },
         "ghcr.io/devcontainers/features/azure-cli:1": {},
-        "ghcr.io/devcontainers/features/powershell:1": {}
+        "ghcr.io/devcontainers/features/docker-in-docker:2": {}
     },
     "customizations": {
         "vscode": {
@@ -21,7 +18,7 @@
             ]
         }
     },
-    "postStartCommand": "git pull origin main && python3 -m pip install -r infra/scripts/index_scripts/requirements.txt && chmod +x ./infra/scripts/quota_check_params.sh",
+    "postStartCommand": "bash ./.devcontainer/setup_env.sh",
     "remoteUser": "vscode",
     "hostRequirements": {
         "memory": "4gb"

@@ -30,7 +30,6 @@ class HistoryService:
         )
 
         self.azure_openai_endpoint = config.azure_openai_endpoint
-        self.azure_openai_api_key = config.azure_openai_api_key
         self.azure_openai_api_version = config.azure_openai_api_version
         self.azure_openai_deployment_name = config.azure_openai_deployment_model
         self.azure_openai_resource = config.azure_openai_resource
@@ -63,20 +62,17 @@ class HistoryService:
                     "AZURE_OPENAI_ENDPOINT or AZURE_OPENAI_RESOURCE is required")
 
             endpoint = self.azure_openai_endpoint or f"https://{self.azure_openai_resource}.openai.azure.com/"
-            api_key = self.azure_openai_api_key
             ad_token_provider = None
 
-            if not api_key:
-                logger.debug("Using Azure AD authentication for OpenAI")
-                ad_token_provider = get_bearer_token_provider(
-                    DefaultAzureCredential(), "https://cognitiveservices.azure.com/.default")
+            logger.debug("Using Azure AD authentication for OpenAI")
+            ad_token_provider = get_bearer_token_provider(
+                DefaultAzureCredential(), "https://cognitiveservices.azure.com/.default")
 
             if not self.azure_openai_deployment_name:
                 raise ValueError("AZURE_OPENAI_MODEL is required")
 
             return AsyncAzureOpenAI(
                 api_version=self.azure_openai_api_version,
-                api_key=api_key,
                 azure_ad_token_provider=ad_token_provider,
                 default_headers={"x-ms-useragent": user_agent},
                 azure_endpoint=endpoint,
@@ -206,6 +202,7 @@ class HistoryService:
                 input_message=messages[-1],
             )
         else:
+            await cosmos_conversation_client.cosmosdb_client.close()
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="No assistant message found")

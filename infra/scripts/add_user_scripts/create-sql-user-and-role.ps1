@@ -1,4 +1,4 @@
-#Requires -Version 7.0
+#Requires -Version 7.2
 
 <#
 .SYNOPSIS
@@ -7,7 +7,7 @@
 .DESCRIPTION
     During an application deployment, the managed identity (and potentially the developer identity)
     must be added to the SQL database as a user and assigned to one or more roles. This script
-    accomplishes this task using Azure AD authentication.
+    accomplishes this task using the owner-managed identity for authentication.
 
 .PARAMETER SqlServerName
     The name of the Azure SQL Server resource.
@@ -21,51 +21,56 @@
 .PARAMETER DisplayName
     The Object (Principal) display name of the identity to be added.
 
-.PARAMETER UseManagedIdentity
-    Switch to indicate whether to use a Managed Identity for authentication (useful for automation).
-    If not provided, it will use your currently logged-in Azure AD account.
-
-.PARAMETER DatabaseRole
-    A comma-separated list of database roles that should be assigned to the user (e.g., db_datareader, db_datawriter, db_owner).
+.PARAMETER DatabaseRoles
+    A comma-separated string of database roles to assign (e.g., 'db_datareader,db_datawriter')
 #>
 
-param (
+Param(
     [string] $SqlServerName,
     [string] $SqlDatabaseName,
     [string] $ClientId,
     [string] $DisplayName,
-    [switch] $UseManagedIdentity,
-    [string] $DatabaseRole
+    [string] $DatabaseRoles
 )
 
+# Using specific version of SqlServer module to avoid issues with newer versions
+$SqlServerModuleVersion = "22.3.0"
+
 function Resolve-Module($moduleName) {
-    if (-not (Get-Module -ListAvailable -Name $moduleName)) {
-        Install-Module -Name $moduleName -Scope CurrentUser -Force -AllowClobber
+    # If module is imported; say that and do nothing
+    if (Get-Module | Where-Object { $_.Name -eq $moduleName }) {
+        Write-Debug "Module $moduleName is already imported"
+    } elseif (Get-Module -ListAvailable | Where-Object { $_.Name -eq $moduleName }) {
+        Import-Module $moduleName
+    } elseif (Find-Module -Name $moduleName | Where-Object { $_.Name -eq $moduleName }) {
+        # Use specific version for SqlServer
+        if ($moduleName -eq "SqlServer") {
+            Install-Module -Name $moduleName -RequiredVersion $SqlServerModuleVersion -Force -Scope CurrentUser
+        } else {
+            Install-Module -Name $moduleName -Force
+        }
+        Import-Module $moduleName
+    } else {
+        Write-Error "Module $moduleName not found"
+        [Environment]::exit(1)
     }
-    Import-Module -Name $moduleName -Force
 }
 
-### Load Required Modules
-Resolve-Module -moduleName Az.Accounts
+###
+### MAIN SCRIPT
+###
 Resolve-Module -moduleName Az.Resources
 Resolve-Module -moduleName SqlServer
 
-### Authenticate and Get Access Token
-if ($UseManagedIdentity) {
-    Write-Host "[INFO] Logging in using Managed Identity..."
-    Connect-AzAccount -Identity
-} else {
-    Write-Host "[INFO] Logging in using current user identity..."
-    Connect-AzAccount -UseDeviceAuthentication
+# Split comma-separated roles into an array
+$roleArray = $DatabaseRoles -split ','
+
+$roleSql = ""
+foreach ($role in $roleArray) {
+    $trimmedRole = $role.Trim()
+    $roleSql += "EXEC sp_addrolemember N'$trimmedRole', N'$DisplayName';`n"
 }
 
-# Split the roles by comma and remove any extra spaces
-$roles = $DatabaseRole -split "," | ForEach-Object { $_.Trim() }
-
-foreach ($role in $roles) {
-    Write-Output "Assigning Role: $role"
-    
-### Generate SQL Script
 $sql = @"
 DECLARE @username nvarchar(max) = N'$($DisplayName)';
 DECLARE @clientId uniqueidentifier = '$($ClientId)';
@@ -75,17 +80,22 @@ IF NOT EXISTS (SELECT * FROM sys.database_principals WHERE name = @username)
 BEGIN
     EXEC(@cmd)
 END
-EXEC sp_addrolemember '$role', @username;
+$($roleSql)
 "@
 
-Write-Output "`nSQL to be executed:`n$($sql)`n"
+Write-Output "`nSQL:`n$($sql)`n`n"
 
-# Get the Azure SQL token for authentication
-$token = (Get-AzAccessToken -ResourceUrl https://database.windows.net/).Token
-
-### Execute the SQL Command
-Write-Host "[INFO] Executing SQL against $SqlDatabaseName..."
-Invoke-Sqlcmd -ServerInstance "$SqlServerName.database.windows.net" -Database $SqlDatabaseName -AccessToken $token -Query $sql -ErrorAction Stop
+$token = (Get-AzAccessToken -AsSecureString -ResourceUrl https://database.windows.net/).Token
+$ssPtr = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($token)
+try {
+    $serverInstance = if ($SqlServerName -like "*.database.windows.net") {  
+        $SqlServerName  
+    } else {  
+        "$SqlServerName.database.windows.net"  
+    }
+    $plaintext = [System.Runtime.InteropServices.Marshal]::PtrToStringBSTR($ssPtr)
+    Invoke-Sqlcmd -ServerInstance $serverInstance -Database $SqlDatabaseName -AccessToken $plaintext -Query $sql -ErrorAction 'Stop'
+} finally {
+    # The following line ensures that sensitive data is not left in memory.
+    $plainText = [System.Runtime.InteropServices.Marshal]::ZeroFreeBSTR($ssPtr)
 }
-
-Write-Host "[SUCCESS] User and role assignment completed."
