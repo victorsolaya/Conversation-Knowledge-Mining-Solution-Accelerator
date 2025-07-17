@@ -3,7 +3,7 @@ WORKDIR /home/node/app
 
 COPY ./package*.json ./  
   
-RUN npm ci --omit=dev --force 
+RUN npm ci --omit=dev 
  
 COPY . .  
  
