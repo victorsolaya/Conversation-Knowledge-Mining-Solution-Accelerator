@@ -6,14 +6,19 @@ param aiProjectName string = ''
 param aiLocation string=''
 param aiKind string=''
 param aiSkuName string=''
+param enableSystemAssignedIdentity bool = false
 param customSubDomainName string = ''
 param publicNetworkAccess string = ''
-param defaultNetworkAction string
+param defaultNetworkAction string = ''
 param vnetRules array = []
 param ipRules array = []
 param aiModelDeployments array = []
 
-resource aiServices 'Microsoft.CognitiveServices/accounts@2025-04-01-preview' = {
+resource aiServices 'Microsoft.CognitiveServices/accounts@2025-04-01-preview' existing = if (!enableSystemAssignedIdentity) {
+  name: aiServicesName
+}
+
+resource aiServicesWithIdentity 'Microsoft.CognitiveServices/accounts@2025-04-01-preview' = if (enableSystemAssignedIdentity) {
   name: aiServicesName
   location: aiLocation
   kind: aiKind
@@ -38,7 +43,7 @@ resource aiServices 'Microsoft.CognitiveServices/accounts@2025-04-01-preview' = 
 
 @batchSize(1)
 resource aiServicesDeployments 'Microsoft.CognitiveServices/accounts/deployments@2025-04-01-preview' = [for aiModeldeployment in aiModelDeployments: if (!empty(aiModelDeployments)) {
-  parent: aiServices
+  parent: aiServicesWithIdentity
   name: aiModeldeployment.name
   properties: {
     model: {
@@ -53,9 +58,14 @@ resource aiServicesDeployments 'Microsoft.CognitiveServices/accounts/deployments
   }
 }]
 
-resource aiProject 'Microsoft.CognitiveServices/accounts/projects@2025-04-01-preview' = if (!empty(aiProjectName)) {
+resource aiProject 'Microsoft.CognitiveServices/accounts/projects@2025-04-01-preview' existing = if (!empty(aiProjectName) && !enableSystemAssignedIdentity) {
   name: aiProjectName
   parent: aiServices
+}
+
+resource aiProjectWithIdentity 'Microsoft.CognitiveServices/accounts/projects@2025-04-01-preview' = if (!empty(aiProjectName) && enableSystemAssignedIdentity) {
+  name: aiProjectName
+  parent: aiServicesWithIdentity
   location: aiLocation
   identity: {
     type: 'SystemAssigned'
@@ -64,7 +74,16 @@ resource aiProject 'Microsoft.CognitiveServices/accounts/projects@2025-04-01-pre
 }
 
 // Role Assignment to AI Services
-resource roleAssignmentToFoundry 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+resource roleAssignmentToFoundryExisting 'Microsoft.Authorization/roleAssignments@2022-04-01' = if (enableSystemAssignedIdentity) {
+  name: roleAssignmentName
+  scope: aiServicesWithIdentity
+  properties: {
+    roleDefinitionId: roleDefinitionId
+    principalId: principalId
+  }
+}
+
+resource roleAssignmentToFoundry 'Microsoft.Authorization/roleAssignments@2022-04-01' = if (!enableSystemAssignedIdentity) {
   name: roleAssignmentName
   scope: aiServices
   properties: {
@@ -74,5 +93,5 @@ resource roleAssignmentToFoundry 'Microsoft.Authorization/roleAssignments@2022-0
 }
 
 // Outputs
-output aiServicesPrincipalId string = aiServices.identity.principalId
-output aiProjectPrincipalId string = !empty(aiProjectName) ? aiProject.identity.principalId : ''
+output aiServicesPrincipalId string = enableSystemAssignedIdentity ? aiServicesWithIdentity.identity.principalId : aiServices.identity.principalId
+output aiProjectPrincipalId string = !empty(aiProjectName) && enableSystemAssignedIdentity ? aiProjectWithIdentity.identity.principalId : aiProject.identity.principalId

@@ -250,18 +250,18 @@ module assignFoundryRoleToMIExisting 'deploy_foundry_role_assignment.bicep' = if
   params: {
     roleDefinitionId: aiUser.id
     roleAssignmentName: guid(resourceGroup().id, managedIdentityObjectId, aiUser.id, 'foundry')
-    aiServicesName: !empty(azureExistingAIProjectResourceId) ? existingAIServicesName : aiServicesName
-    aiProjectName: !empty(azureExistingAIProjectResourceId) ? existingAIProjectName : aiProjectName
+    aiServicesName: existingAIServicesName
+    aiProjectName: existingAIProjectName
     principalId: managedIdentityObjectId
-    // Use the existing AI project resource ID to determine the location and other properties
-    aiLocation: !empty(azureExistingAIProjectResourceId) ? existing_aiServicesModule.outputs.location : solutionLocation
-    aiKind: !empty(azureExistingAIProjectResourceId) ? existing_aiServicesModule.outputs.kind : 'AIServices'
-    aiSkuName: !empty(azureExistingAIProjectResourceId) ? existing_aiServicesModule.outputs.skuName : 'S0'
-    customSubDomainName: !empty(azureExistingAIProjectResourceId) ? existing_aiServicesModule.outputs.customSubDomainName : aiServicesName
-    publicNetworkAccess: !empty(azureExistingAIProjectResourceId) ? existing_aiServicesModule.outputs.publicNetworkAccess : 'Enabled'
-    defaultNetworkAction: !empty(azureExistingAIProjectResourceId) ? existing_aiServicesModule.outputs.defaultNetworkAction : 'Allow'
-    vnetRules: !empty(azureExistingAIProjectResourceId) ? existing_aiServicesModule.outputs.vnetRules : []
-    ipRules: !empty(azureExistingAIProjectResourceId) ? existing_aiServicesModule.outputs.ipRules : []
+    aiLocation: existing_aiServicesModule.outputs.location
+    aiKind: existing_aiServicesModule.outputs.kind
+    aiSkuName: existing_aiServicesModule.outputs.skuName
+    customSubDomainName: existing_aiServicesModule.outputs.customSubDomainName
+    publicNetworkAccess: existing_aiServicesModule.outputs.publicNetworkAccess
+    enableSystemAssignedIdentity: true
+    defaultNetworkAction: existing_aiServicesModule.outputs.defaultNetworkAction
+    vnetRules: existing_aiServicesModule.outputs.vnetRules
+    ipRules: existing_aiServicesModule.outputs.ipRules
     aiModelDeployments: aiModelDeployments // Pass the model deployments to the module if model not already deployed
   }
 }
@@ -280,28 +280,27 @@ resource cognitiveServicesOpenAIUser 'Microsoft.Authorization/roleDefinitions@20
   name: '5e0bd9bd-7b93-4f28-af87-19fc36ad61bd'
 }
 
-module assignOpenAIRoleToAISearch 'deploy_foundry_role_assignment.bicep' = {
-  name: 'assignOpenAIRoleToAISearch'
+resource assignOpenAIRoleToAISearch 'Microsoft.Authorization/roleAssignments@2022-04-01' = if (empty(azureExistingAIProjectResourceId))  {
+  name: guid(resourceGroup().id, aiServices.id, cognitiveServicesOpenAIUser.id)
+  scope: aiServices
+  properties: {
+    principalId: aiSearch.identity.principalId
+    roleDefinitionId: cognitiveServicesOpenAIUser.id
+    principalType: 'ServicePrincipal'
+  }
+}
+
+module assignOpenAIRoleToAISearchExisting 'deploy_foundry_role_assignment.bicep' = if (!empty(azureExistingAIProjectResourceId)) {
+  name: 'assignOpenAIRoleToAISearchExisting'
   scope: resourceGroup(existingAIServiceSubscription, existingAIServiceResourceGroup)
   params: {
     roleDefinitionId: cognitiveServicesOpenAIUser.id
     roleAssignmentName: guid(resourceGroup().id, aiSearch.id, cognitiveServicesOpenAIUser.id, 'openai-foundry')
-    aiServicesName: !empty(azureExistingAIProjectResourceId) ? existingAIServicesName : aiServicesName
-    aiProjectName: !empty(azureExistingAIProjectResourceId) ? existingAIProjectName : aiProjectName
+    aiServicesName: existingAIServicesName
+    aiProjectName: existingAIProjectName
     principalId: aiSearch.identity.principalId
-    // Use the existing AI project resource ID to determine the location and other properties
-    aiLocation: !empty(azureExistingAIProjectResourceId) ? existing_aiServicesModule.outputs.location : solutionLocation
-    aiKind: !empty(azureExistingAIProjectResourceId) ? existing_aiServicesModule.outputs.kind : 'AIServices'
-    aiSkuName: !empty(azureExistingAIProjectResourceId) ? existing_aiServicesModule.outputs.skuName : 'S0'
-    customSubDomainName: !empty(azureExistingAIProjectResourceId) ? existing_aiServicesModule.outputs.customSubDomainName : aiServicesName
-    publicNetworkAccess: !empty(azureExistingAIProjectResourceId) ? existing_aiServicesModule.outputs.publicNetworkAccess : 'Enabled'
-    defaultNetworkAction: !empty(azureExistingAIProjectResourceId) ? existing_aiServicesModule.outputs.defaultNetworkAction : 'Allow'
-    vnetRules: !empty(azureExistingAIProjectResourceId) ? existing_aiServicesModule.outputs.vnetRules : []
-    ipRules: !empty(azureExistingAIProjectResourceId) ? existing_aiServicesModule.outputs.ipRules : []
+    enableSystemAssignedIdentity: false
   }
-  dependsOn: [
-    assignFoundryRoleToMIExisting
-  ]
 }
 
 resource searchIndexDataReader 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = {
@@ -322,7 +321,7 @@ resource assignSearchIndexDataReaderToExistingAiProject 'Microsoft.Authorization
   name: guid(resourceGroup().id, existingAIProjectName, searchIndexDataReader.id, 'Existing')
   scope: aiSearch
   properties: {
-    principalId: assignOpenAIRoleToAISearch.outputs.aiProjectPrincipalId
+    principalId: assignOpenAIRoleToAISearchExisting.outputs.aiProjectPrincipalId
     roleDefinitionId: searchIndexDataReader.id
     principalType: 'ServicePrincipal'
   }
@@ -346,7 +345,7 @@ resource assignSearchServiceContributorToExistingAiProject 'Microsoft.Authorizat
   name: guid(resourceGroup().id, existingAIProjectName, searchServiceContributor.id, 'Existing')
   scope: aiSearch
   properties: {
-    principalId: assignOpenAIRoleToAISearch.outputs.aiProjectPrincipalId
+    principalId: assignOpenAIRoleToAISearchExisting.outputs.aiProjectPrincipalId
     roleDefinitionId: searchServiceContributor.id
     principalType: 'ServicePrincipal'
   }
