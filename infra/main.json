@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.36.177.2456",
-      "templateHash": "8960822814596420700"
+      "templateHash": "12404979401636629434"
     }
   },
   "parameters": {
@@ -382,7 +382,7 @@
     "containerRegistryName": "[format('{0}{1}', variables('abbrs').containers.containerRegistry, variables('solutionPrefix'))]",
     "containerRegistryNameCleaned": "[replace(variables('containerRegistryName'), '-', '')]",
     "acrName": "[if(equals(variables('useLocalBuildLower'), 'true'), variables('containerRegistryNameCleaned'), 'kmcontainerreg')]",
-    "baseUrl": "https://raw.githubusercontent.com/microsoft/Conversation-Knowledge-Mining-Solution-Accelerator/main/"
+    "baseUrl": "https://raw.githubusercontent.com/microsoft/Conversation-Knowledge-Mining-Solution-Accelerator/psl-pk-modelexisting/"
   },
   "resources": [
     {
@@ -681,7 +681,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.36.177.2456",
-              "templateHash": "1154018530262938884"
+              "templateHash": "18139801220201504120"
             }
           },
           "parameters": {
@@ -1206,6 +1206,22 @@
               "condition": "[empty(parameters('azureExistingAIProjectResourceId'))]",
               "type": "Microsoft.Authorization/roleAssignments",
               "apiVersion": "2022-04-01",
+              "scope": "[format('Microsoft.CognitiveServices/accounts/{0}', variables('aiServicesName'))]",
+              "name": "[guid(resourceGroup().id, resourceId('Microsoft.CognitiveServices/accounts', variables('aiServicesName')), resourceId('Microsoft.Authorization/roleDefinitions', '5e0bd9bd-7b93-4f28-af87-19fc36ad61bd'))]",
+              "properties": {
+                "principalId": "[reference(resourceId('Microsoft.Search/searchServices', variables('aiSearchName')), '2024-06-01-preview', 'full').identity.principalId]",
+                "roleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', '5e0bd9bd-7b93-4f28-af87-19fc36ad61bd')]",
+                "principalType": "ServicePrincipal"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Search/searchServices', variables('aiSearchName'))]",
+                "[resourceId('Microsoft.CognitiveServices/accounts', variables('aiServicesName'))]"
+              ]
+            },
+            {
+              "condition": "[empty(parameters('azureExistingAIProjectResourceId'))]",
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2022-04-01",
               "scope": "[format('Microsoft.Search/searchServices/{0}', variables('aiSearchName'))]",
               "name": "[guid(resourceGroup().id, resourceId('Microsoft.CognitiveServices/accounts/projects', variables('aiServicesName'), variables('aiProjectName')), resourceId('Microsoft.Authorization/roleDefinitions', '1407120a-92aa-4202-b7e9-c0e197c71c8f'))]",
               "properties": {
@@ -1225,13 +1241,13 @@
               "scope": "[format('Microsoft.Search/searchServices/{0}', variables('aiSearchName'))]",
               "name": "[guid(resourceGroup().id, variables('existingAIProjectName'), resourceId('Microsoft.Authorization/roleDefinitions', '1407120a-92aa-4202-b7e9-c0e197c71c8f'), 'Existing')]",
               "properties": {
-                "principalId": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('existingAIServiceSubscription'), variables('existingAIServiceResourceGroup')), 'Microsoft.Resources/deployments', 'assignOpenAIRoleToAISearch'), '2022-09-01').outputs.aiProjectPrincipalId.value]",
+                "principalId": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('existingAIServiceSubscription'), variables('existingAIServiceResourceGroup')), 'Microsoft.Resources/deployments', 'assignOpenAIRoleToAISearchExisting'), '2022-09-01').outputs.aiProjectPrincipalId.value]",
                 "roleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', '1407120a-92aa-4202-b7e9-c0e197c71c8f')]",
                 "principalType": "ServicePrincipal"
               },
               "dependsOn": [
                 "[resourceId('Microsoft.Search/searchServices', variables('aiSearchName'))]",
-                "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('existingAIServiceSubscription'), variables('existingAIServiceResourceGroup')), 'Microsoft.Resources/deployments', 'assignOpenAIRoleToAISearch')]"
+                "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('existingAIServiceSubscription'), variables('existingAIServiceResourceGroup')), 'Microsoft.Resources/deployments', 'assignOpenAIRoleToAISearchExisting')]"
               ]
             },
             {
@@ -1257,13 +1273,13 @@
               "scope": "[format('Microsoft.Search/searchServices/{0}', variables('aiSearchName'))]",
               "name": "[guid(resourceGroup().id, variables('existingAIProjectName'), resourceId('Microsoft.Authorization/roleDefinitions', '7ca78c08-252a-4471-8644-bb5ff32d4ba0'), 'Existing')]",
               "properties": {
-                "principalId": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('existingAIServiceSubscription'), variables('existingAIServiceResourceGroup')), 'Microsoft.Resources/deployments', 'assignOpenAIRoleToAISearch'), '2022-09-01').outputs.aiProjectPrincipalId.value]",
+                "principalId": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('existingAIServiceSubscription'), variables('existingAIServiceResourceGroup')), 'Microsoft.Resources/deployments', 'assignOpenAIRoleToAISearchExisting'), '2022-09-01').outputs.aiProjectPrincipalId.value]",
                 "roleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', '7ca78c08-252a-4471-8644-bb5ff32d4ba0')]",
                 "principalType": "ServicePrincipal"
               },
               "dependsOn": [
                 "[resourceId('Microsoft.Search/searchServices', variables('aiSearchName'))]",
-                "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('existingAIServiceSubscription'), variables('existingAIServiceResourceGroup')), 'Microsoft.Resources/deployments', 'assignOpenAIRoleToAISearch')]"
+                "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('existingAIServiceSubscription'), variables('existingAIServiceResourceGroup')), 'Microsoft.Resources/deployments', 'assignOpenAIRoleToAISearchExisting')]"
               ]
             },
             {
@@ -1635,22 +1651,45 @@
                   "roleAssignmentName": {
                     "value": "[guid(resourceGroup().id, parameters('managedIdentityObjectId'), resourceId('Microsoft.Authorization/roleDefinitions', '53ca6127-db72-4b80-b1b0-d745d6d5456d'), 'foundry')]"
                   },
-                  "aiServicesName": "[if(not(empty(parameters('azureExistingAIProjectResourceId'))), createObject('value', variables('existingAIServicesName')), createObject('value', variables('aiServicesName')))]",
-                  "aiProjectName": "[if(not(empty(parameters('azureExistingAIProjectResourceId'))), createObject('value', variables('existingAIProjectName')), createObject('value', variables('aiProjectName')))]",
+                  "aiServicesName": {
+                    "value": "[variables('existingAIServicesName')]"
+                  },
+                  "aiProjectName": {
+                    "value": "[variables('existingAIProjectName')]"
+                  },
                   "principalId": {
                     "value": "[parameters('managedIdentityObjectId')]"
                   },
-                  "aiLocation": "[if(not(empty(parameters('azureExistingAIProjectResourceId'))), createObject('value', reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('existingAIServiceSubscription'), variables('existingAIServiceResourceGroup')), 'Microsoft.Resources/deployments', 'existing_foundry_project'), '2022-09-01').outputs.location.value), createObject('value', parameters('solutionLocation')))]",
-                  "aiKind": "[if(not(empty(parameters('azureExistingAIProjectResourceId'))), createObject('value', reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('existingAIServiceSubscription'), variables('existingAIServiceResourceGroup')), 'Microsoft.Resources/deployments', 'existing_foundry_project'), '2022-09-01').outputs.kind.value), createObject('value', 'AIServices'))]",
-                  "aiSkuName": "[if(not(empty(parameters('azureExistingAIProjectResourceId'))), createObject('value', reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('existingAIServiceSubscription'), variables('existingAIServiceResourceGroup')), 'Microsoft.Resources/deployments', 'existing_foundry_project'), '2022-09-01').outputs.skuName.value), createObject('value', 'S0'))]",
-                  "customSubDomainName": "[if(not(empty(parameters('azureExistingAIProjectResourceId'))), createObject('value', reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('existingAIServiceSubscription'), variables('existingAIServiceResourceGroup')), 'Microsoft.Resources/deployments', 'existing_foundry_project'), '2022-09-01').outputs.customSubDomainName.value), createObject('value', variables('aiServicesName')))]",
-                  "publicNetworkAccess": "[if(not(empty(parameters('azureExistingAIProjectResourceId'))), createObject('value', reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('existingAIServiceSubscription'), variables('existingAIServiceResourceGroup')), 'Microsoft.Resources/deployments', 'existing_foundry_project'), '2022-09-01').outputs.publicNetworkAccess.value), createObject('value', 'Enabled'))]",
+                  "aiLocation": {
+                    "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('existingAIServiceSubscription'), variables('existingAIServiceResourceGroup')), 'Microsoft.Resources/deployments', 'existing_foundry_project'), '2022-09-01').outputs.location.value]"
+                  },
+                  "aiKind": {
+                    "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('existingAIServiceSubscription'), variables('existingAIServiceResourceGroup')), 'Microsoft.Resources/deployments', 'existing_foundry_project'), '2022-09-01').outputs.kind.value]"
+                  },
+                  "aiSkuName": {
+                    "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('existingAIServiceSubscription'), variables('existingAIServiceResourceGroup')), 'Microsoft.Resources/deployments', 'existing_foundry_project'), '2022-09-01').outputs.skuName.value]"
+                  },
+                  "customSubDomainName": {
+                    "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('existingAIServiceSubscription'), variables('existingAIServiceResourceGroup')), 'Microsoft.Resources/deployments', 'existing_foundry_project'), '2022-09-01').outputs.customSubDomainName.value]"
+                  },
+                  "publicNetworkAccess": {
+                    "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('existingAIServiceSubscription'), variables('existingAIServiceResourceGroup')), 'Microsoft.Resources/deployments', 'existing_foundry_project'), '2022-09-01').outputs.publicNetworkAccess.value]"
+                  },
                   "enableSystemAssignedIdentity": {
                     "value": true
                   },
-                  "defaultNetworkAction": "[if(not(empty(parameters('azureExistingAIProjectResourceId'))), createObject('value', reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('existingAIServiceSubscription'), variables('existingAIServiceResourceGroup')), 'Microsoft.Resources/deployments', 'existing_foundry_project'), '2022-09-01').outputs.defaultNetworkAction.value), createObject('value', 'Allow'))]",
-                  "vnetRules": "[if(not(empty(parameters('azureExistingAIProjectResourceId'))), createObject('value', reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('existingAIServiceSubscription'), variables('existingAIServiceResourceGroup')), 'Microsoft.Resources/deployments', 'existing_foundry_project'), '2022-09-01').outputs.vnetRules.value), createObject('value', createArray()))]",
-                  "ipRules": "[if(not(empty(parameters('azureExistingAIProjectResourceId'))), createObject('value', reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('existingAIServiceSubscription'), variables('existingAIServiceResourceGroup')), 'Microsoft.Resources/deployments', 'existing_foundry_project'), '2022-09-01').outputs.ipRules.value), createObject('value', createArray()))]"
+                  "defaultNetworkAction": {
+                    "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('existingAIServiceSubscription'), variables('existingAIServiceResourceGroup')), 'Microsoft.Resources/deployments', 'existing_foundry_project'), '2022-09-01').outputs.defaultNetworkAction.value]"
+                  },
+                  "vnetRules": {
+                    "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('existingAIServiceSubscription'), variables('existingAIServiceResourceGroup')), 'Microsoft.Resources/deployments', 'existing_foundry_project'), '2022-09-01').outputs.vnetRules.value]"
+                  },
+                  "ipRules": {
+                    "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('existingAIServiceSubscription'), variables('existingAIServiceResourceGroup')), 'Microsoft.Resources/deployments', 'existing_foundry_project'), '2022-09-01').outputs.ipRules.value]"
+                  },
+                  "aiModelDeployments": {
+                    "value": "[variables('aiModelDeployments')]"
+                  }
                 },
                 "template": {
                   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
@@ -1659,7 +1698,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.36.177.2456",
-                      "templateHash": "10311862207366846138"
+                      "templateHash": "7364575792801916457"
                     }
                   },
                   "parameters": {
@@ -1695,7 +1734,7 @@
                     },
                     "enableSystemAssignedIdentity": {
                       "type": "bool",
-                      "defaultValue": true
+                      "defaultValue": false
                     },
                     "customSubDomainName": {
                       "type": "string",
@@ -1706,13 +1745,18 @@
                       "defaultValue": ""
                     },
                     "defaultNetworkAction": {
-                      "type": "string"
+                      "type": "string",
+                      "defaultValue": ""
                     },
                     "vnetRules": {
                       "type": "array",
                       "defaultValue": []
                     },
                     "ipRules": {
+                      "type": "array",
+                      "defaultValue": []
+                    },
+                    "aiModelDeployments": {
                       "type": "array",
                       "defaultValue": []
                     }
@@ -1743,6 +1787,32 @@
                       }
                     },
                     {
+                      "copy": {
+                        "name": "aiServicesDeployments",
+                        "count": "[length(parameters('aiModelDeployments'))]",
+                        "mode": "serial",
+                        "batchSize": 1
+                      },
+                      "condition": "[not(empty(parameters('aiModelDeployments')))]",
+                      "type": "Microsoft.CognitiveServices/accounts/deployments",
+                      "apiVersion": "2025-04-01-preview",
+                      "name": "[format('{0}/{1}', parameters('aiServicesName'), parameters('aiModelDeployments')[copyIndex()].name)]",
+                      "properties": {
+                        "model": {
+                          "format": "OpenAI",
+                          "name": "[parameters('aiModelDeployments')[copyIndex()].model]"
+                        },
+                        "raiPolicyName": "[parameters('aiModelDeployments')[copyIndex()].raiPolicyName]"
+                      },
+                      "sku": {
+                        "name": "[parameters('aiModelDeployments')[copyIndex()].sku.name]",
+                        "capacity": "[parameters('aiModelDeployments')[copyIndex()].sku.capacity]"
+                      },
+                      "dependsOn": [
+                        "[resourceId('Microsoft.CognitiveServices/accounts', parameters('aiServicesName'))]"
+                      ]
+                    },
+                    {
                       "condition": "[and(not(empty(parameters('aiProjectName'))), parameters('enableSystemAssignedIdentity'))]",
                       "type": "Microsoft.CognitiveServices/accounts/projects",
                       "apiVersion": "2025-04-01-preview",
@@ -1757,6 +1827,7 @@
                       ]
                     },
                     {
+                      "condition": "[parameters('enableSystemAssignedIdentity')]",
                       "type": "Microsoft.Authorization/roleAssignments",
                       "apiVersion": "2022-04-01",
                       "scope": "[format('Microsoft.CognitiveServices/accounts/{0}', parameters('aiServicesName'))]",
@@ -1768,16 +1839,27 @@
                       "dependsOn": [
                         "[resourceId('Microsoft.CognitiveServices/accounts', parameters('aiServicesName'))]"
                       ]
+                    },
+                    {
+                      "condition": "[not(parameters('enableSystemAssignedIdentity'))]",
+                      "type": "Microsoft.Authorization/roleAssignments",
+                      "apiVersion": "2022-04-01",
+                      "scope": "[format('Microsoft.CognitiveServices/accounts/{0}', parameters('aiServicesName'))]",
+                      "name": "[parameters('roleAssignmentName')]",
+                      "properties": {
+                        "roleDefinitionId": "[parameters('roleDefinitionId')]",
+                        "principalId": "[parameters('principalId')]"
+                      }
                     }
                   ],
                   "outputs": {
                     "aiServicesPrincipalId": {
                       "type": "string",
-                      "value": "[reference(resourceId('Microsoft.CognitiveServices/accounts', parameters('aiServicesName')), '2025-04-01-preview', 'full').identity.principalId]"
+                      "value": "[if(parameters('enableSystemAssignedIdentity'), reference(resourceId('Microsoft.CognitiveServices/accounts', parameters('aiServicesName')), '2025-04-01-preview', 'full').identity.principalId, reference(resourceId('Microsoft.CognitiveServices/accounts', parameters('aiServicesName')), '2025-04-01-preview', 'full').identity.principalId)]"
                     },
                     "aiProjectPrincipalId": {
                       "type": "string",
-                      "value": "[if(not(empty(parameters('aiProjectName'))), reference(resourceId('Microsoft.CognitiveServices/accounts/projects', parameters('aiServicesName'), parameters('aiProjectName')), '2025-04-01-preview', 'full').identity.principalId, '')]"
+                      "value": "[if(not(empty(parameters('aiProjectName'))), if(parameters('enableSystemAssignedIdentity'), reference(resourceId('Microsoft.CognitiveServices/accounts/projects', parameters('aiServicesName'), parameters('aiProjectName')), '2025-04-01-preview', 'full').identity.principalId, reference(resourceId('Microsoft.CognitiveServices/accounts/projects', parameters('aiServicesName'), parameters('aiProjectName')), '2025-04-01-preview', 'full').identity.principalId), '')]"
                     }
                   }
                 }
@@ -1787,9 +1869,10 @@
               ]
             },
             {
+              "condition": "[not(empty(parameters('azureExistingAIProjectResourceId')))]",
               "type": "Microsoft.Resources/deployments",
               "apiVersion": "2022-09-01",
-              "name": "assignOpenAIRoleToAISearch",
+              "name": "assignOpenAIRoleToAISearchExisting",
               "subscriptionId": "[variables('existingAIServiceSubscription')]",
               "resourceGroup": "[variables('existingAIServiceResourceGroup')]",
               "properties": {
@@ -1804,22 +1887,18 @@
                   "roleAssignmentName": {
                     "value": "[guid(resourceGroup().id, resourceId('Microsoft.Search/searchServices', variables('aiSearchName')), resourceId('Microsoft.Authorization/roleDefinitions', '5e0bd9bd-7b93-4f28-af87-19fc36ad61bd'), 'openai-foundry')]"
                   },
-                  "aiServicesName": "[if(not(empty(parameters('azureExistingAIProjectResourceId'))), createObject('value', variables('existingAIServicesName')), createObject('value', variables('aiServicesName')))]",
-                  "aiProjectName": "[if(not(empty(parameters('azureExistingAIProjectResourceId'))), createObject('value', variables('existingAIProjectName')), createObject('value', variables('aiProjectName')))]",
+                  "aiServicesName": {
+                    "value": "[variables('existingAIServicesName')]"
+                  },
+                  "aiProjectName": {
+                    "value": "[variables('existingAIProjectName')]"
+                  },
                   "principalId": {
                     "value": "[reference(resourceId('Microsoft.Search/searchServices', variables('aiSearchName')), '2024-06-01-preview', 'full').identity.principalId]"
                   },
-                  "aiLocation": "[if(not(empty(parameters('azureExistingAIProjectResourceId'))), createObject('value', reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('existingAIServiceSubscription'), variables('existingAIServiceResourceGroup')), 'Microsoft.Resources/deployments', 'existing_foundry_project'), '2022-09-01').outputs.location.value), createObject('value', parameters('solutionLocation')))]",
-                  "aiKind": "[if(not(empty(parameters('azureExistingAIProjectResourceId'))), createObject('value', reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('existingAIServiceSubscription'), variables('existingAIServiceResourceGroup')), 'Microsoft.Resources/deployments', 'existing_foundry_project'), '2022-09-01').outputs.kind.value), createObject('value', 'AIServices'))]",
-                  "aiSkuName": "[if(not(empty(parameters('azureExistingAIProjectResourceId'))), createObject('value', reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('existingAIServiceSubscription'), variables('existingAIServiceResourceGroup')), 'Microsoft.Resources/deployments', 'existing_foundry_project'), '2022-09-01').outputs.skuName.value), createObject('value', 'S0'))]",
-                  "customSubDomainName": "[if(not(empty(parameters('azureExistingAIProjectResourceId'))), createObject('value', reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('existingAIServiceSubscription'), variables('existingAIServiceResourceGroup')), 'Microsoft.Resources/deployments', 'existing_foundry_project'), '2022-09-01').outputs.customSubDomainName.value), createObject('value', variables('aiServicesName')))]",
-                  "publicNetworkAccess": "[if(not(empty(parameters('azureExistingAIProjectResourceId'))), createObject('value', reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('existingAIServiceSubscription'), variables('existingAIServiceResourceGroup')), 'Microsoft.Resources/deployments', 'existing_foundry_project'), '2022-09-01').outputs.publicNetworkAccess.value), createObject('value', 'Enabled'))]",
                   "enableSystemAssignedIdentity": {
-                    "value": true
-                  },
-                  "defaultNetworkAction": "[if(not(empty(parameters('azureExistingAIProjectResourceId'))), createObject('value', reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('existingAIServiceSubscription'), variables('existingAIServiceResourceGroup')), 'Microsoft.Resources/deployments', 'existing_foundry_project'), '2022-09-01').outputs.defaultNetworkAction.value), createObject('value', 'Allow'))]",
-                  "vnetRules": "[if(not(empty(parameters('azureExistingAIProjectResourceId'))), createObject('value', reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('existingAIServiceSubscription'), variables('existingAIServiceResourceGroup')), 'Microsoft.Resources/deployments', 'existing_foundry_project'), '2022-09-01').outputs.vnetRules.value), createObject('value', createArray()))]",
-                  "ipRules": "[if(not(empty(parameters('azureExistingAIProjectResourceId'))), createObject('value', reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('existingAIServiceSubscription'), variables('existingAIServiceResourceGroup')), 'Microsoft.Resources/deployments', 'existing_foundry_project'), '2022-09-01').outputs.ipRules.value), createObject('value', createArray()))]"
+                    "value": false
+                  }
                 },
                 "template": {
                   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
@@ -1828,7 +1907,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.36.177.2456",
-                      "templateHash": "10311862207366846138"
+                      "templateHash": "7364575792801916457"
                     }
                   },
                   "parameters": {
@@ -1864,7 +1943,7 @@
                     },
                     "enableSystemAssignedIdentity": {
                       "type": "bool",
-                      "defaultValue": true
+                      "defaultValue": false
                     },
                     "customSubDomainName": {
                       "type": "string",
@@ -1875,13 +1954,18 @@
                       "defaultValue": ""
                     },
                     "defaultNetworkAction": {
-                      "type": "string"
+                      "type": "string",
+                      "defaultValue": ""
                     },
                     "vnetRules": {
                       "type": "array",
                       "defaultValue": []
                     },
                     "ipRules": {
+                      "type": "array",
+                      "defaultValue": []
+                    },
+                    "aiModelDeployments": {
                       "type": "array",
                       "defaultValue": []
                     }
@@ -1912,6 +1996,32 @@
                       }
                     },
                     {
+                      "copy": {
+                        "name": "aiServicesDeployments",
+                        "count": "[length(parameters('aiModelDeployments'))]",
+                        "mode": "serial",
+                        "batchSize": 1
+                      },
+                      "condition": "[not(empty(parameters('aiModelDeployments')))]",
+                      "type": "Microsoft.CognitiveServices/accounts/deployments",
+                      "apiVersion": "2025-04-01-preview",
+                      "name": "[format('{0}/{1}', parameters('aiServicesName'), parameters('aiModelDeployments')[copyIndex()].name)]",
+                      "properties": {
+                        "model": {
+                          "format": "OpenAI",
+                          "name": "[parameters('aiModelDeployments')[copyIndex()].model]"
+                        },
+                        "raiPolicyName": "[parameters('aiModelDeployments')[copyIndex()].raiPolicyName]"
+                      },
+                      "sku": {
+                        "name": "[parameters('aiModelDeployments')[copyIndex()].sku.name]",
+                        "capacity": "[parameters('aiModelDeployments')[copyIndex()].sku.capacity]"
+                      },
+                      "dependsOn": [
+                        "[resourceId('Microsoft.CognitiveServices/accounts', parameters('aiServicesName'))]"
+                      ]
+                    },
+                    {
                       "condition": "[and(not(empty(parameters('aiProjectName'))), parameters('enableSystemAssignedIdentity'))]",
                       "type": "Microsoft.CognitiveServices/accounts/projects",
                       "apiVersion": "2025-04-01-preview",
@@ -1926,6 +2036,7 @@
                       ]
                     },
                     {
+                      "condition": "[parameters('enableSystemAssignedIdentity')]",
                       "type": "Microsoft.Authorization/roleAssignments",
                       "apiVersion": "2022-04-01",
                       "scope": "[format('Microsoft.CognitiveServices/accounts/{0}', parameters('aiServicesName'))]",
@@ -1937,23 +2048,33 @@
                       "dependsOn": [
                         "[resourceId('Microsoft.CognitiveServices/accounts', parameters('aiServicesName'))]"
                       ]
+                    },
+                    {
+                      "condition": "[not(parameters('enableSystemAssignedIdentity'))]",
+                      "type": "Microsoft.Authorization/roleAssignments",
+                      "apiVersion": "2022-04-01",
+                      "scope": "[format('Microsoft.CognitiveServices/accounts/{0}', parameters('aiServicesName'))]",
+                      "name": "[parameters('roleAssignmentName')]",
+                      "properties": {
+                        "roleDefinitionId": "[parameters('roleDefinitionId')]",
+                        "principalId": "[parameters('principalId')]"
+                      }
                     }
                   ],
                   "outputs": {
                     "aiServicesPrincipalId": {
                       "type": "string",
-                      "value": "[reference(resourceId('Microsoft.CognitiveServices/accounts', parameters('aiServicesName')), '2025-04-01-preview', 'full').identity.principalId]"
+                      "value": "[if(parameters('enableSystemAssignedIdentity'), reference(resourceId('Microsoft.CognitiveServices/accounts', parameters('aiServicesName')), '2025-04-01-preview', 'full').identity.principalId, reference(resourceId('Microsoft.CognitiveServices/accounts', parameters('aiServicesName')), '2025-04-01-preview', 'full').identity.principalId)]"
                     },
                     "aiProjectPrincipalId": {
                       "type": "string",
-                      "value": "[if(not(empty(parameters('aiProjectName'))), reference(resourceId('Microsoft.CognitiveServices/accounts/projects', parameters('aiServicesName'), parameters('aiProjectName')), '2025-04-01-preview', 'full').identity.principalId, '')]"
+                      "value": "[if(not(empty(parameters('aiProjectName'))), if(parameters('enableSystemAssignedIdentity'), reference(resourceId('Microsoft.CognitiveServices/accounts/projects', parameters('aiServicesName'), parameters('aiProjectName')), '2025-04-01-preview', 'full').identity.principalId, reference(resourceId('Microsoft.CognitiveServices/accounts/projects', parameters('aiServicesName'), parameters('aiProjectName')), '2025-04-01-preview', 'full').identity.principalId), '')]"
                     }
                   }
                 }
               },
               "dependsOn": [
-                "[resourceId('Microsoft.Search/searchServices', variables('aiSearchName'))]",
-                "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('existingAIServiceSubscription'), variables('existingAIServiceResourceGroup')), 'Microsoft.Resources/deployments', 'existing_foundry_project')]"
+                "[resourceId('Microsoft.Search/searchServices', variables('aiSearchName'))]"
               ]
             }
           ],
@@ -3091,7 +3212,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.36.177.2456",
-              "templateHash": "7356894116193161964"
+              "templateHash": "6279741508955918821"
             }
           },
           "parameters": {
@@ -3537,17 +3658,9 @@
                   },
                   "aiServicesName": "[if(not(empty(parameters('azureExistingAIProjectResourceId'))), createObject('value', variables('existingAIServicesName')), createObject('value', parameters('aiServicesName')))]",
                   "aiProjectName": "[if(not(empty(parameters('azureExistingAIProjectResourceId'))), createObject('value', split(parameters('azureExistingAIProjectResourceId'), '/')[10]), createObject('value', ''))]",
-                  "aiLocation": "[if(not(empty(parameters('azureExistingAIProjectResourceId'))), createObject('value', reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('existingAIServiceSubscription'), variables('existingAIServiceResourceGroup')), 'Microsoft.Resources/deployments', 'existing_foundry_project'), '2022-09-01').outputs.location.value), createObject('value', parameters('aideploymentsLocation')))]",
-                  "aiKind": "[if(not(empty(parameters('azureExistingAIProjectResourceId'))), createObject('value', reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('existingAIServiceSubscription'), variables('existingAIServiceResourceGroup')), 'Microsoft.Resources/deployments', 'existing_foundry_project'), '2022-09-01').outputs.kind.value), createObject('value', 'AIServices'))]",
-                  "aiSkuName": "[if(not(empty(parameters('azureExistingAIProjectResourceId'))), createObject('value', reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('existingAIServiceSubscription'), variables('existingAIServiceResourceGroup')), 'Microsoft.Resources/deployments', 'existing_foundry_project'), '2022-09-01').outputs.skuName.value), createObject('value', 'S0'))]",
-                  "customSubDomainName": "[if(not(empty(parameters('azureExistingAIProjectResourceId'))), createObject('value', reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('existingAIServiceSubscription'), variables('existingAIServiceResourceGroup')), 'Microsoft.Resources/deployments', 'existing_foundry_project'), '2022-09-01').outputs.customSubDomainName.value), createObject('value', parameters('aiServicesName')))]",
-                  "publicNetworkAccess": "[if(not(empty(parameters('azureExistingAIProjectResourceId'))), createObject('value', reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('existingAIServiceSubscription'), variables('existingAIServiceResourceGroup')), 'Microsoft.Resources/deployments', 'existing_foundry_project'), '2022-09-01').outputs.publicNetworkAccess.value), createObject('value', 'Enabled'))]",
                   "enableSystemAssignedIdentity": {
-                    "value": true
-                  },
-                  "defaultNetworkAction": "[if(not(empty(parameters('azureExistingAIProjectResourceId'))), createObject('value', reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('existingAIServiceSubscription'), variables('existingAIServiceResourceGroup')), 'Microsoft.Resources/deployments', 'existing_foundry_project'), '2022-09-01').outputs.defaultNetworkAction.value), createObject('value', 'Allow'))]",
-                  "vnetRules": "[if(not(empty(parameters('azureExistingAIProjectResourceId'))), createObject('value', reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('existingAIServiceSubscription'), variables('existingAIServiceResourceGroup')), 'Microsoft.Resources/deployments', 'existing_foundry_project'), '2022-09-01').outputs.vnetRules.value), createObject('value', createArray()))]",
-                  "ipRules": "[if(not(empty(parameters('azureExistingAIProjectResourceId'))), createObject('value', reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('existingAIServiceSubscription'), variables('existingAIServiceResourceGroup')), 'Microsoft.Resources/deployments', 'existing_foundry_project'), '2022-09-01').outputs.ipRules.value), createObject('value', createArray()))]"
+                    "value": false
+                  }
                 },
                 "template": {
                   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
@@ -3556,7 +3669,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.36.177.2456",
-                      "templateHash": "10311862207366846138"
+                      "templateHash": "7364575792801916457"
                     }
                   },
                   "parameters": {
@@ -3592,7 +3705,7 @@
                     },
                     "enableSystemAssignedIdentity": {
                       "type": "bool",
-                      "defaultValue": true
+                      "defaultValue": false
                     },
                     "customSubDomainName": {
                       "type": "string",
@@ -3603,13 +3716,18 @@
                       "defaultValue": ""
                     },
                     "defaultNetworkAction": {
-                      "type": "string"
+                      "type": "string",
+                      "defaultValue": ""
                     },
                     "vnetRules": {
                       "type": "array",
                       "defaultValue": []
                     },
                     "ipRules": {
+                      "type": "array",
+                      "defaultValue": []
+                    },
+                    "aiModelDeployments": {
                       "type": "array",
                       "defaultValue": []
                     }
@@ -3640,6 +3758,32 @@
                       }
                     },
                     {
+                      "copy": {
+                        "name": "aiServicesDeployments",
+                        "count": "[length(parameters('aiModelDeployments'))]",
+                        "mode": "serial",
+                        "batchSize": 1
+                      },
+                      "condition": "[not(empty(parameters('aiModelDeployments')))]",
+                      "type": "Microsoft.CognitiveServices/accounts/deployments",
+                      "apiVersion": "2025-04-01-preview",
+                      "name": "[format('{0}/{1}', parameters('aiServicesName'), parameters('aiModelDeployments')[copyIndex()].name)]",
+                      "properties": {
+                        "model": {
+                          "format": "OpenAI",
+                          "name": "[parameters('aiModelDeployments')[copyIndex()].model]"
+                        },
+                        "raiPolicyName": "[parameters('aiModelDeployments')[copyIndex()].raiPolicyName]"
+                      },
+                      "sku": {
+                        "name": "[parameters('aiModelDeployments')[copyIndex()].sku.name]",
+                        "capacity": "[parameters('aiModelDeployments')[copyIndex()].sku.capacity]"
+                      },
+                      "dependsOn": [
+                        "[resourceId('Microsoft.CognitiveServices/accounts', parameters('aiServicesName'))]"
+                      ]
+                    },
+                    {
                       "condition": "[and(not(empty(parameters('aiProjectName'))), parameters('enableSystemAssignedIdentity'))]",
                       "type": "Microsoft.CognitiveServices/accounts/projects",
                       "apiVersion": "2025-04-01-preview",
@@ -3654,6 +3798,7 @@
                       ]
                     },
                     {
+                      "condition": "[parameters('enableSystemAssignedIdentity')]",
                       "type": "Microsoft.Authorization/roleAssignments",
                       "apiVersion": "2022-04-01",
                       "scope": "[format('Microsoft.CognitiveServices/accounts/{0}', parameters('aiServicesName'))]",
@@ -3665,23 +3810,33 @@
                       "dependsOn": [
                         "[resourceId('Microsoft.CognitiveServices/accounts', parameters('aiServicesName'))]"
                       ]
+                    },
+                    {
+                      "condition": "[not(parameters('enableSystemAssignedIdentity'))]",
+                      "type": "Microsoft.Authorization/roleAssignments",
+                      "apiVersion": "2022-04-01",
+                      "scope": "[format('Microsoft.CognitiveServices/accounts/{0}', parameters('aiServicesName'))]",
+                      "name": "[parameters('roleAssignmentName')]",
+                      "properties": {
+                        "roleDefinitionId": "[parameters('roleDefinitionId')]",
+                        "principalId": "[parameters('principalId')]"
+                      }
                     }
                   ],
                   "outputs": {
                     "aiServicesPrincipalId": {
                       "type": "string",
-                      "value": "[reference(resourceId('Microsoft.CognitiveServices/accounts', parameters('aiServicesName')), '2025-04-01-preview', 'full').identity.principalId]"
+                      "value": "[if(parameters('enableSystemAssignedIdentity'), reference(resourceId('Microsoft.CognitiveServices/accounts', parameters('aiServicesName')), '2025-04-01-preview', 'full').identity.principalId, reference(resourceId('Microsoft.CognitiveServices/accounts', parameters('aiServicesName')), '2025-04-01-preview', 'full').identity.principalId)]"
                     },
                     "aiProjectPrincipalId": {
                       "type": "string",
-                      "value": "[if(not(empty(parameters('aiProjectName'))), reference(resourceId('Microsoft.CognitiveServices/accounts/projects', parameters('aiServicesName'), parameters('aiProjectName')), '2025-04-01-preview', 'full').identity.principalId, '')]"
+                      "value": "[if(not(empty(parameters('aiProjectName'))), if(parameters('enableSystemAssignedIdentity'), reference(resourceId('Microsoft.CognitiveServices/accounts/projects', parameters('aiServicesName'), parameters('aiProjectName')), '2025-04-01-preview', 'full').identity.principalId, reference(resourceId('Microsoft.CognitiveServices/accounts/projects', parameters('aiServicesName'), parameters('aiProjectName')), '2025-04-01-preview', 'full').identity.principalId), '')]"
                     }
                   }
                 }
               },
               "dependsOn": [
-                "[resourceId('Microsoft.Resources/deployments', format('{0}-app-module', parameters('name')))]",
-                "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('existingAIServiceSubscription'), variables('existingAIServiceResourceGroup')), 'Microsoft.Resources/deployments', 'existing_foundry_project')]"
+                "[resourceId('Microsoft.Resources/deployments', format('{0}-app-module', parameters('name')))]"
               ]
             }
           ],
