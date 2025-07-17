@@ -36,9 +36,9 @@ In the left-hand menu of the project blade:
 ### 6. Set the Foundry Project Resource ID in Your Environment
 Run the following command in your terminal
 ```bash
-azd env set AZURE_ENV_FOUNDRY_PROJECT_ID '<Existing Foundry Project Resource ID>'
+azd env set AZURE_EXISTING_AI_PROJECT_RESOURCE_ID '<Existing AI Project Resource ID>'
 ```
-Replace `<Existing Foundry Project Resource ID>` with the value obtained from Step 5.
+Replace `<Existing AI Project Resource ID>` with the value obtained from Step 5.
 
 ### 7. Continue Deployment
 Proceed with the next steps in the [deployment guide](/documents/DeploymentGuide.md#deployment-options--steps).
