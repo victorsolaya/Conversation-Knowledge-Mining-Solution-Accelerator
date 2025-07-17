@@ -143,7 +143,7 @@ class TestExpCache:
         cache = ExpCache(maxsize=2, ttl=60, agent=mock_agent)
         cache['key1'] = 'thread_id_1'
         cache['key2'] = 'thread_id_2'
-        cache['key3'] = 'thread_id_3'  # This should trigger LRU eviction
+        cache['key3'] = 'thread_id_3'  
         
         # Verify thread deletion was scheduled
         mock_create_task.assert_called()
@@ -208,7 +208,7 @@ class TestChatService:
         """
 
         mock_msg = MagicMock()
-        mock_msg.role = MessageRole.AGENT  # ✅ Correct Enum type
+        mock_msg.role = MessageRole.AGENT  
         mock_msg.text_messages = [mock_text_msg]
 
         # Setup all methods
@@ -221,7 +221,7 @@ class TestChatService:
         # ACT
         result = await service.process_rag_response("RAG content", "Query")
 
-        print("RESULT:", result)  # 🔍 debug
+        print("RESULT:", result)  
 
         # ASSERT
         assert isinstance(result, dict)
