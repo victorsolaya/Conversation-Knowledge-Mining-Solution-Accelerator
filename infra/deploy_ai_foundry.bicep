@@ -299,6 +299,9 @@ module assignOpenAIRoleToAISearch 'deploy_foundry_role_assignment.bicep' = {
     vnetRules: !empty(azureExistingAIProjectResourceId) ? existing_aiServicesModule.outputs.vnetRules : []
     ipRules: !empty(azureExistingAIProjectResourceId) ? existing_aiServicesModule.outputs.ipRules : []
   }
+  dependsOn: [
+    assignFoundryRoleToMIExisting
+  ]
 }
 
 resource searchIndexDataReader 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = {
