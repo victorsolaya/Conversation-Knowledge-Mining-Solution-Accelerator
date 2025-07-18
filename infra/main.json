@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.36.177.2456",
-      "templateHash": "12404979401636629434"
+      "templateHash": "832352662399817246"
     }
   },
   "parameters": {
@@ -382,7 +382,7 @@
     "containerRegistryName": "[format('{0}{1}', variables('abbrs').containers.containerRegistry, variables('solutionPrefix'))]",
     "containerRegistryNameCleaned": "[replace(variables('containerRegistryName'), '-', '')]",
     "acrName": "[if(equals(variables('useLocalBuildLower'), 'true'), variables('containerRegistryNameCleaned'), 'kmcontainerreg')]",
-    "baseUrl": "https://raw.githubusercontent.com/microsoft/Conversation-Knowledge-Mining-Solution-Accelerator/psl-pk-modelexisting/"
+    "baseUrl": "https://raw.githubusercontent.com/microsoft/Conversation-Knowledge-Mining-Solution-Accelerator/main/"
   },
   "resources": [
     {
