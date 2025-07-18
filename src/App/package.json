@@ -11,10 +11,10 @@
     "@fluentui/react-icons": "^2.0.305",
     "@fluentui/react-components": "^9.66.5",
     "@testing-library/react": "^16.2.0",
-    "@testing-library/user-event": "^13.5.0",
+    "@testing-library/user-event": "^14.6.1",
     "@types/d3": "^7.4.3",
     "@types/jest": "^30.0.0",
-    "@types/node": "^22.13.16",
+    "@types/node": "^24.0.8",
     "@types/react": "^18.3.11",
     "@types/react-dom": "^18.3.1",
     "axios": "^1.10.0",
@@ -32,7 +32,7 @@
     "remark-gfm": "^4.0.1",
     "remark-supersub": "^1.0.0",
     "typescript": "^4.9.5",
-    "web-vitals": "^2.1.4"
+    "web-vitals": "^3.5.2"
   },
   "scripts": {
     "start": "react-scripts start",
