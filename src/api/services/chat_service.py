@@ -91,7 +91,10 @@ class ChatService:
         Uses the ChartAgent directly (agentic call) to extract chart data for Chart.js.
         """
         try:
-            combined_input = f"{query}\n{rag_response}"
+            user_prompt = f"""Generate chart data for -
+            {query}
+            {rag_response}
+            """
 
             agent_info = await ChartAgentFactory.get_agent()
             agent = agent_info["agent"]
@@ -102,7 +105,7 @@ class ChatService:
             client.agents.messages.create(
                 thread_id=thread.id,
                 role=MessageRole.USER,
-                content=combined_input
+                content=user_prompt
             )
 
             run = client.agents.runs.create_and_process(
