@@ -37,6 +37,7 @@ HOST_INSTRUCTIONS = "Answer questions about call center operations"
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
 class ExpCache(TTLCache):
     """
     Extended TTLCache that associates an agent and deletes Azure AI agent threads when items expire or are evicted (LRU).

@@ -34,7 +34,6 @@ class ChartAgentFactory(BaseAgentFactory):
         Verify and refine that JSON should not have any syntax errors like extra closing brackets.
         Ensure Y-axis labels are fully visible by increasing **ticks.padding**, **ticks.maxWidth**, or enabling word wrapping where necessary.
         Ensure bars and data points are evenly spaced and not squished or cropped at **100%** resolution by maintaining appropriate **barPercentage** and **categoryPercentage** values."""
-            
 
         project_client = AIProjectClient(
             endpoint=config.ai_project_endpoint,
