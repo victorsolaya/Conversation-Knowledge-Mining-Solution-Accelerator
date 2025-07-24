@@ -72,7 +72,7 @@ param useLocalBuild string = 'false'
 // Convert input to lowercase
 var useLocalBuildLower = toLower(useLocalBuild)
 
-var uniqueId = toLower(uniqueString(subscription().id, environmentName, solutionLocation))
+var uniqueId = toLower(uniqueString(subscription().id, environmentName, solutionLocation, resourceGroup().name))
 
 
 @metadata({
