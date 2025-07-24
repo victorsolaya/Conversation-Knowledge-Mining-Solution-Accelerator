@@ -9,6 +9,7 @@ from content_understanding_client import AzureContentUnderstandingClient
 
 # === Configuration ===
 KEY_VAULT_NAME = 'kv_to-be-replaced'
+MANAGED_IDENTITY_CLIENT_ID = 'mici_to-be-replaced'
 AZURE_AI_API_VERSION = "2024-12-01-preview"
 ANALYZER_ID = "ckm-audio"
 ANALYZER_TEMPLATE_FILE = 'ckm-analyzer_config_audio.json'
@@ -26,7 +27,7 @@ def get_secrets_from_kv(secret_name: str, vault_name: str) -> str:
     Returns:
         str: The value of the secret.
     """
-    kv_credential = ManagedIdentityCredential()
+    kv_credential = ManagedIdentityCredential(client_id=MANAGED_IDENTITY_CLIENT_ID)
     secret_client = SecretClient(
         vault_url=f"https://{vault_name}.vault.azure.net/",
         credential=kv_credential
@@ -38,7 +39,7 @@ sys.path.append(str(Path.cwd().parent))
 # Fetch endpoint from Key Vault
 endpoint = get_secrets_from_kv("AZURE-OPENAI-CU-ENDPOINT", KEY_VAULT_NAME)
 
-credential = ManagedIdentityCredential()
+credential = ManagedIdentityCredential(client_id=MANAGED_IDENTITY_CLIENT_ID)
 # Initialize Content Understanding Client
 token_provider = get_bearer_token_provider(credential, "https://cognitiveservices.azure.com/.default")
 client = AzureContentUnderstandingClient(
