@@ -19,7 +19,7 @@ async def get_db_connection():
     password = config.sqldb_database
     driver = config.driver
     mid_id = config.mid_id
-    
+
     try:
         async with ManagedIdentityCredential(client_id=mid_id) as credential:
             token = await credential.get_token("https://database.windows.net/.default")
