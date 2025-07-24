@@ -2,7 +2,7 @@
 import sys
 from pathlib import Path
 
-from azure.identity import DefaultAzureCredential, get_bearer_token_provider
+from azure.identity import ManagedIdentityCredential, get_bearer_token_provider
 from azure.keyvault.secrets import SecretClient
 from content_understanding_client import AzureContentUnderstandingClient
 
@@ -20,7 +20,7 @@ def get_secret(secret_name: str, vault_name: str) -> str:
     """
     Retrieve a secret value from Azure Key Vault.
     """
-    kv_credential = DefaultAzureCredential(managed_identity_client_id=MANAGED_IDENTITY_CLIENT_ID)
+    kv_credential = ManagedIdentityCredential(client_id=MANAGED_IDENTITY_CLIENT_ID)
     secret_client = SecretClient(vault_url=f"https://{vault_name}.vault.azure.net/", credential=kv_credential)
     return secret_client.get_secret(secret_name).value
 
@@ -30,7 +30,7 @@ sys.path.append(str(Path.cwd().parent))
 # Get endpoint from Key Vault
 endpoint = get_secret("AZURE-OPENAI-CU-ENDPOINT", KEY_VAULT_NAME)
 
-credential = DefaultAzureCredential(managed_identity_client_id=MANAGED_IDENTITY_CLIENT_ID)
+credential = ManagedIdentityCredential(client_id=MANAGED_IDENTITY_CLIENT_ID)
 # Initialize Content Understanding Client
 token_provider = get_bearer_token_provider(credential, "https://cognitiveservices.azure.com/.default")
 client = AzureContentUnderstandingClient(

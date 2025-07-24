@@ -1,4 +1,4 @@
-from azure.identity import DefaultAzureCredential
+from azure.identity import ManagedIdentityCredential
 from azure.keyvault.secrets import SecretClient
 from azure.search.documents.indexes import SearchIndexClient
 from azure.search.documents.indexes.models import (
@@ -28,12 +28,12 @@ def get_secrets_from_kv(secret_name: str) -> str:
 
     Args:
         secret_name (str): Name of the secret.
-        credential (DefaultAzureCredential): Credential with access to Key Vault.
+        credential (ManagedIdentityCredential): Credential with access to Key Vault.
 
     Returns:
         str: The secret value.
     """
-    kv_credential = DefaultAzureCredential(managed_identity_client_id=MANAGED_IDENTITY_CLIENT_ID)
+    kv_credential = ManagedIdentityCredential(client_id=MANAGED_IDENTITY_CLIENT_ID)
     secret_client = SecretClient(
         vault_url=f"https://{KEY_VAULT_NAME}.vault.azure.net/",
         credential=kv_credential
@@ -49,7 +49,7 @@ def create_search_index():
     - Semantic search using prioritized fields
     """
     # Shared credential
-    credential = DefaultAzureCredential(managed_identity_client_id=MANAGED_IDENTITY_CLIENT_ID)
+    credential = ManagedIdentityCredential(client_id=MANAGED_IDENTITY_CLIENT_ID)
 
     # Retrieve secrets from Key Vault
     search_endpoint = get_secrets_from_kv("AZURE-SEARCH-ENDPOINT")

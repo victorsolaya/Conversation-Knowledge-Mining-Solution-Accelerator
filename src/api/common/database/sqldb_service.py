@@ -5,7 +5,7 @@ import pandas as pd
 from api.models.input_models import ChartFilters
 from common.config.config import Config
 import logging
-from azure.identity.aio import DefaultAzureCredential
+from azure.identity.aio import ManagedIdentityCredential
 import pyodbc
 
 
@@ -18,10 +18,9 @@ async def get_db_connection():
     username = config.sqldb_username
     password = config.sqldb_database
     driver = config.driver
-    mid_id = config.mid_id
 
     try:
-        async with DefaultAzureCredential(managed_identity_client_id=mid_id) as credential:
+        async with ManagedIdentityCredential() as credential:
             token = await credential.get_token("https://database.windows.net/.default")
             token_bytes = token.token.encode("utf-16-LE")
             token_struct = struct.pack(

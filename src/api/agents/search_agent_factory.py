@@ -1,4 +1,4 @@
-from azure.identity import DefaultAzureCredential
+from azure.identity import ManagedIdentityCredential
 from azure.ai.agents.models import AzureAISearchTool, AzureAISearchQueryType
 from azure.ai.projects import AIProjectClient
 
@@ -22,7 +22,7 @@ class SearchAgentFactory(BaseAgentFactory):
         """
         project_client = AIProjectClient(
             endpoint=config.ai_project_endpoint,
-            credential=DefaultAzureCredential(exclude_interactive_browser_credential=False),
+            credential=ManagedIdentityCredential(),
             api_version=config.ai_project_api_version,
         )
 
