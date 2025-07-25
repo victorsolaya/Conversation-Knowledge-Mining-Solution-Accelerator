@@ -49,7 +49,7 @@ def get_credential():
             raise Exception("Failed to obtain credentials using ManagedIdentityCredential and AzureCliCredential.")
 
 def get_secrets_from_kv(kv_name, secret_name):
-    print(f"Key vault name: {kv_name} and secret {secret_name}"
+    print(f"Key vault name: {kv_name} and secret {secret_name}")
     kv_credential = get_credential()
     secret_client = SecretClient(vault_url=f"https://{kv_name}.vault.azure.net/", credential=kv_credential)
     return secret_client.get_secret(secret_name).value
