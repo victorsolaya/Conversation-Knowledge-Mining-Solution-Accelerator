@@ -49,8 +49,8 @@ def log_error(message):
 def get_credential():
     log("🔍 Trying to authenticate with Managed Identity")
     if not MANAGED_IDENTITY_CLIENT_ID or MANAGED_IDENTITY_CLIENT_ID == "mici_to-be-replaced":
-    log_error("❗ MANAGED_IDENTITY_CLIENT_ID is not properly configured.")
-    sys.exit(1)
+    	log_error("❗ MANAGED_IDENTITY_CLIENT_ID is not properly configured.")
+    	sys.exit(1)
 
     log(f"💡 MANAGED_IDENTITY_CLIENT_ID: {MANAGED_IDENTITY_CLIENT_ID}")
     try:
