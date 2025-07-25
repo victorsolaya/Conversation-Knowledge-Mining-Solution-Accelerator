@@ -69,9 +69,6 @@ def get_secrets_from_kv(kv_name, secret_name):
     if not kv_name:
         log_error("❗ KEY_VAULT_NAME is not properly configured.")
         sys.exit(1)
-    if kv_name == "kv_to-be-replaced":
-        log_error("❗ KEY_VAULT_NAME is still 'kv_to-be-replaced'.")
-        sys.exit(1)
     if not secret_name:
         log_error("❗ Secret name is missing.")
         sys.exit(1)
