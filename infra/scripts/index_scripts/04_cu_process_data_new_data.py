@@ -49,11 +49,15 @@ def get_credential():
             raise Exception("Failed to obtain credentials using ManagedIdentityCredential and AzureCliCredential.")
 
 def get_secrets_from_kv(kv_name, secret_name):
+    print(f"Key vault name: {kv_name} and secret {secret_name}"
     kv_credential = get_credential()
     secret_client = SecretClient(vault_url=f"https://{kv_name}.vault.azure.net/", credential=kv_credential)
     return secret_client.get_secret(secret_name).value
 
 # Retrieve secrets
+
+print(f"Retrieving secrets from {KEY_VAULT_NAME}.")
+
 search_endpoint = get_secrets_from_kv(KEY_VAULT_NAME, "AZURE-SEARCH-ENDPOINT")
 openai_api_base = get_secrets_from_kv(KEY_VAULT_NAME, "AZURE-OPENAI-ENDPOINT")
 openai_api_version = get_secrets_from_kv(KEY_VAULT_NAME, "AZURE-OPENAI-PREVIEW-API-VERSION")
