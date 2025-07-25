@@ -47,13 +47,12 @@ def log_error(message):
 
 
 def get_credential():
-    import os
-    print(f"🔍 Trying to authenticate with Managed Identity")
-    print(f"💡 MANAGED_IDENTITY_CLIENT_ID: {MANAGED_IDENTITY_CLIENT_ID}")
+    log(f"🔍 Trying to authenticate with Managed Identity")
+    log(f"💡 MANAGED_IDENTITY_CLIENT_ID: {MANAGED_IDENTITY_CLIENT_ID}")
     try:
         credential = ManagedIdentityCredential(client_id=MANAGED_IDENTITY_CLIENT_ID)
         token = credential.get_token("https://management.azure.com/.default")
-        print("✅ Token obtained successfully")
+        log("✅ Token obtained successfully")
         return credential
     except Exception as e:
         raise Exception(f"❌ Failed to obtain Managed Identity credential: {e}")
