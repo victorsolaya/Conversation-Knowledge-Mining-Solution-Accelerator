@@ -47,13 +47,17 @@ def log_error(message):
 
 
 def get_credential():
+    import os
+    print(f"🔍 Trying to authenticate with Managed Identity")
+    print(f"💡 AZURE_CLIENT_ID: {os.environ.get('AZURE_CLIENT_ID')} and {MANAGED_IDENTITY_CLIENT_ID}")
     try:
         credential = ManagedIdentityCredential(client_id=MANAGED_IDENTITY_CLIENT_ID)
-        # Validación opcional, puedes quitarla si quieres más velocidad
-        credential.get_token("https://management.azure.com/.default")
+        token = credential.get_token("https://management.azure.com/.default")
+        print("✅ Token obtained successfully")
         return credential
     except Exception as e:
-        raise Exception(f"❌ Error in the function get_credential. Failed to obtain Managed Identity credential: {e}")
+        raise Exception(f"❌ Failed to obtain Managed Identity credential: {e}")
+
 
 def get_secrets_from_kv(kv_name, secret_name):
     log(f"Key vault name: {kv_name} and secret {secret_name}")
