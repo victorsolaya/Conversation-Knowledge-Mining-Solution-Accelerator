@@ -29,8 +29,8 @@ from azure.search.documents.indexes.models import (
 )
 
 # Constants and configuration
-KEY_VAULT_NAME = 'kv-kmi6blpcy6x7ga'
-MANAGED_IDENTITY_CLIENT_ID = '33b46606-8344-4327-aeae-ba7a072ae713'
+KEY_VAULT_NAME = 'kv_to-be-replaced'
+MANAGED_IDENTITY_CLIENT_ID = 'mici_to-be-replaced'
 FILE_SYSTEM_CLIENT_NAME = "data"
 DIRECTORY = 'custom_transcripts'
 AUDIO_DIRECTORY = 'custom_audiodata'
@@ -64,8 +64,6 @@ def get_credential():
         raise
 
 def get_secrets_from_kv(kv_name, secret_name):
-    kv_name = 'kv-kmi6blpcy6x7ga'  # Override for testing or hardcoded use
-
     if not kv_name:
         log_error("❗ KEY_VAULT_NAME is not properly configured.")
         sys.exit(1)
