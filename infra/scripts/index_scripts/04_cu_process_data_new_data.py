@@ -47,16 +47,17 @@ def log_error(message):
 
 
 def get_credential():
-    log(f"🔍 Trying to authenticate with Managed Identity")
-    log(f"💡 MANAGED_IDENTITY_CLIENT_ID: {MANAGED_IDENTITY_CLIENT_ID}")
+    log("🔍 Trying to authenticate with Managed Identity")
+    log("💡 MANAGED_IDENTITY_CLIENT_ID: {MANAGED_IDENTITY_CLIENT_ID}")
     try:
         credential = ManagedIdentityCredential(client_id=MANAGED_IDENTITY_CLIENT_ID)
+        log("🔄 Trying to get token...")
         token = credential.get_token("https://management.azure.com/.default")
         log("✅ Token obtained successfully")
         return credential
     except Exception as e:
-        raise Exception(f"❌ Failed to obtain Managed Identity credential: {e}")
-
+        log_error("❌ Failed to obtain Managed Identity credential: {e}")
+        raise
 
 def get_secrets_from_kv(kv_name, secret_name):
     log(f"Key vault name: {kv_name} and secret {secret_name}")
