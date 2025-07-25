@@ -48,7 +48,11 @@ def log_error(message):
 
 def get_credential():
     log("🔍 Trying to authenticate with Managed Identity")
-    log("💡 MANAGED_IDENTITY_CLIENT_ID: {MANAGED_IDENTITY_CLIENT_ID}")
+    if not MANAGED_IDENTITY_CLIENT_ID or MANAGED_IDENTITY_CLIENT_ID == "mici_to-be-replaced":
+    log_error("❗ MANAGED_IDENTITY_CLIENT_ID is not properly configured.")
+    sys.exit(1)
+
+    log(f"💡 MANAGED_IDENTITY_CLIENT_ID: {MANAGED_IDENTITY_CLIENT_ID}")
     try:
         credential = ManagedIdentityCredential(client_id=MANAGED_IDENTITY_CLIENT_ID)
         log("🔄 Trying to get token...")
@@ -56,14 +60,31 @@ def get_credential():
         log("✅ Token obtained successfully")
         return credential
     except Exception as e:
-        log_error("❌ Failed to obtain Managed Identity credential: {e}")
+        log_error(f"❌ Failed to obtain Managed Identity credential: {e}")
         raise
 
 def get_secrets_from_kv(kv_name, secret_name):
-    log(f"Key vault name: {kv_name} and secret {secret_name}")
-    kv_credential = get_credential()
-    secret_client = SecretClient(vault_url=f"https://{kv_name}.vault.azure.net/", credential=kv_credential)
-    return secret_client.get_secret(secret_name).value
+    if not kv_name or kv_name == "kv_to-be-replaced":
+        log_error("❗ KEY_VAULT_NAME is not properly configured.")
+        sys.exit(1)
+
+    if not secret_name:
+        log_error("❗ Secret name is missing.")
+        sys.exit(1)
+
+    try:
+        log(f"🔑 Attempting to fetch secret '{secret_name}' from Key Vault '{kv_name}'")
+        kv_credential = get_credential()
+        secret_client = SecretClient(
+            vault_url=f"https://{kv_name}.vault.azure.net/",
+            credential=kv_credential
+        )
+        secret_value = secret_client.get_secret(secret_name).value
+        log(f"✅ Secret '{secret_name}' retrieved successfully")
+        return secret_value
+    except Exception as e:
+        log_error(f"❌ Failed to retrieve secret '{secret_name}' from Key Vault '{kv_name}': {e}")
+        raise
 
 # Retrieve secrets
 
