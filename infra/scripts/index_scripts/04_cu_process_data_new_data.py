@@ -3,6 +3,7 @@ import re
 import time
 import struct
 import pyodbc
+import sys
 import pandas as pd
 from datetime import datetime, timedelta
 from azure.identity import ManagedIdentityCredential, AzureCliCredential, get_bearer_token_provider
@@ -35,29 +36,34 @@ DIRECTORY = 'custom_transcripts'
 AUDIO_DIRECTORY = 'custom_audiodata'
 INDEX_NAME = "call_transcripts_index"
 
+def log(message):
+    print(f"[INFO] {message}")           # Esto aparece en Azure Portal (stdout)
+    sys.stdout.flush()                   # Asegura que se vea en tiempo real
+
+def log_error(message):
+    print(f"[ERROR] {message}")
+    sys.stderr.write(f"{message}\n")     # También lo lanza a stderr
+    sys.stderr.flush()
+
+
 def get_credential():
     try:
-        mi_credential = ManagedIdentityCredential(client_id=MANAGED_IDENTITY_CLIENT_ID)
-        mi_credential.get_token("https://management.azure.com/.default")
-        return mi_credential
-    except Exception:
-        try:
-            cli_credential = AzureCliCredential()
-            cli_credential.get_token("https://management.azure.com/.default")
-            return cli_credential
-        except Exception:
-            raise Exception("Failed to obtain credentials using ManagedIdentityCredential and AzureCliCredential.")
+        credential = ManagedIdentityCredential(client_id=MANAGED_IDENTITY_CLIENT_ID)
+        # Validación opcional, puedes quitarla si quieres más velocidad
+        credential.get_token("https://management.azure.com/.default")
+        return credential
+    except Exception as e:
+        raise Exception(f"❌ Error in the function get_credential. Failed to obtain Managed Identity credential: {e}")
 
 def get_secrets_from_kv(kv_name, secret_name):
-    print(f"Key vault name: {kv_name} and secret {secret_name}")
+    log(f"Key vault name: {kv_name} and secret {secret_name}")
     kv_credential = get_credential()
     secret_client = SecretClient(vault_url=f"https://{kv_name}.vault.azure.net/", credential=kv_credential)
     return secret_client.get_secret(secret_name).value
 
 # Retrieve secrets
 
-print(f"Retrieving secrets from {KEY_VAULT_NAME}.")
-
+log(f"Retrieving secrets from {KEY_VAULT_NAME}.")
 search_endpoint = get_secrets_from_kv(KEY_VAULT_NAME, "AZURE-SEARCH-ENDPOINT")
 openai_api_base = get_secrets_from_kv(KEY_VAULT_NAME, "AZURE-OPENAI-ENDPOINT")
 openai_api_version = get_secrets_from_kv(KEY_VAULT_NAME, "AZURE-OPENAI-PREVIEW-API-VERSION")
@@ -68,7 +74,7 @@ database = get_secrets_from_kv(KEY_VAULT_NAME, "SQLDB-DATABASE")
 azure_ai_endpoint = get_secrets_from_kv(KEY_VAULT_NAME, "AZURE-OPENAI-CU-ENDPOINT")
 azure_ai_api_version = "2024-12-01-preview"
 embedding_model = get_secrets_from_kv(KEY_VAULT_NAME, "AZURE-OPENAI-EMBEDDING-MODEL")
-print("Secrets retrieved.")
+log("Secrets retrieved.")
 
 # Azure DataLake setup
 account_url = f"https://{account_name}.dfs.core.windows.net"
