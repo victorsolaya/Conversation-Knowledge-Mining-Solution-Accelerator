@@ -64,6 +64,7 @@ def get_credential():
         raise
 
 def get_secrets_from_kv(kv_name, secret_name):
+    kv_name = 'kv-kmi6blpcy6x7ga'  # Override for testing or hardcoded use
     if not kv_name:
         log_error("❗ KEY_VAULT_NAME is not properly configured.")
         sys.exit(1)
